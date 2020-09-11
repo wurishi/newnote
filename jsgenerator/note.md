@@ -399,7 +399,7 @@ foo();
 
 不过, JS 始终是单线程的.(即在任何给定时间仅执行一个命令或函数)
 
-> 注意: Web Workers 是一种多线程机制, 但它不会给我们带来多线程的复杂性. 因为 Web Workers 与 JS 主线程之间只能通过异步事件互相通信, 而异步事件始终遵守着运行时要求的事件循环必须遍历完成的规则.
+> 注意: Web Workers 是一种多线程机制, 但它不会给我们带来多线程的复杂性. 因为 Web Workers 与 JS 主线程之间只能通过异步事件互相通信, 而异步事件始终遵守着执行的当前运行时线程必须全部执行完毕才会发送事件的规则.
 
 ### 运行...停止...运行
 
@@ -786,7 +786,7 @@ makeAjaxCall("http://url1", function (result1) {
 });
 ```
 
-上面体现了异步代码常见的问题, 回调地狱. 现在来看一下使用生成器函数来处理类似的需求.
+上面体现了异步代码常见的问题, **回调地狱**. 现在来看一下使用生成器函数来处理类似的需求.
 
 ```javascript
 let it;
@@ -966,7 +966,7 @@ main();
 
 在 ES7 则可以直接使用 `async function` 实现.
 
-# 3: ES6 迭代
+# 3: ES6 迭代与生成器
 
 [参考资料](https://2ality.com/2015/02/es6-iteration.html)
 
@@ -978,8 +978,8 @@ ES6 引入了新的迭代接口 Iterable, 这篇将会介绍它是如何工作�
 
 可迭代性包含二部分内容:
 
-- 数据消费者(Data consumers): 例如: `for-of` 循环遍历, `...`解构运算符等.
-- 数据源(Data sources): 数据使用者可以从各种数据来源中获得数据. 例如: 遍历数组元素, 从 Map 中获取键值或从字符串中提取字符.
+- **数据消费者(Data consumers):** 例如: `for-of` 循环遍历, `...`解构运算符等.
+- **数据源(Data sources):** 数据使用者可以从各种数据来源中获得数据. 例如: 遍历数组元素, 从 Map 中获取键值或从字符串中提取字符.
 
 数据消费者要支持所有的数据来源可能是不切实际的, 尤其是自定义的数据消费者和来源. 因此 ES6 引入了接口 Iterable, 数据消费者使用它, 数据源实现它.
 
@@ -1084,9 +1084,9 @@ console.log(iter.next()); // { value: undefined, done: true }
 
    并非所有的可迭代数据都必须来自于一个特定的数据结构, 也可以是通过计算获得的. 例如: 所有主要的 ES6 数据结构 (数组, 映射, 集合等) 都有三种返回可迭代对象的方法:
 
-   - entries(): 返回的是 [key, value] 数组. 对于数组, 键代表是它们的索引. 对于集合每个键和值都是相同的.
-   - keys(): 返回由键组成的迭代器.
-   - values(): 返回由值组成的迭代器.
+   - **entries():** 返回的是 [key, value] 数组. 对于数组, 键代表是它们的索引. 对于集合每个键和值都是相同的.
+   - **keys():** 返回由键组成的迭代器.
+   - **values():** 返回由值组成的迭代器.
 
 8. 普通对象是不可迭代的
 
@@ -1195,14 +1195,14 @@ for (let x of iterable) {
 // world
 ```
 
-#### (一) 迭代器本身可以迭代
+#### (一) 可迭代项本身也是迭代器
 
 ```javascript
 function iterateOver(...args) {
     let index = 0;
     let iterable = {
         [Symbol.iterator]() {
-            return this;
+            return this; // 重点就是这一行
         },
         next() {
             if (index < args.length) {
@@ -1240,6 +1240,7 @@ for (let x of arr) {
     console.log(x);
 }
 // 1 2
+// 因为二次迭代数组都是创建了一个新的迭代器
 ```
 
 ```javascript
@@ -1256,14 +1257,12 @@ for (let x of iterable) {
 // arr.values() 也是类似的情况
 ```
 
-
-
 #### (二) 可选的迭代器方法: `return()` 和 `throw()`
 
 迭代器还有两个可选方法:
 
-- return(): 如果迭代器过早结束, 则为迭代器提供清理的机会.
-- throw(): 提供生成器函数 yield* 的支持.
+- **return():** 如果迭代器过早结束, 则为迭代器提供清理的机会.
+- **throw():** 提供生成器函数 yield* 的支持.
 
 通过 return() 关闭迭代器: 
 
@@ -1305,7 +1304,7 @@ for(const line of readLinesSync(fileName)) {
 
 ### 3-1-5 例子
 
-#### (一) 返回对象的迭代器
+#### (一) 迭代对象属性
 
 ```javascript
 function objectEntries(obj) {
@@ -1440,5 +1439,322 @@ for (let x of zipped) {
 // [ '一', 0 ]
 // [ '二', 1 ]
 // [ '三', 2 ]
+```
+
+## 3-2. 深入ES6 生成器
+
+### 3-2-1 概述
+
+生成器有二个重要的功能分别是:
+
+- 实现可迭代
+- 等待异步函数的执行
+
+#### (一) 通过生成器实现迭代
+
+```javascript
+function* objectEntries(obj) {
+    const propKeys = Reflect.ownKeys(obj);
+    for (let key of propKeys) {
+        yield [key, obj[key]];
+    }
+}
+for (const [key, value] of objectEntries({ first: 1, last: 2 })) {
+    console.log(key, value);
+}
+// first 1
+// last 2
+```
+
+#### (二) 等待异步函数调用
+
+```javascript
+function* () {
+    try {
+        const [croftStr, bondStr] = yield Promise.all([
+            getFile('1.json'),
+            getFile('2.json'),
+        ]);
+        const croftJson = JSON.parse(croftStr);
+        const bondJson = JSON.parse(bondStr);
+    } catch (e) {
+        console.log('Failure to read:' + e);
+    }
+}
+```
+
+这里使用**异步 getFile()** 获取两个文件的内容, 注意 `yield Promise.all()` 这里会等到二个文件都加载好再继续往下执行, 这里异步执行的操作看起来像是同步代码一样.
+
+### 3-2-2 什么是生成器?
+
+生成器具有暂停和恢复的功能
+
+```javascript
+function* genFunc() {
+    console.log('First');
+    yield;
+    console.log('Seconde');
+}
+```
+
+相比普通函数它有两个特点:
+
+- 以关键字 `function*` 开头
+- 函数中以 `yield` 关键字暂停
+
+调用 `genFunc`并不会执行函数, 相反, 它会返回一个生成器对象, 让我们可以控制 `genFunc` 的执行与暂停.
+
+```javascript
+const genObj = genFunc();
+```
+
+`genFunc()` 最初是属于暂停状态, 只有调用了 `genObj.next()` 后 `genFunc` 才开始执行, 直到遇见下一个 `yield`:
+
+```javascript
+genObj.next(); // 返回一个对象 {value: undefined, done: false} 是的就是一个迭代器迭代时返回的对象
+// First
+```
+
+此是 `genFunc` 暂停了, 如果再次调用 `next()`, 将继续执行:
+
+```javascript
+genObj.next(); // {value: undefined, done: true}
+// Second
+```
+
+之后函数已经全部执行完成了, 再次调用 `genObj.next()` 无效. (当然仍然会返回 `{value: undefined, done: true}`)
+
+#### (一) 生成器的创建方式:
+
+1. 通过生成器函数声明:
+
+   ```javascript
+   function* genFunc() {}
+   const genObj = genFunc();
+   ```
+
+2. 通过生成器函数表达式:
+
+   ```javascript
+   const genFunc = function* () {};
+   const genObj = genFunc();
+   ```
+
+3. 通过对象中的生成器方法定义:
+
+   ```javascript
+   const obj = {
+       * generatorMethod() {}
+   };
+   const genObj = obj.generatorMethod();
+   
+   ```
+
+4. 通过类中生成器方法定义(可以是函数声明或表达式):
+
+   ```javascript
+   class MyClass {
+       * generatorMethod() {}
+   }
+   const myInst = new MyClass();
+   const genObj = myInst.generatorMethod();
+   ```
+
+#### (二) 生成器扮演的角色
+
+生成器扮演的三个角色:
+
+1. **迭代器(数据生产者):** 生成器函数中每次 `yield` 都可以返回一个值给 `next()`, 这就意味着生成器可以通过循环等方式来生成值的序列. 由于生成器对象又实现了接口 `Iterable`, 因此可以通过任何支持迭代的 `ES6` 语法来处理这些数据, 比如: `for-of`循环和`...`解析运算符等.
+2. **观察者(数据消费者):** `yield` 也可以接收 `next()` 传递的参数. 这意味着生成器成为了数据的使用方, 它可以一直暂停等待直到有数据通过 `next()` 推进生成器函数.
+3. **协程(数据生产者和消费者):** 因为生成器可以暂停, 又可以既当数据生产者又当数据消费者, 因此不需要太多工作就可以将它们转变为协程(协作式多任务).
+
+### 3-2-3 生成器作为迭代器 (数据生产者)
+
+生成器产生(通过 `yield`)的数据, 通过 `next()` 返回值可以获取到, 要注意的是生成器实现了 `Iterable`和 `Iterator`.
+
+```javascript
+function* genFunc() {
+    yield 'a';
+    yield 'b';
+}
+const genObj = genFunc();
+genObj.next(); // {value: 'a', done: false}
+genObj.next(); // {value: 'b', done: false}
+genObj.next(); // {value: 'c', done: true}
+```
+
+#### (一) 迭代生成器的方式
+
+`for-of`:
+
+```javascript
+for(const x of genFunc()) {
+    console.log(x);
+}
+// a
+// b
+```
+
+`...` 解构运算符:
+
+```javascript
+let arr = [...genFunc()]; // ['a', 'b']
+```
+
+数组解构:
+
+```javascript
+const [x, y] = genFunc();
+// x: 'a', y: 'b'
+```
+
+#### (二) 从生成器中 return
+
+不包含显式 `return` 等效于 `return undefined`
+
+```javascript
+function* genFuncWithReturn() {
+    yield 'a';
+    yield 'b';
+    return 'result';
+}
+const genObj = genFuncWithReturn();
+genObj.next(); // {value: 'a', done: false}
+genObj.next(); // {value: 'b', done: false}
+genObj.next(); // {value: 'result', done: true}
+```
+
+要特别注意的是大部分迭代语法会忽略 `done: true` 时的值.
+
+```javascript
+for(let x of genFuncWithReturn()) {
+    console.log(x);
+}
+// a
+// b
+let arr = [...genFuncWithReturn()]; // ['a', 'b']
+```
+
+#### (三) 例子: 迭代对象属性
+
+```javascript
+function* objectEntries(obj) {
+    const propKeys = Reflect.ownKeys(obj);
+    for (let key of propKeys) {
+        yield [key, obj[key]];
+    }
+}
+for (const [key, value] of objectEntries({ first: 1, last: 2 })) {
+    console.log(key, value);
+}
+```
+
+代码比非生成器的实现要简单得多.
+
+#### (四) 通过 `yield*` 输出
+
+```javascript
+function* foo() {
+    yield 'a';
+    yield 'b';
+}
+function* bar() {
+    yield 'x';
+    yield* foo();
+    yield 'y';
+}
+const arr = [...bar()]; // ['x', 'a', 'b', 'y']
+```
+
+`yield*` 内部的大致工作如下:
+
+```javascript
+function* bar() {
+    yield 'x';
+    for(let value of foo()) {
+        yield value;
+    }
+    yield 'y';
+}
+```
+
+另外 `yield*`并不必须是生成器对象, 也可以是任何可迭代的.
+
+```javascript
+function* bla() {
+    yield 'sequence';
+    yield* ['of', 'yielded'];
+    yield 'values';
+}
+let arr = [...bla()]; // ['sequence', 'of', 'yielded', 'values']
+```
+
+1. **`yield*`return:** 
+
+   ```javascript
+   function* genFuncWithReturn() {
+       yield 'a';
+       yield 'b';
+       return 'The result';
+   }
+   function* logReturned(genObj) {
+       let result = yield* genObj;
+       console.log(result);
+   }
+   const arr = [...logReturned(genFuncWithReturn())];
+   console.log(arr);
+   // console.log(result): The result
+   // console.log(arr): ['a', 'b']
+   ```
+
+2. **遍历树:** 传统方法遍历树往往使用到递归, 非递归的版本代码编写会非常复杂. 但使用生成器将会非常简单
+
+   ```javascript
+   class BinaryTree {
+       constructor(value, left = null, right = null) {
+           this.value = value;
+           this.left = left;
+           this.right = right;
+       }
+   
+       *[Symbol.iterator]() {
+           yield this.value;
+           if (this.left) {
+               yield* this.left;
+           }
+           if (this.right) {
+               yield* this.right;
+           }
+       }
+   }
+   
+   let tree = new BinaryTree(
+       'a',
+       new BinaryTree('b', new BinaryTree('c'), new BinaryTree('d')),
+       new BinaryTree('e')
+   );
+   for (let x of tree) {
+       console.log(x);
+   }
+   ```
+
+#### (五) yield 只能在生成器中使用
+
+生成器有一个重要的限制, yield 只能在生成器函数内部使用, 不能在回调中使用:
+
+```javascript
+function* genFunc() {
+    ['a', 'b'].forEach(x => yield x); // SyntaxError
+}
+```
+
+需要改成这样
+
+```javascript
+function* genFunc() {
+    for(let x of ['a', 'b']) {
+        yield x;
+    }
+}
 ```
 

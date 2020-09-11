@@ -1302,3 +1302,143 @@ for(const line of readLinesSync(fileName)) {
     break; // 因为加了 return(), 即使 break 文件也能正确关闭了.
 }
 ```
+
+### 3-1-5 例子
+
+#### (一) 返回对象的迭代器
+
+```javascript
+function objectEntries(obj) {
+    let index = 0;
+    const propKeys = Reflect.ownKeys(obj); // IE 全系不支持
+    // 与 Object.keys(obj) 一样, 并不会获取原型链上的属性
+
+    return {
+        [Symbol.iterator]() {
+            return this;
+        },
+        next() {
+            if (index < propKeys.length) {
+                const key = propKeys[index++];
+                return { value: [key, obj[key]] };
+            } else {
+                return { done: true };
+            }
+        },
+    };
+}
+const obj = { first: 'hello', last: 'world' };
+for (const [key, value] of objectEntries(obj)) {
+    console.log(`${key}: ${value}`);
+}
+```
+
+#### (二) 迭代组合器
+
+- take(): 迭代指定数量
+
+  ```javascript
+  function take(n, iterable) {
+      const iter = iterable[Symbol.iterator]();
+      return {
+          [Symbol.iterator]() {
+              return this;
+          },
+          next() {
+              if (n > 0) {
+                  n--;
+                  return iter.next();
+              } else {
+                  return { done: true };
+              }
+          },
+      };
+  }
+  const arr = ['a', 'b', 'c', 'd'];
+  for (let x of take(2, arr)) {
+      console.log(x);
+  }
+  // 'a' 'b'
+  ```
+
+- zip(): 合并数组每一项
+
+  ```javascript
+  function zip(...iterables) {
+      const iterators = iterables.map((i) => i[Symbol.iterator]());
+      let done = false;
+      return {
+          [Symbol.iterator]() {
+              return this;
+          },
+          next() {
+              if (!done) {
+                  const items = iterators.map((i) => i.next());
+                  done = items.some((item) => item.done);
+                  if (!done) {
+                      return { value: items.map((i) => i.value) };
+                  }
+                  for (const iterator of iterators) {
+                      iterator.return && iterator.return();
+                  }
+              }
+  
+              return { done };
+          },
+      };
+  }
+  const zipped = zip(['a', 'b', 'c'], [1, 2, 3, 4]);
+  for (const x of zipped) {
+      console.log(x);
+  }
+  // ['a', 1]
+  // ['b', 2]
+  // ['c', 3]
+  ```
+
+#### (三) 无限迭代
+
+```javascript
+function naturalNumbers() {
+    let n = 0;
+    return {
+        [Symbol.iterator]() {
+            return this;
+        },
+        next() {
+            return { value: n++ };
+        },
+    };
+}
+for (let x of naturalNumbers()) {
+    if (x > 2) break;
+    console.log(x);
+}
+// 0
+// 1
+// 2
+
+const [a, b, c] = naturalNumbers();
+console.log(a, b, c);
+// 0 1 2
+```
+
+另外也可以和之前的方法混合使用:
+
+```javascript
+for (let x of take(3, naturalNumbers())) {
+    console.log(x);
+}
+// 0
+// 1
+// 2
+
+const zipped = zip(['一', '二', '三'], naturalNumbers());
+for (let x of zipped) {
+    console.log(x);
+}
+// [ '一', 0 ]
+// [ '二', 1 ]
+// [ '三', 2 ]
+```
+

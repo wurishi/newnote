@@ -1570,7 +1570,7 @@ genObj.next(); // {value: undefined, done: true}
 
 ### 3-2-3 生成器作为迭代器 (数据生产者)
 
-生成器产生(通过 `yield`)的数据, 通过 `next()` 返回值可以获取到, 要注意的是生成器实现了 `Iterable`和 `Iterator`.
+生成器产生(通过 `yield`)的数据, 通过 `next()` 返回值可以获取到, 要注意的是生成器同时实现了 `Iterable`和 `Iterator`.
 
 ```javascript
 function* genFunc() {
@@ -1758,3 +1758,101 @@ function* genFunc() {
 }
 ```
 
+### 3-2-4 生成器作为观察者 (数据消费者)
+
+作为数据的消费者, 生成器对象实现了 Observer 观察者接口:
+
+```javascript
+interface Observer {
+    next(value?: any): void;
+    return(value?: any): void;
+    throw(error): void;
+}
+```
+
+作为观察者, 生成器会暂停直到接收到输入, 接口的三种方法分别表示传入的输入类型:
+
+- **next():** 发送普通输入.
+- **return():** 终止生成器.
+- **throw():** 抛入错误.
+
+#### (一) 通过`next()`发送数据
+
+```javascript
+function* dataConsumer() {
+    console.log('Started');
+    console.log('1.' + yield);
+    console.log('2.' + yield);
+    return 'result';
+}
+const genObj = dataConsumer();
+genObj.next();
+// Started
+genObj.next('a');
+// 1. a
+genObj.next('b'); // {value: 'result', done: true}
+// 2. b
+```
+
+要特别注意的是, `next()`的调用是不对称的, 第一次调用的唯一目的是启动观察者, 让它准备在之后接受输入. 所以第一次调用 `next(1)`传递的任何参数都是没有意义的.
+
+可以用以下方法解决这个问题:
+
+```javascript
+const normal = function* () {
+    console.log('input: ' + yield);
+};
+const genObj = normal();
+genObj.next('Hello'); // 第一次只是启动, 参数'Hello'没有任何意义
+genObj.next('World'); // input: World
+
+function coroutine(generatorFunction) {
+    return function (...args) {
+        let generatorObject = generatorFunction(...args);
+        generatorObject.next();
+        return generatorObject;
+    };
+}
+const wrapped = coroutine(function* () {
+    while (true) {
+        const x = yield;
+        if (x === 'DONE') {
+            return x;
+        }
+        console.log('input: ' + x);
+    }
+});
+wrapped().next('Hello'); // input: Hello
+```
+
+#### (二)`yield`的优先级
+
+`yield`的优先级是非常低的, 因此我们不需要将操作数放在小括号内:
+
+```javascript
+yield a + b + c;
+// 等价于
+yield (a + b + c);
+// 而不是 (yield a) + b + c;
+```
+
+但由于 `yield` 优先级较低, 如果将 `yield`作为操作数时, 则必须给自己加上括号, 例如:
+
+```javascript
+console.log('Hello' + yield); // SyntaxError
+console.log('Hello' + yield 123); // SyntaxError
+const x = 'Hello' + yield; // SyntaxError
+
+console.log('Hello' + (yield)); // 正确
+console.log('Hello' + (yield 123)); // 正确
+const x = 'Hello' + (yield); // 正确
+```
+
+以下情况则不需要加括号:
+
+```javascript
+foo(yield 'a', yield 'b');
+const input = yield;
+```
+
+#### (三)`return()`和`throw()`

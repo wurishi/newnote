@@ -39,3 +39,50 @@ console.log(it.next('DONE'));
 //     const x = 'Hello' + yield;
 //   };
 // })();
+
+!(function () {
+  console.log('return--------');
+
+  function* genFunc1() {
+    try {
+      console.log('Started');
+      yield;
+      console.log('A Exiting');
+    } finally {
+      console.log('B Exiting');
+    }
+  }
+
+  const genObj1 = genFunc1();
+  console.log(genObj1.next());
+  console.log(genObj1.return('Result'));
+
+  function* genFunc2() {
+    try {
+      console.log('Started');
+      yield;
+    } finally {
+      yield 'Not done, yet!';
+    }
+  }
+  const genObj2 = genFunc2();
+  console.log(genObj2.next());
+  console.log(genObj2.return('Result'));
+  console.log(genObj2.next());
+
+  function* genFunc() {}
+  console.log(genFunc().return('yes'));
+})();
+
+!(function () {
+  console.log('Error');
+
+  function* genFunc2() {
+    console.log('Started');
+    yield;
+  }
+
+  const genObj2 = genFunc2();
+  console.log(genObj2.next());
+  console.log(genObj2.throw(new Error('Problem!')));
+})();

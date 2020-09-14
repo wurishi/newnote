@@ -1483,7 +1483,7 @@ function* () {
 }
 ```
 
-这里使用**异步 getFile()** 获取两个文件的内容, 注意 `yield Promise.all()` 这里会等到二个文件都加载好再继续往下执行, 这里异步执行的操作看起来像是同步代码一样.
+这里使用**异步 getFile()** 获取两个文件的内容, 注意 `yield Promise.all()` 这里会等到二个文件都加载好再继续往下执行, 这里异步执行的操作看起来像是同步代码一样. (需要额外的调度器代码来实现, 请*参考3-2-5(二)*)
 
 ### 3-2-2 什么是生成器?
 
@@ -1524,7 +1524,7 @@ genObj.next(); // {value: undefined, done: true}
 
 之后函数已经全部执行完成了, 再次调用 `genObj.next()` 无效. (当然仍然会返回 `{value: undefined, done: true}`)
 
-#### (一) 生成器的创建方式:
+#### (一) 生成器的创建方式
 
 1. 通过生成器函数声明:
 
@@ -1566,7 +1566,7 @@ genObj.next(); // {value: undefined, done: true}
 
 1. **迭代器(数据生产者):** 生成器函数中每次 `yield` 都可以返回一个值给 `next()`, 这就意味着生成器可以通过循环等方式来生成值的序列. 由于生成器对象又实现了接口 `Iterable`, 因此可以通过任何支持迭代的 `ES6` 语法来处理这些数据, 比如: `for-of`循环和`...`解析运算符等.
 2. **观察者(数据消费者):** `yield` 也可以接收 `next()` 传递的参数. 这意味着生成器成为了数据的使用方, 它可以一直暂停等待直到有数据通过 `next()` 推进生成器函数.
-3. **协程(数据生产者和消费者):** 因为生成器可以暂停, 又可以既当数据生产者又当数据消费者, 因此不需要太多工作就可以将它们转变为协程(协作式多任务).
+3. **协同程序(数据生产者和消费者):** 因为生成器可以暂停, 又可以既当数据生产者又当数据消费者, 因此不需要太多工作就可以将它们转变为协程(协作式多任务).
 
 ### 3-2-3 生成器作为迭代器 (数据生产者)
 
@@ -1856,3 +1856,316 @@ const input = yield;
 ```
 
 #### (三)`return()`和`throw()`
+
+现在回顾一下 `next(x)`的工作流程:
+
+1. 当生成器遇到`yield`时暂停.
+2. 将值`x`发送给`yield`, 这意味着生成器将处理 `x`.
+3. 继续执行直到遇到下一个 `yield`或 `return`
+
+在步骤 2 处, `return()`和 `throw()`的行为类似 `next()`, 但也有些不同之处.
+
+#### (四) `return()`停止生成器
+
+```javascript
+function* genFunc1() {
+    try {
+        console.log('Started');
+        yield;
+        console.log('A Exiting');
+    } finally {
+        console.log('B Exiting');
+    }
+}
+
+const genObj1 = genFunc1();
+console.log(genObj1.next()); 
+// Started
+// {value: undefined, done: false}
+console.log(genObj1.return('Result')); 
+// B Exiting
+// {value: 'Result', done: true}
+```
+
+`return()`将会停止生成器函数的执行, 所以 `A Exiting`将永远不会执行到. 不过需要注意的, `finally`中的代码仍然会在 `return()`后执行.
+
+另外, 如果 `return()`时在 `finally`中执行 `yield xxx`, 则优先执行 `yield`语句, `return`的内容将排队在下一次执行 `next()`时才完成, 比如:
+
+```javascript
+function* genFunc2() {
+    try {
+        console.log('Started');
+        yield;
+    } finally {
+        yield 'Not done, yet!';
+    }
+}
+const genObj2 = genFunc2();
+console.log(genObj2.next());
+// Started
+// {value: undefined, done: false}
+console.log(genObj2.return('Result')); // return('Result') 将排队
+// {value: 'Not done, yet!', done: false}
+console.log(genObj2.next());
+// {value: 'return', done: true}
+```
+
+也允许直接从新创建的生成器(尚未启动)中返回值:
+
+```javascript
+function* genFunc() {}
+console.log(genFunc().return('yes'));
+```
+
+#### (五)`throw()`抛出错误异常
+
+`throw()`将会在生成器因为`yield`暂停的位置抛出异常.
+
+```javascript
+function* genFunc1() {
+    try {
+        console.log('Started');
+        yield;
+    } catch (error) {
+        console.log('Caught: ' + error);
+    }
+}
+const genObj1 = genFunc1();
+genObj1.next(); // {value: undefined, done: false}
+// Started
+genObj1.throw(new Error('Problem!')); // {value: undefined, done: true}
+// Caught: Error: Problem!
+```
+
+如果在生成器内部没有使用 `try...catch`捕获异常, 异常将直接抛到外部.
+
+```javascript
+function* genFunc2() {
+    console.log('Started');
+    yield;
+}
+const genObj2 = genFunc2();
+console.log(genObj2.next());
+// Started
+// { value: undefined, done: false }
+console.log(genObj2.throw(new Error('Problem!')));
+// Error: Problem!
+```
+
+同样的, 也允许直接在新创建的生成器上抛出错误:
+
+```javascript
+function* genFunc() {}
+genFunc().throw(new Error('Problem!'));
+// Error: Problem!
+```
+
+#### (六) 处理异步数据流
+
+[代码](3-2-4.6.js)
+
+- **splitLines**: target 是通过 chain 拿到的 numberLines, 当 file stream 读取到文本流时, 将由 splitLines 按 \n 拆分, 将每一行传递给 numberLines.
+- **numberLines**: 负责记录 lineNo.
+- **printLines**: 负责输出.
+
+#### (七) `yield*`
+
+```javascript
+const yieldStarResult = yield* calleeFunc();
+```
+
+大致类似于:
+
+```javascript
+let yieldStarResult;
+
+const calleeObj = calleeFunc();
+let prevReceived = undefined;
+while(true) {
+    try {
+        const item = calleeObj.next(prevReceived);
+        if(item.done) {
+            yieldStarResult = item.value;
+            break;
+        }
+        prevReceived = yield item.value;
+    } catch (e) {
+        if(e instanceOf Return) {
+            calleeObj.return(e.returnedValue);
+            return e.returnedValue;
+        } else {
+            calleeObj.throw(e);
+        }
+    }
+}
+```
+
+为了简单起见, 以上代码缺少几件事情:
+
+- `yield*` 可以是任何可迭代的值.
+- `return()`和 `throw()`是可选的迭代器方法, 应该是仅在该方法存在时才调用.
+- 捕获到异常并且迭代器没有 `throw()`方法时, 如果有 `return()`它应该在异常抛出之前调用, 以便 `calleeObj`有机会进行清理工作.
+
+看下面这个例子:
+
+```javascript
+function* callee() {
+    try {
+        yield 'b';
+        yield 'c';
+    } finally {
+        console.log('finally callee');
+    }
+}
+function* caller() {
+    try {
+        yield 'a';
+        yield* callee();
+        yield 'd';
+    } catch (e) {
+        console.log('[caller] ' + e);
+    } finally {
+        console.log('finally caller');
+    }
+}
+```
+
+```javascript
+const genObj = caller();
+genObj.next(); // value: 'a'
+genObj.next(); // value: 'b'
+console.log(genObj.throw(new Error('Problem!')));
+// finally callee
+// [caller] Error: Problem!
+// finally caller
+// {value: undefined, done: true}
+```
+
+可以看到 `callee`并没有捕获异常, 所以异常传递到上一层, 即 `caller`处了.
+
+```javascript
+const [x, y] = caller(); // ['a', 'b']
+// finally callee
+// finally caller
+```
+
+会发现 `caller`会将 `return`转发给 `callee`, `callee`结束后 `return`又像异常一样传递到了外面, 让 `caller`也能符合我们预期的结束.
+
+但要注意 `return`与生成器函数暂停的时机:
+
+```javascript
+const [z] = caller();
+// finally caller
+```
+
+ 因为还没有开始执行 `callee`.
+
+#### 如果理解 `yield*`?
+
+- 可以理解为生成器函数之间的调用.
+- 要理解 `return()`的行为, 可以考虑将被调用方的函数拷贝到调用方时, 应该处样处理.
+
+### 3-2-5 生成器作为协同程序
+
+#### (一) 作为协程需要实现的接口
+
+生成器对象完整的接口是需要同时处理输出和输入的, 它其实就是结合了之前看到的两个接口: `Iterator`用于输出, `Observer`用于输入.
+
+```javascript
+interface Iterator {
+    next(): IteratorResult;
+    return?(value?: any): IteratorResult;
+}
+interface Observer {
+    next(value?: any) : void;
+    return(value?: any): void;
+    throw(error): void;
+}
+// ECMAScript 规则中的生成器对象的完整接口:
+interface Generator {
+    next(value?:any): IteratorResult;
+    throw(value?:any): IteratorResult;
+    return(value?:any): IteratorResult;
+}
+interface IteratorResult {
+    value: any;
+    done: boolean;
+}
+```
+
+#### (二) 多任务协作
+
+协作式多任务处理是生成器在实际应用中经常碰到的, 在此之前先回顾一下 JavaScript 中关于多任务的内容.
+
+JavaScript 仅能在单个进程中运行, 目前有两种方法可以消除此限制:
+
+- **多线程**: Web Workers 可以让 JavaScript 运行在多个进程中. 在多线程编程中, 共享数据的访问往往有非常多的问题. Web Workers 是通过不共享任何数据来避免这种情况的. 也就是说, 如果要让 Web Workder 拥有一条数据, 则必须向其发送一个事件将数据传输给它, 并且之后你将无法再访问这条数据了.
+- **协程**: 有许多种模式和库都在尝试提供协作式多任务处理. 这些库都有一个特点, 即虽然说起来是运行多个任务, 但实际上同一时间只能运行其中的一个任务. 每个任务都必须显式的挂起(暂停)自己才能让外部程序控制何时发生任务切换. 在这些库中, 数据通常都可以在任务间共享, 但因为有着明确的暂停机制, 所以几乎没有风险.
+
+多任务协作被经常用来以下两种情况:
+
+- **异步计算**: 任务一直处于阻塞(暂停)状态, 直到接收到其他长时间运行的计算结果为止.
+- **数据流**: 任务按顺序处理数据流, 但没有可用数据时, 则暂停.
+
+对于二进制流, WHATWG 当前正在研究基于回调和 Promise 的[标准建议](https://streams.spec.whatwg.org/).
+
+对于数据流, 有一个名为 Communicating Sequential Processes (CSP)方案.
+
+对于异步计算, Promise 是一个非常流行的 ECMAScript6 标准方案.
+
+下面是一个用生成器简化异步代码的例子:
+
+```javascript
+function getFile(url) {
+    return fetch(url)
+    	.then(request => request.text());
+}
+co(function* () {
+    try {
+        const [croftStr, bondStr] = yield Promise.all([
+            getFile('croft.json'),
+            getFile('bond.json'),
+        ]);
+        const croftJson = JSON.parse(croftStr);
+        const bondJson = JSON.parse(bondStr);
+    } catch (e) {
+        console.log('Failure to read: ' + e);
+    }
+});
+function co(genFunc) {
+    const genObj = genFunc();
+    run();
+    function run(promiseResult = undefined) {
+        const item = genObj.next(promiseResult);
+        if(!item.done) {
+            item.value
+            	.then(result => run(result))
+            	.catch(error => genObj.throw(error));
+        }
+    }
+}
+```
+
+#### (三) 通过生成器进行多任务协作的局限性
+
+**协程**是**无限制**的协作式多任务的, 在协程内部, 任何函数(函数本身, 函数的调用方, 函数的调用方的调用方等等)都可以挂起整个协程.
+
+相比之下, 生成器的多任务协作只能从生成器内部挂起生成器函数. 因为这个限制, 生成器有时候被称为*浅协程*.
+
+生成器的局限性其实也能带来一些好处:
+
+- 生成器与事件循环兼容, 该事件循环可以在浏览中提供简单的多任务协作功能.
+- 生成器相对容易实现, 因为仅需要暂停单个功能的激活, 并且浏览器可以继续使用事件循环.
+
+JavaScript 其实已经有了一种非常简单的多任务协作功能了, 那就是**事件循环**. 它负责调度队列中任务的执行. 每个任务都通过调用一个函数开始, 并在该函数完成后结束. 比如通过 `setTimeout()`就能将一个事件添加到队列中.
+
+这种多任务处理方式提供了一个重要的保证: **开始运行直到完成**. 每个功能在完成之前都不会被其他任务打断. 所以函数变成了类似事务的概念, 它们可以执行完整的算法, 而没有人可以看到他们运行时操作的数据. 也就不会引入多任务并发访问共享数据的复杂性.
+
+而相对的, 协程会阻止运行完成, 因为任何函数都可以让程序挂起. 
+
+生成器则保留了开始运行直到完成的特性, 因为它们仅能暂停自身并返回到调用方. 之前的`co`已经提供了协程的大部分功能.
+
+- 为生成器定义的任务提供了调度程序.
+- 任务是从生成器开始的, 所以也支持在生成器中挂起.
+- 可以通过 `yield*`递归控制生成器函数的调用.
+

@@ -2,6 +2,10 @@
 
 参考资料: [BFS 算法框架套路详解](https://mp.weixin.qq.com/s/Gse3M1P0OJGZj4OmnidLkA) (已完成)
 
+# brunch
+
+参考资料: [Brunch Quick Start](https://brunch.io/docs/getting-started)
+
 # d3js
 
 参考资料: [D3.js 的 v5 版本入门教程](https://blog.csdn.net/qq_34414916/article/details/80026029) _(完成 追加一些 Example)_
@@ -30,9 +34,9 @@ electron
 参考资料:
 
 - [JavaScript Generators 权威指南](https://github.com/gajus/gajus.com-blog/blob/master/posts/the-definitive-guide-to-the-javascript-generators/index.md) **(完成)**
-- [ES6 Generators](https://davidwalsh.name/es6-generators) *(进行中)*
-- [深入 ES6 generators](https://2ality.com/2015/03/es6-generators.html)
-- [3 cases where JavaScript generators rock](https://goshakkk.name/javascript-generators-understanding-sample-use-cases/)
+- [ES6 Generators](https://davidwalsh.name/es6-generators) **(完成)**
+- [深入 ES6 generators](https://2ality.com/2015/03/es6-generators.html) **(完成)**
+- [3 cases where JavaScript generators rock](https://goshakkk.name/javascript-generators-understanding-sample-use-cases/) **(完成)**
 
 # reactconcurrent
 

@@ -2393,3 +2393,80 @@ function* foo(x) {
 ```
 
 此时 `*`还是紧跟关键字 `yield`写的, 所以与 `function*`一起作为习惯保持.
+
+# 4: Generators 的三种应用
+
+[参考资料](https://goshakkk.name/javascript-generators-understanding-sample-use-cases/)
+
+## 4-1. 异步构建工具的线性执行 (Brunch)
+
+Brunch 是一款前端构建工具, 它的监视模式是当每次文件发生更改时就重新构建生成的.
+
+为了实现这种监视模式, 我们基本上需要:
+
+- 等待初始编译
+- 发现文件产生了变化
+- 等待后续编译完成
+- 断言更改已经反应在新版本中
+
+用生成器函数来实现它是非常简单的:
+
+```javascript
+watch({}, function* (compilation) {
+    yield compilation(); // 暂停并等待
+    t.false(fs.readdirSync('./node_module').includes('lodash'));
+    
+    // 文件发生成变化
+    const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+    packageJson.dependencies.lodash = '*';
+    fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
+    
+    yield compilation();
+    t.true(fs.readdirSync('./node_module').includes('lodash'));
+    t.end();
+});
+```
+
+整个流程是线性的.
+
+## 4-2. co
+
+[co](https://github.com/tj/co) 是一个生成器解释工具, 可以让你编写更好, 更线性的 promise 代码.
+
+用来代替嵌套代码:
+
+```javascript
+getUser().then(user => getComments(user));
+```
+
+使用 co:
+
+```javascript
+co(function* () {
+    const user = yield getUser();
+    const comments = yield getComments(user);
+});
+```
+
+基本上可以看作是 async-await 的实现.
+
+## 4-3. redux-saga
+
+redux-sage 作为 Redux 中的中间件, 最大的作用就是用来管理 Redux 中的副作用.
+
+它不需要分散的编写多个 action creator 和 reducer, 只需要将相关逻辑部分组合到一个名为 saga 的程序中即可.
+
+在 redux-saga 中常用的命令:
+
+- **take (ACTION_NAME)**: 等待 `ACTION_NAME` 的 `action`发送, 并返回 `action` 对象.
+- **put (action)**: 发送 `action`.
+- **call (promiseFn)**: 调用返回 `promise`的函数, 在其成功后返回 `promise`返回的内容.
+
+```javascript
+function* welcomeSaga() {
+    yield take('REGISTRATION_FINISHED');
+    yield put(showWelcomePopup());
+}
+sagaMiddleware.run(welcomeSaga);
+```
+

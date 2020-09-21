@@ -382,3 +382,80 @@ webpack 运行后会发现, img 和 背景图片指向的都是类似 `dabc8b293
 
 ## 3.3 加载字体
 
+file-loader 和 url-loader 可以接收并加载任何文件, 然后将其输出到构建目录中. 这就是说, 可以将它们用于任何类型的文件, 包括**字体**. 
+
+webpack.config.js
+
+```diff
++       {
++         test: /\.(woff|woff2|eot|ttf|otf)$/,
++         use: [
++           'file-loader'
++         ]
++       }
+```
+
+project
+
+```diff
+  |- package.json
+  |- webpack.config.js
+  |- /dist
+    |- bundle.js
+    |- index.html
+  |- /src
++   |- gigi.ttf
+    |- icon.svg
+    |- style.css
+    |- index.js
+  |- /node_modules
+```
+
+此时就可以使用 `@font-face`引入字体, 本地的 `url(...)`指令会被 webpack 处理, 就像处理图片资源一样:
+
+src/style.css
+
+```css
+@font-face {
+  font-family: 'MyFont';
+  src: url('./gigi.ttf');
+  font-weight: 300;
+  font-style: normal;
+}
+```
+
+## 3.4 加载数据
+
+此外, 可以加载的有用资源还包括数据. 如 JSON 文件, CSV, TSV 和 XML等. 类似于 NodeJS, JSON 支持实际上是内置的. 也就是说 `import Data from './data.json'`默认将正常运行. 要导入 CSV, TSV 和 XML, 可以使用 csv-loader 和 xml-loader.
+
+```bash
+npm i -D csv-loader xml-loader
+```
+
+project
+
+```diff
+  |- /src
++   |- data.xml
++   |- data.csv
+```
+
+现在, 可以直接使用 `import`加载四种类型的数据(JSON, CSV, TSV, XML)中的任何一种, 导入的数据将会是一个直接可以使用的已经解析的 JSON.
+
+## 3.5 全局资源
+
+以上述方式加载资源的好处是, 你可以以直观的方式将模块和资源组合在一起. 无需依赖于含有全部资源的 `/assets`目录, 而是将资源与代码组合在了一起.
+
+```diff
+- |- /assets
++ |– /components
++ |  |– /my-component
++ |  |  |– index.jsx
++ |  |  |– index.css
++ |  |  |– icon.svg
++ |  |  |– img.png
+```
+
+这种配置方式会使代码更具备可移植性. 因为现有的统一放置的方式会造成所有资源紧密耦合在了一起. 如果想在另一个项目中使用 `/my-component`, 只需要将整个文件夹复制过去. 在确保安装了任何扩展依赖(external dependencies), 并且已经在配置中定义过相同的 loader, 那么项目应该能够良好运行.
+
+但是, 如果你无法使用新的开发方式, 只能固定于旧有的开发方式. 或者有一些多个组件之间共享的资源. 你仍然可以将这些资源存储在公共目录(base directory)中, 甚至配合使用 alias 来使它们更方便 `import 导入`.

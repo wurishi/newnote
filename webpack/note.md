@@ -197,3 +197,69 @@ npm i lodash
 npx webpack
 ```
 
+## 2.3 模块
+
+ES2015 中的 `import`和 `export`语句已经被标准化. 虽然大多数浏览器还无法支持它们, 但是 webpack 却能提供开箱即用般的支持.
+
+事实上, webpack 会将代码 "转译", 以便旧版本浏览器可以执行. 除了 `import`和 `export`, webpack 还能够支持多种其他模块语法.
+
+注意, webpack 不会更改代码中除 `import`和 `export`语句以上的部分, 如果使用了其它 ES2015 特性, 请确保 webpack 的 loader 系统中使用了一个像是 Babel 或类似的转译器.
+
+## 2.4 使用一个配置文件
+
+在 webpack 4 中, 可以无须任何配置使用, 然而大多数项目会需要很复杂的设置, 这就是为什么 webpack 仍然要支持配置文件.
+
+```diff
+  webpack-demo
+  |- package.json
++ |- webpack.config.js
+  |- /dist
+    |- index.html
+  |- /src
+    |- index.js
+```
+
+```bash
+npx webpack
+# 或
+npx webpack --config webpack.config.js
+```
+
+> 如果 `webpack.config.js`文件存在, 则 webpack 命令将默认选择使用它. 当然也可以使用 `--config` 选项指定其他任何名称的配置文件.
+
+比起在终端中手动输入大量命令, 配置文件具有更多的灵活性. 可以通过配置方式指定 loader 规则(loader rules), 插件(plugins), 解析选项(resolve options), 以及许多其他增强功能.
+
+## 2.5 NPM 脚本(NPM Scripts)
+
+考虑到用 CLI 这种方式来运行本地的 webpack 不是特别方便, 我们可以设置一个快捷方式. 在 `package.json`中添加一个 npm 脚本.
+
+package.json
+
+```diff
+  {
+    "name": "webpack-demo",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1",
++     "build": "webpack"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+      "webpack": "^4.0.1",
+      "webpack-cli": "^2.0.9",
+      "lodash": "^4.17.5"
+    }
+  }
+```
+
+现在可以运行命令:
+
+```bash
+npm run build
+```
+
+> 通过向 `npm run build`命令和你的参数之间添加两个中横线, 可以将自定义参数传递给 webpack, 例如: `npm run build -- --colors`

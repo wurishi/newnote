@@ -210,7 +210,6 @@ ES2015 中的 `import`和 `export`语句已经被标准化. 虽然大多数浏�
 在 webpack 4 中, 可以无须任何配置使用, 然而大多数项目会需要很复杂的设置, 这就是为什么 webpack 仍然要支持配置文件.
 
 ```diff
-  webpack-demo
   |- package.json
 + |- webpack.config.js
   |- /dist
@@ -263,3 +262,123 @@ npm run build
 ```
 
 > 通过向 `npm run build`命令和你的参数之间添加两个中横线, 可以将自定义参数传递给 webpack, 例如: `npm run build -- --colors`
+
+# 3. 管理资源
+
+在 webpack 出现之前, 前端开发人员会使用 grunt 或 gulp 等工具来处理资源, 并将它们从 `/src`文件夹移动到 `/dist`或 `/build`目录中. JavaScript 模块也是同样方式处理的. 但是像 webpack, 它是动态打包(dynamically bundle)所有依赖项(创建所谓的**依赖图(dependency graph)**). 因为每个模块都可以明确表述它自身的依赖, 这样将避免打包未使用的模块.
+
+webpack 最出色的功能之一就是, 除了 JavaScript, 还可以通过 loader 引入任何其他类型的文件. 也就是说, 显式依赖 JavaScript 模块的优点, 同样也可以用来构建网站或 web 应用程序中的所有非 JavaScript 内容. 先从 CSS 开始起步.
+
+## 3.1 加载 CSS
+
+为了从 JavaScript 模块中 `import`一个 CSS 文件, 需要在 module 配置中安装并添加 style-loader 和 css-loader:
+
+```bash
+npm i -D style-loader css-loader
+```
+
+webpack.config.js
+
+```diff
+  const path = require('path');
+
+  module.exports = {
+    entry: './src/index.js',
+    output: {
+      filename: 'bundle.js',
+      path: path.resolve(__dirname, 'dist')
+    },
++   module: {
++     rules: [
++       {
++         test: /\.css$/,
++         use: [
++           'style-loader',
++           'css-loader'
++         ]
++       }
++     ]
++   }
+  };
+```
+
+> webpack 根据正则表达式, 来确定应该查找哪些文件, 并将其提供给指定的 loader. 在这里就是将 `.css`结尾的全部文件, 都提供给 `style-loader`和 `css-loader`
+
+project
+
+```diff
+  |- package.json
+  |- webpack.config.js
+  |- /dist
+    |- bundle.js
+    |- index.html
+  |- /src
++   |- style.css
+    |- index.js
+  |- /node_modules
+```
+
+src/index.js
+
+```javascript
+...
+import './style.css'
+...
+```
+
+此时, 依赖的样式 `import './style.css`中的 CSS 字符串将在模块运行时, 被加入到 `<style>`标签, 并被插入到 html 文件的 `<head>`中.
+
+## 3.2 加载图片
+
+使用 file-loader, 可以轻松的将背景和图标等图片内容混合到 CSS 中.
+
+```bash
+npm i -D file-loader
+```
+
+webpack.config.js
+
+```diff
+...
+module: {
+      rules: [
+        {
+          test: /\.css$/,
+          use: [
+            'style-loader',
+            'css-loader'
+          ]
+        },
++       {
++         test: /\.(png|svg|jpg|gif)$/,
++         use: [
++           'file-loader'
++         ]
++       }
+      ]
+    }
+```
+
+project
+
+```diff
+  |- package.json
+  |- webpack.config.js
+  |- /dist
+    |- bundle.js
+    |- index.html
+  |- /src
++   |- icon.svg
+    |- style.css
+    |- index.js
+  |- /node_modules
+```
+
+现在, 当使用 `import Icon from './icon.svg'`, 该图像将被处理并添加到指定的 `output`目录, 并且 `Icon`变量将包含该图像处理后的最终 url. 当使用 css-loader时, 在 CSS 中的 `url('./icon.svg')`会使用类似的过程去处理. loader 会识别这是一个本地文件, 并将 `'./icon.svg'`路径, 替换为处理后的最终路径. html-loader 会以相同的方式处理 `<img src="./icon.svg" />`
+
+webpack 运行后会发现, img 和 背景图片指向的都是类似 `dabc8b293a64eba5a5ab0dabb31511eb.svg`一样的路径. 这意味着 webpack 在 `src`文件夹中找到了图片文件, 并成功处理了它.
+
+> 下一步可以查看 image-webpack-loader 和 url-loader, 以了解更多关于图片压缩和优化功能.
+
+## 3.3 加载字体
+

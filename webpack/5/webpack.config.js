@@ -10,9 +10,9 @@ module.exports = {
     print: './src/print.js',
   },
   devtool: 'inline-source-map',
-  devServer: {
-    contentBase: './dist',
-  },
+  // devServer: {
+  //   contentBase: './dist',
+  // },
   plugins: [
     new webpack.ProgressPlugin(),
     new CleanWebpackPlugin(),
@@ -24,5 +24,6 @@ module.exports = {
   output: {
     filename: '[name].bundle.js',
     path: path.resolve(__dirname, 'dist'),
+    publicPath: '/',
   },
 };

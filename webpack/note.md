@@ -624,3 +624,62 @@ npx webpack-dev-server --open
 
 此时浏览器会自动加载页面, 如果修改并保存任意源文件, web 服务器就会自动重新加载编译后的代码.
 
+## 5.5 使用 webpack-dev-middleware
+
+`webpack-dev-middleware`是一个容器(wrapper), 它可以把 webpack 处理后的文件传递给一个服务器(server). `webpack-dev-server`在内部使用了它. 同时, 它也可以作为一个单独的包使用, 以便进行更多自定义设置来实现更多需求. 接下来是一个 `webpack-dev-middleware`配合 `express`的示例.
+
+```bash
+npm i -D express webpack-dev-middleware
+```
+
+webpack.config.js
+
+```diff
+    output: {
+      filename: '[name].bundle.js',
+      path: path.resolve(__dirname, 'dist'),
++     publicPath: '/'
+    }
+```
+
+增加 publicPath 会在服务器脚本中用到.
+
+server.js
+
+```javascript
+const express = require('express');
+const webpack = require('webpack');
+const webpackDevMiddleware = require('webpack-dev-middleware');
+
+const app = express();
+const config = require('./webpack.config');
+const compiler = webpack(config);
+
+app.use(
+  webpackDevMiddleware(compiler, {
+    publicPath: config.output.publicPath, // 这里就是在 webpack.config.js 中指定的publicPath
+  })
+);
+
+app.listen(3456, () => {
+  console.log('Express listening on port 3456!\n');
+});
+
+```
+
+最后执行:
+
+```bash
+node server.js
+```
+
+此时 express 创建的服务器将会输出 webpack 编译后的内容. 此时修改源代码, webpack 也会自动重新编译. 刷新浏览器后就能看到变化.
+
+## 5.6 调整文本编辑器
+
+使用自动编译代码时, 可能会在保存文件时遇到一些问题. 某些编辑器具有"安全写入"功能, 可能会影响重新编译.
+
+- **Sublime Text 3**: 在用户首选项(user preferences)中添加 `atomic_save: "false"`.
+- **IntelliJ**: 在首选项(preferences)中使用搜索, 查找到 "safe write"并且禁用它.
+- **Vim**: 在设置(settings)中增加 `:set backupcopy=yes`.
+- **WebStorm**: 在 `Preferences > Appearance & Behavior > System Settings`中取消选中 Use "safe write".

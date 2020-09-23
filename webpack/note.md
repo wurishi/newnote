@@ -554,3 +554,73 @@ source map 有很多不同的选项可用.
 
 开发环境中我们使用 `inline-source-map`选项.
 
+webpack.config.js
+
+```diff
++   devtool: 'inline-source-map',
+```
+
+src/print.js
+
+```diff
+  export default function printMe() {
+-   console.log('I get called from print.js!');
++   cosnole.error('I get called from print.js!');
+  }
+```
+
+此时在最终生成的页面中, 点击按钮, 控制台中的错误将包含发生错误的文件(`print.js`)和行号(2)信息.
+
+## 5.2 选择一个开发工具
+
+> 一些文本编辑器具有"安全写入"功能, 可能会干扰以下某些工具.
+
+每次要编译代码时, 手动输入命令并运行就会变得很麻烦.
+
+webpack 中有几个不同的选项, 可以在代码发生变化后自动编译代码:
+
+1. webpack's Watch Mode
+2. webpack-dev-server
+3. webpack-dev-middleware
+
+## 5.3 使用观察模式 (Watch Mode)
+
+你可以指示 webpack "watch" 当目录中有文件被更新时, 代码将重新编译.
+
+```bash
+npx webpack --watch
+```
+
+此时, 修改项目目录下的文件, webpack 将自动重新编译.
+
+> 目前有二个情况待解决:
+>
+> 1. clean-webpack-plugin 只在第一次执行时触发, 后续的自动重新编译并不会清理 dist 目录.(这个其实也正常, 在开发过程中并不需要频繁清理)
+> 2. html-webpack-plugin 生成的 html, 在后续自动重新编译时被清理了???
+
+这时, 有一个缺点就是如果要查看修改后的效果, 还需要刷新浏览器. 这时候就可以尝试使用 webpack-dev-server, 它会自动刷新浏览器.
+
+## 5.4 使用 webpack-dev-server
+
+webpack-dev-server 提供了一个简单的 web 服务器, 并且能够实时重新加载 (live reloading)
+
+```bash
+npm i -D webpack-dev-server
+```
+
+修改 webpack.config.js 告诉开始服务器(dev server), 在哪里查找文件.
+
+```diff
++   devServer: {
++     contentBase: './dist'
++   },
+```
+
+在命令行中运行:
+
+```bash
+npx webpack-dev-server --open
+```
+
+此时浏览器会自动加载页面, 如果修改并保存任意源文件, web 服务器就会自动重新加载编译后的代码.
+

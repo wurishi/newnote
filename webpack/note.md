@@ -683,3 +683,148 @@ node server.js
 - **IntelliJ**: 在首选项(preferences)中使用搜索, 查找到 "safe write"并且禁用它.
 - **Vim**: 在设置(settings)中增加 `:set backupcopy=yes`.
 - **WebStorm**: 在 `Preferences > Appearance & Behavior > System Settings`中取消选中 Use "safe write".
+
+# 6. 模块热替换
+
+模块热替换(Hot Module Replacement 或 HMR)是 webpack 提供的最有用的功能之一. 它允许在运行时更新各种模块, 而无需进行完全刷新.
+
+> HMR 不适用于生产环境.
+
+## 6.1 启用 HMR
+
+启用此功能实际上相当简单, 就是更新 webpack-dev-server 的配置, 和使用 webpack 内置的 HMR 插件.
+
+> 如果使用了 webpack-dev-middleware, 而没有使用 webpack-dev-server, 请使用 ***webpack-hot-middleware*** package 包, 以在你的自定义服务或应用程序上使用 HMR.
+
+webpack.config.js
+
+```diff
+  const path = require('path');
+  const HtmlWebpackPlugin = require('html-webpack-plugin');
+  const CleanWebpackPlugin = require('clean-webpack-plugin');
++ const webpack = require('webpack');
+
+  module.exports = {
+    entry: {
+-      app: './src/index.js',
+-      print: './src/print.js'
++      app: './src/index.js'
+    },
+    devtool: 'inline-source-map',
+    devServer: {
+      contentBase: './dist',
++     hot: true
+    },
+    plugins: [
+      new CleanWebpackPlugin(['dist']),
+      new HtmlWebpackPlugin({
+        title: 'Hot Module Replacement'
+      }),
++     new webpack.NamedModulesPlugin(), // 已经废弃
++     new webpack.HotModuleReplacementPlugin()
+    ],
+    output: {
+      filename: '[name].bundle.js',
+      path: path.resolve(__dirname, 'dist')
+    }
+  };
+```
+
+index.js
+
+```diff
+  import _ from 'lodash';
+  import printMe from './print.js';
+
+  function component() {
+    var element = document.createElement('div');
+    var btn = document.createElement('button');
+
+    element.innerHTML = _.join(['Hello', 'webpack'], ' ');
+
+    btn.innerHTML = 'Click me and check the console!';
+    btn.onclick = printMe;
+
+    element.appendChild(btn);
+
+    return element;
+  }
+
+  document.body.appendChild(component());
++
++ if (module.hot) {
++   module.hot.accept('./print.js', function() {
++     console.log('Accepting the updated printMe module!');
++     printMe();
++   })
++ }
+```
+
+运行
+
+```bash
+npx webpack-dev-server --open
+```
+
+之后, 修改 `print.js` 文件, 将会触发 `index.js`中相关的更新方法(`module.hot.accept(...)`).
+
+## 6.2 通过 Node.js API
+
+当同时使用 webpack dev server 和 Node.js API 时, 不要将 dev server 选项放在 webpack 配置对象(webpack config object)中. 而是, 在创建选项时, 将其作为第二个参数传递.
+
+```javascript
+new WebpackDevServer(compiler, options);
+```
+
+想要启用 HMR, 还需要修改 webpack 配置对象, 使其包含 HMR 入口起点. `webpack-dev-server`package 中具有一个叫做 `addDevServerEntrypoints`的方法, 可以通过这个方法来实现.
+
+## 6.3 问题
+
+之前模块热替换只是加载了新的代码, 但是点击页面上的按钮, 会发现控制台输出的还是旧的功能. 这是因为按钮的 `onclick`事件仍然绑定在旧的函数上. 为了让它与 HMR 正常工作, 还需要在 `module.hot.accept`中更新绑定到新的函数上.
+
+index.js
+
+```diff
+  import _ from 'lodash';
+  import printMe from './print.js';
+
+  function component() {
+    var element = document.createElement('div');
+    var btn = document.createElement('button');
+
+    element.innerHTML = _.join(['Hello', 'webpack'], ' ');
+
+    btn.innerHTML = 'Click me and check the console!';
+    btn.onclick = printMe;  // onclick 事件绑定原始的 printMe 函数上
+
+    element.appendChild(btn);
+
+    return element;
+  }
+
+- document.body.appendChild(component());
++ let element = component(); // 当 print.js 改变导致页面重新渲染时，重新获取渲染的元素
++ document.body.appendChild(element);
+
+  if (module.hot) {
+    module.hot.accept('./print.js', function() {
+      console.log('Accepting the updated printMe module!');
+-     printMe();
++     document.body.removeChild(element);
++     element = component(); // 重新渲染页面后，component 更新 click 事件处理
++     document.body.appendChild(element);
+    })
+  }
+```
+
+## 6.4 HMR 修改样式表
+
+借助于 `style-loader`的帮助, CSS模块热替换实际上是相当简单的. 当更新 CSS 依赖模块时, 此 loader 会在后台使用 `module.hot.accept`来修补(patch) `<style>`标签.
+
+## 6.5 其他代码和框架
+
+- [React Hot Loader](https://github.com/gaearon/react-hot-loader): 实时调整 react 组件.
+- [Vue Loader](https://github.com/vuejs/vue-loader): 此 loader 支持用于 vue 组件的 HMR, 提供开箱即用体验.
+- [Elm Hot Loader](https://github.com/fluxxu/elm-hot-loader): 支持用于 Elm 程序语言的 HMR.
+- [Redux HMR](https://survivejs.com/webpack/appendices/hmr-with-react/#configuring-hmr-with-redux): ~~无需 loader 或插件, 只需对 main store 文件进行简单的修改.~~(已合并到 React Hot Loader)
+- [Angular HMR](https://github.com/PatrickJS/angular-hmr): 没有必要使用 loader! 只需对主要的 NgModule 文件进行简单的修改, 由 HMR API 完全控制.

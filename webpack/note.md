@@ -459,3 +459,98 @@ project
 这种配置方式会使代码更具备可移植性. 因为现有的统一放置的方式会造成所有资源紧密耦合在了一起. 如果想在另一个项目中使用 `/my-component`, 只需要将整个文件夹复制过去. 在确保安装了任何扩展依赖(external dependencies), 并且已经在配置中定义过相同的 loader, 那么项目应该能够良好运行.
 
 但是, 如果你无法使用新的开发方式, 只能固定于旧有的开发方式. 或者有一些多个组件之间共享的资源. 你仍然可以将这些资源存储在公共目录(base directory)中, 甚至配合使用 alias 来使它们更方便 `import 导入`.
+
+# 4. 管理输出
+
+目前为止, 我们在 `index.html`文件中手动引入所有资源, 然而随着应用程序的增长, 并且一旦开始对文件名使用 hash 并输出多个 bundle时, 手动对 `index.html`文件进行管理将会变得困难起来. 此时可以通过一些插件使这个过程更容易操控.
+
+## 4.1 设定 HtmlWebpackPlugin
+
+首先安装插件:
+
+```bash
+npm i -D html-webpack-plugin
+```
+
+调整 webpack.config.js:
+
+```diff
+  const path = require('path');
++ const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+  module.exports = {
+    entry: {
+      app: './src/index.js',
+      print: './src/print.js'
+    },
++   plugins: [
++     new HtmlWebpackPlugin({
++       title: 'Output Management'
++     })
++   ],
+    output: {
+      filename: '[name].bundle.js',
+      path: path.resolve(__dirname, 'dist')
+    }
+  };
+```
+
+之时再使用 webpack 构建, `dist/index.html`将会被 `HtmlWebpackPlugin`生成的 `index.html`文件覆盖. 所有的 bundle 会自动添加到插件生成的新的 html中.
+
+## 4.2 清理 `/dist`文件夹
+
+`/dist`文件夹会随着时间的推移变的相当杂乱, 通常在每次构建前都会先清理 `/dist`文件夹, 这是比较推荐的做法. clean-webpack-plugin 是一个比较普及的管理插件.
+
+```bash
+npm i -D clean-webpack-plugin
+```
+
+webpack.config.js
+
+```diff
+  const path = require('path');
+  const HtmlWebpackPlugin = require('html-webpack-plugin');
++ const CleanWebpackPlugin = require('clean-webpack-plugin').CleanWebpackPlugin;
+
+  module.exports = {
+    entry: {
+      app: './src/index.js',
+      print: './src/print.js'
+    },
+    plugins: [
++     new CleanWebpackPlugin(),
+      new HtmlWebpackPlugin({
+        title: 'Output Management'
+      })
+    ],
+    output: {
+      filename: '[name].bundle.js',
+      path: path.resolve(__dirname, 'dist')
+    }
+  };
+```
+
+## 4.3 Manifest
+
+webpack 及其插件是通过 manifest 来对 「你的模块映射到输出 bundle 的过程」保持追踪的.
+
+通过使用 WebpackManifestPlugin 可以直接将数据提到到一个 json 文件, 以供使用.
+
+```bash
+npm i -D webpack-manifest-plugin
+```
+
+# 5. 开发
+
+> 这一节使用的工具仅限用于开发环境, **不要**在生产环境中使用它们.
+
+## 5.1 使用 source map
+
+在 webpack 打包源代码时, 可能会很难追踪到错误和警告在源代码中的原始位置. 例如: 如果将三个源文件(`a.js`, `b.js`和 `c.js`)打包到一个 bundle (`bundle.js`)中, 而其中一个源文件包含一个错误, 那么堆栈跟踪就会简单地指向到 `bundle.js`. 这通常并没有太多帮助, 因为你可能需要准确地知道错误来自于哪个源文件.
+
+为了更容易地追踪错误和警告, JavaScript 提供了 source map 功能, 将编译后的代码映射回原始源代码. 如果一个错误来自于 `b.js`, source map 就会明确的告诉你.
+
+source map 有很多不同的选项可用.
+
+开发环境中我们使用 `inline-source-map`选项.
+

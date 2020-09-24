@@ -1001,3 +1001,32 @@ module.exports = merge(common, {
 ## 8.5 指定环境
 
 许多 library 通过与 `process.env.NODE_ENV`环境变量关联, 以决定 library 中应该引用哪些内容. 例如, 当不处于生产环境时, 某些 library 为了使调试变得容易, 可能会添加额外的日志记录(log)和测试(test). 当使用 `process.env.NODE_ENV === 'production'`时, 一些 library 可能针对具体用户的环境进行代码优化, 从而删除或添加一些重要的代码. 可以使用 webpack 内置的 DefinePlugin 为所有的依赖定义这个变量.
+
+webpack.prod.js
+
+```diff
+const { merge } = require('webpack-merge');
+const common = require('./webpack.common.js');
++ const webpack = require('webpack');
+
+module.exports = merge(common, {
+  devtool: 'source-map',
+  mode: 'production',
++  plugins: [
++   new webpack.DefinePlugin({
++    'process.env.NODE_ENV': JSON.stringify('production'),
++   }),
++  ],
+});
+
+```
+
+> 技术上讲, `NODE_ENV`是一个由 Node.js 暴露给执行脚本的系统环境变量. 通常用于决定在开发环境与生产环境(dev-vs-prod)下, 服务器工具, 构建脚本和客户端 library 的行为. 然而, 与预期不同的是, 无法在构建脚本 `webpack.config.js`中, 将 `process.env.NODE_ENV`设置为 `"production"`. 因此, 如 `process.env.NODE_ENV === 'production' ? '[name].[hash].bundle.js' : '[name].bundle.js'`这样的条件语句, 在 webpack 配置文件中, 无法按照预期运行.
+
+## 8.6 Split CSS
+
+正如在管理资源中最后的 "加载 CSS" 小节中提到的, 通常最好的做法是使用 `ExtractTextPlugin`将 CSS 分离成单独的文件. 使用 `disable`选项和 `--env`标记结合使用, 以允许在开发中进行内联加载, 推荐用于热模块替换与构建速度.
+
+## 8.7 CLI 替代选项
+
+以上描述也可以通过命令行实现. 例如, `--optimize-minimize`标记将在后台引用 `UglifyJSPlugin`.使用 `--define process.env.NODE_ENV="'production'"`和使用 `DefinePlugin`会做同样的事情.

@@ -902,3 +902,102 @@ module.exports = {
 ```
 
 > 注意, 也可以在命令行接口中使用 --optimize-minimize 标记, 来使用 UglifyJSPlugin.
+
+# 8. 生产环境构建
+
+## 8.1 配置
+
+开发环境(development)和生产环境(production)的构建目标差异很大. 在开发环境中, 我们需要具有强大的, 具有实时重新加载(live reloading)或热模块替换(hot module replacement)能力的 source map 和 localhost server. 而在生产环境中, 我们的目标则转向于关注更小的 bundle, 更轻量的 source map, 以及更优化的资源, 以改善加载时间. 由于要遵循逻辑分离, 我们通常建议为每个环境编写彼此独立的 webpack 配置.
+
+虽然, 我们将生产和开发环境做了区分, 但是我们还是会遵循不重复原则(Don't repeat yourself - DRY), 保留一个"通用"配置. 为了将这些配置合并在一起, 我们将使用一个名为 `webpack-merge`的工具. 通过"通用"配置, 我们不必在环境特定(environment-specific)的配置中重复代码.
+
+```bash
+npm i -D webpack-merge
+```
+
+project
+
+```diff
+  |- package.json
+- |- webpack.config.js
++ |- webpack.common.js
++ |- webpack.dev.js
++ |- webpack.prod.js
+  |- /dist
+  |- /src
+    |- index.js
+    |- math.js
+  |- /node_modules
+```
+
+## 8.2 NPM Scripts
+
+package.json
+
+```diff
+  {
+    "name": "development",
+    "scripts": {
+-     "start": "webpack-dev-server --open",
++     "start": "webpack-dev-server --open --config webpack.dev.js",
+-     "build": "webpack"
++     "build": "webpack --config webpack.prod.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+    	...
+    }
+  }
+```
+
+或直接执行命令:
+
+```bash
+npx webpack --config webpack.prod.js
+# 或
+npx webpack-dev-server --open --config webpack.dev.js
+```
+
+## 8.3 Minification
+
+UglifyJsPlugin 已经被移除, 默认是通过配置 `optimization.minimize`来选择是否开启(`mode: 'development'时默认开启压缩和tree shaking`).
+
+代码压缩还有一些可选的插件:
+
+- [terser-webpack-plugin](https://github.com/webpack-contrib/terser-webpack-plugin)
+- [closure-webpack-plugin](https://github.com/webpack-contrib/closure-webpack-plugin)
+
+```js
+optimization: {
+    minimize: true,
+    minimizer: [
+        new TerserPlugin(),
+        // 或
+        new ClosurePlugin(),
+    ]
+}
+```
+
+## 8.4 source map
+
+webpack 鼓励在生产环境中启用 srouce map, 因为它们对调试源码(debug)和运行基准测试(benchmark test)很有帮助. 在生产环境建议构建一个快速的推荐配置. 在生产环境中使用 `source-map`, 在开发环境中使用 `inline-source-map`
+
+webpack.prod.js
+
+```diff
+const { merge } = require('webpack-merge');
+const common = require('./webpack.common.js');
+
+module.exports = merge(common, {
++  devtool: 'source-map',
+   mode: 'production',
+});
+```
+
+> 避免在生产中使用 `inline-***`和 `eval-***`, 因为它们会增加 bundle 大小, 并降低整体性能.
+
+## 8.5 指定环境
+
+许多 library 通过与 `process.env.NODE_ENV`环境变量关联, 以决定 library 中应该引用哪些内容. 例如, 当不处于生产环境时, 某些 library 为了使调试变得容易, 可能会添加额外的日志记录(log)和测试(test). 当使用 `process.env.NODE_ENV === 'production'`时, 一些 library 可能针对具体用户的环境进行代码优化, 从而删除或添加一些重要的代码. 可以使用 webpack 内置的 DefinePlugin 为所有的依赖定义这个变量.

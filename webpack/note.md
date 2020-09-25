@@ -1030,3 +1030,161 @@ module.exports = merge(common, {
 ## 8.7 CLI 替代选项
 
 以上描述也可以通过命令行实现. 例如, `--optimize-minimize`标记将在后台引用 `UglifyJSPlugin`.使用 `--define process.env.NODE_ENV="'production'"`和使用 `DefinePlugin`会做同样的事情.
+
+# 9. 代码分离
+
+代码分离是 webpack 中最引人注目的特性之一. 此特性能够把代码分离到不同的 bundle 中, 然后可以按需加载或并行加载这些文件. 代码分离可以用于获取更小的 bundle, 以及控制资源加载优先级, 如果使用合理, 会极大影响加载时间.
+
+有三种常用的代码分离方法:
+
+- **入口起点**: 使用 entry 配置手动地分离代码.
+- **防止重复**: 使用 CommonsChunkPlugin 去重和分离 chunk.
+- **动态导入**: 通过模块的内联函数调用来分离代码.
+
+## 9.1 入口起点(entry points)
+
+这是迄今为止最简单, 最直观的分离代码的方式. 不过, 这种方式手动配置较多, 并有一些陷阱.
+
+project
+
+```diff
+|- package.json
+|- webpack.config.js
+|- /dist
+|- /src
+  |- index.js
++ |- another-module.js
+```
+
+运行 webpack 构建, 将生成二个 bundle, `index.bundle.js`和 `another.bundle.js`, 但这种方法存在一些问题.
+
+- 如果入口 chunks 之间包含重复的模块, 那些重复模块都会被引入到各个的 bundle 中.
+- 这种方法不够灵活, 并且不能将核心应用程序逻辑进行动态拆分代码.
+
+## 9.2 防止重复(prevent duplication)
+
+~~CommonsChunkPlugin 插件可以将公共的依赖模块提取到已有的入口 chunk 中, 或者提取到一个新生成的 chunk.~~(*The CommonsChunkPlugin 已经从 webpack v4 legato 中移除。*使用配置`optimization.splitChunks`)
+
+webpack.config.js
+
+```diff
+  const path = require('path');
+  const HTMLWebpackPlugin = require('html-webpack-plugin');
+
+  module.exports = {
+    entry: {
+      index: './src/index.js',
+      another: './src/another-module.js'
+    },
+    plugins: [
+      new HTMLWebpackPlugin({
+        title: 'Code Splitting'
+      })
+    ],
++   optimization: {
++   	splitChunks: {
++   		chunks: 'all',
++   		name: 'chunk',
++   	}
++   },
+    output: {
+      filename: '[name].bundle.js',
+      path: path.resolve(__dirname, 'dist')
+    }
+  };
+```
+
+配置后, 会看到 `lodash`被分离到单独的 chunk 中. index 和 another 中的 lodash 代码将会被移除.
+
+以下是一些由社区提供的对代码分离很有帮助的插件和 loader:
+
+- [ExtractTextPlugin](https://www.webpackjs.com/plugins/extract-text-webpack-plugin/): 用于将 CSS 从主应用程序中分离. (webpack 4 开始使用 [mini-css-extract-plugin](https://github.com/webpack-contrib/mini-css-extract-plugin))
+- [bundle-loader](https://www.webpackjs.com/loaders/bundle-loader/): 用于分离代友和延迟加载生成的 bundle.
+- [promise-loader](https://github.com/gaearon/promise-loader): 类似于 `bundle-loader`, 但是使用的是 promise.
+
+## 9.3 动态导入(dynamic imports)
+
+当涉及到动态代码拆分时, webpack 提供了两种类似的技术. 第一种, 也是优先选择的方式是, 使用符合 ECMAScript 提案的 `import()`语法. 第二种, 则是使用 webpack 特定的 `require.ensure`.
+
+webpack.config.js
+
+```diff
+const path = require('path');
+const HTMLWebpackPlugin = require('html-webpack-plugin');
+
+module.exports = {
+  entry: {
+    index: './src/index.js',
+  },
+  plugins: [new HTMLWebpackPlugin({ title: '动态导入' })],
+  output: {
+    filename: '[name].bundle.js',
++   chunkFilename: '[name].bundle.js',
+    path: path.resolve(__dirname, 'dist'),
+  },
+};
+
+```
+
+scr/index.js
+
+```diff
+- import _ from 'lodash';
+-
+- function component() {
++ function getComponent() {
+-   var element = document.createElement('div');
+-
+-   // Lodash, now imported by this script
+-   element.innerHTML = _.join(['Hello', 'webpack'], ' ');
++   return import(/* webpackChunkName: "lodash" */ 'lodash').then(_ => {
++     var element = document.createElement('div');
++
++     element.innerHTML = _.join(['Hello', 'webpack'], ' ');
++
++     return element;
++
++   }).catch(error => 'An error occurred while loading the component');
+  }
+
+- document.body.appendChild(component());
++ getComponent().then(component => {
++   document.body.appendChild(component);
++ })
+```
+
+由于 `import()`会返回一个 promise, 因此它可以和 `async`函数一起使用. 但可能需要使用像 Babel 这样的预处理器和 Syntax Dynamic Import Babel Plugin.
+
+src/index.js
+
+```diff
+- function getComponent() {
++ async function getComponent() {
+-   return import(/* webpackChunkName: "lodash" */ 'lodash').then(_ => {
+-     var element = document.createElement('div');
+-
+-     element.innerHTML = _.join(['Hello', 'webpack'], ' ');
+-
+-     return element;
+-
+-   }).catch(error => 'An error occurred while loading the component');
++   var element = document.createElement('div');
++   const _ = await import(/* webpackChunkName: "lodash" */ 'lodash');
++
++   element.innerHTML = _.join(['Hello', 'webpack'], ' ');
++
++   return element;
+  }
+
+  getComponent().then(component => {
+    document.body.appendChild(component);
+  });
+```
+
+## 9.4 bundle 分析(bundle analysis)
+
+如果我们以分离代码作为开始, 那么就以检查模块作为结束, 分析输出结果是很有用处的. [官方分析工具](https://github.com/webpack/analyse) 是一个好的初始选择(使用命令 `npx webpack --profile --json > stats.json`生成文件并上传以获得分析结果). 下面是一些社区支持的可选工具:
+
+- [webpack-chart](https://alexkuz.github.io/webpack-chart/): webpack 数据交互饼图.
+- [webpack-visualizer](https://chrisbateman.github.io/webpack-visualizer/): 可视化并分析你的 bundle, 检查哪些模块占用空间, 哪些可能是重复使用的.
+- [webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer): 一款分析 bundle 内容的插件及 CLI 工具, 以便捷的, 交互式, 可缩放的树状图形式展现给用户.

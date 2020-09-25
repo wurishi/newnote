@@ -1188,3 +1188,32 @@ src/index.js
 - [webpack-chart](https://alexkuz.github.io/webpack-chart/): webpack 数据交互饼图.
 - [webpack-visualizer](https://chrisbateman.github.io/webpack-visualizer/): 可视化并分析你的 bundle, 检查哪些模块占用空间, 哪些可能是重复使用的.
 - [webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer): 一款分析 bundle 内容的插件及 CLI 工具, 以便捷的, 交互式, 可缩放的树状图形式展现给用户.
+
+# 10. 懒加载
+
+懒加载或者按需加载, 是一种很好的优化网页或应用的方式. 这种方式实际上是先把你的代码在一些逻辑断点处分离开, 然后在一些代码块中完成某些操作后, 立即引用或即将引用另外一些新的代码块. 这样加快了应用的初始加载速度, 减轻了它的总体体积, 因为某些代码块可能永远不会被加载.
+
+## 10.1 示例
+
+在之前代码分离的例子中已经有一部分分离的代码块了, 在技术概念上还是"懒加载"的模块. 但因为加载这个包时并没有交互, 即每次加载页面时就会立即请求它, 这样做不旦没有什么帮助, 还会对性能产生负面影响.
+
+现在试着增加一个交互, 在用户点击按钮时打印一些文字, 但是会在等到第一次产生这个交互时才会去加载代码.
+
+project
+
+```diff
+|- package.json
+|- webpack.config.js
+|- /dist
+|- /src
+  |- index.js
++ |- print.js
+```
+
+## 10.2 框架
+
+许多框架和类库对于如何用它们自己的方式来实现(懒加载)都有自己的建议.
+
+- [React](https://reactrouter.com/web/guides/code-splitting)
+- [Vue](https://alexjover.com/blog/lazy-load-in-vue-using-webpack-s-code-splitting/)
+- [AngularJS](https://medium.com/@var_bin/angularjs-webpack-lazyload-bb7977f390dd)

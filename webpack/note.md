@@ -1850,3 +1850,92 @@ import 'core-js/modules/web.dom.iterable';
 > 例如: `ProvidePlugin`, 任何需要 AST 的功能, 都无法正常运行.
 
 最后, 有一些模块支持不同的模块格式, 比如 AMD 规范, CommonJS 规范和遗留模块(legacy). 在大多数情况下, 他们首先检查 `define`, 然后使用一些古怪的代码来导出一些属性. 在这些情况下, 可以通过 `imports-loader`设置 `define=>false`来强制 CommonJS 路径.
+
+# 14. 渐进式网络应用程序
+
+渐进式网络应用程序(Progressive Web Application - PWA), 是一种可以提供类似于原生应用程序(native app)体验的网络应用程序(web app). PWA 可以用来做很多事. 其中最重要的是, 在**离线(offline)**时应用程序能够继续运行功能. 这是通过使用名为 Service Workers 的网络技术来实现的.
+
+## 14.1 现在我们并没有离线环境下运行过
+
+到目前为止, 用户通过网络访问网络应用程序, 用户的浏览器会与一个提供所需资源(例如: .html, .js 和 .css 文件)的服务器通讯. 
+
+现在开始使用一个简易服务器, 搭建出离线体验.
+
+```bash
+npm i -D http-server
+```
+
+运行
+
+```bash
+npx http-server dist
+```
+
+此时, 用浏览器访问 `http://127.0.0.1:8080`将看到基于 `dist`目录创建出的服务, 此时停止服务器并刷新, 该应用程序将不再可访问.
+
+接下来要实现的就是, 既然服务器停止了, 刷新后应用程序仍然可以正常运行.
+
+## 14.2 添加 Workbox
+
+添加 workbox-webpack-plugin 插件.
+
+```bash
+npm i -D workbox-webpack-plugin
+```
+
+webpack.config.js
+
+```diff
+  const path = require('path');
+  const HtmlWebpackPlugin = require('html-webpack-plugin');
+  const CleanWebpackPlugin = require('clean-webpack-plugin');
++ const WorkboxPlugin = require('workbox-webpack-plugin');
+
+  module.exports = {
+    entry: {
+      app: './src/index.js',
+      print: './src/print.js'
+    },
+  plugins: [
+    new CleanWebpackPlugin(['dist']),
+    new HtmlWebpackPlugin({
+-     title: 'Output Management'
++     title: 'Progressive Web Application'
+-   })
++   }),
++   new WorkboxPlugin.GenerateSW({
++     // 这些选项帮助 ServiceWorkers 快速启用
++     // 不允许遗留任何“旧的” ServiceWorkers
++     clientsClaim: true,
++     skipWaiting: true
++   })
+  ],
+    output: {
+      filename: '[name].bundle.js',
+      path: path.resolve(__dirname, 'dist')
+    }
+  };
+```
+
+## 14.3 注册 Service Worker
+
+index.js
+
+```diff
+  import _ from 'lodash';
+  import printMe from './print.js';
+
++ if ('serviceWorker' in navigator) {
++   window.addEventListener('load', () => {
++     navigator.serviceWorker.register('/service-worker.js').then(registration => {
++       console.log('SW registered: ', registration);
++     }).catch(registrationError => {
++       console.log('SW registration failed: ', registrationError);
++     });
++   });
++ }
+```
+
+> 要注意, Service Worker 无法运行在 ip 上, 必须要 localhost 访问.
+
+此时即使服务器停止了服务, 应用程序仍然可以正常运行, 因为此刻是由 Service Worker 提供服务.

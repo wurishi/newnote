@@ -1217,3 +1217,130 @@ project
 - [React](https://reactrouter.com/web/guides/code-splitting)
 - [Vue](https://alexjover.com/blog/lazy-load-in-vue-using-webpack-s-code-splitting/)
 - [AngularJS](https://medium.com/@var_bin/angularjs-webpack-lazyload-bb7977f390dd)
+
+# 11. 缓存
+
+使用 webpack 打包应用程序, webpack 会生成一个可部署的 `/dist`目录, 然后把打包后的内容放置在这个目录中. 只要将 `/dist`目录中的内容部署到服务器上, 客户端(通常是浏览器)就能够访问此服务器的资源. 而最后这一步获取资源是比较耗费时间的, 这就是为什么浏览器使用一种名为缓存的技术. 通过命中缓存, 以降低网络流量, 使网站加载速度更快. 然而, 如果我们在部署新版本时不更改资源的文件名, 浏览器可能会认为它没有被更新, 就会使用它的缓存版本. 由于缓存的存在, 当你需要获取新的代码时, 就会显得很棘手.
+
+本节主要是通过必要的配置, 以确保 webpack 编译生成的文件能够被客户端缓存, 而在文件内容变化后, 能够请求到新的文件.
+
+## 11.1 输出文件的文件名 (Output Filenames)
+
+通过使用 `output.filename`进行文件名替换, 可以确保浏览器获取到修改后的文件. `[hash]`替换可以用于在文件名中包含一个构建相关(build-specific)的 hash, 但是更好的方式是使用 `[chunkhash]`替换, 在文件名中包含一个 chunk 相关(chunk-specific)的哈希.
+
+webpack.config.js
+
+```diff
+    output: {
+-     filename: 'bundle.js',
++     filename: '[name].[chunkhash].js',
+      path: path.resolve(__dirname, 'dist')
+    }
+```
+
+使用此配置, 可以看到 webpack 构建的 bundle 的名称是它内容 (通过 hash)的映射. 如果不修改 `./src/index.js` 文件, 再次运行构建, 我们以为文件名会保持不为. 然而有时情况并非如此.
+
+这是因为 webpack 在入口 chunk 中, 包含了某些样板(boilerplate), 特别是 runtime 和 manifest. (样板 boilerplate 指 webpack 运行时的引导代码)
+
+## 11.2 提取模板 (Extracting Boilerplate)
+
+webpack.config.js
+
+```js
+const path = require('path');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ManifestWebpackPlugin = require('webpack-manifest-plugin');
+
+module.exports = {
+  entry: {
+    main: './src/index.js',
+    vendor: ['lodash'],
+  },
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+    },
+  },
+  plugins: [
+    new ManifestWebpackPlugin(),
+    new CleanWebpackPlugin(),
+    new HtmlWebpackPlugin({
+      title: '缓存',
+    }),
+  ],
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: '[name].[chunkhash].js',
+  },
+};
+
+```
+
+## 11.3 模块标识符 (Module Identifiers)
+
+接下来添加一个模块 `print.js`
+
+project
+
+```diff
+|- package.json
+|- webpack.config.js
+|- /dist
+|- /src
+  |- index.js
++ |- print.js
+```
+
+print.js
+
+```diff
++ export default function print(text) {
++   console.log(text);
++ };
+```
+
+index.js
+
+```diff
+    import _ from 'lodash';
++    import Print from './print';
+
+    function getComponent() {
+      const el = document.createElement('div');
+      el.innerHTML = _.join(['Hello', 'Webpack'], ' ');
+
++      el.onclick = Print.bind(null, 'Hello webpack!');
+      return el;
+    }
+
+    document.body.appendChild(getComponent());
+```
+
+再次运行构建, 我们期望的是, 只有 `main`bundle 的 hash 发生变化, 然而每个文件的 hash 都发生成变化了. 这是因为每个 `module.id`会基于默认的解析顺序(resolve order)进行增量. 也就是说, 当解析顺序发生变化, ID 也会随之改变.
+
+```diff
+-	u.push([3, 0]), t();
++	u.push([4, 0]), t();
+    })({
+-	3: function (e, r, t) {
++	4: function (e, r, t) {
+        e.exports = t(0);
+      },
+```
+
+可以使用 `HashedModuleIdsPlugin`解决 `module.id`的问题.
+
+webpack.config.js
+
+```diff
+plugins: [
+      new ManifestWebpackPlugin({}),
+      new CleanWebpackPlugin(),
++     new webpack.HashedModuleIdsPlugin(),
+      new HtmlWebpackPlugin({
+        title: '缓存'
+      }),
+    ],
+```
+

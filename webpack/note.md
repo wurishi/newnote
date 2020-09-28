@@ -1939,3 +1939,148 @@ index.js
 > 要注意, Service Worker 无法运行在 ip 上, 必须要 localhost 访问.
 
 此时即使服务器停止了服务, 应用程序仍然可以正常运行, 因为此刻是由 Service Worker 提供服务.
+
+# 15. TypeScript
+
+## 15.1 基础安装
+
+首先安装 TypeScript 编译器(compiler)和 loader :
+
+```bash
+npm i -D typescript ts-loader
+```
+
+project
+
+```diff
+  |- package.json
++ |- tsconfig.json
+  |- webpack.config.js
+  |- /dist
+    |- bundle.js
+    |- index.html
+  |- /src
+    |- index.js
++   |- index.ts
+```
+
+tsconfig.json
+
+```json
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "noImplicitAny": true,
+    "module": "ES6",
+    "target": "ES5",
+    "jsx": "react",
+    "allowJs": true
+  }
+}
+```
+
+webpack.config.js
+
+```js
+const path = require('path');
+
+module.exports = {
+  entry: './src/index.ts',
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/
+      }
+    ]
+  },
+  resolve: {
+    extensions: [ '.tsx', '.ts', '.js' ]
+  },
+  output: {
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist')
+  }
+};
+```
+
+将 webpack 入口指定为 `index.ts`, 然后通过 `ts-loader`加载所有的 `.ts`和 `.tsx`文件, 并且在当前目录输出一个 `bundle.js`文件.
+
+## 15.2 Loader
+
+[ts-loader](https://github.com/TypeStrong/ts-loader)
+
+## 15.3 source map
+
+要启动 source map 必须配置 TypeScript, 以将内联的 source map 输出到编译过的 JavaScript 文件.
+
+tsconfig.json
+
+```diff
+  {
+    "compilerOptions": {
+      "outDir": "./dist/",
++     "sourceMap": true,
+      "noImplicitAny": true,
+      "module": "commonjs",
+      "target": "es5",
+      "jsx": "react",
+      "allowJs": true
+    }
+  }
+```
+
+然后告诉 webpack 提取这些 source map, 并内联到最终的 bundle 中.
+
+webpack.config.js
+
+```diff
+  const path = require('path');
+
+  module.exports = {
+    entry: './src/index.ts',
++   devtool: 'inline-source-map',
+    module: {
+      rules: [
+        {
+          test: /\.tsx?$/,
+          use: 'ts-loader',
+          exclude: /node_modules/
+        }
+      ]
+    },
+    resolve: {
+      extensions: [ '.tsx', '.ts', '.js' ]
+    },
+    output: {
+      filename: 'bundle.js',
+      path: path.resolve(__dirname, 'dist')
+    }
+  };
+```
+
+## 15.4 使用第三方库
+
+当从 npm 安装第三方库时, 一定要同时安装这个库的类型声明文件. 你可以从 [TypeSearch](http://microsoft.github.io/TypeSearch/) 中找到并安装这些第三方库的类型声明文件.
+
+想了解更多, 可以查看[这篇文章](https://devblogs.microsoft.com/typescript/the-future-of-declaration-files-2/).
+
+## 15.5 导入其他资源
+
+要在 TypeScript 里使用非代码资源, 需要先告诉 TypeScript 如何兼容这些导入类型. 首先在项目里创建 `custom.d.ts`文件.
+
+custom.d.ts
+
+```tsx
+declare module "*.svg" {
+    const content: any;
+    export default content;
+}
+```
+
+这里通过指定任何以 `.svg`结尾的导入, 并将模块的 `content`定义为 `any`, 将 SVG 声明为一个新模块. 这里可以将类似从 `any`改为 `string`, 以更加显式地将它声明为一个 url. 同样的理念适用于其他资源, 包括 CSS, SCSS, JSON 等.
+
+## 15.6 构建性能
+
+使用 TypeScript, 构建性能可能会降低.

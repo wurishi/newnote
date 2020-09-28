@@ -1473,3 +1473,380 @@ webpack.config.js
 > 注意, `library`设置绑定到 `entry`配置. 对于大多数库, 指定一个入口起点就足够了. 虽然构建多个库也是可以的, 然而还可以直接通过将主入口脚本(index script)暴露部分导出, 来作为单个入口起点则相对简单. **不推荐**使用`数组`作为库的 `entry`.
 
 当你在 import 引入模块时, 这可以将你的 library bundle 暴露为名为 `webpackNumbers`的全局变量. 为了让 library 和其他环境兼容, 还需要在配置文件中添加 `libraryTarget`属性.
+
+webpack.config.js
+
+```diff
+  var path = require('path');
+
+  module.exports = {
+    entry: './src/index.js',
+    output: {
+      path: path.resolve(__dirname, 'dist'),
+      filename: 'webpack-numbers.js',
+-     library: 'webpackNumbers'
++     library: 'webpackNumbers',
++     libraryTarget: 'umd'
+    },
+    externals: {
+      lodash: {
+        commonjs: 'lodash',
+        commonjs2: 'lodash',
+        amd: 'lodash',
+        root: '_'
+      }
+    }
+  };
+```
+
+可以通过以下方式暴露 library:
+
+- 变量: 作为一个全局变量, 通过 `script`标签来访问 (libraryTarget: 'var').
+- this: 通过 `this`对象访问 (libraryTarget: 'this').
+- window: 通过 `window`对象访问, 在浏览器中 (libraryTarget: 'window').
+- UMD: 在 AMD 或 CommonJS 的 `require`之后可访问 (libraryTarget: 'umd').
+
+如果设置了 `library`但没设置 `libraryTarget`, 则 `libraryTarget`默认为 `var`.
+
+## 12.6 最终步骤
+
+最后还需要通过设置 `package.json`中的 `main`字段, 添加生成 bundle 文件的路径.
+
+package.json
+
+```json
+{
+    ...
+    "main": "dist/webpack-numbers.js"
+    ...
+}
+```
+
+或者添加为标准模块
+
+```json
+{
+    ...
+    "module": "src/index.js"
+    ...
+}
+```
+
+`main`是 `package.json`标准, `module`是一个提案, 此提案允许 JavaScript 生态系统升级使用 ES2015 模块, 而不会破坏向后兼容性.
+
+> `module`属性应指向一个使用 ES2015 模块语法的脚本, 但不包括浏览器或 Node.js 尚不支持的其他语法特性. 这使得 webpack 本身就可以解析模块语法, 如果用户只用到 library 的某些部分, 则允许通过 tree shaking 打包更轻量的包.
+
+# 13. shimming
+
+`webpack`编译器(compiler)能够识别遵循 ES2015 模块语法, CommonJS 或 AMD 规范编写的模块. 然而, 一些第三方的库(library)可能会引用一些全局依赖(例如 `jQuery`中的 `$`). 这些库也可能创建一些需要被导出的全局变量. 这些"不符合规范的模块"就是 shimming 发挥作用的地方.
+
+> 我们不推荐使用全局的东西! 在 webpack 背后的整个概念是让前端开发更加模块化. 也就是说, 需要编写具有良好的封闭性(well contained), 彼此隔离的模块, 以及不要依赖于那些隐含的依赖模块(例如, 全局变量).
+
+shimming 另外一个使用场景就是, 当你希望 polyfill 浏览器功能以支持更多用户时. 在这些情况下, 你可能只想要将 polyfills 提供给到需要修补(patch)的浏览器(也就是实现按需加载).
+
+## 13.1 shimming 全局变量
+
+src/index.js
+
+```diff
+- import _ from 'lodash';
+-
+  function component() {
+    var element = document.createElement('div');
+
+-   // Lodash, now imported by this script
+    element.innerHTML = _.join(['Hello', 'webpack'], ' ');
+
+    return element;
+  }
+
+  document.body.appendChild(component());
+```
+
+webpack.config.js
+
+```diff
+  const path = require('path');
++ const webpack = require('webpack');
+
+  module.exports = {
+    entry: './src/index.js',
+    output: {
+      filename: 'bundle.js',
+      path: path.resolve(__dirname, 'dist')
+-   }
++   },
++   plugins: [
++     new webpack.ProvidePlugin({
++       _: 'lodash'
++     })
++   ]
+  };
+```
+
+本质上, 我们所做的, 就是告诉 webpack, 如果遇到至少一处用到 `lodash`变量的模块实例(`_`), 那就将 `lodash`package 包引入, 并将其提供给需要用到它的模块.
+
+我们还可以使用 `ProvidePlugin`暴露某个模块中单个导出值, 只需要通过一个"数组路径"进行配置(例如 `[module, child, ...children?]`). 所以, 如果想单独提供 `join`方法, 可以这样:
+
+scr/index.js
+
+```diff
+  function component() {
+    var element = document.createElement('div');
+
+-   element.innerHTML = _.join(['Hello', 'webpack'], ' ');
++   element.innerHTML = join(['Hello', 'webpack'], ' ');
+
+    return element;
+  }
+
+  document.body.appendChild(component());
+```
+
+webpack.config.js
+
+```diff
+  const path = require('path');
+  const webpack = require('webpack');
+
+  module.exports = {
+    entry: './src/index.js',
+    output: {
+      filename: 'bundle.js',
+      path: path.resolve(__dirname, 'dist')
+    },
+    plugins: [
+      new webpack.ProvidePlugin({
+-       _: 'lodash'
++       join: ['lodash', 'join']
+      })
+    ]
+  };
+```
+
+这样就能很好的与 tree shaking 配合, 将 `lodash`库中的其他没用到的部分去除.
+
+## 13.2 细粒度 shimming
+
+一些传统的模块依赖的 `this`指向的是 `window`对象.
+
+src/index.js
+
+```diff
+  function component() {
+    var element = document.createElement('div');
+
+    element.innerHTML = join(['Hello', 'webpack'], ' ');
++
++   // Assume we are in the context of `window`
++   this.alert('Hmmm, this probably isn\'t a great idea...')
+
+    return element;
+  }
+
+  document.body.appendChild(component());
+```
+
+当模块运行在 CommonJS 环境下这将会变成一个问题, 也就是说此时的 this 指向的是 `module.exports`
+
+webpack.config.js
+
+```diff
+  const path = require('path');
+  const webpack = require('webpack');
+
+  module.exports = {
+    entry: './src/index.js',
+    output: {
+      filename: 'bundle.js',
+      path: path.resolve(__dirname, 'dist')
+    },
++   module: {
++     rules: [
++       {
++         test: require.resolve('index.js'),
++         use: 'imports-loader?this=>window'
++       }
++     ]
++   },
+    plugins: [
+      new webpack.ProvidePlugin({
+        join: ['lodash', 'join']
+      })
+    ]
+  };
+```
+
+## 13.3 全局 exports
+
+project
+
+```diff
+  |- package.json
+  |- webpack.config.js
+  |- /dist
+  |- /src
+    |- index.js
++   |- globals.js
+```
+
+webpack.config.js
+
+```diff
+  const path = require('path');
+  const webpack = require('webpack');
+
+  module.exports = {
+    entry: './src/index.js',
+    output: {
+      filename: 'bundle.js',
+      path: path.resolve(__dirname, 'dist')
+    },
+    module: {
+      rules: [
+        {
+          test: require.resolve('index.js'),
+          use: 'imports-loader?this=>window'
+-       }
++       },
++       {
++         test: require.resolve('globals.js'),
++         use: 'exports-loader?file,parse=helpers.parse'
++       }
+      ]
+    },
+    plugins: [
+      new webpack.ProvidePlugin({
+        join: ['lodash', 'join']
+      })
+    ]
+  };
+```
+
+## 13.4 加载 polyfills
+
+引入 babel-polyfill:
+
+```bash
+npm i babel-polyfill
+```
+
+src/index.js
+
+```diff
++ import 'babel-polyfill';
++
+  function component() {
+    var element = document.createElement('div');
+
+    element.innerHTML = join(['Hello', 'webpack'], ' ');
+
+    return element;
+  }
+
+  document.body.appendChild(component());
+```
+
+> 注意, 我们没有将 `import`绑定到变量. 这是因为只需在基础代码(code base)之外, 再额外执行 polyfills, 就可以假定代码中已经具有某些原生功能了.
+
+polyfills 虽然是一种模块引入方式, 但是**并不推荐在主 bundle 中引入 polyfills**, 因为这不利于具备这些模块功能的现代浏览器用户, 会使他们下载体积很大, 但却不需要的脚本文件.
+
+更好的办法是将 `import 'babel-polyfill'`放入一个新文件, 并加入 whatwg-fetch polyfill.
+
+```bash
+npm i whatwg-fetch
+```
+
+project
+
+```diff
+  |- package.json
+  |- webpack.config.js
+  |- /dist
+  |- /src
+    |- index.js
+    |- globals.js
++   |- polyfills.js
+```
+
+src/polyfills.js
+
+```js
+import 'babel-polyfill';
+import 'whatwg-fetch';
+```
+
+webpack.config.js
+
+```diff
+-   entry: './src/index.js',
++   entry: {
++     polyfills: './src/polyfills.js',
++     index: './src/index.js'
++   },
+    output: {
+-     filename: 'bundle.js',
++     filename: '[name].bundle.js',
+      path: path.resolve(__dirname, 'dist')
+    },
+```
+
+将代码分离后, 可以在 index.html 中添加一些逻辑根据条件加载新的 `polyfills.bundle.js`
+
+dist/index.html
+
+```diff
+  <!doctype html>
+  <html>
+    <head>
+      <title>Getting Started</title>
++     <script>
++       var modernBrowser = (
++         'fetch' in window &&
++         'assign' in Object
++       );
++
++       if ( !modernBrowser ) {
++         var scriptElement = document.createElement('script');
++
++         scriptElement.async = false;
++         scriptElement.src = '/polyfills.bundle.js';
++         document.head.appendChild(scriptElement);
++       }
++     </script>
+    </head>
+    <body>
+      <script src="index.bundle.js"></script>
+    </body>
+  </html>
+```
+
+## 13.5 深度优化
+
+`babel-preset-env`package 使用 browserslist 来转译那些浏览器中不支持的特性. 这里预设了 `useBuiltIns`选项, 默认值是 `false`, 能将你的全局 `babel-polyfill`导入方式, 改进为更细粒度的 `import`格式:
+
+```js
+import 'core-js/modules/es7.string.pad-start';
+import 'core-js/modules/es7.string.pad-end';
+import 'core-js/modules/web.timers';
+import 'core-js/modules/web.immediate';
+import 'core-js/modules/web.dom.iterable';
+```
+
+## 13.6 Node 内置
+
+像 `process`这种 Node 内置模块, 能直接根据配置文件(configuration file)进行正确的 polyfills, 且不需要特定的 loaders 或者 plugins.
+
+## 13.7 其他工具
+
+还有一些其他的工具能够帮我们处理老旧的模块.
+
+`script-loader`会在全局上下文中对代码进行取值, 类似于通过一个 `script`标签引入脚本. 在这种模式下, 每一个标准的库都应该能正常运行. require, module 等的取值是 undefined.
+
+> 当使用 `script-loader` , 模块将转化为字符串, 然后添加到 bundle 中. 它不会被 `webpack`压缩, 所以你应该选择一个 min 版本. 同时, 使用此 loader 将不会有 `devtool`的支持.
+
+这些老旧的模块如果没有 AMD/CommonJS 规范版本, 但你也想将他们加入 `dist`文件, 可以使用 `noParse`来标识出这个模块. 这样就能使 webpack 引入这些模块, 但不进行转化(parse), 以及不解析(resolve) `require()`和 `import`语句. 这将提升构建性能.
+
+> 例如: `ProvidePlugin`, 任何需要 AST 的功能, 都无法正常运行.
+
+最后, 有一些模块支持不同的模块格式, 比如 AMD 规范, CommonJS 规范和遗留模块(legacy). 在大多数情况下, 他们首先检查 `define`, 然后使用一些古怪的代码来导出一些属性. 在这些情况下, 可以通过 `imports-loader`设置 `define=>false`来强制 CommonJS 路径.

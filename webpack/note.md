@@ -2084,3 +2084,43 @@ declare module "*.svg" {
 ## 15.6 构建性能
 
 使用 TypeScript, 构建性能可能会降低.
+
+# 16. 迁移到新版本
+
+主要描述的是 webpack 1 到 2 的变化.
+
+# 17. 使用环境变量
+
+要在开发和生产环境之间, 消除 `webpack.config.js`的差异, 你可能需要环境变量.
+
+webpack 命令行环境配置中, 通过设置 `--env`可以使你根据需要, 传入尽可能多的环境变量. 在 `webpack.config.js`文件中可以访问到这些环境变量. 例如, `--env.production`或 `--env.NODE_ENV=local`(`NODE_ENV`通常约定用于定义环境类型)
+
+```bash
+webpack --env.NODE_ENV=local --env.production --progress
+```
+
+> 如果设置 `env`变量, 却没有赋值, `--env.production`默认将 `--env.production`设置为 `true`
+
+然而, 你必须对 webpack 配置进行一处修改. 通常, `module.exports`指向配置对象. 但要使用 `env`, 必须将 `module.exports`转换成一个函数.
+
+webpack.config.js
+
+```js
+const path = require('path');
+
+console.log('NODE_ENV: ', process.env.NODE_ENV); // undefined
+console.log('Production: ', process.env.production); // undefined
+
+module.exports = (env) => {
+  console.log('NODE_ENV: ', env.NODE_ENV); // local
+  console.log('Production: ', env.production); // true
+  return {
+    entry: './src/index.js',
+    output: {
+      filename: 'bundle.js',
+      path: path.resolve(__dirname, 'dist'),
+    },
+  };
+};
+```
+

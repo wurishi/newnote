@@ -1344,3 +1344,132 @@ plugins: [
     ],
 ```
 
+# 12. 创建 library
+
+除了打包应用程序代码, webpack 还可以用于打包 JavaScript library.
+
+## 12.1 创建一个 library
+
+project
+
+```diff
++  |- webpack.config.js
++  |- package.json
++  |- /src
++    |- index.js
++    |- ref.json
+```
+
+## 12.2 基本配置
+
+现在, 让我们以某种方式打包这个 library, 能够实现以下几个目标:
+
+- 不打包 `lodash`, 而是使用 `externals`来 require 用户加载好的 lodash.
+- 设置 library 的名称为 `webpack-numbers`.
+- 将 library 暴露为一个名为 `webpackNumbers`的变量.
+- 能够访问其他 Node.js 中的 library.
+
+以外, 用户应该能够通过以下方式访问 library:
+
+- ES2015 模块. 例如 `import webpackNumbers from 'webpack-numbers'`.
+- CommonJS 模块. 例如 `require('webpack-numbers')`.
+- 全局变量, 当通过 `<script>`脚本引入时.
+
+webpack.config.js
+
+```js
+const path = require('path');
+
+module.exports = {
+  entry: './src/index.js',
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'webpack-numbers.js',
+  },
+};
+```
+
+## 12.3 外部化 lodash
+
+现在, 如果执行 `webpack`, 会发现创建了一个非常巨大的文件. 主要是因为 lodash 也被打包到代友中了. 在这种场景中, 我们更倾向于把 `lodash`当作 `peerDependency`. 也就是说, 用户应该已经将 `lodash`安装好. 因此, 你可以放弃对外部 library 的控制, 而是将控制权让给使用 library 的用户.
+
+这可以使用 `externals`配置来完成.
+
+webpack.config.js
+
+```diff
+  var path = require('path');
+
+  module.exports = {
+    entry: './src/index.js',
+    output: {
+      path: path.resolve(__dirname, 'dist'),
+      filename: 'webpack-numbers.js'
+-   }
++   },
++   externals: {
++     lodash: {
++       commonjs: 'lodash',
++       commonjs2: 'lodash',
++       amd: 'lodash',
++       root: '_'
++     }
++   }
+  };
+```
+
+这意味着你的 library 需要一个名为 `lodash`的依赖, 这个依赖在用户的环境中必须存在且可用.
+
+> 注意, 如果你计划只是将 library 用作另一个 webpack bundle 中的依赖模块, 则可以将 `externals`指定为数组.
+
+## 12.4 外部扩展的限制
+
+对于从一个依赖目录中, 调用多个文件的 library:
+
+```js
+import A from 'library/one';
+import B from 'library/two';
+// ...
+```
+
+无法通过 externals 中指定 `library`目录的方式, 将它们从 bundle 中排除. 你需要逐个排除它们, 或者使用正则表达式排除.
+
+```js
+externals: [
+    'library/one',
+    'library/tow',
+    /^library\/.+$/
+]
+```
+
+## 12.5 暴露 library
+
+对于用途广泛的 library, 我们希望它能够兼容不同的环境, 例如 CommonJS, AMD, Node.js 或者作为一个全局变量. 为了让你的 library 能够在各种用户环境(consumption)中可用, 需要在 `output`中添加 `library`属性:
+
+webpack.config.js
+
+```diff
+  var path = require('path');
+
+  module.exports = {
+    entry: './src/index.js',
+    output: {
+      path: path.resolve(__dirname, 'dist'),
+-     filename: 'webpack-numbers.js'
++     filename: 'webpack-numbers.js',
++     library: 'webpackNumbers'
+    },
+    externals: {
+      lodash: {
+        commonjs: 'lodash',
+        commonjs2: 'lodash',
+        amd: 'lodash',
+        root: '_'
+      }
+    }
+  };
+```
+
+> 注意, `library`设置绑定到 `entry`配置. 对于大多数库, 指定一个入口起点就足够了. 虽然构建多个库也是可以的, 然而还可以直接通过将主入口脚本(index script)暴露部分导出, 来作为单个入口起点则相对简单. **不推荐**使用`数组`作为库的 `entry`.
+
+当你在 import 引入模块时, 这可以将你的 library bundle 暴露为名为 `webpackNumbers`的全局变量. 为了让 library 和其他环境兼容, 还需要在配置文件中添加 `libraryTarget`属性.

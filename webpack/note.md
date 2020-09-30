@@ -2360,3 +2360,46 @@ importAll(require.context('../components', true, /\.js$/));
 // 在构建时, 所有被 require 的模块都会被存到 cache 里面.
 ```
 
+# 22. 公共路径 (public path)
+
+webpack 提供一个非常有用的配置, 该配置能帮助你为项目中的所有资源指定一个基础路径. 它被称为 `公共路径(publicPath)`
+
+## 22.1 在构建项目时设置路径值
+
+在开发模式中, 我们通常有一个 `assets/`文件夹, 它往往存放在和首页一个级别的目录下. 但是在生产环境下, 如果想把这些静态文件统一使用 CDN 加载, 该怎么办?
+
+可以使用有着悠久历史的环境变量, 比如设置一个名为 `ASSET_PATH`的变量:
+
+```js
+import webpack from 'webpack';
+
+const ASSET_PATH = process.env.ASSET_PATH || '/';
+
+export default {
+    output: {
+        publicPath: ASSET_PATH
+    }
+    plugins: [
+    	new webpack.DefinePlugin({'process.env.ASSET_PATH': JSON.stringify(ASSET_PATH)})
+    ]
+}
+```
+
+## 22.2 即时设定路径值
+
+另一个可能出现的情况是, 我们需要即时设置公共路径. `webpack`提供一个全局变量供你设置, 它名叫 `__webpack_public_path__`. 所以在你的项目入口, 你可以设置如下:
+
+```js
+__webpack_public_path__ = process.env.ASSET_PATH;
+```
+
+当设置完成后, 因为我们已经在配置荐中使用了 `DefinePlugin`, `process.env.ASSET_PATH`就已经被定义了, 所以我们能够安心地使用它.
+
+警告: 请注意, 如果你在入口文件中使用 ES6 模块导入, 则在导入后对 `__webpack_public_path__`进行赋值. 在这种情况下, 你必须将公共路径(public path)赋值移至自己的专属模块, 然后将其导入到你的 entry.js 之上:
+
+```js
+// entry.js
+import './public-path';
+import './app';
+```
+

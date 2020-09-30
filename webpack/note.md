@@ -2265,3 +2265,98 @@ Source maps 真的很消耗资源. 你真的需要他们?
 ### 3. Sass
 
 - `node-sass`中有个来自 Node.js 线程池的阻塞线程的 bug. 当使用 `thread-loader`时, 需要设置 `workerParallelJobs: 2`.
+
+# 19. 内容安全策略
+
+webpack 能够为其加载的所有脚本添加 `nonce`. 要启用此功能, 需要在引入的入口脚本中设置一个 `__webpack_nonce__`变量. 应该为每个唯一的页面视图生成和提供一个唯一的基于 hash 的 nonce, 这就是为什么 `__webpack_nonce__`要在入口文件中指定, 而不是在配置中指定的原因. 请注意, `nonce`应该是一个 base64 编码的字符串.
+
+## 19.1 示例
+
+在 entry 文件中:
+
+```js
+__webpack__nonce__ = 'c29tZSBjb29sIHN0cmluZyB3aWxsIHBvcCB1cCAxMjM=';
+```
+
+## 19.2 启用 CSP
+
+注意, CSP 默认情况下不启用. 需要与文档(document)一起发送相应的 `CSP`header 或 meta 标签 `<meta http-equiv="Content-Security-Policy" ...>`, 以告知浏览器启用 CSP. 以下是一个包含 CDN 白名单 URL 的 CSP header 的示例:
+
+```js
+Content-Security-Policy: default-src 'self'; script-src 'self' https://trusted.cdn.com;
+```
+
+# 20. 开发 - Vagrant
+
+# 21. 管理依赖
+
+## 21.1 带表达式的 require 语句
+
+如果你的 request 含有表达式(expressions), 会创建一个上下文(context), 因为在编译时(compile time)并不清楚具体是哪一个模块被导入.
+
+比如:
+
+```js
+require('./template/' + name + '.ejs');
+```
+
+webpack 解析 `require()`的调用, 会提取出来如下信息:
+
+```
+Directory: ./template
+Regular expression: /^.*\.ejs$/
+```
+
+此时这个具有上下文的模块会包含目录下的所有模块的引用(reference), 这些模块能够[通过从 request 匹配出来的正则表达式]所 require 进来. 上下文模块包含一个 map 对象, 会把 request 中所有模块转译成对应的模块 id.
+
+示例:
+
+```js
+{
+    './table.ejs': 42,
+    './table-row.ejs': 43,
+    './directory/folder.ejs': 44
+}
+```
+
+上下文模块还包含一些运行时(runtime)逻辑来访问这个 map 对象.
+
+这意味着 webpack 能够支持动态 require, 但会导致所有可能用到的模块都包含在 bundle 中.
+
+## 21.2 `require.context`
+
+你还可以使用 `require.context()`方法来创建自己的模块上下文.
+
+你可以给这个方法传3个参数, 要搜索的文件夹目录, 是否还应该搜索它的子目录, 以及一个匹配文件的正则表达式.
+
+webpack 会在构建的时候解析代码中的 `require.context()`.
+
+语法如下:
+
+```js
+require.context(directory, useSubdirectories = false, regExp = /^\.\//)
+```
+
+> 注意, 传递给 `require.context`的参数必须是字面量(literal)!
+
+## 21.3 上下文模块 API
+
+一个上下文模块导出一个 (require) 函数, 这个函数可以接收一个参数: request.
+
+导出的方法有 3 个属性: `resolve`, `keys`, `id`.
+
+- `resolve`是一个函数, 它返回请求被解析后得到的模块 id.
+- `keys`是一个函数, 它返回一个数组, 由所有可能被上下文模块处理的请求组成.
+
+比如, 如果想引入一个文件夹下面的所有文件, 或者引入能匹配正则表达式的文件, 你可以这样.
+
+```js
+const cache = {};
+
+function importAll(r) {
+    r.keys().forEach(key => cache[key] = r(key));
+}
+importAll(require.context('../components', true, /\.js$/));
+// 在构建时, 所有被 require 的模块都会被存到 cache 里面.
+```
+

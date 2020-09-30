@@ -9,3 +9,4 @@ unityecs/Assets/ecs/*
 tensorflowjs/demos/*/model/*
 tensorflowjs/demos/*/dist/*
 webpack/*/dist/*
+threejs/**/dist/*

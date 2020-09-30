@@ -107,7 +107,7 @@ U3D JobSystem
 
 # webpack
 
-参考资料: [webpack 指南](https://www.webpackjs.com/guides/installation/) *(进行中)*
+参考资料: [webpack 指南](https://www.webpackjs.com/guides/installation/)  **(完成)**
 
 # wordcloud
 

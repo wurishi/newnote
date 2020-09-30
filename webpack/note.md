@@ -2124,3 +2124,359 @@ module.exports = (env) => {
 };
 ```
 
+# 18. 构建性能
+
+## 18.1 保持版本最新
+
+使用 webpack 最新稳定版本, 保持最新的 Node.js, 包管理工具 (npm 或 yarn), 能够建立更高效的模块树以及提高解析速度.
+
+## 18.2 Loaders
+
+将 loaders 应用于最少数的必要模块, 如:
+
+```js
+{
+    test: /\.js$/,
+    loader: 'babel-loader'
+}
+```
+
+使用 `include`字段仅将 loader 模块应用在实际需要用其转换的位置中:
+
+```js
+{
+    test: /\.js$/,
+    include: path.resolve(__dirname, 'src'),
+    loader: 'babel-loader'
+}
+```
+
+## 18.3 Bootstrap
+
+每个额外的 loader/plugin 都有启动时间. 尽量少使用不同的工具.
+
+## 18.4 解析
+
+- 尽量减少 `resolve.modules`, `resolve.extensions`, `resolve.mainFiles`, `resolve.descriptionFiles`中类目的数量, 因为它们会增加文件系统调用的次数.
+- 如果你不使用 `symlinks`, 可以设置 `resolve.symlinks: false`(例如 `npm link`或者 `yarn link`).
+- 如果使用自定义解析 plugins, 并且没有指定 context 信息, 可以设置 `resolve.cacheWithContext: false`.
+
+## 18.5 Dlls
+
+使用 `DllPlugin`将更改不频繁的代码进行单独编译. 这将改善引用程序的编译速度, 即使它增加了构建过程的复杂性.
+
+## 18.6 Smaller = Faster
+
+减少编译的整体大小, 以提高构建性能. 尽量保持 chunks 小巧.
+
+- 使用 更少/更小 的库.
+- 在多页面应用程序中使用 `CommonsChunksPlugin`.
+- 在多页面应用程序中以 `async`模式使用 `CommonsChunksPlugin`.
+- 移除不使用的代码.
+- 只编译当前正在开发部分的代码.
+
+## 18.7 Worker Pool
+
+`thread-loader`可以将非常消耗资源的 loaders 转存到 worker pool 中.
+
+> 不要使用太多的 workers, 因为 Node.js 的 runtime 和 loader 有一定的启动开销. 最小化 workers 和主进程间的模块传输. 进程间通讯(IPC)是非常消耗资源的.
+
+## 18.8 持久化缓存
+
+使用 `cache-loader`启用持久化缓存. 使用 `package.json`中的 `"postinstall"`清除缓存目录.
+
+## 18.9 Development
+
+### 1. 增量编译
+
+使用 webpack 的监听模式. 不要使用其他工具来监听你的文件和调用 webpack. 在监听模式下构建会记录时间戳并将信息传递给编译让缓存失效.
+
+在某些设置中, 监听会回退到轮询模式. 有许多监听文件会导致 CPU 大量负载. 在这些情况下, 你可以使用 `watchOptions.poll`来增加轮询的间隔.
+
+### 2. 在内存中编译
+
+以下几个实用工具通过在内存中进行代码的编译和资源的提供, 但并不写入磁盘以提高性能:
+
+- `webpack-dev-server`
+- `webpack-hot-middleware`
+- `webpack-dev-middleware`
+
+### 3. Devtool
+
+需要注意的是不同的 `devtool`的设置, 会导致不同的性能差异.
+
+- `eval`具有最好的性能, 但并不能帮助你转译代码.
+- 如果你能接受稍差一些的 mapping 质量, 可以使用 `cheap-source-map`选项来提高性能.
+- 使用 `eval-source-map`配置进行增量编译.
+
+在大多数情况下, `cheap-module-eval-source-map`是最好的选择.
+
+### 4. 避免在生产环境下才会用到的工具
+
+某些实用工具, plugins 和 loaders 都只能在构建生产环境时才有用, 比如压缩代码在生产环境下并没有多大意义. 所以以下这些工具在开发中通常被排除在外:
+
+- `UglifyJsPlugin`
+- `ExtractTextPlugin`
+- `[hash] / [chunkhash]`
+- `AggressiveSplittingPlugin`
+- `AggressiveMergingPlugin`
+- `ModuleConcatenationPlugin`
+
+### 5. 最小化入口 chunk
+
+webpack 只会在文件系统中生产已经更新的 chunk. 对于某些配置选项(HMR, `[name] / [chunkhash]`, `output.chunkFilename`, `[hash]`)来说. 除了更新的 chunks 无效之外, 入口 chunk 也不会生效.
+
+应当在生成入口 chunk 时, 尽量减少入口 chunk 的体积, 以提高性能. 下述代码块将只提取包含 runtime 的 chunk, 其他 chunk 都作为子模块.
+
+```js
+new CommonsChunkPlugin({
+    name: "manifest",
+    minChunks: Infinity
+})
+```
+
+## 18.10 Production
+
+### 1. 多个编译时
+
+当进行多个编译时, 以下工具可以帮助到你:
+
+- `parallel-webpack`: 它允许编译工作在 worker 池中进行.
+- `cache-loader`: 缓存可以在多个编译时之间共享.
+
+### 2. Source Maps
+
+Source maps 真的很消耗资源. 你真的需要他们?
+
+## 18.11 工具相关问题
+
+下列工具存在某些可能会降低构建性能的问题.
+
+### 1. Babel
+
+- 项目中的 preset/plugins 数量最小化.
+
+### 2. TypeScript
+
+- 在单独的进程中使用 `fork-ts-checker-webpack-plugin`进行类型检查.
+- 配置 loaders 跳过类型检查.
+- 使用 `ts-loader`时, 设置 `happyPackMode: true`/ `transpileOnly: true`.
+
+### 3. Sass
+
+- `node-sass`中有个来自 Node.js 线程池的阻塞线程的 bug. 当使用 `thread-loader`时, 需要设置 `workerParallelJobs: 2`.
+
+# 19. 内容安全策略
+
+webpack 能够为其加载的所有脚本添加 `nonce`. 要启用此功能, 需要在引入的入口脚本中设置一个 `__webpack_nonce__`变量. 应该为每个唯一的页面视图生成和提供一个唯一的基于 hash 的 nonce, 这就是为什么 `__webpack_nonce__`要在入口文件中指定, 而不是在配置中指定的原因. 请注意, `nonce`应该是一个 base64 编码的字符串.
+
+## 19.1 示例
+
+在 entry 文件中:
+
+```js
+__webpack__nonce__ = 'c29tZSBjb29sIHN0cmluZyB3aWxsIHBvcCB1cCAxMjM=';
+```
+
+## 19.2 启用 CSP
+
+注意, CSP 默认情况下不启用. 需要与文档(document)一起发送相应的 `CSP`header 或 meta 标签 `<meta http-equiv="Content-Security-Policy" ...>`, 以告知浏览器启用 CSP. 以下是一个包含 CDN 白名单 URL 的 CSP header 的示例:
+
+```js
+Content-Security-Policy: default-src 'self'; script-src 'self' https://trusted.cdn.com;
+```
+
+# 20. 开发 - Vagrant
+
+# 21. 管理依赖
+
+## 21.1 带表达式的 require 语句
+
+如果你的 request 含有表达式(expressions), 会创建一个上下文(context), 因为在编译时(compile time)并不清楚具体是哪一个模块被导入.
+
+比如:
+
+```js
+require('./template/' + name + '.ejs');
+```
+
+webpack 解析 `require()`的调用, 会提取出来如下信息:
+
+```
+Directory: ./template
+Regular expression: /^.*\.ejs$/
+```
+
+此时这个具有上下文的模块会包含目录下的所有模块的引用(reference), 这些模块能够[通过从 request 匹配出来的正则表达式]所 require 进来. 上下文模块包含一个 map 对象, 会把 request 中所有模块转译成对应的模块 id.
+
+示例:
+
+```js
+{
+    './table.ejs': 42,
+    './table-row.ejs': 43,
+    './directory/folder.ejs': 44
+}
+```
+
+上下文模块还包含一些运行时(runtime)逻辑来访问这个 map 对象.
+
+这意味着 webpack 能够支持动态 require, 但会导致所有可能用到的模块都包含在 bundle 中.
+
+## 21.2 `require.context`
+
+你还可以使用 `require.context()`方法来创建自己的模块上下文.
+
+你可以给这个方法传3个参数, 要搜索的文件夹目录, 是否还应该搜索它的子目录, 以及一个匹配文件的正则表达式.
+
+webpack 会在构建的时候解析代码中的 `require.context()`.
+
+语法如下:
+
+```js
+require.context(directory, useSubdirectories = false, regExp = /^\.\//)
+```
+
+> 注意, 传递给 `require.context`的参数必须是字面量(literal)!
+
+## 21.3 上下文模块 API
+
+一个上下文模块导出一个 (require) 函数, 这个函数可以接收一个参数: request.
+
+导出的方法有 3 个属性: `resolve`, `keys`, `id`.
+
+- `resolve`是一个函数, 它返回请求被解析后得到的模块 id.
+- `keys`是一个函数, 它返回一个数组, 由所有可能被上下文模块处理的请求组成.
+
+比如, 如果想引入一个文件夹下面的所有文件, 或者引入能匹配正则表达式的文件, 你可以这样.
+
+```js
+const cache = {};
+
+function importAll(r) {
+    r.keys().forEach(key => cache[key] = r(key));
+}
+importAll(require.context('../components', true, /\.js$/));
+// 在构建时, 所有被 require 的模块都会被存到 cache 里面.
+```
+
+# 22. 公共路径 (public path)
+
+webpack 提供一个非常有用的配置, 该配置能帮助你为项目中的所有资源指定一个基础路径. 它被称为 `公共路径(publicPath)`
+
+## 22.1 在构建项目时设置路径值
+
+在开发模式中, 我们通常有一个 `assets/`文件夹, 它往往存放在和首页一个级别的目录下. 但是在生产环境下, 如果想把这些静态文件统一使用 CDN 加载, 该怎么办?
+
+可以使用有着悠久历史的环境变量, 比如设置一个名为 `ASSET_PATH`的变量:
+
+```js
+import webpack from 'webpack';
+
+const ASSET_PATH = process.env.ASSET_PATH || '/';
+
+export default {
+    output: {
+        publicPath: ASSET_PATH
+    }
+    plugins: [
+    	new webpack.DefinePlugin({'process.env.ASSET_PATH': JSON.stringify(ASSET_PATH)})
+    ]
+}
+```
+
+## 22.2 即时设定路径值
+
+另一个可能出现的情况是, 我们需要即时设置公共路径. `webpack`提供一个全局变量供你设置, 它名叫 `__webpack_public_path__`. 所以在你的项目入口, 你可以设置如下:
+
+```js
+__webpack_public_path__ = process.env.ASSET_PATH;
+```
+
+当设置完成后, 因为我们已经在配置荐中使用了 `DefinePlugin`, `process.env.ASSET_PATH`就已经被定义了, 所以我们能够安心地使用它.
+
+警告: 请注意, 如果你在入口文件中使用 ES6 模块导入, 则在导入后对 `__webpack_public_path__`进行赋值. 在这种情况下, 你必须将公共路径(public path)赋值移至自己的专属模块, 然后将其导入到你的 entry.js 之上:
+
+```js
+// entry.js
+import './public-path';
+import './app';
+```
+
+# 23. 集成 (integrations)
+
+首先我们要消除一个常见的误解. webpack 是一个模块打包器(module bundler) (例如, Browserify 或 Brunch). 它不是一个任务执行器(task runner) (例如, Make, Grunt 或者 Gulp). 任务执行器就是用来自动化处理常见的开发任务, 例如项目的检查(lint), 构建(build), 测试(test). 相对于打包器(bundler), 任务执行器则聚焦在偏重上层的问题上面. 你可以得益于, 使用上层的工具, 而将打包部分的问题留给 webpack.
+
+打包器(bundler)帮助你取得准备用于部署的 JavaScript 和样式表, 将它们转换为适合浏览器的可用格式. 例如, JavaScript 可以压缩, 拆分 chunk 和懒加载, 以提高性能. 打包是 web 开发中最重要的挑战之一, 解决此问题可以消除开发过程中的大部分痛点.
+
+发消息是, 虽然有一些功能重复, 但如果以正确的方式处理, 任务运行器和模块打包器能够一起协同工作.
+
+## 23.1 NPM Scripts
+
+通常 webpack 用户使用 npm scripts 来作为任务执行器. 这是比较好的开始. 然而跨平台支持是一个问题, 为此有一些解决方案. 许多用户, 但不是大多数用户, 直接使用 npm scripts 和各种级别的 webpack 配置和工具, 来应对构建任务.
+
+因此, 当 webpack 的核心焦点专注于打包时, 有多种扩展可以供你使用, 可以将其用于任务运行者常见的工作. 集成一个单独的工具会增加复杂度, 所以一定要权衡集成前后的利弊.
+
+## 23.2 Grunt
+
+对于那些使用 Grunt 的人, 推荐使用 `grunt-webpack`包(package). 使用 `grunt-webpack`可以将 webpack 或 webpack-dev-server 作为一项任务(task)执行, 访问模板标签(template tags)中的统计信息, 拆分开发和生产配置等等.
+
+```bash
+npm i -D grund-webpack webpack
+```
+
+Gruntfile.js
+
+```js
+const webpackConfig = require('./webpack.config');
+
+module.exports = function (grunt) {
+  grunt.initConfig({
+    webpack: {
+      options: {
+        stats: !process.env.NODE_ENV || process.env.NODE_ENV === 'development',
+      },
+      prod: webpackConfig,
+      dev: Object.assign({ watch: true }, webpackConfig),
+    },
+  });
+  grunt.loadNpmTasks('grunt-webpack');
+
+  grunt.registerTask('default', ['webpack']);
+};
+```
+
+## 23.3 Gulp
+
+在 `webpack-stream`包(package) (也称作 `gulp-webpack`)的帮助下, 也可以很简单的将 Gulp 和 webpack 集成.
+
+```bash
+npm i -D webpack-stream
+```
+
+gulpfile.js
+
+```js
+const gulp = require('gulp');
+const webpack = require('webpack-stream');
+const webpackConfig = require('./webpack.config');
+gulp.task('default', function () {
+  return gulp
+    .src('./src/index.js') //
+    .pipe(webpack(webpackConfig))
+    .pipe(gulp.dest('./dist'));
+});
+
+```
+
+## 23.4 Mocha
+
+`mocha-webpack`可以用来将 Mocha 与 webpack 完全集成. 这个仓库提供了很多关于工具优势和缺点方面的细节, 但 `mocha-webpack`还算是一层简单的封装, 提供与 Mocha 几乎相同的 CLI, 并提供各种 webpack 功能, 例如改进了 watch 模式和优化了路径分析(path resolution).
+
+```bash
+npm i -D mocha mocha-webpack
+mocha-webpack 'test/**/*.js'
+```
+
+## 23.5 Karma
+

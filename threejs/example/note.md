@@ -22,3 +22,6 @@ npx webpack --config webpack.dll.config.js
 npx webpack-dev-server
 ```
 
+# webgl_animation_skinning_morph
+
+![webgl_animation_skinning_morph](assets/webgl_animation_skinning_morph.png)

@@ -1,5 +1,9 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { GUI } from 'dat.gui';
+import * as Stats from 'stats.js';
+
+const api: { [key: string]: any; state: string } = { state: 'Walking' };
 
 class Main {
   private container: HTMLElement;
@@ -11,7 +15,12 @@ class Main {
 
   private model: THREE.Group;
 
-  private state: any;
+  private stats: Stats;
+  private gui: GUI;
+  private mixer: THREE.AnimationMixer;
+  private actions: { [key: string]: THREE.AnimationAction };
+  private activeAction: THREE.AnimationAction;
+  private previousAction: THREE.AnimationAction;
 
   constructor() {
     this.init();
@@ -71,19 +80,103 @@ class Main {
     renderer.outputEncoding = THREE.sRGBEncoding;
     this.container.appendChild(renderer.domElement);
     this.renderer = renderer;
+
+    this.stats = new Stats();
+    this.container.appendChild(this.stats.dom);
   }
 
   private createGUI(
     model: THREE.Group,
     animations: THREE.AnimationClip[]
-  ): void {}
+  ): void {
+    const states = [
+      'Idle',
+      'Walking',
+      'Running',
+      'Dance',
+      'Sitting',
+      'Standing',
+    ];
+    const emotes = ['Jump', 'Yes', 'No', 'Wave', 'Punch', 'ThumbsUp'];
+    this.gui = new GUI();
+    this.mixer = new THREE.AnimationMixer(model);
+    this.actions = {};
+
+    animations.forEach((clip) => {
+      const action = this.mixer.clipAction(clip);
+      this.actions[clip.name] = action;
+      if (emotes.indexOf(clip.name) >= 0 || states.indexOf(clip.name) >= 4) {
+        action.clampWhenFinished = true;
+        action.loop = THREE.LoopOnce;
+      }
+    });
+
+    const statesFolder = this.gui.addFolder('States');
+    const clipCtrl = statesFolder.add(api, 'state').options(states);
+    clipCtrl.onChange(() => this.fadeToAction(api.state, 0.5));
+    statesFolder.open();
+
+    const emoteFolder = this.gui.addFolder('Emotes');
+    function createEmoteCallback(main: Main, name: string): void {
+      api[name] = function () {
+        main.fadeToAction(name, 0.2);
+        main.mixer.addEventListener('finished', () => main.restoreState);
+      };
+      emoteFolder.add(api, name);
+    }
+
+    for (let i = 0; i < emotes.length; i++) {
+      createEmoteCallback(this, emotes[i]);
+    }
+    emoteFolder.open();
+
+    const face: any = this.model.getObjectByName('Head_2');
+    const expressions = Object.keys(face.morphTargetDictionary);
+    const expressionFolder = this.gui.addFolder('Expressions');
+
+    for (let i = 0; i < expressions.length; i++) {
+      expressionFolder
+        .add(face.morphTargetInfluences, i + '', 0, 1, 0.01)
+        .name(expressions[i]);
+    }
+
+    this.activeAction = this.actions['Walking'];
+    this.activeAction.play();
+
+    expressionFolder.open();
+  }
+
+  private restoreState = (): void => {
+    this.mixer.removeEventListener('finished', this.restoreState);
+    this.fadeToAction(api.state, 0.2);
+  };
+
+  private fadeToAction(name: string, duration: number): void {
+    this.previousAction = this.activeAction;
+    this.activeAction = this.actions[name];
+
+    if (this.previousAction !== this.activeAction) {
+      this.previousAction.fadeOut(duration);
+    }
+    this.activeAction
+      .reset()
+      .setEffectiveTimeScale(1)
+      .setEffectiveWeight(1)
+      .fadeIn(duration)
+      .play();
+  }
 
   private animate = (): void => {
     const dt = this.clock.getDelta();
+    if (this.mixer) {
+      this.mixer.update(dt);
+    }
 
     requestAnimationFrame(this.animate);
 
     this.renderer.render(this.scene, this.camera);
+
+    this.stats.update();
   };
 }
 

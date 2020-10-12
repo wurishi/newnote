@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/dat.gui": "^0.7.5",
+    "@types/stats.js": "^0.17.0",
     "@types/three": "^0.103.2",
     "dat.gui": "^0.7.7",
     "stats.js": "^0.17.0",

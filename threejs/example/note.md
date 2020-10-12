@@ -25,3 +25,11 @@ npx webpack-dev-server
 # webgl_animation_skinning_morph
 
 ![webgl_animation_skinning_morph](assets/webgl_animation_skinning_morph.png)
+
+# webgl_animation_skinning_additive_blending
+
+![webgl_animation_skinning_additive_blending](assets/webgl_animation_skinning_additive_blending.png)
+
+# webgl_animation_multiple
+
+![webgl_animation_multiple](assets/webgl_animation_multiple.png)

@@ -49,3 +49,7 @@ npx webpack-dev-server
 # webgl_camera_logarithmicdepthbuffer
 
 ![webgl_camera_logarithmicdepthbuffer](assets/webgl_camera_logarithmicdepthbuffer.png)
+
+# webgl_clipping
+
+![webgl_clipping](assets/webgl_clipping.png)

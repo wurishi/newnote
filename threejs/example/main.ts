@@ -2,6 +2,25 @@ import * as THREE from 'three';
 import * as Stats from 'stats.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
+export class StyleRule {
+  private style: HTMLStyleElement;
+
+  constructor() {
+    const head = document.head || document.getElementsByTagName('head')[0];
+    const style = document.createElement('style');
+    head.appendChild(style);
+    this.style = style;
+  }
+
+  addCSSRule(selector: string, rules: string, index = 0) {
+    if (this.style.sheet.insertRule) {
+      this.style.sheet.insertRule(selector + '{' + rules + '}', index);
+    } else if (this.style.sheet.addRule) {
+      this.style.sheet.addRule(selector, rules, index);
+    }
+  }
+}
+
 export class Main {
   protected container: HTMLDivElement;
   protected clock: THREE.Clock;

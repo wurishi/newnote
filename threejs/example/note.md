@@ -57,3 +57,7 @@ npx webpack-dev-server
 # webgl_clipping_advanced
 
 ![webgl_clipping_advanced](assets/webgl_clipping_advanced.png)
+
+# webgl_clipping_intersection
+
+![webgl_clipping_intersection](assets/webgl_clipping_intersection.png)

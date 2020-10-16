@@ -61,3 +61,7 @@ npx webpack-dev-server
 # webgl_clipping_intersection
 
 ![webgl_clipping_intersection](assets/webgl_clipping_intersection.png)
+
+# webgl_clipping_stencil
+
+![webgl_clipping_stencil](assets/webgl_clipping_stencil.png)

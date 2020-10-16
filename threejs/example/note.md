@@ -65,3 +65,7 @@ npx webpack-dev-server
 # webgl_clipping_stencil
 
 ![webgl_clipping_stencil](assets/webgl_clipping_stencil.png)
+
+# webgl_decals
+
+![webgl_decals](assets/webgl_decals.png)

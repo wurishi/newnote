@@ -10,3 +10,4 @@ tensorflowjs/demos/*/model/*
 tensorflowjs/demos/*/dist/*
 webpack/*/dist/*
 threejs/**/dist/*
+webpack/**/dist/*

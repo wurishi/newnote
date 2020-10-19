@@ -83,7 +83,8 @@ Rust
 - doc: [three.js 中文](http://www.webgl3d.cn/threejs/docs/index.html) **(完成)**
 - webgl: [WebGL 入门教程](http://www.yanhuangxueyuan.com/WebGL/) **(完成)**
 - coures: [three.js 教程](http://www.yanhuangxueyuan.com/Three.js_course.html) **(完成)**
-https://alteredqualia.com/
+- example: [three.js examples](https://threejs.org/examples/) (*进行中*)
+- https://alteredqualia.com/
 
 # u3decs
 
@@ -107,7 +108,10 @@ U3D JobSystem
 
 # webpack
 
-参考资料: [webpack 指南](https://www.webpackjs.com/guides/installation/)  **(完成)**
+- 指南: [webpack 指南](https://www.webpackjs.com/guides/installation/)  **(完成)**
+- 概念: [webpack 概念](https://www.webpackjs.com/concepts/) (进行中)
+- 配置: [webpack 配置](https://www.webpackjs.com/configuration/) 
+- API: [webpack API](https://www.webpackjs.com/api/)
 
 # wordcloud
 

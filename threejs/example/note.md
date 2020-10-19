@@ -69,3 +69,7 @@ npx webpack-dev-server
 # webgl_decals
 
 ![webgl_decals](assets/webgl_decals.png)
+
+# webgl_depth_texture
+
+![webgl_depth_texture](assets/webgl_depth_texture.png)

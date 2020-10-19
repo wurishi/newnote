@@ -85,3 +85,7 @@ npx webpack-dev-server
 # webgl_effects_parallaxbarrier
 
 ![webgl_effects_parallaxbarrier](assets/webgl_effects_parallaxbarrier.jpg)
+
+# webgl_effects_peppersghost
+
+![webgl_effects_peppersghost](assets/webgl_effects_peppersghost.png)

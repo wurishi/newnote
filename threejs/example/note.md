@@ -73,3 +73,7 @@ npx webpack-dev-server
 # webgl_depth_texture
 
 ![webgl_depth_texture](assets/webgl_depth_texture.png)
+
+# webgl_effects_anaglyph
+
+![webgl_effects_anaglyph](assets/webgl_effects_anaglyph.jpg)

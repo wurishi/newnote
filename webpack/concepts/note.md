@@ -147,3 +147,47 @@ const config = {
 在多页应用中, 每次页面跳转都会获取一个新的 HTML 文档. 页面会重新加载文档, 并且资源会重新下载. 这给了我们特殊的机会去做很多事:
 
 - 使用 `CommonsChunkPlugin`为每个页面间的应用程序共享代码创建 bundle. 由于入口起点增多, 多页应用能够复用这些共享代码/模块.
+
+# 3. 输出 (output)
+
+配置 `output`选项可以控制 webpack 如何向硬盘写入编译文件. 注意, 即使可以存在多个 `入口`起点, 但只能指定一个 `输出`配置.
+
+## 3.1 用法 (Usage)
+
+在 webpack 中配置 `output`属性的最低要求是, 将它的值设置为一个对象, 包括以下两点:
+
+- `filename`用于输出文件的文件名.
+- `path`目标输出目录(绝对路径)
+
+## 3.2 多个入口起点
+
+如果配置创建了多个单独的"chunk" (例如, 使用多个入口起点或使用像 CommonsChunkPlugin 这样的插件), 则应该使用占位符(substitutions)来确保每个文件具有唯一的名称.
+
+```js
+const config = {
+    // ...
+    entry: {
+        app: './src/app.js',
+        search: './src/search.js'
+    },
+    output: {
+        filename: '[name].js',
+        path: __dirname + '/dist'
+    }
+}
+```
+
+## 3.3 高级进阶
+
+使用 CDN 和资源 hash 的复杂示例:
+
+```js
+const config = {
+    // ...
+    output: {
+        path: '/home/proj/cdn/assets/[hash]',
+        publicPath: 'http://cdn.example.com/assets/[hash]/'
+    }
+};
+```
+

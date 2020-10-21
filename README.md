@@ -112,6 +112,7 @@ U3D JobSystem
 - 概念: [webpack 概念](https://www.webpackjs.com/concepts/) (进行中)
 - 配置: [webpack 配置](https://www.webpackjs.com/configuration/) 
 - API: [webpack API](https://www.webpackjs.com/api/)
+- 怎样编写 loader: [webpack 参与贡献](https://www.webpackjs.com/contribute/) 
 
 # wordcloud
 

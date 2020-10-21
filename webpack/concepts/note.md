@@ -352,3 +352,64 @@ loader 通过(loader)预处理函数, 为 JavaScript 生态系统提供了更多
 loader 遵循标准的模块解析. 多数情况下, loader 将从模块路径(通常将模块路径认为是 `npm install`, `node_modules`)解析.
 
 loader 模块需要导出为一个函数, 并且使用 Node.js 兼容的 JavaScript 编写. 通常使用 npm 进行管理, 但是也可以将自定义 loader 作为应用程序中的文件. 按照约定, loader 通常被命名为 `xxx-loader`(例如 `json-loader`).
+
+# 6. 插件 (plugins)
+
+插件是 webpack 的支柱功能. webpack 自身也是构建于, 在 webpack 配置中使用到的相同的插件系统之上的.
+
+插件目的在于解决 loader 无法实现的其他事.
+
+## 6.1 剖析
+
+webpack 插件是有一个具有 `apply`属性的 JavaScript 对象. `apply`属性会被 webpack compiler 调用, 并且 compiler 对象可在整个编译生命周期访问.
+
+```js
+const pluginName = 'ConsoleLogOnuildWebpackPlugin';
+
+class ConsoleLogOnBuildWebpackPlugin {
+    apply(compiler) {
+        compiler.hook.run.tap(pluginName, compilation => {
+            console.log('webpack 构建过程开始!')
+        });
+    }
+}
+```
+
+compiler hook 的 tap 方法的第一个参数, 应该是**驼峰式命名**的插件名称.
+
+## 6.2 用法
+
+由于插件可以携带参数/选项, 所以必须在 webpack 配置中, 向 `plugins`属性传入 `new`实例.
+
+### 6.2.1 配置
+
+```js
+const HtmlWebpackPlugin = require('html-webpack-plugin'); // 通过 npm 安装的插件
+const webpack = require('webpack'); // 访问内置插件
+
+const config = {
+    // ...
+    plugins: [
+        new webpack.optimize.UglifyJsPlugin(),
+        new HtmlWebpackPlugin({
+            template: './src/index.html'
+        })
+    ]
+};
+
+module.exports = config;
+```
+
+### 6.2.2 Node API
+
+```js
+const webpack = require('webpack');
+const configuration = require('./webpack.config.js');
+
+const compiler = webpack(configuration);
+compiler.apply(new webpack.ProgressPlugin());
+
+compiler.run(function(err, stats) {});
+```
+
+> 即使使用 Node API , 仍然推荐在配置中传入 `plugins`属性. `compiler.apply`并不是推荐的使用方式.

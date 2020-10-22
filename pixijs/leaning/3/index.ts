@@ -7,6 +7,7 @@ const app = new PIXI.Application({
   transparent: false,
   resolution: 1,
   forceCanvas: true,
+  backgroundColor: 0xff0000, // 背景颜色
 });
 
 // (app.renderer as PIXI.CanvasRenderer)._backGroundColor = 0x061639;
@@ -20,6 +21,5 @@ style.position = 'absolute';
 style.display = 'block';
 app.renderer.autoResize = true;
 app.renderer.resize(window.innerWidth, window.innerHeight);
-
 
 document.body.appendChild(app.view);

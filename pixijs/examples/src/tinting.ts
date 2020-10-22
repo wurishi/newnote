@@ -15,7 +15,7 @@ import Stats from 'stats.js';
   const totalDudes = 20;
 
   for (let i = 0; i < totalDudes; i++) {
-    const dude = PIXI.Sprite.from('../egghead.png') as Dude;
+    const dude = PIXI.Sprite.from('../eggHead.png') as Dude;
 
     dude.anchor.set(0.5);
     dude.scale.set(0.8 + Math.random() * 0.3);

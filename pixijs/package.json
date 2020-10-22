@@ -19,6 +19,7 @@
   "dependencies": {
     "@types/pixi.js": "^4.8.9",
     "@types/stats.js": "^0.17.0",
+    "pixi.js": "^5.3.3",
     "stats.js": "^0.17.0"
   }
 }

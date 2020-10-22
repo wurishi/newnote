@@ -27,4 +27,10 @@ const sprite = new PIXI.Sprite(texture);
 
 `sprite.tint`改变颜色
 
-# 4. CacheAsBitmap![cacheasbitmap](assets/cacheasbitmap.jpg)
+# 4. CacheAsBitmap
+
+![cacheasbitmap](assets/cacheasbitmap.jpg)
+
+# 5. Particle Container
+
+![particlec](assets/particlec.jpg)

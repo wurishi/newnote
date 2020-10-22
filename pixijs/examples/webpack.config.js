@@ -32,6 +32,7 @@ const { options } = webpack({
     port: 9000,
     contentBase: path.resolve(__dirname, 'dist'),
   },
+  mode: 'production',
 });
 
 const links = [];

@@ -16,6 +16,10 @@ import Stats from 'stats.js';
 
   let count = 0;
   const alienContainer = new PIXI.Container();
+  // const alienContainer = new PIXI.ParticleContainer(10000, {
+  //   rotation: true,
+  //   tint: true,
+  // });
   alienContainer.x = 400;
   alienContainer.y = 300;
 

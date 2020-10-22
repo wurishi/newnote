@@ -1,5 +1,3 @@
-/// <reference path="../../node_modules/@types/pixi.js/index.d.ts"/>
-
 const app = new PIXI.Application({
   width: 256,
   height: 256,

@@ -50,6 +50,12 @@ electron
 
 # pixijs
 
+[参考资料](https://www.pixijs.com/tutorials)
+
+[Examples](https://pixijs.io/examples)
+
+[LearningPixi](https://github.com/Zainking/learningPixi)
+
 # reactconcurrent
 
 concurrent 实验

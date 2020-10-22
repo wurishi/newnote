@@ -95,4 +95,3 @@ PIXI.loader
 ```
 
 另外 `loader`也允许使用 JSON 文件.
-

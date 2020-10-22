@@ -34,3 +34,11 @@ const sprite = new PIXI.Sprite(texture);
 # 5. Particle Container
 
 ![particlec](assets/particlec.jpg)
+
+# 6. BlendModes
+
+![blendmodes](assets/blendmodes.jpg)
+
+# 7. SimplePlane
+
+![simpleplane](assets/simpleplane.jpg)

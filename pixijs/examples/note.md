@@ -31,6 +31,8 @@ const sprite = new PIXI.Sprite(texture);
 
 ![cacheasbitmap](assets/cacheasbitmap.jpg)
 
+只有设置 `interactive = true`, 精灵才能触发鼠标事件.
+
 # 5. Particle Container
 
 ![particlec](assets/particlec.jpg)

@@ -17,6 +17,8 @@
     "webpack-cli": "^3.3.12"
   },
   "dependencies": {
-    "@types/pixi.js": "^4.5.5"
+    "@types/pixi.js": "^4.8.9",
+    "@types/stats.js": "^0.17.0",
+    "stats.js": "^0.17.0"
   }
 }

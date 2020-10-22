@@ -1,3 +1,7 @@
+# anypixel
+
+[参考资料](https://github.com/googlecreativelab/anypixel)
+
 # bfs
 
 参考资料: [BFS 算法框架套路详解](https://mp.weixin.qq.com/s/Gse3M1P0OJGZj4OmnidLkA) (已完成)
@@ -43,6 +47,8 @@ electron
 # mocha
 
 参考资料: [mochajs.cn](https://mochajs.cn/)
+
+# pixijs
 
 # reactconcurrent
 

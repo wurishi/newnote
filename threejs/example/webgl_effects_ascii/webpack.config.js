@@ -19,9 +19,6 @@ const options = webpack({
       },
     ],
   },
-  resolve: {
-    extensions: ['.ts', '.tsx', '.js'],
-  },
   plugins: [
     new webpack.DllReferencePlugin({
       context: __dirname,

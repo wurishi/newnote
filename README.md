@@ -1,3 +1,11 @@
+# anypixel
+
+[参考资料](https://github.com/googlecreativelab/anypixel)
+
+# babylon
+
+[参考资料](https://www.babylonjs.com/)
+
 # bfs
 
 参考资料: [BFS 算法框架套路详解](https://mp.weixin.qq.com/s/Gse3M1P0OJGZj4OmnidLkA) (已完成)
@@ -44,6 +52,14 @@ electron
 
 参考资料: [mochajs.cn](https://mochajs.cn/)
 
+# pixijs
+
+[参考资料](https://www.pixijs.com/tutorials)
+
+[Examples](https://pixijs.io/examples)
+
+[LearningPixi](https://github.com/Zainking/learningPixi)
+
 # reactconcurrent
 
 concurrent 实验
@@ -83,7 +99,8 @@ Rust
 - doc: [three.js 中文](http://www.webgl3d.cn/threejs/docs/index.html) **(完成)**
 - webgl: [WebGL 入门教程](http://www.yanhuangxueyuan.com/WebGL/) **(完成)**
 - coures: [three.js 教程](http://www.yanhuangxueyuan.com/Three.js_course.html) **(完成)**
-https://alteredqualia.com/
+- example: [three.js examples](https://threejs.org/examples/) (*进行中*)
+- https://alteredqualia.com/
 
 # u3decs
 
@@ -107,7 +124,11 @@ U3D JobSystem
 
 # webpack
 
-参考资料: [webpack 指南](https://www.webpackjs.com/guides/installation/)  **(完成)**
+- 指南: [webpack 指南](https://www.webpackjs.com/guides/installation/)  **(完成)**
+- 概念: [webpack 概念](https://www.webpackjs.com/concepts/) **(完成)**
+- 配置: [webpack 配置](https://www.webpackjs.com/configuration/) 
+- API: [webpack API](https://www.webpackjs.com/api/)
+- 怎样编写 loader: [webpack 参与贡献](https://www.webpackjs.com/contribute/) 
 
 # wordcloud
 

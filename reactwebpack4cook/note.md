@@ -31,3 +31,9 @@ module.exports = webpack({
 }).options;
 ```
 
+## 3. 安装 react 并编写代码
+
+```bash
+npm i react react-dom
+```
+

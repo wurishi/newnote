@@ -68,3 +68,7 @@ const sprite = new PIXI.Sprite(texture);
 ## Screenshot
 
 ![screenshot](assets/screenshot.jpg)
+
+## Collision
+
+![collision](assets/collision.png)

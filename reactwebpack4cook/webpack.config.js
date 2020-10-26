@@ -1,20 +1,3 @@
-# 一. 基础配置
-
-## 1. init 项目
-
-```bash
-npm init
-```
-
-## 2. 安装 webpack
-
-```bash
-npm i -D webpack@4 webpack-cli@3 webpack-dev-server@3
-```
-
-webpack.config.js
-
-```js
 const webpack = require('webpack');
 const path = require('path');
 
@@ -29,5 +12,3 @@ module.exports = webpack({
   plugins: [],
   devServer: {},
 }).options;
-```
-

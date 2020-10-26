@@ -8,7 +8,15 @@ module.exports = webpack({
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
   },
-  module: {},
+  module: {
+    rules: [
+      {
+        test: /\.jsx?$/,
+        exclude: /node_module/,
+        use: 'babel-loader',
+      },
+    ],
+  },
   plugins: [],
   devServer: {},
 }).options;

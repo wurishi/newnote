@@ -92,3 +92,28 @@ module.exports = webpack({
 }
 ```
 
+## 5. 按需引入 polyfill
+
+在 `./src/index.js`中全局引入 `@babel/polyfill`, 并写入 ES6 语法, 但是这样有一个缺点:
+
+全局引入 `@babel/polyfill`可能会导入代码中不需要的 polyfill, 从而导致包体积过大.
+
+更改 `.babelrc`, 只转译使用到的 ES6 语法:
+
+```bash
+npm i core-js@2 @babel/runtime-corejs2
+```
+
+.babelrc
+
+```diff
+{
+  "presets": [
+-	"@babel/preset-env",
++	["@babel/preset-env", { "useBuiltIns": "usage" }],
+    "@babel/preset-react"
+  ],
+  "plugins": ["@babel/plugin-transform-runtime"]
+}
+
+```

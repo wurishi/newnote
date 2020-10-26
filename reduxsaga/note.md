@@ -21,3 +21,16 @@ redux-sage 使用了 ES6 的 Generator 功能, 让异步的流程更易于读取
 [深入 ES6 generators](https://2ality.com/2015/03/es6-generators.html)
 
 [3 cases where JavaScript generators rock](https://goshakkk.name/javascript-generators-understanding-sample-use-cases/)
+
+### 01-01: 开始
+
+#### 安装
+
+```bash
+npm i redux-saga
+```
+
+或者, 可以直接在 HTML 页面的 `<script>`标签中使用提供的 UMD 构建文件.
+
+#### 示例
+

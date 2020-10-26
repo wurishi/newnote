@@ -48,3 +48,7 @@ const sprite = new PIXI.Sprite(texture);
 # 8. Slots
 
 ![slots](assets/slots.jpg)
+
+# 9. Scratchcard
+
+![scratchcard](assets/scratchcard.jpg)

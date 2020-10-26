@@ -2,11 +2,13 @@
 
 使用 `npx webpack-dev-server`
 
-# 1. Container
+# DEMOS - BASIC
+
+## Container
 
 ![container](assets/container.png)
 
-# 2. Transparent Background
+## Transparent Background
 
 ![tbackground](assets/tbackground.png)
 
@@ -19,7 +21,7 @@ const texture = PIXI.Texture.from('A');
 const sprite = new PIXI.Sprite(texture);
 ```
 
-# 3. Tinting
+## Tinting
 
 ![tinting](assets/tinting.jpg)
 
@@ -27,28 +29,34 @@ const sprite = new PIXI.Sprite(texture);
 
 `sprite.tint`改变颜色
 
-# 4. CacheAsBitmap
+## CacheAsBitmap
 
 ![cacheasbitmap](assets/cacheasbitmap.jpg)
 
 只有设置 `interactive = true`, 精灵才能触发鼠标事件.
 
-# 5. Particle Container
+## Particle Container
 
 ![particlec](assets/particlec.jpg)
 
-# 6. BlendModes
+## BlendModes
 
 ![blendmodes](assets/blendmodes.jpg)
 
-# 7. SimplePlane
+## SimplePlane
 
 ![simpleplane](assets/simpleplane.jpg)
 
-# 8. Slots
+# DEMOS - ADVANCED
+
+## Slots
 
 ![slots](assets/slots.jpg)
 
-# 9. Scratchcard
+## Scratchcard
 
 ![scratchcard](assets/scratchcard.jpg)
+
+## Mouse Trail
+
+![mousetrail](assets/mousetrail.jpg)

@@ -72,3 +72,7 @@ const sprite = new PIXI.Sprite(texture);
 ## Collision
 
 ![collision](assets/collision.png)
+
+## Spinners
+
+![spinners](assets/spinners.jpg)

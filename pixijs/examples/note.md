@@ -44,3 +44,7 @@ const sprite = new PIXI.Sprite(texture);
 # 7. SimplePlane
 
 ![simpleplane](assets/simpleplane.jpg)
+
+# 8. Slots
+
+![slots](assets/slots.jpg)

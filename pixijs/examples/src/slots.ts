@@ -5,7 +5,7 @@ import Stats from 'stats.js';
     container: PIXI.Container;
     symbols: PIXI.Sprite[];
     position: number;
-    previousPosition: 0;
+    previousPosition: number;
     blur: PIXI.filters.BlurFilter;
   }
 
@@ -118,10 +118,112 @@ import Stats from 'stats.js';
         if (running) return;
         running = true;
 
-        reels.forEach( r=> {
+        reels.forEach((r, i) => {
           const extra = Math.floor(Math.random() * 3);
-          // TODO:
-        })
+          const target = r.position + 10 + i * 5 + extra;
+          const time = 2500 + i * 600 + extra * 600;
+          tweenTo(
+            r,
+            'position',
+            target,
+            time,
+            backout(0.5),
+            null,
+            i === reels.length - 1 ? reelsComplete : null
+          );
+        });
+      }
+
+      function reelsComplete() {
+        running = false;
+      }
+
+      app.ticker.add((delta) => {
+        reels.forEach((r, i) => {
+          r.blur.blurY = (r.position - r.previousPosition) * 8;
+          r.previousPosition = r.position;
+          r.symbols.forEach((s, j) => {
+            const prevy = s.y;
+            s.y =
+              ((r.position + j) % r.symbols.length) * SYMBOL_SIZE - SYMBOL_SIZE;
+            if (s.y < 0 && prevy > SYMBOL_SIZE) {
+              s.texture =
+                slotTextures[Math.floor(Math.random() * slotTextures.length)];
+              s.scale.x = s.scale.y = Math.min(
+                SYMBOL_SIZE / s.texture.width,
+                SYMBOL_SIZE / s.texture.height
+              );
+              s.x = Math.round((SYMBOL_SIZE - s.width) / 2);
+            }
+          });
+        });
+      });
+    });
+
+  app.ticker.add((delta) => {
+    stats.update();
+    const now = Date.now();
+    const remove: TWEEN[] = [];
+    tweening.forEach((t) => {
+      const phase = Math.min(1, (now - t.start) / t.time);
+      t.object[t.property] = lerp(
+        t.propertyBeginValue,
+        t.target,
+        t.easing(phase)
+      );
+      if (t.change) t.change(t);
+      if (phase === 1) {
+        t.object[t.property] = t.target;
+        if (t.complete) t.complete(t);
+        remove.push(t);
       }
     });
+    remove.forEach((r) => {
+      tweening.splice(tweening.indexOf(r), 1);
+    });
+  });
 })();
+
+interface TWEEN {
+  object: any;
+  property: string;
+  propertyBeginValue: number;
+  target: number;
+  easing: any;
+  time: number;
+  change: (t: TWEEN) => void;
+  complete: (t: TWEEN) => void;
+  start: number;
+}
+const tweening: TWEEN[] = [];
+function tweenTo(
+  object: any,
+  property: string,
+  target: number,
+  time: number,
+  easing: any,
+  onchange: () => void,
+  oncomplete: () => void
+) {
+  const tween: TWEEN = {
+    object,
+    property,
+    propertyBeginValue: object[property],
+    target,
+    easing,
+    time,
+    change: onchange,
+    complete: oncomplete,
+    start: Date.now(),
+  };
+  tweening.push(tween);
+  return tween;
+}
+
+function backout(amount: number) {
+  return (t: number) => --t * t * ((amount + 1) * t + amount) + 1;
+}
+
+function lerp(a1: number, a2: number, t: number): number {
+  return a1 * (1 - t) + a2 * t;
+}

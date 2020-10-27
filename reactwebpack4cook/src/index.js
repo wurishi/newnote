@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 // import '@babel/polyfill';
 import { AppContainer } from 'react-hot-loader';
 import Router from './router.js';
+import Style from './style.scss';
 
 renderWithHotReload(Router);
 

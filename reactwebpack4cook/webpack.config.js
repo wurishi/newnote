@@ -20,6 +20,19 @@ module.exports = webpack({
         exclude: /node_module/,
         use: 'babel-loader',
       },
+      {
+        test: /\.(css|scss|sass)$/,
+        use: [
+          'style-loader',
+          'css-loader',
+          {
+            loader: 'sass-loader',
+            options: {
+              implementation: require('dart-sass'),
+            },
+          },
+        ],
+      },
     ],
   },
   resolve: {

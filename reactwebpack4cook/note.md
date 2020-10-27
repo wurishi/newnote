@@ -257,3 +257,29 @@ plugins: [
 npm i -D react-hot-loader
 ```
 
+## 11. 编译 css  和 scss
+
+使用 dart-sass 代替 node-sass
+
+```bash
+npm i -D css-loader style-loader sass-loader dart-sass
+```
+
+webpack.config.js
+
+```js
+{
+        test: /\.(css|scss|sass)$/,
+        use: [
+          'style-loader',
+          'css-loader',
+          {
+            loader: 'sass-loader',
+            options: {
+              implementation: require('dart-sass'),
+            },
+          },
+        ],
+      }
+```
+

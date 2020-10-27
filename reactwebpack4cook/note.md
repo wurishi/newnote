@@ -319,3 +319,26 @@ postcss-cssnext 包含 autoprefixer
 
 cssnano css 压缩
 
+## 13. 处理图片
+
+```bash
+npm i -D file-loader url-loader
+```
+
+webpack.config.js
+
+```js
+{
+    test: /\.(png|jpg|jpeg|gif|svg)$/,
+    use: [
+            {
+                loader: 'url-loader',
+                options: {
+                    outputPath: 'images/', // 图片输出路径
+                    limit: 10 * 1024, // 小于这个大小时直接以 base64 编码
+                },
+            },
+        ],
+}
+```
+

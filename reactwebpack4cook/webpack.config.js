@@ -41,6 +41,18 @@ module.exports = webpack({
           },
         ],
       },
+      {
+        test: /\.(png|jpg|jpeg|gif|svg)$/,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              outputPath: 'images/',
+              limit: 10 * 1024,
+            },
+          },
+        ],
+      },
     ],
   },
   resolve: {

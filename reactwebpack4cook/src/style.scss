@@ -1,7 +1,13 @@
 #app {
-  background-color: green;
+  background: url('./img.jpg') no-repeat;
+  color: #ccc;
 }
 
 .next {
   transform: scale(2);
+}
+
+.img {
+  border-radius: 5px;
+  border: 1px solid red;
 }

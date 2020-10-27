@@ -363,3 +363,27 @@ webpack.config.js
 }
 ```
 
+# 二. webpack 优化
+
+## 1. alias 对文件路径优化
+
+1. extensions: 指定 extensions 后可以不用在 require 或 import 的时候加文件扩展名, webpack 会依次尝试添加扩展名进行匹配.
+2. alias: 配置别名可以加快 webpack 查找模块的速度.
+
+```js
+resolve: {
+    extensions: ['.js', '.jsx'],
+    alias: {
+      'react-dom': '@hot-loader/react-dom',
+    },
+}
+```
+
+## 14. 使用静态资源路径 publicPath
+
+```js
+output: {
+    publicPath: 'http://cdn.com/'
+}
+```
+

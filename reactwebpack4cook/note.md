@@ -202,3 +202,12 @@ module.exports = webpack({
 
 ```
 
+## 8. 使用 source-map, 对 devtool 进行优化
+
+webpack.config.js
+
+```js
+devtool: 'cheap-module-eval-source-map', // 开发环境
+devtool: 'cheap-module-source-map', // 线上环境
+```
+

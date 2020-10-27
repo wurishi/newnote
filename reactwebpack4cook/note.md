@@ -119,3 +119,42 @@ npm i core-js@2 @babel/runtime-corejs2
 }
 
 ```
+
+## 6. 插件 CleanWebpackPlugin
+
+使用插件清理 `./dist`目录下的旧版本文件.
+
+```bash
+npm i -D clean-webpack-plugin
+```
+
+webpack.config.js
+
+```diff
+  const webpack = require('webpack');
+  const path = require('path');
++ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+
+module.exports = webpack({
+  mode: 'development',
+  entry: ['./src/index.js'],
+  output: {
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist'),
+  },
+  module: {
+    rules: [
+      {
+        test: /\.jsx?$/,
+        exclude: /node_module/,
+        use: 'babel-loader',
+      },
+    ],
+  },
+  plugins: [
++	new CleanWebpackPlugin()
+  ],
+  devServer: {},
+}).options;
+```
+

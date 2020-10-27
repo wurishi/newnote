@@ -211,3 +211,49 @@ devtool: 'cheap-module-eval-source-map', // 开发环境
 devtool: 'cheap-module-source-map', // 线上环境
 ```
 
+## 9. 使用 WebpackDevServer
+
+```bash
+npx webpack-dev-server
+```
+
+webpack.config.js
+
+```js
+devServer: {
+    open: true, // 自动打开浏览器
+    hot: true,
+    contentBase: path.join(__dirname, 'dist'),
+    // host: '0.0.0.0',
+    port: 9000,
+    historyApiFallback: true, // 所有 404 都连接到 index.html
+    proxy: {
+      // 拦截所有 api 开头的请求地址, 代理到其他地址
+      '/api': 'http://localhost:3000',
+    },
+  }
+```
+
+## 10.1 使用 HotModuleReplacement (热模块替换 HMR)
+
+使用了开发环境本地服务器后, 每次修改 `./src`下的内容, 网页会同步刷新, 但是页面的状态无法保存. 如果要实现更改了代码后, 页面仍然保存当前状态, 即实现局部更改, 首先需要用到 `HotModuleReplacementPlugin`插件.
+
+webpack.config.js
+
+```js
+devServer: {
+    hot: true, // 需要开启
+}
+plugins: [
+    new webpack.HotModuleReplacementPlugin()
+]
+```
+
+目前状态还没有保存, 还需要使用 react-hot-loader 插件.
+
+## 10.2 react-hot-loader 记录 react 页面状态
+
+```bash
+npm i -D react-hot-loader
+```
+

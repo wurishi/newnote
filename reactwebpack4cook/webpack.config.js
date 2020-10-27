@@ -2,6 +2,7 @@ const webpack = require('webpack');
 const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = webpack({
   mode: 'development',
@@ -24,7 +25,8 @@ module.exports = webpack({
       {
         test: /\.(css|scss|sass)$/,
         use: [
-          'style-loader',
+          // 'style-loader',
+          MiniCssExtractPlugin.loader,
           'css-loader',
           {
             loader: 'postcss-loader',
@@ -83,6 +85,10 @@ module.exports = webpack({
       template: path.join(__dirname, 'index.template.html'), // 指定模板
     }),
     new webpack.HotModuleReplacementPlugin(),
+    new MiniCssExtractPlugin({
+      filename: '[name].css',
+      chunkFilename: '[id].css',
+    }),
   ],
   devServer: {
     open: true,

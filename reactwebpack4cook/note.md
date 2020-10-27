@@ -379,6 +379,58 @@ resolve: {
 }
 ```
 
+## 2. MiniCssExtractPlugin 抽取 css 文件
+
+如果不做配置, css 是直接打包进 `js`里面, 如果希望单独生成 `css`文件, 就需要使用 `MiniCssExtractPlugin`插件.
+
+```bash
+npm i -D mini-css-extract-plugin
+```
+
+webpack.config.js
+
+```diff
+{
+        test: /\.(css|scss|sass)$/,
+        use: [
+-         'style-loader',
++         MiniCssExtractPlugin.loader,
+          'css-loader',
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: [require('postcss-cssnext')()],
+              },
+            },
+          },
+          {
+            loader: 'sass-loader',
+            options: {
+              implementation: require('dart-sass'),
+            },
+          },
+        ],
+      }
+      
+...
+
+plugins: [
+    new CleanWebpackPlugin(),
+    new HtmlWebpackPlugin({
+      filename: 'index.html', // 最终创建的文件名
+      template: path.join(__dirname, 'index.template.html'), // 指定模板
+    }),
+    new webpack.HotModuleReplacementPlugin(),
++   new MiniCssExtractPlugin({
++     filename: '[name].css',
++     chunkFilename: '[id].css',
++   }),
+  ]
+```
+
+
+
 ## 14. 使用静态资源路径 publicPath
 
 ```js

@@ -283,3 +283,39 @@ webpack.config.js
       }
 ```
 
+## 12. 集成 postcss
+
+```bash
+npm i -D postcss-loader postcss-cssnext
+```
+
+webpack.config.js
+
+```diff
+{
+        test: /\.(css|scss|sass)$/,
+        use: [
+          'style-loader',
+          'css-loader',
++          {
++            loader: 'postcss-loader',
++            options: {
++              postcssOptions: {
++                plugins: [require('postcss-cssnext')()],
++              },
++            },
++          },
+          {
+            loader: 'sass-loader',
+            options: {
+              implementation: require('dart-sass'),
+            },
+          },
+        ],
+      }
+```
+
+postcss-cssnext 包含 autoprefixer
+
+cssnano css 压缩
+

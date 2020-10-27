@@ -26,6 +26,14 @@ module.exports = webpack({
           'style-loader',
           'css-loader',
           {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: [require('postcss-cssnext')()],
+              },
+            },
+          },
+          {
             loader: 'sass-loader',
             options: {
               implementation: require('dart-sass'),

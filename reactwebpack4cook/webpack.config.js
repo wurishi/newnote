@@ -53,6 +53,20 @@ module.exports = webpack({
           },
         ],
       },
+      {
+        test: /\.(eot|woff2?|ttf|svg)$/,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              name: '[name]-[hash:5].min.[ext]',
+              limit: 5000,
+              publicPath: 'fonts/',
+              outputPath: 'fonts/',
+            },
+          },
+        ],
+      },
     ],
   },
   resolve: {

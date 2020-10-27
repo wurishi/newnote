@@ -158,3 +158,47 @@ module.exports = webpack({
 }).options;
 ```
 
+## 7. 插件 HtmlWebpackPlugin
+
+使用 `CleanWebpackPlugin` 插件后, 往往 `index.html`文件也会被清除, 所以使用 `HtmlWebpackPlugin`插件自动生成 `html`. 使用这个插件的好处是, webpack 会自动将打包好的 js 以 `<script>`的形式插入 html 文件中, 另外还可以指定模板来生成最终的 html 文件.
+
+```bash
+npm i -D html-webpack-plugin
+```
+
+webpack.config.js
+
+```diff
+  const webpack = require('webpack');
+  const path = require('path');
+  const { CleanWebpackPlugin } = require('clean-webpack-plugin');
++ const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+module.exports = webpack({
+  mode: 'development',
+  entry: ['./src/index.js'],
+  output: {
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist'),
+  },
+  module: {
+    rules: [
+      {
+        test: /\.jsx?$/,
+        exclude: /node_module/,
+        use: 'babel-loader',
+      },
+    ],
+  },
+  plugins: [
+    new CleanWebpackPlugin(),
++	new HtmlWebpackPlugin({
++		filename: 'index.html', // 最终创建的文件名
++		template: path.join(__dirname, 'index.template.html'), // 指定模板
++	}),
+  ],
+  devServer: {},
+}).options;
+
+```
+

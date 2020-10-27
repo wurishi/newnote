@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = webpack({
   mode: 'development',
@@ -19,7 +20,11 @@ module.exports = webpack({
     ],
   },
   plugins: [
-    new CleanWebpackPlugin()
+    new CleanWebpackPlugin(),
+    new HtmlWebpackPlugin({
+      filename: 'index.html', // 最终创建的文件名
+      template: path.join(__dirname, 'index.template.html'), // 指定模板
+    }),
   ],
   devServer: {},
 }).options;

@@ -632,3 +632,8 @@ output: {
 }
 ```
 
+## 13. 合并提取 webpack 公共配置
+
+一般使用 `webpack-merge` 将开发环境与生产环境相同的配置以及不同的配置分离开.
+
+可参考 build 目录下的 webpack 配置.

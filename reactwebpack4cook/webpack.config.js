@@ -3,6 +3,8 @@ const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const PurifyCSS = require('purifycss-webpack');
+const glob = require('glob-all');
 
 module.exports = webpack({
   mode: 'production',
@@ -96,6 +98,14 @@ module.exports = webpack({
       'process.env': {
         BASE_URL: JSON.stringify('http://localhost:9000'),
       },
+    }),
+    new PurifyCSS({
+      paths: glob.sync([
+        path.resolve(__dirname, './src/*.html'),
+        path.resolve(__dirname, './src/*.js'),
+        path.resolve(__dirname, './src/*.jsx'),
+        path.resolve(__dirname, './index.template.html'),
+      ]),
     }),
   ],
   devServer: {

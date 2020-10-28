@@ -467,6 +467,28 @@ new webpack.DefinePlugin({
 })
 ```
 
+## 7. CSS Tree Shaking
+
+```bash
+npm i -D glob-all purify-css purifycss-webpack
+```
+
+webpack.config.js
+
+```js
+const PurifyCSS = require('purifycss-webpack');
+const glob = require('glob-all');
+
+new PurifyCSS({
+      paths: glob.sync([
+        path.resolve(__dirname, './src/*.html'),
+        path.resolve(__dirname, './src/*.js'),
+        path.resolve(__dirname, './src/*.jsx'),
+        path.resolve(__dirname, './index.template.html'),
+      ]),
+})
+```
+
 
 
 ## 14. 使用静态资源路径 publicPath

@@ -6,6 +6,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const PurifyCSS = require('purifycss-webpack');
 const glob = require('glob-all');
 const AddAssetHtmlWebpackPlugin = require('add-asset-html-webpack-plugin');
+const HappyPack = require('happypack');
 
 module.exports = webpack({
   mode: 'production',
@@ -23,7 +24,8 @@ module.exports = webpack({
       {
         test: /\.jsx?$/,
         exclude: /node_module/,
-        use: 'babel-loader',
+        // use: 'babel-loader',
+        use: 'happypack/loader?id=threadBabel',
       },
       {
         test: /\.(css|scss|sass)$/,
@@ -113,6 +115,11 @@ module.exports = webpack({
     }),
     new webpack.DllReferencePlugin({
       manifest: path.resolve(__dirname, 'dll', 'jquery-manifest.json'),
+    }),
+    new HappyPack({
+      id: 'threadBabel',
+      loaders: ['babel-loader?cacheDirectory'],
+      threads: 2,
     }),
   ],
   devServer: {

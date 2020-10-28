@@ -555,6 +555,35 @@ plugins: [
 ]
 ```
 
+## 10. 使用 happypack 并发执行任务
+
+```bash
+npm i -D happypack
+```
+
+webpack.config.js
+
+```diff
++ const HappyPack = require('happypack');
+
+rules: [
+	{
+        test: /\.jsx?$/,
+        exclude: /node_module/,
+-       use: 'babel-loader',
++       use: 'happypack/loader?id=threadBabel',
+      },
+]
+
+plugins: [
++	new HappyPack({
++     id: 'threadBabel',
++     loaders: ['babel-loader?cacheDirectory'],
++     threads: 2,
++   })
+]
+```
+
 
 
 ## 14. 使用静态资源路径 publicPath

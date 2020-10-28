@@ -16,7 +16,7 @@ export default function () {
     <div onMouseMove={(evt) => setX(evt.clientX)}>
       <div>{x}</div>
       <img className="img" src={IMG} alt=""/>
-      <button onClick={clickFn}>jquery</button>
+      <button onClick={clickFn}>打印输出</button>
     </div>
   );
 }

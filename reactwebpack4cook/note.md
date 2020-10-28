@@ -501,6 +501,60 @@ optimization: {
 }
 ```
 
+## 9. DllPlugin 插件打包第三方类库
+
+webpack.dll.config.js
+
+```js
+const path = require('path');
+const webpack = require('webpack');
+
+const src = path.resolve(process.cwd(), 'src'); // 源码目录
+const env =
+  process.env.NODE_ENV === 'production' ? 'production' : 'development';
+
+module.exports = webpack({
+  mode: 'production',
+  entry: {
+    jquery: ['jquery'],
+  },
+  output: {
+    path: path.resolve(__dirname, 'dll'),
+    filename: '[name].dll.js',
+    library: '[name]_[hash]',
+    libraryTarget: 'this',
+  },
+  plugins: [
+    new webpack.DllPlugin({
+      context: process.cwd(),
+      path: path.resolve(__dirname, 'dll', '[name]-manifest.json'),
+      name: '[name]_[hash]',
+    }),
+  ],
+}).options;
+```
+
+安装 `add-asset-html-webpack-plugin`插件, 将打包后的 dll 文件注入到 html 中.
+
+```bash
+npm i -D add-asset-html-webpack-plugin
+```
+
+webpack.config.js
+
+```diff
++ const AddAssetHtmlWebpackPlugin = require('add-asset-html-webpack-plugin');
+
+plugins: [
++   new AddAssetHtmlWebpackPlugin({
++     filepath: path.resolve(__dirname, 'dll', 'jquery.dll.js'),
++   }),
++	new webpack.DllReferencePlugin({
++     manifest: path.resolve(__dirname, 'dll', 'jquery-manifest.json'),
++   }),
+]
+```
+
 
 
 ## 14. 使用静态资源路径 publicPath

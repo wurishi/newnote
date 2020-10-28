@@ -5,6 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const PurifyCSS = require('purifycss-webpack');
 const glob = require('glob-all');
+const AddAssetHtmlWebpackPlugin = require('add-asset-html-webpack-plugin');
 
 module.exports = webpack({
   mode: 'production',
@@ -106,6 +107,12 @@ module.exports = webpack({
         path.resolve(__dirname, './src/*.jsx'),
         path.resolve(__dirname, './index.template.html'),
       ]),
+    }),
+    new AddAssetHtmlWebpackPlugin({
+      filepath: path.resolve(__dirname, 'dll', 'jquery.dll.js'),
+    }),
+    new webpack.DllReferencePlugin({
+      manifest: path.resolve(__dirname, 'dll', 'jquery-manifest.json'),
     }),
   ],
   devServer: {

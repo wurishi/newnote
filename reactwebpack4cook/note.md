@@ -489,6 +489,18 @@ new PurifyCSS({
 })
 ```
 
+## 8. JS Tree Shaking
+
+清除代码中无用的 JS 代码, 只支持 import 引入.
+
+另外, 只有 mode 为 production 时才会生效.
+
+```js
+optimization: {
+    usedExports: true,
+}
+```
+
 
 
 ## 14. 使用静态资源路径 publicPath

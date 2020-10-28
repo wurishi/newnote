@@ -7,6 +7,7 @@ const PurifyCSS = require('purifycss-webpack');
 const glob = require('glob-all');
 const AddAssetHtmlWebpackPlugin = require('add-asset-html-webpack-plugin');
 const HappyPack = require('happypack');
+const WorkboxPlugin = require('workbox-webpack-plugin');
 
 module.exports = webpack({
   mode: 'production',
@@ -120,6 +121,10 @@ module.exports = webpack({
       id: 'threadBabel',
       loaders: ['babel-loader?cacheDirectory'],
       threads: 2,
+    }),
+    new WorkboxPlugin.GenerateSW({
+      clientsClaim: true,
+      skipWaiting: true,
     }),
   ],
   devServer: {

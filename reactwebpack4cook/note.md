@@ -584,9 +584,47 @@ plugins: [
 ]
 ```
 
+## 11. PWA 优化策略
+
+使用 ServiceWorker 将内容缓存, 以实现本地浏览. (一般只在生产环境使用)
+
+```bash
+npm i -D workbox-webpack-plugin
+```
+
+webpack.config.js
+
+```diff
++ const WorkboxPlugin = require('workbox-webpack-plugin');
+
+plugins: [
++	new WorkboxPlugin.GenerateSW({
++     clientsClaim: true,
++     skipWaiting: true,
++   })
+]
+```
+
+src/index.js
+
+```js
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register('/service-worker.js')
+      .then((registration) => {
+        console.log('service-worker registed', registration);
+      })
+      .catch((error) => {
+        console.log('service-worker register error', error);
+      });
+  });
+}
+```
 
 
-## 14. 使用静态资源路径 publicPath
+
+## 12. 使用静态资源路径 publicPath
 
 ```js
 output: {

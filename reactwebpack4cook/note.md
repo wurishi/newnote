@@ -449,6 +449,14 @@ webpack4 只要在生产模式下, 代码就会自动压缩
 mode: 'production'
 ```
 
+## 5. 暴露全局变量
+
+```js
+new webpack.ProvidePlugin({
+      $: 'jquery', // 代码中, $ 等价于执行过 import $ from 'jquery'
+})
+```
+
 
 
 ## 14. 使用静态资源路径 publicPath

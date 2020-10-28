@@ -89,6 +89,9 @@ module.exports = webpack({
       filename: '[name].css',
       chunkFilename: '[id].css',
     }),
+    new webpack.ProvidePlugin({
+      $: 'jquery',
+    }),
   ],
   devServer: {
     open: true,

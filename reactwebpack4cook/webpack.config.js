@@ -5,7 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = webpack({
-  mode: 'development',
+  mode: 'production',
   devtool: 'cheap-module-eval-source-map',
   entry: {
     main: './src/index.js',
@@ -100,6 +100,11 @@ module.exports = webpack({
     proxy: {
       // 拦截所有 api 开头的请求地址, 代理到其他地址
       '/api': 'http://localhost:3000',
+    },
+  },
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
     },
   },
 }).options;

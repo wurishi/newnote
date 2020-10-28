@@ -429,6 +429,26 @@ plugins: [
   ]
 ```
 
+## 3. 代码分割 (提取公共代码)
+
+webpack.config.js
+
+```js
+ optimization: {
+    splitChunks: {
+      chunks: 'all',
+    },
+  },
+```
+
+## 4. 文件压缩
+
+webpack4 只要在生产模式下, 代码就会自动压缩
+
+```js
+mode: 'production'
+```
+
 
 
 ## 14. 使用静态资源路径 publicPath

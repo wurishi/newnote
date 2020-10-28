@@ -9,6 +9,7 @@ export default function () {
     console.log(IMG);
     console.log(J);
     console.log($);
+    console.log(process.env);
   }
 
   return (

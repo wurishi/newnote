@@ -92,6 +92,11 @@ module.exports = webpack({
     new webpack.ProvidePlugin({
       $: 'jquery',
     }),
+    new webpack.DefinePlugin({
+      'process.env': {
+        BASE_URL: JSON.stringify('http://localhost:9000'),
+      },
+    }),
   ],
   devServer: {
     open: true,

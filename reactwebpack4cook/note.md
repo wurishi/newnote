@@ -457,6 +457,16 @@ new webpack.ProvidePlugin({
 })
 ```
 
+## 6. 指定环境, 定义环境变量
+
+```js
+new webpack.DefinePlugin({
+      'process.env': {
+        BASE_URL: JSON.stringify('http://localhost:9000'),
+      },
+})
+```
+
 
 
 ## 14. 使用静态资源路径 publicPath

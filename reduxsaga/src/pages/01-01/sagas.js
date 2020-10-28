@@ -1,9 +1,15 @@
 import { call, put, takeEvery, takeLatest } from 'redux-saga/effects';
 
+let tmp = 0;
 function mockAPI(userId) {
-  return new Promise((r) => {
+  return new Promise((resolve, reject) => {
     setTimeout(() => {
-      r({
+      tmp++;
+      if (tmp % 5 === 0) {
+        reject(new Error('随机错误'));
+        return;
+      }
+      resolve({
         no: 200,
         data: {
           userId,
@@ -16,10 +22,10 @@ function mockAPI(userId) {
 
 function* fetchUser(action) {
   try {
-    const user = yield call(mockAPI, action.payload.userId);
-    yield put({ type: 'USER_FETCH_SUCCESS', user });
+    const res = yield call(mockAPI, action.payload.userId);
+    yield put({ type: 'USER_FETCH_SUCCESS', user: res.data });
   } catch (error) {
-    yield put({ type: 'USeR_FETCH_FAILED', message: error.message });
+    yield put({ type: 'USER_FETCH_FAILED', message: error.message });
   }
 }
 

@@ -37,3 +37,11 @@ npm i redux-saga
 ## 02: 入门教程
 
 一个计数器例子作为入门教程
+
+代码可测试:
+
+```bash
+npm i -D jest
+```
+
+见 saga.spec.js

@@ -11,3 +11,4 @@ tensorflowjs/demos/*/dist/*
 webpack/*/dist/*
 threejs/**/dist/*
 webpack/**/dist/*
+reduxsaga/coverage/**/*

@@ -1,4 +1,11 @@
-import { all, delay, put, takeEvery, takeLatest } from 'redux-saga/effects';
+import {
+  all,
+  call,
+  delay,
+  put,
+  takeEvery,
+  takeLatest,
+} from 'redux-saga/effects';
 
 export function* helloSaga() {
   console.log('Hello Sagas!');
@@ -28,4 +35,15 @@ export function* randomNum(action) {
 
 export function* watchRandomNum() {
   yield takeEvery('RANDOM_NUM_ASYNC', randomNum);
+}
+
+export function* fetchProducts() {
+  const products = yield call(() => {
+    new Promise((r) => setTimeout(() => r('Products'), 1000));
+  });
+  console.log(products);
+}
+
+export function* watchFetchProducts() {
+  yield takeEvery('PRODUCTS_REQUESTED', fetchProducts);
 }

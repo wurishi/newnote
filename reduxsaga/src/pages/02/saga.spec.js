@@ -1,6 +1,12 @@
-import { delay, put, takeEvery } from 'redux-saga/effects';
+import { delay, put, takeEvery, cps } from 'redux-saga/effects';
 
-import { incrementAsync, helloSaga, watchIncrementAsync } from './sagas';
+import {
+  incrementAsync,
+  helloSaga,
+  watchIncrementAsync,
+  fetchProducts,
+  watchFetchProducts,
+} from './sagas';
 import rootSaga from './sagas';
 
 test('test', () => {
@@ -35,3 +41,8 @@ test('rootSaga', () => {
   const allValue = gen.next().value;
   expect(allValue.type).toEqual('ALL');
 });
+
+// test('fetchProducts', () => {
+//   const gen = fetchProducts();
+//   expect(gen.next()).toEqual('1');
+// });

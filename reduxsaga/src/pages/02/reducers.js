@@ -2,6 +2,8 @@ import { combineReducers } from 'redux';
 
 const defaultState = {
   count: 0,
+  num: 0,
+  numChange: 0,
 };
 
 const ACTIONS_HANDLER = {
@@ -10,6 +12,9 @@ const ACTIONS_HANDLER = {
   },
   DECREMENT(state) {
     return { ...state, count: state.count - 1 };
+  },
+  RANDOM_NUM(state, action) {
+    return { ...state, num: action.num, numChange: state.numChange + 1 };
   },
 };
 

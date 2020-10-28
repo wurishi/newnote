@@ -45,3 +45,32 @@ npm i -D jest
 ```
 
 见 saga.spec.js
+
+## 03: 基础概念
+
+### 03-01: 使用 Saga 辅助函数
+
+redux-saga 提供了一些辅助函数, 包装了一些内部方法, 用来在一些特定的 action 被发起到 Store 时派生任务.
+
+`takeEvery`是最常见的, 它提供了类似 redux-thunk 的行为.
+
+要注意的是, `takeEvery`允许多个生成器函数同时启动. 如:
+
+```js
+function* fetchData(action) {
+    try {
+        const data = yield call(Api.fetchUser, action.payload.url);
+        yield put({type: 'FETCH_SUCCESS', data});
+    } catch (error) {
+        yield put({type: 'FETCH_FAILED', error});
+    }
+}
+
+function* watchFetchData() {
+    yield takeEvery('FETCH_REQUESTED', fetchData);
+}
+```
+
+在上面这个例子中, `takeEvery`允许多个 `fetchData`实例同时启动. 如果 只想得到最新的数据, 可以使用 `taskLatest`
+
+和 `takeEvery`不同, 在任何时刻, `takeLatest`只允许一个 `fetchData`任务在执行. 并且这个任务是最后被启动的那个. 如果已经有一个任务在执行的时候又启动了另一个, 那么之前的那个任务会被自动取消.

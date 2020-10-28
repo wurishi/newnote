@@ -1,4 +1,4 @@
-import { all, delay, put, takeEvery } from 'redux-saga/effects';
+import { all, delay, put, takeEvery, takeLatest } from 'redux-saga/effects';
 
 export function* helloSaga() {
   console.log('Hello Sagas!');
@@ -17,5 +17,15 @@ export default function* rootSaga() {
   yield all([
     helloSaga(), //
     watchIncrementAsync(),
+    watchRandomNum(),
   ]);
+}
+
+export function* randomNum(action) {
+  yield delay(1000);
+  yield put({ type: 'RANDOM_NUM', num: action.num });
+}
+
+export function* watchRandomNum() {
+  yield takeEvery('RANDOM_NUM_ASYNC', randomNum);
 }

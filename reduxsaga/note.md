@@ -327,3 +327,51 @@ const [users, repos] = yield all([
 ```
 
 当 `yield all`一个包含 effects 的数组时, generator 会被阻塞直到所有的 effects 都执行完毕, 或者当其中一个 effect 被拒绝 (就像 `Promise.all`的行为)
+
+### 04-04: 在多个 Effects 之间启动 race
+
+下面的示例演示了触发一个远程请求, 并且限制在1秒内响应, 否则作超时处理.
+
+```js
+function* fetchPostsWithTimeout(time) {
+  const { posts, timeout } = yield race({
+    posts: call(mockFetch, '/posts'),
+    timeout: delay(time),
+  });
+  if (posts) {
+    yield put({ type: 'POSTS_RECEIVED', posts });
+  } else {
+    yield put({ type: 'TIMEOUT_ERROR' });
+  }
+}
+```
+
+`race`的另一个有用的功能是, 它会自动取消那些失败的 Effects.
+
+```js
+function* backgroundTask() {
+  try {
+    while (true) {
+      yield delay(1000);
+      yield put({ type: 'REFRESH', time: Date.now() });
+    }
+  } catch (error) {
+  } finally {
+    if (yield cancelled()) {
+      yield put({ type: '主动取消了' });
+    }
+  }
+}
+
+function* watchStartBackgroundTask() {
+  while (true) {
+    yield take('START_BACKGROUND_TASK');
+    yield race({
+      task: call(backgroundTask),
+      cancel: take('CANCEL_TASK'),
+    });
+  }
+}
+```
+
+当 `CANCEL_TASK`被发起时, `race`会自动取消 `backgroundTask`, 并且 `backgroundTask`中的 finally 块将被执行到并发现自己被 `cancelled`了.

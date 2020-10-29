@@ -176,3 +176,66 @@ function* fetchProducts() {
 概括来说, 从 Saga 内部触发的异步操作 (Side Effect) 总是由 yield 一些声明式的 Effect 来完成的. (你也可以直接 yield Promise, 但是这会让测试变得困难)
 
 一个 Saga 所做的实际上是组合那些 Effect, 实现其所需的控制流. 最简单的例子是直接把 yield 一个接一个地放置来对序列化 yield Effect. 当然也可以使用熟悉的控制流操作 (if, while, for) 来实现更复杂的控制流.
+
+## 04: 高级
+
+### 04-01: 监听未来的 action
+
+`takeEvery`/ `takeLatest`只是一个在强大的低阶 API 之上构建的 wrapper effect. 接下来使用一个新的 Effect`take`. `take`让我们通过全面控制 action 观察进程来构建复杂的控制流成为可能.
+
+一个简单的日志记录器:
+
+```js
+function* watchAndLog_take() {
+  while (true) {
+    const action = yield take('*');
+    const state = yield select();
+
+    console.log('action', action);
+    console.log('state after', state);
+  }
+}
+```
+
+`take`就像我们更早之前看到的 `call`和 `put`. 它创建另一个命令对象, 告诉 middleware 等待一个特定的 action. 正如在 `call`Effect 的情况中, middleware 会暂停 Generator, 直到返回的 Promise 被 resolve. 在 `take`情况中, 它将会暂停 Generator 直到一个匹配的 action 被发起.
+
+注意, 这里使用了一个无限循环 `while(true)`. 因为它是一个 Generator 函数, 所以它不具备 `从运行至完成(run-to-completion behavior)`的行为. Generator 将在每次迭代阻塞以等待 action 发起.
+
+在`takeEvery`的情况中, 被调用的任务无法控制何时被调用, 它将在每次 action 被匹配时一遍遍地调用. 并且它们也无法控制何时停止监听.
+
+而在 `take`的情况中, 控制恰恰相反. 与 action 被 `推向(pushed)`的任务处理函数不同, Saga 是自己主动 `拉取(pulling)`action 的.
+
+这样的反向控制让我们可以使用传统的 push 方法实现不同的控制流程.
+
+比如我们希望监听用户发送三次 action 之后, 显示祝贺信息:
+
+```js
+function* watchFirstThreeAction() {
+  for (let i = 0; i < 3; i++) {
+    const action = yield take('*');
+  }
+  yield put({ type: 'SHOW_CONGRATULATION' });
+}
+```
+
+与 `while(true)`不同, 这里运行了一个只迭代三次的 `for`循环, 在 `take`初次的3个 action 之后, saga 会发送一条祝贺信息的 action 然后结束. 这意味着 Generator 会被回收并且相应的监听不会再发生.
+
+主动拉取 action 的另一个好处是我们可以使用熟悉的同步风格来描述控制流. 举个例子, 假设我们希望实现一个这样的登录控制流, 有两个 action 分别是 `LOGIN`和 `LOGOUT`. 使用 `takeEvery`或 redux-thunk 我们必须要写两个分别的任务或 thunks : 一个用于 `LOGIN`, 另一个用于 `LOGOUT`.
+
+结果就是逻辑被分开在两个地方, 并且在阅读代码时为了搞明白情况, 还需要在大脑中重新排列它们从而重建控制流模型.
+
+使用拉取(pull)模式, 则可以让我们在同一个地方写控制流, 而不是重复处理相同的 action.
+
+```js
+function* loginFlow() {
+    while(true) {
+        yield take('LOGIN');
+        // ...
+        yield take('LOGOUT');
+        // ...
+    }
+}
+```
+
+这样的 saga 会更好理解, 因为序列中的 actions 就是我们期望中的. 它知道 `LOGIN`action 后面应该始终跟着一个 `LOGOUT`action.
+

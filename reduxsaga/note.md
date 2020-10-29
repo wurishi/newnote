@@ -391,3 +391,41 @@ function* game() {
 }
 ```
 
+### 04-06: 组合 Sagas
+
+虽然使用 `yield*`是提供组合 Sagas 的惯用方式, 但这个方法也有一些局限性:
+
+- 如果想要单独测试嵌套的 Generator, 这导致了一些重复的测试代码和重复执行的开销.
+- `yield*`只允许任务顺序组合, 所以一次只能 `yield*`一个 Generator.
+
+所以使用 `all`/ `race`等组合 API 可以更加自由的组合各种 saga.
+
+```js
+function* mainTask() {
+  const scores = yield all([call(task1), call(task2), call(task1)]);
+  yield put({ type: 'SCORES', scores });
+}
+```
+
+```js
+function* game() {
+  let finished = false;
+  while (!finished) {
+    yield take('GAME_START');
+
+    const { score, timeout } = yield race({
+      score: call(play),
+      timeout: delay(5000),
+    });
+
+    if (!timeout) {
+      finished = true;
+      yield put({ type: 'GAME_STOP' });
+      yield put({ type: 'SHOW_SCORE', score });
+    } else {
+      yield put({ type: 'GAME_RESTART' });
+    }
+  }
+}
+```
+

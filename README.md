@@ -39,6 +39,8 @@ electron
 
 参考资料: 《你所不知道的 Javascript》_(进行中)_
 
+# jest
+
 # jsgenerator
 
 参考资料:

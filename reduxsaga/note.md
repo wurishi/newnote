@@ -139,3 +139,30 @@ yield apply(obj, obj.method, [arg1, arg2, ...])
 const content = yield cps(readFile, '/path/to/file');
 ```
 
+### 03-03: 发起 action 到 store
+
+如果要发起一些 action 通知 Store, 可以找到 Store 的 `dispatch`函数.
+
+```js
+function* fetchProducts(dispatch) {
+    const products = yield call(Api.fetch, '/products');
+    dispatch({ type: 'PRODUCTS_RECEIVED', products });
+}
+```
+
+然后, 该解决方案和上一节中的在 Generator 内部直接调用函数有着相同的缺点, 即如果我们要测试 `fetchProducts`, 则需要模拟 AJAX 响应之后的 dispatch.
+
+相反的, 我们需要同样的使用声明式的解决方案, 即对于 Generator 而言我们要测试的仅是检查 yield 之后的 effect, 是否包含了正确的指令.
+
+redux-saga 为此提供了另外一个函数 `put`, 这个函数用于创建 dispatch Effect.
+
+```js
+import { call, put } from 'redux-saga/effects';
+
+function* fetchProducts() {
+    const products = yield call(Api.fetch, '/products');
+    yield put({ type: 'PRODUCTS_RECEIVED', products });
+}
+```
+
+此时测试 fethProducts, 就很简单, 只需要检查 yield 是否是一个 dispatch 指令即可.

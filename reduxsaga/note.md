@@ -375,3 +375,19 @@ function* watchStartBackgroundTask() {
 ```
 
 当 `CANCEL_TASK`被发起时, `race`会自动取消 `backgroundTask`, 并且 `backgroundTask`中的 finally 块将被执行到并发现自己被 `cancelled`了.
+
+### 04-05: 使用 yield* 对 Sagas 进行排序
+
+可以使用内置的 `yield*`操作符来组合多个 Sagas, 使得它们保持顺序.
+
+```js
+function* game() {
+  const score1 = yield* play1();
+  const score2 = yield* play2();
+  const score3 = yield* play3();
+  yield put(showScore(score1));
+  yield put(showScore(score2));
+  yield put(showScore(score3));
+}
+```
+

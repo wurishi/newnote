@@ -429,3 +429,77 @@ function* game() {
 }
 ```
 
+### 04-07: 取消任务
+
+一旦任务被 fork , 可以使用 `yield cancel(task)`来中止任务的执行. 
+
+#### 取消传播
+
+要注意的是取消消息是会不断的往下传播的(相对的, 被回传的值和没有捕捉的错误是不断往上). 
+
+```js
+function* task1() {
+  try {
+    yield call(task2);
+  } finally {
+    if (cancelled()) {
+      yield put({ type: 'task1 canceled' });
+    }
+  }
+}
+
+function* task2() {
+  try {
+    while (true) {
+      yield delay(1000);
+    }
+  } finally {
+    if (cancelled()) {
+      yield put({ type: 'task2 canceled' });
+    }
+  }
+}
+
+function* task() {
+  yield take('START_TASK');
+  const { task, cancel } = yield race({
+    task: call(task1),
+    cancel: take('CANCEL_TASK'),
+  });
+}
+```
+
+当触发 `CANCEL_TASK`时, task1 被取消的同时, task2 也会触发取消.
+
+#### 测试 fork effect
+
+```bash
+npm i -D @redux-saga/testing-utils
+```
+
+```js
+import { forkFn, task2 } from './sagas';
+import { cancel, fork, take } from 'redux-saga/effects';
+import { createMockTask } from '@redux-saga/testing-utils';
+
+test('forkFn', () => {
+  const gen = forkFn();
+
+  expect(gen.next().value).toEqual(take('START_FORK'));
+  expect(gen.next().value).toEqual(fork(task2));
+
+  const mockTask = createMockTask(); // 创建一个 mockTask, 用来测试取消的情况.
+
+  expect(gen.next(mockTask).value).toEqual(take('CANCEL_FORK'));
+
+  const cancelYield = cancel(mockTask);
+  expect(gen.next().value).toEqual(cancelYield);
+});
+```
+
+#### 自动取消
+
+除了手动调用 `cancel`取消任务之外, 还有一些情况也会自动触发取消.
+
+1. 在 `race`Effect 中, 所有参与 race 的任务, 除了最先完成的任务, 其他任务都会被取消.
+2. 并行的 `all`Effect, 一旦其中任何一个任务被拒绝(抛出 Error), 并行的其他未完的 Effect 都将被自动取消.

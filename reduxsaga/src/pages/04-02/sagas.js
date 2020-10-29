@@ -55,9 +55,31 @@ function* authorize(user, password) {
   }
 }
 
+function timeout(time) {
+  return new Promise((r, reject) => {
+    setTimeout(() => {
+      // if (time == 200) {
+      //   reject(new Error('Error 200'));
+      //   return;
+      // }
+      r(time);
+    }, time);
+  });
+}
+
+function* helloAll() {
+  const times = yield all([
+    call(timeout, 100),
+    call(timeout, 200),
+    call(timeout, 5000),
+  ]);
+  console.log(times);
+}
+
 export default function* () {
   yield all([
     // loginFlow(), //
     newLoginFlow(),
+    helloAll(),
   ]);
 }

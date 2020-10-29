@@ -308,3 +308,22 @@ function* authorize(user, password) {
 }
 ```
 
+### 04-03: 同时执行多个任务
+
+`yield`指令可以很简单的将异步控制流以同步的写法表现出来, 但如果要同时执行多个任务, 不能像下面这样写:
+
+```js
+const users = yield call(fetch, '/users'),
+      repos = yield call(fetch, '/repos');
+```
+
+因为这样写, 第二个 effect 将会在第一个 `call`执行完毕之后才开始, 所以应该这样写:
+
+```js
+const [users, repos] = yield all([
+    call(fetch, '/users'),
+    call(fetch, '/repos')
+]);
+```
+
+当 `yield all`一个包含 effects 的数组时, generator 会被阻塞直到所有的 effects 都执行完毕, 或者当其中一个 effect 被拒绝 (就像 `Promise.all`的行为)

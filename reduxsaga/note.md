@@ -166,3 +166,13 @@ function* fetchProducts() {
 ```
 
 此时测试 fethProducts, 就很简单, 只需要检查 yield 是否是一个 dispatch 指令即可.
+
+### 03-04: 错误处理
+
+使用 `try/catch`
+
+### 03-05: Effect
+
+概括来说, 从 Saga 内部触发的异步操作 (Side Effect) 总是由 yield 一些声明式的 Effect 来完成的. (你也可以直接 yield Promise, 但是这会让测试变得困难)
+
+一个 Saga 所做的实际上是组合那些 Effect, 实现其所需的控制流. 最简单的例子是直接把 yield 一个接一个地放置来对序列化 yield Effect. 当然也可以使用熟悉的控制流操作 (if, while, for) 来实现更复杂的控制流.

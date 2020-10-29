@@ -239,3 +239,72 @@ function* loginFlow() {
 
 这样的 saga 会更好理解, 因为序列中的 actions 就是我们期望中的. 它知道 `LOGIN`action 后面应该始终跟着一个 `LOGOUT`action.
 
+### 04-02: 无阻塞调用
+
+```js
+function* loginFlow() {
+  while (true) {
+    const { user, password } = yield take('LOGIN_REQUEST');
+    const token = yield call(authorize, user, password);
+    if (token) {
+      yield put({ type: 'STORE_TOKEN', token });
+      yield take('LOGOUT');
+      yield put({ type: 'CLEAR_tOKEN' });
+    }
+  }
+}
+```
+
+这样的 loginFlow 有一个问题, 即在等待 authorize 时, 如果触发了 `LOGOUT` action, 因为此时 generator 还被阻塞在 `yield call(authorize, user, password)`处, 导致 `LOGOUT`会被错过. 这是因为 `call`是一个会阻塞的 Effect, 即 Generator 在调用它结束之前是不能执行或处理其他事情的. 但在这里, 我们希望 `LOGOUT`与 `authorize`是并发的, 所以我们需要以非阻塞的形式调用 `authorize`方法. 这样 loginFlow 就能继续执行, 并且监听并发的响应.
+
+redux-saga 提供了一个表示无阻塞调用的 Effect: `fork`. 当我们 fork 一个任务时, 任务会在后台启动, 调用者可以继续自己的流程, 而不用等待被 fork 的任务结束.
+
+```js
+function* newLoginFlow() {
+  while (true) {
+    const { user, password } = yield take('LOGIN_REQUEST');
+    yield fork(authorize, user, password);
+    yield take(['LOGOUT', 'LOGIN_ERROR']);
+    yield put({ type: 'CLEAR_TOKEN' });
+  }
+}
+```
+
+`yield take(['LOGOUT', 'LOGIN_ERROR'])`意思是监听 2 个并发的 action.
+
+但还没完, 如果 `authorize`和 `LOGOUT`是并发调用了, 那么我们需要在收到 `LOGOUT`时, 取消 `authorize`的任务, 否则 `authorize`成功获取响应(或失败的应用)后还是会发起一个 `LOGIN_SUCCESS`或 `LOGIN_ERROR`, 这将导致状态不一致.
+
+为了取消 fork 任务, 我们可以使用一个指定的 Effect `cancel`.
+
+```js
+function* newLoginFlow() {
+  while (true) {
+    const { user, password } = yield take('LOGIN_REQUEST');
+    const task = yield fork(authorize, user, password);
+    const action = yield take(['LOGOUT', 'LOGIN_ERROR']);
+    if (action.type === 'LOGOUT') {
+      yield cancel(task);
+    }
+    yield put({ type: 'CLEAR_TOKEN' });
+  }
+}
+```
+
+另外 `cancel`Effect 并不是粗暴地结束了 `authorize`任务, 相反, 它会给予任务一个机会用来执行清理的逻辑, 那就是 `cancelled`Effect.
+
+```js
+function* authorize(user, password) {
+  try {
+    const token = yield call(mockAPI, user, password);
+    yield put({ type: 'LOGIN_SUCCESS', token });
+    return token;
+  } catch (error) {
+    yield put({ type: 'LOGIN_ERROR', error });
+  } finally {
+    if (yield cancelled()) {
+      console.log('被主动取消了');
+    }
+  }
+}
+```
+

@@ -762,3 +762,65 @@ function* watchRequests() {
 #### 使用 `eventChannel`factory 连接外部的事件
 
 `eventChannel`是一个 factory function, 不是一个 Effect. 它可以为 Redux Store 以外的事件来源创建一个 Channel.
+
+每秒发生一个数字:
+
+```js
+import { eventChannel, END } from 'redux-saga';
+function countdown(secs) {
+  return eventChannel((emitter) => {
+    const iv = setInterval(() => {
+      secs -= 1;
+      if (secs > 0) {
+        emitter(secs);
+      } else {
+        emitter(END); // 这里会导致 channel 关闭
+      }
+    }, 1000);
+    return () => {
+      clearInterval(iv);
+    };
+  });
+}
+```
+
+```js
+export function* countdownSaga() {
+  const chan = yield call(countdown, 5);
+  try {
+    while (true) {
+      const seconds = yield take(chan);
+      yield put({ type: 'SECOND', seconds });
+    }
+  } finally {
+    yield put({ type: 'SECOND_END' });
+  }
+}
+```
+
+通过 `yield call(countdown)`创建一个 `eventChannel`.
+
+通过 `yield take(chan)`获取自定义的事件源中的消息. (这里是每秒接收到一次).
+
+要注意 countdown 函数最后返回了一个函数, 这个是订阅者模式常见的返回一个 `unsubscribe`函数, 该函数用来在事件完成之后处理一些清理工作.
+
+另外, 如果想要在 saga 中主动关闭 channel, 可以使用 `chan.close()`来关闭.
+
+```diff
+export function* countdownSaga() {
+  const chan = yield call(countdown, 5);
+  try {
+    while (true) {
+      const seconds = yield take(chan);
+      yield put({ type: 'SECOND', seconds });
+    }
+  } finally {
+    yield put({ type: 'SECOND_END' });
++   if (yield cancelled()) {
++     chan.close(); // 主动关闭
++   }
+  }
+}
+```
+
+> 注意: eventChannel 上的消息默认不会被缓存, 如果需要缓存, 请手动指定 `eventChannel(subscriber, buffer)`

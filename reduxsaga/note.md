@@ -614,3 +614,64 @@ const takeLatest = (pattern, saga, ...args) =>
   });
 ```
 
+### 04-10: 测试 Sagas
+
+有两种主要的测试 Sagas 的方式:
+
+- 一步一步测试 saga generator function
+- 执行整个 saga 并断方 side effects
+
+#### 测试 Saga generator function
+
+```js
+export function* changeColorSaga() {
+  const action = yield take(CHOOSE_COLOR);
+  yield put(changeUI(action.payload.color));
+}
+```
+
+一步一步地测试, 因为 saga 使用声明式的 effect, 所以每一步 yield 其实都是一个可以预测的 plain object:
+
+```js
+test('test changeColorSaga', () => {
+  const gen = changeColorSaga();
+  expect(gen.next().value).toEqual(take(CHOOSE_COLOR));
+
+  const color = 'red';
+  expect(gen.next(chooseColor(color)).value) //
+    .toEqual(put(changeUI(color)));
+
+  expect(gen.next().done).toEqual(true);
+});
+```
+
+#### Branching Saga
+
+有时候 saga 可能会有不同的结果, 为了测试不同的 branch 而不重复所有的流程, 可以使用 `cloneableGenerator`(在 `@redux-saga/testing-utils` 中)
+
+```js
+export function* doStuffThenChangeColor() {
+  yield put(doStuff());
+  yield put(doStuff());
+  const action = yield take(CHOOSE_NUMBER);
+  if (action.payload.number % 2 === 0) {
+    yield put(changeUI('red'));
+  } else {
+    yield put(changeUI('blue'));
+  }
+}
+```
+
+测试 `action.payload.number % 2 === 0`, 可以使用 `cloneableGenerator`, 在流程中间 clone 不同的 gen 用来测试不同的逻辑分支.
+
+```js
+const gen = cloneableGenerator(doStuffThenChangeColor)();
+  expect(gen.next().value).toEqual(put(doStuff()));
+  expect(gen.next().value).toEqual(put(doStuff()));
+  expect(gen.next().value).toEqual(take(CHOOSE_NUMBER));
+  let clone = gen.clone(); 
+  expect(clone.next(chooseNumber(0)).value).toEqual(put(changeUI('red')));
+  clone = gen.clone();
+  expect(clone.next(chooseNumber(1)).value).toEqual(put(changeUI('blue')));
+```
+

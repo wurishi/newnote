@@ -3,7 +3,7 @@ import store from './main';
 
 export default function () {
   function action(type, payload) {
-    store.dispatch({ type, payload });
+    const a = store.dispatch({ type, payload });
   }
   return (
     <Provider store={store}>

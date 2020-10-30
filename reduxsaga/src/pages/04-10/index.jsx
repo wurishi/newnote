@@ -36,6 +36,14 @@ export default function () {
         <button onClick={() => store.dispatch(chooseNumber(num))}>
           send number
         </button>
+        <hr />
+        <button
+          onClick={() => {
+            store.dispatch({ type: 'CALL', url: 'http://www.baidu.com' });
+          }}
+        >
+          CALL
+        </button>
       </div>
     </Provider>
   );

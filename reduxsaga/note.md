@@ -705,3 +705,60 @@ runSaga({
 }, saga);
 ```
 
+### 04-12: 使用 Channels
+
+目前为止, 我们使用了 `take`和 `put`来与 Redux Store 进行通信. 而 Channels 则是可以被用来处理这些 Effects 与外部事件源或 Sagas 之间的通信的. 它们还可以用于在 Store 中对特定的 actions 进行排序.
+
+- 使用 `yield actionChannel`Effect 缓存特定的 action.
+- 使用 `eventChannel`factory function 连接 `take`Effects 至外部的事件来源.
+- 使用通用的 `channel`factory function 创建 `channel`, 并在 `take`/ `put`Effects 中使用它来让两个 Saga 之间通信.
+
+#### 使用 `actionChannel`Effect
+
+```js
+function* watchRequests() {
+    while(true) {
+        const { payload } = yield take('REQUEST');
+        yield fork(handleRequest, payload);
+    }
+}
+```
+
+这个例子演示了经典的 watch-and-fort 模式. watchRequests 使用 fork 来避免阻塞, 因此它不会错过任何来自 store 的 action. 但是如果并发产生多个 REQUEST action, 则 handleRequest 会有多个同时执行.
+
+假设我们的需求如下: 每次只处理一个 REQUEST action. 比如有 4 个 REQUEST action 发起了, 但我们想一个个处理, 处理完成第一个 action 之后再处理第二个.
+
+此时我们就需要有一个队列 (queue), 来保存所有未处理的 action. 每当我们处理完当前的 handleRequest 之后, 就可以队列中获取下一个.
+
+Redux-Saga 提供了一个 helper Effect `actionChannel` 就可以为作为这样的一个队列.
+
+```js
+function* watchRequests() {
+  // 1. 为 REQUEST actions 创建一个 channel
+  const requestChan = yield actionChannel('REQUEST');
+  while (true) {
+    // 2. take from the channel
+    const { url } = yield take(requestChan);
+    // 3. 这里使用 call 阻塞调用, 所以只有完成了 handleRequest, 才会处理后一个
+    yield call(handleRequest, url);
+  }
+}
+```
+
+默认情况下, `actionChannel`会无限制缓存所有传入的消息. 如果想要更多地控制缓存, 可以提供一个 Buffer 参数给 `actionChannel`. Redux-Saga 提供了一些常用的 buffers (none, dropping, sliding), 当然也可以自己实现.
+
+如果只想要处理最近的五个项目(缓存池最多缓存5个, 消费掉后可以继续往里面加):
+
+```js
+import { buffers } from 'redux-saga';
+import { actionChannel } from 'redux-saga/effects';
+
+function* watchRequests() {
+    const requestChan = yield actionChannel('REQUEST', buffers.sliding(5));
+    // ...
+}
+```
+
+#### 使用 `eventChannel`factory 连接外部的事件
+
+`eventChannel`是一个 factory function, 不是一个 Effect. 它可以为 Redux Store 以外的事件来源创建一个 Channel.

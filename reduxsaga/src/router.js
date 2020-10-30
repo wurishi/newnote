@@ -13,7 +13,13 @@ function renderLinks() {
     return (
       <>
         <Link to={'/' + arr[1]}>{arr[1]}</Link>
-        <br />
+        <div
+          style={{
+            margin: '5px',
+          }}
+        >
+          |
+        </div>
       </>
     );
   });
@@ -40,7 +46,15 @@ export default () => (
   <div>
     <div>
       <h1>Link</h1>
-      {renderLinks()}
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}
+      >
+        {renderLinks()}
+      </div>
     </div>
     <hr />
     <div>

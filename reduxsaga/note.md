@@ -857,3 +857,8 @@ function* handleRequest(chan) {
 ```
 
 上面的例子, 将创建三个 handleRequest 任务, 每次接收到 CHANNEL_REQUEST 消息, 三个 worker 中的一个会被分配去处理请求. 注意在这个机制中, 这 3 个 worker 会有一个自动的负载均衡, 所以快的 worker 不会被慢的 worker 拖慢.
+
+## 05: 技巧
+
+### 05:01: 节流 (Throttling)
+

@@ -1,4 +1,4 @@
-const { call, all, put, delay, fork } = require('redux-saga/effects');
+const { call, all, put, delay, fork, take } = require('redux-saga/effects');
 
 function mock(name, time) {
   return new Promise((r) =>
@@ -30,6 +30,7 @@ function* log(name) {
 }
 
 function* game() {
+  yield take('GAME');
   yield fork(log, '1');
   const score1 = yield* play1();
   const score2 = yield* play2();

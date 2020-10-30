@@ -15,6 +15,7 @@ function* task2() {
 }
 
 function* mainTask() {
+  yield take('MAIN');
   const scores = yield all([call(task1), call(task2), call(task1)]);
   yield put({ type: 'SCORES', scores });
 }

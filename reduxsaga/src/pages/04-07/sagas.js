@@ -14,7 +14,7 @@ function* task1() {
   try {
     yield call(task2);
   } finally {
-    if (cancelled()) {
+    if (yield cancelled()) {
       yield put({ type: 'task1 canceled' });
     }
   }
@@ -27,7 +27,7 @@ export function* task2() {
       yield delay(1000);
     }
   } finally {
-    if (cancelled()) {
+    if (yield cancelled()) {
       yield put({ type: 'task2 canceled' });
     }
   }
@@ -53,7 +53,7 @@ function* mission(name, time) {
     yield delay(time);
   } catch (error) {
   } finally {
-    if (cancelled()) {
+    if (yield cancelled()) {
       console.log(name + ' finally', Date.now());
     }
   }

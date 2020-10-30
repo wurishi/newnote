@@ -442,7 +442,7 @@ function* task1() {
   try {
     yield call(task2);
   } finally {
-    if (cancelled()) {
+    if (yield cancelled()) {
       yield put({ type: 'task1 canceled' });
     }
   }
@@ -454,7 +454,7 @@ function* task2() {
       yield delay(1000);
     }
   } finally {
-    if (cancelled()) {
+    if (yield cancelled()) {
       yield put({ type: 'task2 canceled' });
     }
   }
@@ -502,4 +502,11 @@ test('forkFn', () => {
 除了手动调用 `cancel`取消任务之外, 还有一些情况也会自动触发取消.
 
 1. 在 `race`Effect 中, 所有参与 race 的任务, 除了最先完成的任务, 其他任务都会被取消.
-2. 并行的 `all`Effect, 一旦其中任何一个任务被拒绝(抛出 Error), 并行的其他未完的 Effect 都将被自动取消.
+2. 并行的 `all`Effect, 一旦其中任何一个任务被拒绝(抛出 Error), 并行的其他未完成的 Effect 都将被自动取消.
+
+### 04-08: redux-saga 的 fork model
+
+在 redux-saga 中, 有 2 个 Effects 可以在后台动态地 fork task.
+
+- `fork`用来创建 attached forks
+- `spawn`用来创建 detached forks

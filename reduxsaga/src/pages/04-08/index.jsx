@@ -4,7 +4,7 @@ import store from './main';
 export default function () {
   return (
     <Provider store={store}>
-      <button onClick={() => store.dispatch({ type: 'GAME' })}>GAME</button>
+      <h2>04-08</h2>
     </Provider>
   );
 }

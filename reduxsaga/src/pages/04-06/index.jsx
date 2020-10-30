@@ -25,6 +25,8 @@ export default function () {
           Game Start
         </button>
       )}
+      <br />
+      <button onClick={() => store.dispatch({ type: 'MAIN' })}>MAIN</button>
     </Provider>
   );
 }

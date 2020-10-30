@@ -1,6 +1,7 @@
 import { buffers } from 'redux-saga';
 import { actionChannel, all, call, delay, put, take } from 'redux-saga/effects';
 import { countdownSaga } from './ecsaga';
+import { channelWatchRequests } from './csaga';
 
 function* handleRequest(url) {
   yield delay(1000);
@@ -19,5 +20,6 @@ export default function* () {
   yield all([
     watchRequests(), //
     countdownSaga(),
+    channelWatchRequests(),
   ]);
 }

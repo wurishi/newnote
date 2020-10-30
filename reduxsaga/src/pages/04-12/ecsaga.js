@@ -18,6 +18,7 @@ function countdown(secs) {
 }
 
 export function* countdownSaga() {
+  yield take('SECOND_START');
   const chan = yield call(countdown, 5);
   // console.log(chan);
   try {

@@ -824,3 +824,36 @@ export function* countdownSaga() {
 ```
 
 > 注意: eventChannel 上的消息默认不会被缓存, 如果需要缓存, 请手动指定 `eventChannel(subscriber, buffer)`
+
+#### 使用 channels 在 Sagas 之间沟通
+
+```js
+export function* channelWatchRequests() {
+  // 创建一个 channel 队列
+  const chan = yield call(channel);
+
+  // 创建 3 个 worker threads
+  for (let i = 0; i < 3; i++) {
+    yield fork(handleRequest, chan);
+  }
+
+  while (true) {
+    const { payload } = yield take('CHANNEL_REQUEST');
+    yield put(chan, payload);
+  }
+}
+
+function* handleRequest(chan) {
+  const name = 'NAME_' + ++_name;
+  while (true) {
+    const payload = yield take(chan); // 从 channel 中获取
+    yield delay(payload.time);
+    yield put({
+      type: 'SUCC_' + name,
+      payload,
+    });
+  }
+}
+```
+
+上面的例子, 将创建三个 handleRequest 任务, 每次接收到 CHANNEL_REQUEST 消息, 三个 worker 中的一个会被分配去处理请求. 注意在这个机制中, 这 3 个 worker 会有一个自动的负载均衡, 所以快的 worker 不会被慢的 worker 拖慢.

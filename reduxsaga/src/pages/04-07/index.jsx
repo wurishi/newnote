@@ -14,6 +14,8 @@ export default function () {
       <button onClick={() => action('START_FORK')}>Start FORK</button>
       <br />
       <button onClick={() => action('CANCEL_FORK')}>Cancel FORK</button>
+      <br />
+      <button onClick={() => action('START_TEST')}>Start TEST</button>
     </Provider>
   );
 }

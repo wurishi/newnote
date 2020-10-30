@@ -61,6 +61,7 @@ function* mission(name, time) {
 }
 
 function* raceTest() {
+  yield take('START_TEST');
   yield race({
     mission1: call(mission, 'mission1', 1000),
     mission2: call(mission, 'mission2', 2000),
@@ -74,6 +75,7 @@ function* errFn(time) {
 }
 
 function* allTest() {
+  yield take('START_TEST');
   yield all([
     call(mission, 'm1', 1000), //
     call(mission, 'm2', 2000),

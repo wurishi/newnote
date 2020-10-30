@@ -510,3 +510,72 @@ test('forkFn', () => {
 
 - `fork`用来创建 attached forks
 - `spawn`用来创建 detached forks
+
+#### (一) fork
+
+##### 行为
+
+```js
+function* attached() {
+  yield take('ATTACHED_START');
+  const task1 = yield fork(fetchResource, 'users');
+  const task2 = yield fork(fetchResource, 'comments');
+  yield delay(500);
+  yield put({ type: 'ATTACHED_END' });
+}
+```
+
+attached 的完整结束其实意味着 3 个 effect 都被成功执行并完成了.
+
+所以以上这种写法也可以用 `all`替换
+
+```js
+function* attached() {
+    yield all([
+        call(fetchResource, 'users'),
+        call(fetchResource, 'comments'),
+        delay(500)
+    ]);
+}
+```
+
+所以被附加的 fork 与平行的 Effect 共享相同的语意:
+
+- 在平行情况下执行 task
+- 在所有被执行的 task 结束后, parent effect 才算是结束
+
+##### Error 传播
+
+```js
+function* attachedErr() {
+  yield take('ATTACHED_START_1');
+  const task1 = yield fork(fetchResource, 'users', 10);
+  const task2 = yield fork(fetchResource, 'comments');
+  const take3 = yield fork(errorR, 'error_1', 50);
+  yield delay(500);
+  yield put({ type: 'ATTACHED_END' });
+}
+```
+
+和 `all`的行为类似, 当 fork 中的一个任务抛出错误后, 其他所有未执行完成的任务都会被取消. (要注意的, 已经完成的任务是无法得知任务被取消的)
+
+##### Cancellation
+
+当 main task 被 `cancel`后, 其他 fork 的正在运行中的任务也会被取消. (**与文档冲突**)
+
+#### (二) spawn
+
+```js
+function* detached() {
+  yield take('DETACHED');
+  const task1 = yield spawn(fetchResource, 'users', 10);
+  const task2 = yield spawn(fetchResource, 'comments');
+  const take3 = yield spawn(errorR, 'error_1', 50);
+  yield delay(500);
+  yield put({ type: 'DETACHED_END' });
+}
+```
+
+使用 spawn 执行的是被分离到它们本身执行上下文的任务. 该任务不会因为父任务的原因而被终止. 所以 spawn 的任务抛出的错误不会冒泡到父任务而导致其他分离的任务被取消. (如果需要取消, 必须明确的手动去取消它们).
+
+简单来说, 被分离的任务, 更像是直接使用 `middleware.run`API 启动的 root Saga.

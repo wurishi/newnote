@@ -28,7 +28,7 @@ export default function () {
 
   return (
     <Provider store={store}>
-      <div>是否登录: {isLogin}</div>
+      <div>是否登录: {isLogin ? 'yes' : 'no'}</div>
       <button onClick={clickLogin}>点击登录</button>
       <br />
       <button onClick={clickLogout}>退出登录</button>

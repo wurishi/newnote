@@ -579,3 +579,38 @@ function* detached() {
 使用 spawn 执行的是被分离到它们本身执行上下文的任务. 该任务不会因为父任务的原因而被终止. 所以 spawn 的任务抛出的错误不会冒泡到父任务而导致其他分离的任务被取消. (如果需要取消, 必须明确的手动去取消它们).
 
 简单来说, 被分离的任务, 更像是直接使用 `middleware.run`API 启动的 root Saga.
+
+### 04-09: 并发
+
+之前使用过辅助函数 `takeEvery`和 `takeLatest`effect 来管理 Effects 之间的并发.
+
+现在看看如何使用低阶 Effects 来实现这些辅助函数.
+
+#### takeEvery
+
+```js
+const takeEvery = (pattern, saga, ...args) =>
+  fork(function* () {
+    while (true) {
+      const action = yield take(pattern);
+      yield fork(saga, ...args.concat(action));
+    }
+  });
+```
+
+#### takeLatest
+
+```js
+const takeLatest = (pattern, saga, ...args) =>
+  fork(function* () {
+    let lastTask;
+    while (true) {
+      const action = yield take(pattern);
+      if (lastTask) {
+        yield cancel(lastTask); // 如果任务已经结束, cancel 为空操作
+      }
+      lastTask = yield fork(saga, ...args.concat(action));
+    }
+  });
+```
+

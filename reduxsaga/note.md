@@ -942,6 +942,10 @@ options: Object
 
 ```js
 const sagaMiddleware = createSagaMiddleware({
+    onError(error, errorInfo) {
+        // error: JS Error
+        // errorInfo: sagaStack saga对于错误的描述信息
+    },
     effectMiddlewares: [
         (emitter) => (action) => {
             emitter(action);
@@ -1006,3 +1010,95 @@ const sagaMiddleware = createSagaMiddleware({
 | saga: Function                       | Generator 函数.                                              |
 | args: Array<any>                     | 传递给启动任务的参数. action 会作为最后一个参数追加到参数列表中. |
 
+### 07-03: Effect 创建器
+
+> 注意:
+>
+> - 以下每个函数都会返回一个普通 JavaScript 对象 (plain JavaScript Object), 并且不会执行任何其他操作.
+> - 执行是由 middleware 在迭代过程中进行的.
+> - middleware 会检查每个 Effect 的描述信息, 并进行相应的操作.
+
+#### `take(pattern)`
+
+命令 middleware 在 Store 上等待指定的 action. 在发起与 `pattern`匹配的 action 之前, Generator 将暂停.
+
+pattern:
+
+- 如果以空参数或 `'*'`调用 `take`, 那么将匹配所有发起的 action. (例如, `take()`将匹配所有 action)
+- 如果它是一个函数, 那么将匹配 `pattern(action)`为 true 的 action. (例如, `take(action => action.entities)`将匹配 action 的 entities 为真的 action)
+- 如果它是一个字符串, 那么将匹配 `action.type === pattern`的 action. (例如: take('INCREMENT_ASYNC'))
+- 如果它是一个数组, 那么数组中的每一项都适用于上述规则 (因此它是支持字符串与函数混用的). 不过最常见的还是纯字符串数组, 其结果就是用 `action.type`与数组中的每一项进行对比. (例如: `take(INCREMENT, DECREMENT)`将匹配 `INCREMENT`或 `DECREMENT`类型的 action)
+
+middleware 提供了一个特殊的 action -- `END`. 如果发起 END action, 则无论哪种 pattern, 只要是被 take Effect 阻塞的 Saga 都会被终止. 且如果被终止的 Saga 下扔有分叉 (forked) 任务还在运行, 那么它还会在终止任务前, 先等待这些子任务的终止.
+
+#### `takeMaybe(pattern)`
+
+与 `take(pattern)`相同, 但在 `END` action 时不会自动终止 Saga.
+
+#### `take(channel)`
+
+用来从指定的 channel 中等待一条特定的消息. 如果 channel 已经被关闭了, 那么 Generator 将会和上面的 `take(pattern)`一样终止.
+
+#### `takeMaybe(channel)`
+
+#### `put(action)`
+
+向 Store 发起一个 action. 这个 effect 是非阻塞型的, 并且所有下游抛出的错误, 都不会冒泡到 saga 中.
+
+#### `putResolve(action)`
+
+类似 `put`, 但 effect 是阻塞型的. (如果从 `dispatch`返回了 promise, 它将会等待其结果), 并且会接收到下游冒泡的错误.
+
+#### `put(channel, action)`
+
+向指定的 channel 中放入一条 action.
+
+#### `call(fn, ...args)`
+
+创建一个 Effect 描述信息, 用来命令 middleware 以参数 `args`调用函数 `fn`
+
+`fn`注意事项:
+
+- `fn`即可以是一个普通函数, 也可以是一个 Generator 函数. middleware 会调用该函数, 并检查其结果.
+- 如果结果是一个迭代器对象 (Iterator object), 那么 middleware 将会执行这个 Generator 函数. 父级 Generator 将一直被暂停直到子级 Generator 返回值后才会带着该值恢复执行. 如果子级 Generator 中断报错, 则父级 Generator 也会抛出一个错误.
+- 如果结果是一个 Promise, 那么在该 Promise 被 resolve 或 reject 之前, middleware 都将一直暂停 Generator, 直到 resolve 后带着返回值恢复执行, 或是 reject 后抛出一个错误.
+- 如果其结果即不是迭代器对象也不是 Promise, 那么 middleware 会立即把该值返回给 saga, 从而让它可以以同步的形式恢复执行.
+- 当 Generator 中抛出错误时, 如果有使用 `try/catch`包裹当前的 `yield`指令, 那么控制权将交给 `catch`. 否则, Generator 会因为错误而中断, 并且假设这个 Generator 是由其他 Generator 调用的话, 那么错误还会被传递给调用方.
+
+#### `call([context, fn], ...args)`
+
+类似 `call(fn, ...args)`, 但支持传递 `this`上下文(context)给 `fn`.
+
+#### `call([context, fnName], ...args)`
+
+类似 `call([context, fn], ...args)`, 但支持用字符串表示要调用的 `context`上的函数的名字.
+
+#### `apply(context, fn, [args])`
+
+同 JS Function 的 call 和 apply 的区别.
+
+#### `cps(fn, ...args)`
+
+创建一个 Effect, 命令 middleware 以 Node 风格的函数 (Node style function)的方式调用 `fn`
+
+> Node style function:
+>
+> 即 middleware 会以 `fn(...arg, cb)` 的形式调用, 如果 `fn`正常结束, 则必定会调用 `cb(null, result)`, 从而告知 middleware 成功的结果. 如果 `fn`遇到了错误, 则必定会调用 `cb(error)`, 告知 middleware 出错.
+>
+> 在 `fn`终止之前, middleware 会保持暂停状态
+
+#### `fork(fn, ...args)`
+
+让 middleware 以非阻塞调用的形式执行 `fn`.
+
+所有分叉任务 (forked tasks)都会被附加(attach)到它们的父级任务身上. 当父级任务终止其自身的命令被执行时, 它会在返回之前等待所有分叉任务的终止.
+
+来自于子级任务的错误会自动冒泡到它们的父级任务. 而且父级任务因为任何一个子级错误而中断时, 父级的整个执行树(即分叉任务 + 还在运行着的父体扮演的主任务)都会被取消.
+
+一个主分叉任务被取消, 会自动取消所有还在执行的子分叉任务. 如果被取消的任务是被阻塞的话, 这个阻塞的 Effect 也会被取消.
+
+如果一个分叉任务是以同步的形式失败的, 则不会返回 Task , 并且父级任务将被尽快地中断.
+
+#### `spawn(fn, ...args)`
+
+与 `fork(fn, ...args)`类似, 但创建的是**被分离的**任务. 被分离的任务与其父级任务保持独立, 并像顶级任务般工作. 父级任务不会在返回之前等待被分离的任务终止, 并且所有可能影响父级或被分离的任务事件都是完全独立的 (错误, 取消)

@@ -1,0 +1,75 @@
+import {
+  all,
+  cancel,
+  cancelled,
+  delay,
+  fork,
+  put,
+  take,
+  call,
+} from 'redux-saga/effects';
+
+function* fn1() {
+  yield take('FORK_TASK');
+  const task1 = yield fork(mock, 'task1');
+  // const task2 = yield fork(mock, 'task2');
+  const task2 = yield fork(mock2, 'task2');
+  const task3 = yield fork(mock, 'task3');
+  // yield delay(10);
+  yield cancel(task2);
+  // yield fork(mockErr);
+}
+
+function* mock2() {
+  yield fork(mock, 'sub_1');
+  yield fork(mock, 'sub_2');
+  yield fork(mock, 'sub_3');
+  yield call(mock2_fn);
+}
+
+function* mock2_fn() {
+  try {
+    yield put({ type: 'mock2_fn_S' });
+    yield delay(5000);
+    yield put({ type: 'mock2_fn_E' });
+  } finally {
+    if (yield cancelled()) {
+      yield put({ type: 'mock2_fn_cancelled' });
+    }
+    yield put({ type: 'mock2_fn_finally' });
+  }
+}
+
+function* mock(name) {
+  // if (name === 'task3') {
+  //   yield delay(10);
+  //   a = 100;
+  // }
+  try {
+    yield delay(1000);
+    yield put({ type: 'FORK_TASK_' + name });
+  } finally {
+    if (yield cancelled()) {
+      yield put({ type: 'FORK_TASK_' + name + '_FINALLY' });
+    }
+  }
+}
+
+function mockErr() {
+  a = 100;
+}
+
+function* f2() {
+  try {
+    yield fork(mock, 'F2 任务');
+  } finally {
+    yield put({ type: 'F2 任务 finally' });
+  }
+}
+
+export default function* () {
+  yield all([
+    fn1(), //
+    f2(),
+  ]);
+}

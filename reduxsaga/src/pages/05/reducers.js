@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 
-const defaultState = {};
+const defaultState = {
+};
 
 const ACTIONS_HANDLER = {};
 

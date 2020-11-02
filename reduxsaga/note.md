@@ -862,3 +862,24 @@ function* handleRequest(chan) {
 
 ### 05:01: 节流 (Throttling)
 
+```js
+function* logInputSaga() {
+    while(true) {
+        const action = yield take('INPUT');
+        yield call(logInput, action);
+    }
+}
+```
+
+上面的 saga 会响应每次 INPUT 事件, 如果想要不这么频繁响应, 可以使用 `throttle`节流.
+
+```js
+function* logInputSaga() {
+    yield throttle(500, 'INPUT', logInput);
+}
+```
+
+使用 `throttle`后, 每 500ms 之内, 只有最新的 INPUT 会被 logInput 处理.(第一次响应时可以理解为已经等待500ms了, 所以接收到的第一个 INPUT 就会响应, 后面的则是收集 500ms 内所有的 INPUT action, 最后仅响应最新的那个)
+
+> 注意, 节流不需要 `while(true)`
+

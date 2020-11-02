@@ -14,7 +14,7 @@ export default function () {
 
   return (
     <Provider store={store}>
-      <button onClick={throttling}>throttling</button>
+      <button onMouseDown={throttling}>throttling</button>
       <hr />
     </Provider>
   );

@@ -2,6 +2,8 @@
 
 [参考资料](https://github.com/googlecreativelab/anypixel)
 
+# babel
+
 # babylon
 
 [参考资料](https://www.babylonjs.com/)
@@ -38,6 +40,8 @@ electron
 # javascriptbook
 
 参考资料: 《你所不知道的 Javascript》_(进行中)_
+
+# jest
 
 # jsgenerator
 

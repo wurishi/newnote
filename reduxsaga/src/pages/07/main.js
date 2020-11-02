@@ -14,6 +14,11 @@ const sagaMiddleware = createSagaMiddleware({
       emit(action);
     },
   ],
+  sagaMonitor: {
+    actionDispatched(action) {
+      console.log(action);
+    },
+  },
 });
 
 const composeEnhancers = composeWithDevTools({

@@ -1190,3 +1190,105 @@ effects: Object - 一个 `{ label: effect, ... }`形式的字典对象.
 #### `all(effects)`
 
 与 `all([...effects])`类似, 只不过传入的是一个带有 label 的 effect 的字典对象.
+
+### 07-05: 接口
+
+#### Task
+
+Task 接口指定了通过 `fork`, `middleware.run`或 `runSaga`运行 Saga 的结果.
+
+| 方法               | 返回值                                                       |
+| ------------------ | ------------------------------------------------------------ |
+| task.isRunning()   | 若任务还未返回或抛出错误, 则为 true                          |
+| task.isCancelled() | 或任务已被取消则为 true                                      |
+| task.result()      | 任务的返回值. 若任务仍在运行中则为 'undefined'               |
+| task.error()       | 任务抛出的错误. 若任务仍在运行中则为 'undefined'             |
+| task.toPromise     | 一个 Promise, 任务正常返回时调用 resolve, 任务抛出错误时调用 reject |
+| task.cancel()      | 取消任务 (如果任务仍在执行中)                                |
+
+#### Channel
+
+channel 是用于在任务间发送和接收消息的对象. 在被感兴趣的接收者请求之前, 来自发送者的消息将被放入 (put) 队列. 在信息可用之前, 已注册的接收者将被放入队列.
+
+每个 channel 都有一个底层 buffer, 这个 buffer 定义了缓存策略 (fixed size, dropping, sliding)
+
+Channel 接口定义了 3 个方法:
+
+##### `channel.take(callback)`
+
+用于注册一个 taker. take 会根据以下规则解析.
+
+1. 如果 channel 有被缓存的消息, 那么将会从底层 buffer 用下一条消息调用 `callback`.
+2. 如果 channel 已关闭, 并且没有被缓存的消息, 那将以 `END`为参数调用 `callback`.
+3. 否则, 直到有消息被放入 channel 之前, `callback`将被放入队列.
+
+##### `channel.put(message)`
+
+用于在 buffer 上放入消息. 
+
+1. 如果 channel 已经关闭, 那么 put 将没有效果.
+2. 如果还有未被处理的 taker, 那将用该 message 调用最老的 taker.
+3. 否则将 message 放入底层 buffer.
+
+##### `channel.flush(callback)`
+
+用于从 channel 中提取所有被缓存的消息.
+
+1. 如果 channel 已经被关闭, 并且没有被缓存的消息. 那么将以 `END`为参数调用 `callback`.
+2. 否则, 将以所有被缓存的消息为参数调用 `callback`.
+
+#### Buffer
+
+用于为 channel 实现缓存策略.
+
+##### `isEmpty()`
+
+如果缓存中没有消息则返回. 每当注册了新的 taker 时, channel 都会调用该方法.
+
+##### `put(message)`
+
+用于往缓存中放入新的消息. 注意, 缓存可以选择不存储消息.
+
+##### `take()`
+
+用于检索任务被缓存的消息. 此方法的行为必须与 `isEmpty()`一致.
+
+#### SagaMonitor
+
+用于由 middleware  发起监视(monitor)事件.
+
+##### `effectTriggered(options)`
+
+当一个 effect 被触发时 (通过 `yield someEffect`)调用.
+
+options:
+
+| 字段                   | 作用                                               |
+| ---------------------- | -------------------------------------------------- |
+| effectId: Number       | 分配给 yielded effect 的唯一 ID.                   |
+| parentEffectId: Number | 父级 Effect 的 ID.                                 |
+| label: String          | 例如 `race(effects)`时, 传递给 effects 对象的标签. |
+| effect: Object         | yielded effect 其自身.                             |
+
+##### `effectResolved(effectId, result)`
+
+当 effect 成功被 resolve 时调用.
+
+| 参数名           | 作用                                                         |
+| ---------------- | ------------------------------------------------------------ |
+| effectId: Number | yielded effect 的 ID                                         |
+| result: any      | 该 effect 成功 resolve 的结果. 在 `fork`或 `spawn`的情况下, 结果将是一个 Task 对象 |
+
+##### `effectRejected(effectId, error)`
+
+当 effect 因一个错误被 reject 时调用.
+
+##### `effectCancelled(effectId)`
+
+当 effect 被取消时调用.
+
+##### `actionDispatched(action)`
+
+当 Redux action 被发起时调用.
+
+action 是一个对象, 它就是被发起的 Redux action. 如果该 action 是由一个 saga 发起的, 那么该 action 将拥有一个属性 `SAGA_ACTION`并被设为 true (@@redux-saga/SAGA_ACTION)

@@ -12,6 +12,10 @@ import {
   getContext,
 } from 'redux-saga/effects';
 
+import {} from '@redux-saga/testing-utils'
+
+import { Channel, Task, Buffer, } from 'redux-saga';
+
 function* fn1() {
   yield take('FORK_TASK');
   const task1 = yield fork(mock, 'task1');
@@ -77,6 +81,7 @@ function* joinFn() {
     const task1 = yield fork(mock, 'joinFn_1');
     const task2 = yield fork(mock, 'joinFn_2');
     const task3 = yield fork(mock, 'joinFn_3');
+    console.log(task2);
     yield join(task2);
   } finally {
     yield put({

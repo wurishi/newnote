@@ -914,3 +914,15 @@ function* () {
   - 节流500ms, 即2秒内会在(0, 500ms, 1000ms, 1500ms, 2000ms)这几个时间点响应事件.
   - 防抖500ms, 则每100ms触发的事件会把前一个事件取消. 即最后只会在2100ms时响应事件.
 
+## 06: 外部资源
+
+- [Vuex metts Redux-saga](https://medium.com/@xanf/vuex-meets-redux-saga-e9c6b46555e#.d4318am40)
+- [redux-saga-sc](https://www.npmjs.com/package/redux-saga-sc) - 通过 SocketCluster websockets 提供易于 dispatch redux action 的 sagas
+- [redux-form-saga](https://www.npmjs.com/package/redux-form-saga) - 一个 action creator 和 saga, 用于整合 Redux Form 和 Redux Saga
+- [redux-electron-enhancer](https://www.npmjs.com/package/redux-electron-enhancer) - 用于在多进程中, 同步每个实例之间的 Redux store
+- [eslint-plugin-redux-saga](https://www.npmjs.com/package/eslint-plugin-redux-saga) - ESLint rules
+- [redux-saga-router](https://www.npmjs.com/package/redux-saga-router) - 响应 route 的改变时执行 sagas
+- [vuex-redux-saga](https://github.com/xanf/vuex-redux-saga) - 用于连接 Vuex 和 Redux-Saga 的 Bridge
+- [esdoc-saga-plugin](https://www.npmjs.com/package/esdoc-saga-plugin) - ESDoc plugin, 用于记录 sagas effects
+- [redux-saga-compose](https://www.npmjs.com/package/redux-saga-compose) - 以 koa-compose 风格来 Compose sagas 为 middleware
+

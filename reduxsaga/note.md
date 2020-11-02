@@ -1292,3 +1292,95 @@ options:
 当 Redux action 被发起时调用.
 
 action 是一个对象, 它就是被发起的 Redux action. 如果该 action 是由一个 saga 发起的, 那么该 action 将拥有一个属性 `SAGA_ACTION`并被设为 true (@@redux-saga/SAGA_ACTION)
+
+### 07-06: 外部 API
+
+#### `runSaga(options, saga, ...args)`
+
+允许在 Redux middleware 环境外部启动 saga.
+
+### 07-07: 工具
+
+#### `channel([buffer])`
+
+用于创建 Channel 的工厂方法.
+
+#### `eventChannel(subscribe, [buffer], [matcher])`
+
+使用 `subscribe`方法创建 channel, 该 channel 将订阅自定义的事件源.
+
+| 参数名              | 作用                                                         |
+| ------------------- | ------------------------------------------------------------ |
+| subscribe: Function | 用于自定义实现订阅底层的事件源. 这个函数必须返回一个用于结束订阅的 unsubscribe 函数. |
+| buffer: Buffer      | 可选的用于该 channel 上的缓存消息. 默认不缓存.               |
+| matcher: Function   | 可选的断言函数, 用于过滤传入的消息是否要放到 channel 上.     |
+
+#### `buffers`
+
+提供一些通用的缓存:
+
+##### `buffers.none()`
+
+不缓存. 如果没有尚未处理的 taker, 那么新消息将被丢弃.
+
+##### `buffers.fixed(limit)`
+
+新消息将被缓存, 最多缓存 `limit`条. 溢出时将会报错. 默认 `limit`为 `10`.
+
+##### `buffers.expanding(initialSize)`
+
+与 `fixed`类似, 但溢出时将会动态扩展缓存.
+
+##### `buffers.dropping(limit)`
+
+与 `fixed`类似, 但溢出时将会静默地丢弃消息.
+
+##### `buffers.sliding(limit)`
+
+与 `fixed`类似, 但溢出时会把新消息插到缓存的最尾处, 并丢弃缓存中最老的消息.
+
+#### `delay(ms, [val])`
+
+用于阻塞执行 `ms`毫秒, 并返回 `val`值.
+
+### 07-08: @redux-saga/testing-utils
+
+仅用于测试
+
+#### `cloneableGenerator(generatorFunc)`
+
+返回的 Generator 函数实例化的 generator 都是可以克隆的.
+
+#### `createMockTask()`
+
+返回一个 mock 的 task 对象
+
+### 07-07: (阻塞 / 非阻塞) 速查表
+
+| 名称                 | 阻塞                                            |
+| -------------------- | ----------------------------------------------- |
+| takeEvery            | 否                                              |
+| takeLatest           | 否                                              |
+| takeLeading          | 否                                              |
+| throttle             | 否                                              |
+| take                 | 是                                              |
+| take(channel)        | 有时                                            |
+| takeMaybe            | 是                                              |
+| put                  | 否                                              |
+| putResolve           | 是                                              |
+| put(channel, action) | 否                                              |
+| call                 | 是                                              |
+| apply                | 是                                              |
+| cps                  | 是                                              |
+| fork                 | 否                                              |
+| spawn                | 否                                              |
+| join                 | 是                                              |
+| cancel               | 否                                              |
+| select               | 否                                              |
+| actionChannel        | 否                                              |
+| flush                | 是                                              |
+| cancelled            | 是                                              |
+| race                 | 是                                              |
+| delay                | 是                                              |
+| all                  | 当 array 或 object 中有阻塞型 effect 的时候阻塞 |
+

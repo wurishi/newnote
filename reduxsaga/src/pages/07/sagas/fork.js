@@ -12,9 +12,9 @@ import {
   getContext,
 } from 'redux-saga/effects';
 
-import {} from '@redux-saga/testing-utils'
+import { createMockTask, cloneableGenerator } from '@redux-saga/testing-utils';
 
-import { Channel, Task, Buffer, } from 'redux-saga';
+import { Channel, Task, Buffer } from 'redux-saga';
 
 function* fn1() {
   yield take('FORK_TASK');

@@ -1170,3 +1170,23 @@ function* saga() {
 #### `getContext(prop)`
 
 返回当前 saga 上下文中的一个特定属性.
+
+### 07-04: Effect 组合器 (combinators)
+
+#### `race(effects)`
+
+在多个 effect 间运行竞赛(Race)
+
+effects: Object - 一个 `{ label: effect, ... }`形式的字典对象.
+
+#### `race([...effects])`
+
+与 `race(effects)`类似, 但传入的是 effect 数组.
+
+#### `all([...effects])`
+
+并行地运行多个 Effect, 并等待它们全部完成.
+
+#### `all(effects)`
+
+与 `all([...effects])`类似, 只不过传入的是一个带有 label 的 effect 的字典对象.

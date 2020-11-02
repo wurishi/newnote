@@ -56,6 +56,10 @@ electron
 
 参考资料: [mochajs.cn](https://mochajs.cn/)
 
+# particlesjs
+
+参考资料: [particles.js](https://vincentgarreau.com/particles.js/)
+
 # pixijs
 
 [参考资料](https://www.pixijs.com/tutorials)

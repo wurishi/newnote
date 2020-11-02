@@ -116,3 +116,63 @@ export default (
 ```
 
 > 如果你在其他地方也使用了 Babel 并且把 `模块(modules)`设置为了 `false`, 那么你要么同时维护两份单独的 `.babelrc`文件, 要么使用 `const jsxobj = require('jsxobj');` 并且使用 `module.exports`而不是新版本的 `import`和 `export`语法. 这是因为尽管 Node.js 已经支持了许多 ES6 的新特性, 然而还无法支持 ES6 模块语法.
+
+# 3. 多种配置类型 (configuration types)
+
+除了导出单个配置对象, 还有一些方式满足其他需求.
+
+## 3.1 导出为一个函数
+
+从 webpack 配置文件中导出一个函数. 该函数在调用时, 会传入两个参数.
+
+- 环境对象(environment): 包含了相关 CLI 的环境选项. (具体请查看 CLI 文档的环境选项)
+- 选项 map(argv): 描述了传递给 webpack 的选项, 并且具有 `output-filename`和 `optimize-minimize`等 key.
+
+```js
+module.exports = function (env, argv) {
+  env = env || {};
+
+  // argv['optimize-minimize'] === true 只有传入 -p 或 --optimize-minimize
+
+  return {
+    mode: env.production ? 'production' : 'development',
+    devtool: env.production ? 'source-maps' : 'eval',
+    entry: './index.js',
+  };
+};
+
+```
+
+## 3.2 导出一个 Promise
+
+webpack 将运行由配置文件导出的函数, 并且等待 Promise 返回. 便于异步地加载所需的配置变量.
+
+```js
+module.exports = () => {
+    return new Promise((resolve, reject) => {
+        // ...
+    })
+}
+```
+
+## 3.3 导出多个配置对象
+
+从 webpack 3.1.0 开始, 支持导出多个配置对象. webpack 会对所有的配置对象一一对应进行构建.
+
+```js
+module.exports = [
+    {
+        output: {
+            filename: './dist-amd.js',
+            libraryTarget: 'amd'
+        }
+    },
+    {
+        output: {
+            filename:'./dist-commonjs.js',
+            libraryTarget: 'commonjs'
+        }
+    }
+]
+```
+

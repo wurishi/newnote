@@ -7,6 +7,9 @@ import {
   put,
   take,
   call,
+  join,
+  setContext,
+  getContext,
 } from 'redux-saga/effects';
 
 function* fn1() {
@@ -67,9 +70,26 @@ function* f2() {
   }
 }
 
+function* joinFn() {
+  try {
+    yield setContext({ AAA: Date.now() });
+    yield setContext({ BBB: 'BBB' });
+    const task1 = yield fork(mock, 'joinFn_1');
+    const task2 = yield fork(mock, 'joinFn_2');
+    const task3 = yield fork(mock, 'joinFn_3');
+    yield join(task2);
+  } finally {
+    yield put({
+      type: 'joinFn 任务 finally',
+      payload: yield getContext('AAA'),
+    });
+  }
+}
+
 export default function* () {
   yield all([
     fn1(), //
     f2(),
+    joinFn(),
   ]);
 }

@@ -16,6 +16,10 @@ export default function () {
     <Provider store={store}>
       <button onMouseDown={throttling}>throttling</button>
       <hr />
+      <button onMouseDown={() => action('02_INPUT', { time: Date.now() })}>
+        debouncing
+      </button>
+      <hr />
     </Provider>
   );
 }

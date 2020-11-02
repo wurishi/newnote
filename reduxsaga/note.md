@@ -860,7 +860,7 @@ function* handleRequest(chan) {
 
 ## 05: 技巧
 
-### 05:01: 节流 (Throttling)
+### 05-01: 节流 (Throttling)
 
 ```js
 function* logInputSaga() {
@@ -882,4 +882,35 @@ function* logInputSaga() {
 使用 `throttle`后, 每 500ms 之内, 只有最新的 INPUT 会被 logInput 处理.(第一次响应时可以理解为已经等待500ms了, 所以接收到的第一个 INPUT 就会响应, 后面的则是收集 500ms 内所有的 INPUT action, 最后仅响应最新的那个)
 
 > 注意, 节流不需要 `while(true)`
+
+### 05-02: 防抖动 (Debouncing)
+
+```js
+function* () {
+    let task;
+    while(true) {
+        const action = yield take('INPUT');
+        if(task) {
+            yield cancel(task);
+        }
+        task = yield fork(logInput, action);
+    }
+}
+```
+
+也可以使用 redux-saga 内置的 `taskLatest`实现:
+
+```js
+function* () {
+    yield takeLatest('INPUT', logInput);
+}
+```
+
+节流与防抖的区别:
+
+- 节流控制的是在指定时间范围内最多只能触发一次事件.
+- 防抖控制的是二次事件之间的间隔必须不小于某个指定的值.
+- 假设在2秒内每100ms触发一次事件.
+  - 节流500ms, 即2秒内会在(0, 500ms, 1000ms, 1500ms, 2000ms)这几个时间点响应事件.
+  - 防抖500ms, 则每100ms触发的事件会把前一个事件取消. 即最后只会在2100ms时响应事件.
 

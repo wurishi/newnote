@@ -78,7 +78,7 @@ concurrent 实验
 
 # reduxsaga
 
-参考资料: [Redux-Saga](https://redux-saga-in-chinese.js.org/) _(进行中)_
+参考资料: [Redux-Saga](https://redux-saga-in-chinese.js.org/) **(完成)**
 
 # rust
 

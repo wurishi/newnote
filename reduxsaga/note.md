@@ -926,3 +926,83 @@ function* () {
 - [esdoc-saga-plugin](https://www.npmjs.com/package/esdoc-saga-plugin) - ESDoc plugin, 用于记录 sagas effects
 - [redux-saga-compose](https://www.npmjs.com/package/redux-saga-compose) - 以 koa-compose 风格来 Compose sagas 为 middleware
 
+## 07: API 参考
+
+### 07-01: Middleware API
+
+#### `createSagaMiddleware(options)`
+
+options: Object
+
+| 属性                                  | 作用                                                         |
+| ------------------------------------- | ------------------------------------------------------------ |
+| sagaMonitor: SagaMonitor              | 如果提供了 Saga onitor, middleware 将向 monitor 传送监视事件. |
+| effectMiddlewares: EffectMiddleware[] | 高阶函数 (high order function), 它接受一个内置 emitter 并返回另一个 emitter. |
+| onError: Function                     | 当提供该方法时, middleware 将带着 Sagas 中未被捕获的错误调用它. |
+
+```js
+const sagaMiddleware = createSagaMiddleware({
+    effectMiddlewares: [
+        (emitter) => (action) => {
+            emitter(action);
+        }
+    ]
+});
+```
+
+#### `middleware.run(saga, ...args)`
+
+| 参数名           | 作用                |
+| ---------------- | ------------------- |
+| saga: Function   | 一个 Generator 函数 |
+| args: Array<any> | 提供给 saga 的参数  |
+
+### 07-02: Saga 辅助函数
+
+#### `takeEvery(pattern, saga, ...args)`
+
+在发起 (dispatch) 到 Store 并且匹配 `pattern`的每一个 action 上派生一个 `saga`.
+
+| 参数名                                          | 作用                                                         |
+| ----------------------------------------------- | ------------------------------------------------------------ |
+| pattern: String \| Array \| Function \| Channel | 可以匹配字符串, 数组, 自定义函数, 或是一个 channel.          |
+| saga: Function                                  | Generator 函数.                                              |
+| args: Array<any>                                | 传递给启动任务的参数. action 会作为最后一个参数追加到参数列表中. |
+
+`takeEvery`是一个使用 `take`和 `fork`构建的高级 API.
+
+#### `takeLatest(pattern, saga, ...args)`
+
+在发起到 Store 并且匹配 `pattern`的每一个 action 上派生一个 `saga`. 并且自动取消之前所有已经启动但仍在执行中的 `saga`任务.
+
+| 参数名                                          | 作用                                                         |
+| ----------------------------------------------- | ------------------------------------------------------------ |
+| pattern: String \| Array \| Function \| Channel | 可以匹配字符串, 数组, 自定义函数, 或是一个 channel.          |
+| saga: Function                                  | Generator 函数.                                              |
+| args: Array<any>                                | 传递给启动任务的参数. action 会作为最后一个参数追加到参数列表中. |
+
+`takeLatest`是一个使用 `take` `fork`和 `cancel`构建的高级 API.
+
+#### `takeLeading(pattern, saga, ...args)`
+
+在发起到 Store 并且匹配 `pattern`的每一个 action 上派生一个 `saga`. 它将在派生一次任务之后阻塞, 直到派生的 saga 完成, 然后再开始监听指定的 pattern.
+
+| 参数名                                          | 作用                                                         |
+| ----------------------------------------------- | ------------------------------------------------------------ |
+| pattern: String \| Array \| Function \| Channel | 可以匹配字符串, 数组, 自定义函数, 或是一个 channel.          |
+| saga: Function                                  | Generator 函数.                                              |
+| args: Array<any>                                | 传递给启动任务的参数. action 会作为最后一个参数追加到参数列表中. |
+
+`takeLeading`是一个使用 `take`和 `call`构建的高级 API.
+
+#### `throttle(ms, pattern, saga, args)`
+
+在发起到 Store 并且匹配 `pattern`的每一个 action 上派生一个 `saga`. 它在派生一次任务之后, 仍然会将新传入的 action 接收到底层的 `buffer`中, 并保留最近的一个. 与此同时, 它在 `ms`毫秒内将暂停派生新的任务.
+
+| 参数名                               | 作用                                                         |
+| ------------------------------------ | ------------------------------------------------------------ |
+| ms: Number                           | 在 action 开始处理后, 无视新的 action 的时长. 单位为毫秒.    |
+| pattern: String \| Array \| Function | 可以匹配字符串, 数组或自定义函数.                            |
+| saga: Function                       | Generator 函数.                                              |
+| args: Array<any>                     | 传递给启动任务的参数. action 会作为最后一个参数追加到参数列表中. |
+

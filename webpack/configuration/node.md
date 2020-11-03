@@ -1744,3 +1744,49 @@ watchOptions: {
 - nosources-source-map: 创建的 source map 不包含 sourcesContent(源代码内容). 它可以用来映射客户端上的堆栈跟踪, 而无须暴露所有的源代码. 你可以将 source map 文件部署到 web 服务器.
 
   > 这仍然会暴露源文件的文件名和结构, 但它不会暴露原始代码.
+
+# 11. 构建目标 (targets)
+
+webpack 能够为多种环境或 target 构建编译.
+
+## 11.1 target
+
+`string | function(compiler)`
+
+### string
+
+通过 `WebpackOptionsApply`, 可以支持以下字符串值:
+
+| 选项              | 描述                                                         |
+| ----------------- | ------------------------------------------------------------ |
+| async-node        | 编译为类 Node.js 环境可用 (使用 fs 和 vm 异步加载)           |
+| atom              | electron-main 的别名                                         |
+| electron          | electron-main 的别名                                         |
+| electron-main     | 编译为 Electron 主进程                                       |
+| electron-renderer | 编译为 Electron 渲染进程, 使用 `JsonpTemplatePlugin`, `FunctionModulePlugin`来为浏览器环境提供目标, 使用 `NodeTargetPlugin`和 `ExternalsPlugin`为 CommonJS 和 Electron 内置模块提供目标 |
+| node              | 编译为类 Node.js 环境可用 (使用 Node.js require 加载 chunk)  |
+| node-webkit       | 编译为 Webkit 可用, 并且使用 jsonp 去加载 chunk. 支持 Node.js 内置模块和 `nw.gui`导入 (实验性质) |
+| web               | 编译为类浏览器环境里可用 **(默认)**                          |
+| webworker         | 编译成一个 WebWorker                                         |
+
+### function
+
+如果传入一个函数, 此函数调用时会传入一个 compiler 作为参数. 可以不使用以上任何插件, 或自定义指定插件.
+
+```js
+// 不使用任何插件
+const options = {
+    target: () => undefined
+}
+
+// 使用指定插件
+const options = {
+    target: compiler => {
+        compiler.apply(
+            new webpack.JsonpTemplatePlugin(options.output),
+            new webpack.LoaderTargetPlugin('web')
+        );
+    }
+}
+```
+

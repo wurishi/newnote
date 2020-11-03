@@ -549,9 +549,11 @@ webpack 3.0.0 开始支持 `string[]`
 
 ### 暴露为一个变量
 
-会将入口起点的返回值, 在 bundle 包所引入的位置, 赋值给 `output.library`提供的变量名.
+这些选项会将入口起点的返回值, 在 bundle 包所引入的位置, 赋值给 `output.library`提供的变量名.
 
-`libraryTarget: "var"` - 默认值. 当 library 加载完成, 入口起点的返回值将分配给一个变量:
+#### `libraryTarget: "var"`
+
+默认值. 当 library 加载完成, 入口起点的返回值将分配给一个变量:
 
 ```js
 var MyLibrary = _entry_return_;
@@ -561,7 +563,9 @@ MyLibrary.doSomething();
 
 **当使用此选项时, 如果将 `output.library`设置为空, 会因为没有变量导致无法赋值.**
 
-`libraryTarget: "assign"` - 将产生一个隐含的全局变量, 可能会潜在地重新分配到全局中已经存在的值(可能会覆盖全局变量, 所以要谨慎使用).
+#### `libraryTarget: "assign"`
+
+将产生一个隐含的全局变量, 可能会潜在地重新分配到全局中已经存在的值(可能会覆盖全局变量, 所以要谨慎使用).
 
 ```js
 MyLibrary = _entry_return_;
@@ -570,3 +574,294 @@ MyLibrary = _entry_return_;
 如果 `MyLibrary`在作用域中未在前面的代码中定义, 则 library 将被设置到全局作用域内.
 
 **当使用此选项时, 如果将 `output.library`设置为空, 将产生一个破损的输出 bundle**
+
+### 通过在对象上赋值暴露
+
+这些选项将入口起点的返回值, 赋值给一个特定对象的属性 (此名称由 `output.library`定义)下.
+
+**注意, 不设置 `output.library`将导致由入口起点返回的所有属性, 都会被赋值给给定的对象; 这里并不会检查现有的属性名是否存在.**
+
+#### `libraryTarget: "this"`
+
+入口起点的返回值将分配给 this 的一个属性(名称由 `output.library`定义).
+
+```js
+this['MyLibrary'] = _entry_return_;
+
+this.MyLibrary.doSomething();
+// 如果 this 是 window
+MyLibrary.doSomething();
+```
+
+#### `libraryTarget: "window"`
+
+入口起点的返回值将使用 `output.library`中定义的值, 分配给 `window`对象的这个属性下.
+
+```js
+window['MyLibrary'] = _entry_return_;
+```
+
+#### `libraryTarget: "global"`
+
+入口起点的返回值将使用 `output.library`中定义的值, 分配给 `global`对象的这个属性下.
+
+```js
+global['MyLibrary'] = _entry_return_;
+```
+
+#### `libraryTarget: "commonjs"`
+
+入口起点的返回值将使用 `output.library`中定义的值, 分配给 `exports`对象. 这个名称也意味着, 模块用于 CommonJS 环境.
+
+```js
+exports['MyLibrary'] = _entry_return_;
+
+require('MyLibrary').doSomething();
+```
+
+### 模块定义系统
+
+这些选项将导致 bundle 带有更完整的模块头部, 以确保与各种模块系统的兼容性. 根据 `output.libraryTarget`选项的不同, `output.library`选项将具有不同的含义.
+
+#### `libraryTarget: "commonjs2"`
+
+入口起点的返回值将分配给 `module.exports`对象. 这个名称也意味着模块用于 CommonJS 环境.
+
+```js
+module.exports = _entry_return_;
+
+require('MyLibrary').doSomething();
+```
+
+注意, `output.library`会被省略不需要再设置.
+
+#### `libraryTarget: "amd"`
+
+将 library 暴露为 AMD 模块.
+
+AMD 模块要求入口 chunk (例如使用 `<script>`标签加载的第一个脚本)通过特定的属性定义, 例如 `define`和 `require`, 它们通常由 RequireJS 或任何兼容的模块加载器提供 (例如 almond). 否则, 直接加载生成的 AMD bundle 将导致报错, 如 `define is not defined`.
+
+所以, 使用以下配置:
+
+```js
+output: {
+    library: 'MyLibrary',
+    libraryTarget: 'amd'
+}
+```
+
+生成的 output 将会使用 "MyLibrary" 作为模块名定义, 即
+
+```js
+define('MyLibrary', [], function() {
+    return _entry_return_;
+});
+```
+
+可以在 script 标签中, 将 bundle 作为一个模块整体引入, 并且可以像这样调用 bundle:
+
+```js
+require(['MyLibrary'], function(MyLibrary) {});
+```
+
+如果 `output.library`未定义, 将会生成以下内容.
+
+```js
+define([], function() {
+    return _entry_return_;
+});
+```
+
+如果直接加载 `<script>`标签, 此 bundle 无法按预期运行, 或者根本无法正常运行(在 almond loader 中). 只能通过文件的实际路径, 在 RequireJS 兼容的异步模块加载器中运行, 因此在这种情况下, 如果这些设置直接暴露在服务器, 那么 `output.path`和 `output.filename`对于这个特定的设置可能变得很重要.
+
+#### `libraryTarget: "umd"`
+
+将 library 暴露为所有的模块定义下都可运行的方式. 它将在 CommonJS, AMD 环境下运行, 或将模块导出到 global 下的变量.
+
+所以使用以下配置:
+
+```js
+output: {
+    library: 'MyLibrary',
+    libraryTarget: 'umd'
+}
+```
+
+最终输出如下:
+
+```js
+(function webpackUniversalModuleDefinition(root, factory) {
+    if(typeof exports === 'object' && typeof module === 'object')
+        module.exports = factory();
+    else if(typeof define === 'function' && define.umd)
+        define([], factory);
+    else if(typeof exports === 'object')
+        exports['MyLibrary'] = factory();
+    else
+        root['MyLibrary'] = factory();
+})(typeof self !== 'undefined' ? self : this, function() {
+    return _entry_return_;
+});
+```
+
+注意, 省略 `library`会导致将入口起点返回的所有属性, 直接赋值给 root 对象.
+
+```js
+output: {
+    libraryTarget: 'umd'
+}
+```
+
+输出结果如下:
+
+```js
+(function webpackUniversalModuleDefinition(root, factory) {
+    if(typeof exports === 'object' && typeof module === 'object')
+        module.exports = factory();
+    else if(typeof define === 'function' && define.amd)
+        define([], factory);
+    else {
+        var a = factory();
+        for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
+    }
+})(typeof self !== 'undefined' ? self : this, function() {
+    return _entry_return_;
+});
+```
+
+从 webpack 3.1.0 开始, 可以将 `library`指定为一个对象, 用于给每个 target 起不同的名称.
+
+```js
+output: {
+    library: {
+        root: 'MyLibrary',
+        amd: 'my-library',
+        commonjs: 'my-common-library'
+    },
+    libraryTarget: 'umd'
+}
+```
+
+### 其他 Targets
+
+#### `libraryTarget: "jsonp"`
+
+这将把入口起点的返回值, 包裹到一个 jsonp 包装容器中
+
+```js
+MyLibrary(_entry_return_);
+```
+
+你的 library 的依赖将由 `externals`配置定义.
+
+## 5.22 output.path
+
+`string`
+
+output 目录对应一个绝对路径
+
+```js
+path: path.resolve(__dirname, 'dist/assets')
+```
+
+注意, `[hash]`在参数中被替换为编译过程(compilation)的 hash.
+
+## 5.23 output.pathinfo
+
+`boolean`
+
+告诉 webpack 在 bundle 中引入所包含模块信息的相关注释. 此选项默认值是 `false`, 并且**不应该**用于生产环境(production), 但是对于阅读开发环境(development)中的生成代码(generated code)极其有用.
+
+注意, 这些注释也会被添加至经过 tree shaking 后生成的 bundle 中.
+
+## 5.24 output.publicPath
+
+`string | function`
+
+对于按需加载(on-demand-load)或加载外部资源(external resources) (如图片, 文件等)来说, output.publicPath 是很重要的选项. 如果指定了一个错误的值, 则在加载这些资源时会收到 404 错误.
+
+此选项指定在浏览中所引用的此输出目录对应的**公开 URL**. 相对 URL(relative URL)会被相对于 HTML 页面 (或 <base> 标签)解析. 相对于服务的 URL(Server-relative URL), 相对于协议的 URL(protocol-relative URL)或绝对 URL(absolute URL)也可能被用到, 或者有时必须要用到, 例如: 当将资源托管到 CDN 时.
+
+该选项的值是以 runtime(运行时) 或 loader(载入时)所创建的每个 URL 为前缀. 因此, 在多数情况下, **此选项的值都会以 / 结束**.
+
+默认值是一个空字符串 `""`
+
+示例:
+
+```js
+'https://cdn.example.com/assets/' // CDN(总是以 HTTPS 协议)
+'//cdn.example.com/assets' // CDN (协议相同)
+'/assets/' // 相对于服务(server-relative)
+'assets/' // 相对于 HTML 页面
+'../assets/' // 相对于 HTML 页面
+'' // 相对于 HTML 页面(目录相同)
+```
+
+## 5.25 output.sourceMapFilename
+
+`string`
+
+此选项会向硬盘写入一个输出文件, 只在 `devtool`启用了 SourceMap 选项时才使用.
+
+配置 source map 的命名方式, 默认使用 `"[file].map"`.
+
+可以使用 `[name]`, `[id]`, `[hash]`和 `[chunkhash]`替换符号. 除此之外, 还可以使用以下替换符号.
+
+| 模板       | 描述                                     |
+| ---------- | ---------------------------------------- |
+| [file]     | 模块文件名称                             |
+| [filebase] | 模块 basename (Node.js 的 path.basename) |
+
+建议**只使用 `[file]`占位符**, 因为其他占位符在非 chunk 文件(non-chunk files)生成的 SourceMap 时不起作用.
+
+## 5.26 output.sourcePrefix
+
+`string`
+
+修改输出 bundle 中每行的前缀.
+
+```js
+sourcePrefix: '\t'
+```
+
+注意, 默认情况下使用空字符串. 使用一些缩进会看起来更美观, 但是可能导致多行字符串出现问题.
+
+## 5.27 output.strictModuleExceptionHandling
+
+`boolean`
+
+如果一个模块是在 `require`时抛出异常, 告诉 webpack 从模块实例缓存(`require.cache`)中删除这个模块.
+
+出于性能原因, 默认为 `false`.
+
+当设置为 `false`时, 该模块不会从缓存中删除, 这将造成仅在第一次 `require`调用时抛出异常(会导致与 node.js 不兼容).
+
+例如, 有一个 `module.js`
+
+```js
+throw new Error('error');
+```
+
+```js
+// 当 strictModuleExceptionHandling = false
+require('module') // 抛出错误
+require('module') // 不抛出错误
+```
+
+```js
+// 当 strictModuleExceptionHandling = true
+require('module') // 抛出错误
+require('module') // 仍然抛出错误
+```
+
+## 5.28 output.umdNamedDefine
+
+`boolean`
+
+当使用了 `libraryTarget: "umd"`时, 设置
+
+```js
+umdNamedDefine: true
+```
+
+会对 UMD 的构建过程中的 AMD 模块进行命名. 否则就使用匿名的 `define`.

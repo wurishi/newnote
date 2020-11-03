@@ -893,11 +893,11 @@ noParse: function(content) {
 
 创建模块时, 匹配请求的规则数组. 这些规则能够修改模块的创建方式. 这些规则能够对模块(module)应用 loader, 或者修改解析器(parser).
 
-### Rule
+## 6.3 Rule
 
 每个规则可以分为三部分 - 条件(condition), 结果(result)和嵌套规则(nested rule).
 
-#### Rule 条件
+### Rule 条件
 
 条件有两种输入值:
 
@@ -910,7 +910,7 @@ noParse: function(content) {
 
 当使用多个条件时, 所有条件都需要匹配.
 
-#### Rule 结果
+### Rule 结果
 
 规则结果只在规则条件匹配时使用.
 
@@ -927,13 +927,13 @@ noParse: function(content) {
 
 `parser`属性会影响 parser 选项.
 
-#### 嵌套的 Rule
+### 嵌套的 Rule
 
 可以使用属性 `rules`和 `oneOf`指定嵌套规则.
 
 这些规则用于在规则条件(rule condition)匹配时进行取值.
 
-### Rule.enforce
+## 6.4 Rule.enforce
 
 可能的值有: `"pre"` | `"post"`
 
@@ -951,15 +951,15 @@ noParse: function(content) {
 
 不应该使用行内 loader 和 `!`前缀, 因为它们是非标准的. 它们可在由 loader 生成的代码中使用.
 
-### Rule.exclude
+## 6.5 Rule.exclude
 
 `Rule.exclude`是 `Rule.resource.exclude`的简写. 如果提供了 `Rule.exclude`选项, 就不能再提供 `Rule.resource`.
 
-### Rule.include
+## 6.6 Rule.include
 
 `Rule.include`是 `Rule.source.include`的简写. 如果提供了 `Rule.include`选项, 就不能再提供 `Rule.resource`.
 
-### Rule.issuer
+## 6.7 Rule.issuer
 
 一个<!--条件-->, 用来与被发布的 request 对应的模块项匹配. 在以下示例中, a.js request 的 `发布者(issuer)`是 index.js 文件的路径.
 
@@ -971,15 +971,15 @@ import A from './a.js'
 
 这个选项可以用来将 loader 应用到一个特定模块或一组模块的依赖中.
 
-### Rule.loader
+## 6.8 Rule.loader
 
 `Rule.loader`是 `Rule.use:[ {loader} ]`的简写.
 
-### ~~Rule.loaders~~
+## ~~6.9 Rule.loaders~~
 
 是 `Rule.use`的别名, 但已被标识为废弃.
 
-### Rule.oneOf
+## 6.10 Rule.oneOf
 
 规则数组, 当规则匹配时, 只使用第一个匹配规则.
 
@@ -999,11 +999,11 @@ import A from './a.js'
 }
 ```
 
-### ~~Rule.options / Rule.query~~
+## ~~6.11 Rule.options / Rule.query~~
 
 它们是 `Rule.use: [ { options } ]`的简写, 已废弃.
 
-### Rule.parser
+## 6.12 Rule.parser
 
 解析选项对象. 所有应用的解析选项都将被合并.
 
@@ -1032,11 +1032,11 @@ parser: {
 }
 ```
 
-### Rule.resource
+## 6.13 Rule.resource
 
 <!--条件-->会匹配 resource. 既可以提供 `Rule.resource`选项, 也可以使用快捷选项 `Rule.test`, `Rule.exclude`和 `Rule.include`.
 
-### Rule.resourceQuery
+## 6.14 Rule.resourceQuery
 
 <!--条件-->用来匹配 query, 如 `import foo from './foo.css?inline'`匹配的是:
 
@@ -1048,15 +1048,15 @@ parser: {
 }
 ```
 
-### Rule.rules
+## 6.15 Rule.rules
 
 规则数组
 
-### Rule.test
+## 6.16 Rule.test
 
 `Rule.test`是 `Rule.resource.test`的简写. 如果提供了一个 `Rule.test`选项, 就不能再提供 `Rule.resource`
 
-### Rule.use
+## 6.17 Rule.use
 
 应用于模块的 <!--UseEntity--> 列表. 每个入口(entry)指定使用一个 loader.
 
@@ -1064,7 +1064,7 @@ parser: {
 
 当使用数组传递多个 loader 时, 将会按从右到左的顺序执行. (即最后一条配置最先执行).
 
-## 6.3 <!--条件-->
+## 6.18 <!--条件-->
 
 条件可以是这些之一:
 
@@ -1080,7 +1080,7 @@ parser: {
   - `{ or: [Condition] }`: 匹配数组中的任何一个条件.
   - `{ not: [Condition] }`: 必须排队这个条件.
 
-## 6.4 <!--UseEntry-->
+## 6.19 <!--UseEntry-->
 
 `object`
 
@@ -1090,6 +1090,226 @@ parser: {
 
 由于兼容性原因, 也可能有 `query`属性, 它是 `options`属性的别名.
 
-## ~~6.5 模块上下文~~
+## ~~6.20 模块上下文~~
 
 已被废弃
+
+# 7. 解析 (resolve)
+
+这些选项能设置模块如何被解析.
+
+## 7.1 resolve
+
+`object`
+
+配置模块如何解析. 例如, 当在 ES2015 中调用 `import 'lodash'`, `resolve`选项能够对 webpack 查找 `"lodash"`的方式去做修改.
+
+## 7.2 resolve.alias
+
+`object`
+
+创建 `import`和 `require`的别名, 来确保模块引入变得更简单.
+
+例如:
+
+```js
+alias: {
+    Utilities: path.resolve(__dirname, 'src/utilities/'),
+    Templates: path.resolve(__dirname, 'src/templates/')
+}
+```
+
+```js
+import Utility from '../../utilities/utility';
+// 上面这种可以使用别名导入
+import Utility from 'Utilities/utility';
+```
+
+也可以在给定对象的键后的未尾添加 `$`, 以表示精准匹配:
+
+```js
+alias: {
+    xyz$: path.resolve(__dirname, 'path/to/file.js')
+}
+```
+
+这将产生以下结果:
+
+```js
+import Test1 from 'xyz'; // 精确匹配, 将导入 path/to/file.js
+import Test2 from 'xyz/file.js'; // 非精确匹配, 触发普通解析
+```
+
+| 别名                           | import "xyz"                        | import "xyz/file.js"              |
+| ------------------------------ | ----------------------------------- | --------------------------------- |
+| {}                             | /abc/node_modules/xyz/index.js      | /abc/node_modules/xyz/file.js     |
+| {xyz: '/abs/path/to/file.js'}  | /abc/path/to/file.js                | error                             |
+| {xyz$: '/abs/path/to/file.js'} | /abc/path/to/file.js                | /abc/node_modules/xyz/file.js     |
+| {xyz: './dir/file.js'}         | /abc/dir/file.js                    | error                             |
+| {xyz$: './dir/file.js'}        | /abc/dir/file.js                    | /abc/node_modules/xyz/file.js     |
+| {xyz: '/some/dir'}             | /some/dir/index.js                  | /some/dir/file.js                 |
+| {xyz$: '/some/dir'}            | /some/dir/index.js                  | /abc/node_module/xyz/file.js      |
+| {xyz: './dir'}                 | /abc/dir/index.js                   | /abc/dir/file.js                  |
+| {xyz: 'modu'}                  | /abc/node_module/modu/index.js      | /abc/node_modules/modu/file.js    |
+| {xyz$: 'modu'}                 | /abc/node_module/modu/index.js      | /abc/node_module/xyz/file.js      |
+| {xyz: 'modu/some/file.js'}     | /abc/node_modules/modu/some/file.js | error                             |
+| {xyz: 'modu/dir'}              | /abc/node_module/modu/dir/index.js  | /abc/node_modules/dir/file.js     |
+| {xyz: 'xyz/dir'}               | /abc/node_module/xyz/dir/index.js   | /abc/node_modules/xyz/dir/file.js |
+| {xyz$: 'xyz/dir'}              | /abc/node_module/xyz/dir/index.js   | /abc/node_modules/xyz/file.js     |
+
+要注意, 如果在 package.json 文件中有过配置, index.js 也可能是解析到另一个文件上.
+
+/abc/node_modules 也可能会在 /node_modules 中解析.
+
+## 7.3 resolve.aliasFields
+
+`string`
+
+指定一个字段, 例如 `browser`, 进行解析.
+
+## 7.4 resolve.cacheWithContext
+
+`boolean`(从 webpack 3.1.0 开始)
+
+如果启用了不安全缓存, 请在缓存键(cache key)中引入 `request.context`. 这个选项被 `enhanced-resolve`模块考虑在内. 从 webpack 3.1.0 开始, 在配置了 `resolve`或 `resolveLoader`插件时, 解析缓存(resolve caching)中的上下文(context)会被忽略. 这个选项用来解决性能衰退的问题.
+
+## 7.5 resolve.descriptionFiles
+
+`array`
+
+用于描述的 JSON 文件. 默认:
+
+```js
+descriptionFiles: ['package.json']
+```
+
+## 7.6 resolve.enforceExtension
+
+`boolean`
+
+如果是 `true`, 将不允许无扩展名(extension-less)文件. 默认如果 `./foo`有 `.js`扩展, `require('./foo')`可以正常运行. 但如果设置此选项为 `true`, 只有 `require('./foo.js')`才能够正常工作.
+
+## 7.7 resolve.enforceModuleExtension
+
+`boolean`
+
+对模块是否需要使用扩展(例如 loader), 默认为 false.
+
+## 7.8 resolve.extensions
+
+`array`
+
+自动解析确定的扩展, 默认值为:
+
+```js
+extensions: ['.js', '.json']
+```
+
+> 注意, 使用此选项时, 会覆盖默认数组. 也就是说 webpack 将不再尝试使用默认扩展来解析模块. 对于使用了扩展名导入的模块, 如 `import someFile from './somefile.ext'`, 要想正确的解析, 需要有一个 `"*"`字符串选项包含中数组中.
+
+## 7.9 resolve.mainFields
+
+`array`
+
+当从 npm 包中导入模块时 (如 `import * as D3 from 'd3'`), 此选项将决定在 `package.json`中使用哪个字段导入模块. 根据 webpack 配置中指定的 `target`不同, 默认值也会有所不同.
+
+当 `target`属性设置为 `webworker`, `web`或者没有指定时, 默认值为:
+
+```js
+mainFields: ['browser', 'module', 'main']
+```
+
+对于其他任意的 `target`(包括 `node`), 默认值为:
+
+```js
+mainFields: ['module', 'main']
+```
+
+如果 D3 的 `package.json`含有这些字段:
+
+```json
+{
+    "main": "build/d3.Node.js",
+    "browser": "build/d3.js",
+    "module": "index",
+}
+```
+
+这意味着 `import * as D3 from 'd3'`, 实际上是从 `browser`属性解析文件, 因为 `browser`属性是最优先选择.
+
+## 7.10 resolve.mainFiles
+
+`array`
+
+解析目录时要使用的文件名, 默认:
+
+```js
+mainFiles: ['index']
+```
+
+## 7.11 resolve.modules
+
+`array`
+
+告诉 webpack 解析模块时应该搜索的目录.
+
+绝对路径和相对路径都能使用, 但是要知道它们之间存在一些差异.
+
+相对路径将类似于 Node 查找 'node_modules'的方式一样, 如果当前目录下没有找到, 将会一级级的往父级目录查找.
+
+绝对路径, 将只在给定的目录中搜索.
+
+## 7.12 resolve.unsafeCache
+
+`regex | array | boolean`
+
+如果启用, 会主动缓存模块, 但并不安全. 默认
+
+```js
+unsafeCache: true
+```
+
+如果只想缓存 utilities 模块, 可以使用正则表达式或正则数组.
+
+```js
+unsafeCache: /src\/utilities/
+```
+
+## 7.13 resolve.plugins
+
+使用额外的解析插件列表.
+
+## 7.14 resolve.symlinks
+
+`boolean`
+
+是否将符号连接(symlink)解析到它们的符号链接位置(symlink location). 默认 true.
+
+启用时, 符号链接(symlink)的资源, 将解析为其真实的路径, 而不是其符号链接(symlink)位置. 注意, 当使用符号链接 package 包工具时(如 `npm link`), 可能会导致模块解析失败.
+
+## 7.15 resolve.cachePredicate
+
+`function`
+
+决定请求是否应该被缓存的函数. 函数传入一个带有 `path`和 `request`属性的对象. 默认为:
+
+```js
+cachePredicate: function() { return true; }
+```
+
+## 7.16 resolveLoader
+
+`object`
+
+这组选项与上的 `resolve`对象的属性集合相同, 但仅用于解析 webpack 的 loader 包.
+
+## 7.17 resolveLoader.moduleExtensions
+
+`array`
+
+解析 loader 时, 用到扩展名(extensions)/后缀(suffixes). 从 webpack 2 开始, 强烈建议使用全名, 以尽可能的清晰. 但如果确实想将 `example-loader`省略为 `example`, 则可以使用此选项来实现:
+
+```js
+moduleExtensions: ['-loader']
+```
+

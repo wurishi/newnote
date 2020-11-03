@@ -1313,3 +1313,11 @@ cachePredicate: function() { return true; }
 moduleExtensions: ['-loader']
 ```
 
+# 8. 插件 (plugins)
+
+## 8.1 plugins
+
+`array`
+
+该选项用于以各种方式自定义 webpack 构建过程. 
+

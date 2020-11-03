@@ -1321,3 +1321,334 @@ moduleExtensions: ['-loader']
 
 该选项用于以各种方式自定义 webpack 构建过程. 
 
+# 9. 开发中 Server (devServer)
+
+webpack-dev-server 能够用于快速开发应用程序.
+
+与 webpack-dev-middleware 兼容的选项旁边有 *🔑*
+
+## 9.1 devServer
+
+`object`
+
+通过来自 webpack-dev-server 的这些选项, 能够用多种方式改变其行为.
+
+如果使用 Node.js API 来使用 dev-server, `devServer`中和选项将被忽略.
+
+## 9.2 devServer.after
+
+`function`
+
+使用 middleware 启动 devServer 后.
+
+## 9.3 devServer.allowedHosts
+
+`array`
+
+允许访问 devServer 的白名单.
+
+## 9.4 devServer.before
+
+`function`
+
+使用 middleware 启动 devServer 前.
+
+## 9.5 devServer.bonjour
+
+## 9.6 devServer.clientLogLevel
+
+`string`
+
+可能的值有 `none`, `error`, `warning`或者 `info`(默认值)
+
+## 9.7 devServer.color - CLI only
+
+`boolean`
+
+是否在控制台启用颜色.
+
+## 9.8 devServer.compress
+
+`boolean`
+
+服务是否启用 gzip 压缩
+
+## 9.9 devServer.contentBase
+
+`boolean | string | array`
+
+告诉服务器从哪里提供静态文件内容. 
+
+## 9.10 devServer.disableHostCheck
+
+`boolean`
+
+## 9.11 devServer.filename *🔑*
+
+`string`
+
+只有在**惰性模式**中有效. 默认在惰性模式中, 每个请求结果都会产生全新的编译. 使用 `filename`, 可以只在某个文件被请求时编译.
+
+## 9.12 devServer.headers *🔑*
+
+`object`
+
+在所有响应中添加 head 内容.
+
+## 9.13 devServer.historyApiFallback
+
+`boolean | object`
+
+当使用 H5 History API 时, 任意的 `404`响应都可能需要被替代为 `index.html`, 可以传入以下启用:
+
+```js
+historyApiFallback: true
+```
+
+通过传入一个对象, 比如使用 `rewrites`这个选项, 可以对此行为做进一步控制:
+
+```js
+historyApiFallback: {
+    rewrites: {
+        { from: /^\/$/, to: '/views/landing.html' },
+        { from: /^\/subpage/, to: '/views/subpage.html' },
+        { from: /./, to: '/views/404.html' }
+    }
+}
+```
+
+当路径中使用点(dot) (常见于 Angular), 可能需要使用 `disableDotRule`
+
+## 9.14 devServer.host
+
+`string`
+
+指定使用一个 host, 默认是 localhost.
+
+## 9.15 devServer.hot
+
+`boolean`
+
+启用 webpack 的模块热替换特性.
+
+## 9.16 devServer.hotOnly
+
+`boolean`
+
+## 9.17 devServer.https
+
+`boolean | true`
+
+设置为 true, 表示 dev-server 通过 HTTPS 的 HTTP/2 提供服务.
+
+也可以提供自己的签名证书:
+
+```js
+https: {
+    key: fs.readFileSync('/path/to/server.key'),
+    cert: fs.readFileSync('/path/to/server.crt'),
+    ca: fs.readFileSync('/path/to/ca.pem')
+}
+```
+
+## 9.18 devServer.index
+
+`string`
+
+指定 index 文件的文件名
+
+## 9.19 devServer.info - CLI only
+
+`boolean`
+
+## 9.20 devServer.inline
+
+`boolean`
+
+在 dev-server 的两种不同模式之间切换. 默认情况下, 使用内联模式(inline mode), 这意味着一段处理实际重载的脚本会被插入到 bundle 中, 并且构建消息将会出现在浏览器控制台.
+
+也可以使用 iframe 模式 (设置为 false), 它会在通知栏下面使用 <iframe> 标签, 其中包含了关于构建的消息.
+
+> 推荐使用模块热替换的内联模式, 因为它包含来自 websocket 的 HMR 触发器. 轮询模式可以作为替代方案, 但需要一个额外的入口点. `'webpack/hot/poll?1000'`
+
+## 9.21 devServer.lazy *🔑*
+
+`boolean`
+
+当启用 `lazy`时, dev-server 只有在请求时才编译包 (bundle). 这意味着 webpack 不会监视任何文件改动. 这称为 **惰性模式**
+
+## 9.22 devServer.noInfo *🔑*
+
+`boolean`
+
+启用后, 部分消息会被隐藏(如, 启动时和每次保存之后, 显示的 webpack 包(bundle)信息). 错误和警告仍然会显示.
+
+## 9.23 devServer.open
+
+`boolean`
+
+设置为 true 时, 每次启动 dev-server 会打开浏览器.
+
+默认打开的是默认浏览器, 也可以指定
+
+```bash
+webpack-dev-server --open 'Google Chrome'
+```
+
+## 9.24 devServer.openPage
+
+`string`
+
+当浏览器自动打开时指向的页面路径.
+
+## 9.25 devServer.overlay
+
+`boolean | object`
+
+是否在浏览器中全屏显示编译错误和警告.
+
+传入对象, 可以精细控制错误和警告:
+
+```js
+overlay: {
+    warnings: true,
+    errors: true
+}
+```
+
+## 9.25 devServer.pfx
+
+`string`
+
+指定 SSL 的.pfx 文件.
+
+## 9.26 devServer.pfxPassphrase
+
+`string`
+
+## 9.27 devServer.port
+
+`number`
+
+指定要监听请示的端口号.
+
+## 9.28 devServer.proxy
+
+`object`
+
+dev-server 使用了 `http-proxy-middleware`包处理代理.
+
+```js
+proxy: {
+    '/api': 'http://localhost:3000'
+}
+// 请求 /api/users 会被代理请求到 http://localhost:3000/api/users
+
+// 如果不想传递 /api
+proxy: {
+    '/api': {
+        target: 'http://localhost:3000',
+        pathRewrite: {'^/api': ''}
+    }
+}
+```
+
+如果不想代理所有的请求, 可以基于一个函数的返回值绕过代理. 必须返回 `false`或路径, 来跳过代理请示.
+
+```js
+proxy: {
+    '/api': {
+        target: 'http://localhost:3000',
+        bypass: function(req, res, proxyOptions) {
+            if(req.headers.accept.indexOf('html') !== -1) {
+                console.log('跳过代理');
+                return '/index.html'
+            }
+        }
+    }
+}
+```
+
+## 9.29 devServer.progress - CLI only
+
+`boolean`
+
+将运行进度输出到控制台.
+
+## 9.30 devServer.public
+
+`boolean`
+
+当使用 内联模式(inline mode)并代理 dev-server 时, 内联的客户端脚本并不总是知道要连接到什么地方. 它会尝试根据 `window.location`来猜测服务器的 URL, 但是如果失败, 你需要这样:
+
+```js
+public: 'myapp.test:80' // 让 dev-server 代理到 nginx 的 myapp.test 上
+```
+
+## 9.31 devServer.publicPath *🔑*
+
+`string`
+
+此路径下的打包文件可以在浏览器中访问.
+
+> 请确保 publicPath 总是以斜杠(/)开头和结尾.
+>
+> 也可以使用一个完整的 URL
+
+## 9.32 devServer.quiet *🔑*
+
+`boolean`
+
+启用后, 除了初始启动信息之外的任何内容都不会被打印到控制台.(包括错误和警告)
+
+## ~~9.33 devServer.setup~~
+
+`function`
+
+webpack 3.0.0 开始废弃, 请使用 `devServer.before`
+
+## 9.34 devServer.socket
+
+`string`
+
+## 9.35 devServer.staticOptions
+
+只有在 `contentBase`被设置时才有效.
+
+## 9.36 devServer.stats *🔑*
+
+`string | object`
+
+控制输出信息. 当使用了 `quiet`或 `noInfo`之后无效.
+
+## 9.37 devServer.stdin - CLI only
+
+`boolean`
+
+当接收到 stdin ends 时是否关闭 dev server.
+
+## 9.38 devServer.useLocalIp
+
+`boolean`
+
+浏览器打开时是否使用本地 IP.
+
+## 9.39 devServer.watchContentBase
+
+`boolean`
+
+是否让服务器观察到 `devServer.contentBase`目录中的文件被修改时触发页面 reload. 默认为 false.
+
+## 9.40 devServer.watchOptions *🔑*
+
+`object`
+
+webpack 默认情况下使用文件系统(file system)获取文件改动的通知. 但在某些情况下, 可能不能正常工作. (例如使用 Network File System(NFS)时). 这时, 可以改为轮询模式:
+
+```js
+watchOptions: {
+    poll: true
+}
+```
+
+如果轮询对文件系统来说太频繁的话, 可以修改间隔时间(毫秒为单位), 将其设置为一个整数.

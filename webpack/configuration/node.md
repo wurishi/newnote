@@ -1790,3 +1790,88 @@ const options = {
 }
 ```
 
+# 12. watch 和 watchOptions
+
+webpack 可以监听文件变化, 当它们修改后会重新编译.
+
+## 12.1 watch
+
+`boolean`
+
+启用 Watch 模式. 这意味着在初始构建之后, webpack 将继续监听任何已解析文件的更改. 默认是关闭的.
+
+> 注: webpack-dev-server 和 webpack-dev-middleware 里 Watch 模式默认开启.
+
+## 12.2 watchOptions
+
+`object`
+
+一组用来定制 Watch 模式的选项.
+
+## 12.3 watchOptions.aggregateTimeout
+
+`number`
+
+当第一个文件更改后, 会在重新构建前增加延迟. 这个选项允许 webpack 将这段时间内进行的任何其他更改都聚合到一次重新构建里, 以毫秒为单位.
+
+```js
+aggregateTimeout: 300 // 默认值
+```
+
+## 12.4 watchOptions.ignored
+
+对于某些系统, 监听大量文件系统会导致大量的 CPU 或内存占用, 这个选项可以排除一些文件夹, 比如:
+
+```js
+ignored: /node_modules/
+```
+
+也可以使用 anymatch 模式
+
+```js
+ignored: "files/**/*.js"
+```
+
+## 12.5 watchOptions.poll
+
+`boolean | number`
+
+通过传递 `true`开启 polling, 或者指定毫秒进行轮询.
+
+## 12.6 info-verbosity
+
+`string: none | info | verbose`
+
+默认为 info, 设置为 verbose 还会额外在增量构建的开始和结束时, 向控制台发送消息.
+
+## 12.7 故障排除
+
+### 发现修改, 但并未做处理
+
+可以在运行 webpack 时, 通过使用 --progress 标志, 来验证文件修改后, 有没有通知 webpack. 如果进度显示保存, 但没有输出文件, 则可能是配置问题, 而非文件监视问题.
+
+### 没有足够的文件观察者
+
+确认系统中有足够多的文件观察者. 如果这个值太低, webpack 中的文件观察者将无法识别修改.
+
+> Arch 用户，请将 `fs.inotify.max_user_watches=524288` 添加到 `/etc/sysctl.d/99-sysctl.conf` 中，然后执行 `sysctl --system`。 Ubuntu 用户（可能还有其他用户）请执行：`echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p`
+
+### MacOS fsevents Bug
+
+在 MacOS 中, 某些情况下文件夹可能会损坏.
+
+### Windows Paths
+
+因为 webpack 期望获得多个配置选项的绝对路径, 所以 windows 的路径分隔符 `\`可能会破坏某些功能.
+
+使用正确的分隔符. 即 `path.resolve`或 `path.join`
+
+### Vim
+
+在某些机器上, Vim 预告将 backupcopy 选项设置为 `auto`. 这可能会导致系统的文件监视机制出现问题. 将此选项设置为 `yes`可以确保创建文件的副本, 并在保存时覆盖原始文件.
+
+`:set backupcopy=yes`
+
+### 在 WebStorm 中保存
+
+使用 JetBrains WebStorm IDE 时, 你可能会发现保存修改过的文件, 并不会按照预期触发观察者. 尝试在设置中禁用 `安全写入(safe write)`选项.

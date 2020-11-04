@@ -52,6 +52,12 @@ electron
 - [深入 ES6 generators](https://2ality.com/2015/03/es6-generators.html) **(完成)**
 - [3 cases where JavaScript generators rock](https://goshakkk.name/javascript-generators-understanding-sample-use-cases/) **(完成)**
 
+# leetcode
+
+leetcode
+
+[labuladong的算法小抄](https://labuladong.gitbook.io/algo/)
+
 # mocha
 
 参考资料: [mochajs.cn](https://mochajs.cn/)

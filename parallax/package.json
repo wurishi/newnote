@@ -1,0 +1,14 @@
+{
+  "name": "parallax-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "parallax-js": "^3.1.0"
+  }
+}

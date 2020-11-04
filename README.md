@@ -62,6 +62,10 @@ leetcode
 
 参考资料: [mochajs.cn](https://mochajs.cn/)
 
+# parallax
+
+参考资料: [parallax.js](https://github.com/wagerfield/parallax) **(完成)**
+
 # particlesjs
 
 参考资料: [particles.js](https://vincentgarreau.com/particles.js/)
@@ -144,7 +148,7 @@ U3D JobSystem
 
 - 指南: [webpack 指南](https://www.webpackjs.com/guides/installation/)  **(完成)**
 - 概念: [webpack 概念](https://www.webpackjs.com/concepts/) **(完成)**
-- 配置: [webpack 配置](https://www.webpackjs.com/configuration/) 
+- 配置: [webpack 配置](https://www.webpackjs.com/configuration/) **(完成)**
 - API: [webpack API](https://www.webpackjs.com/api/)
 - 怎样编写 loader: [webpack 参与贡献](https://www.webpackjs.com/contribute/) 
 

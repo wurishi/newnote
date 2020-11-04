@@ -1981,3 +1981,319 @@ performance: {
 }
 ```
 
+# 15. Node
+
+这些选项可以配置是否 polyfill 或 mock 某些 Node.js 全局变量和模块. 这可以使初始为 Node.js 环境编写的代码, 在其他环境(如浏览器)中运行.
+
+## 15.1 node
+
+`object`
+
+每个属性对应 Node.js 的全局变量或模块, 每个属性的值是以下其中之一:
+
+- true: 提供 polyfill.
+- "mock": 提供 mock 实现预期接口, 但功能很少或没有.
+- "empty": 提供空对象.
+- false: 什么都不提供 
+
+这里是默认值:
+
+```js
+node: {
+    console: false,
+    global: true,
+    process: true,
+    __filename: 'mock',
+    __dirname: 'mock',
+    Buffer: true,
+    setImmediate: true
+}
+```
+
+从 webpack 3.0.0 开始, node 选项可能被设置为 `false`, 以完全关闭 `NodeStuffPlugin`和 `NodeSourcePlugin`插件.
+
+## 15.2 node.console
+
+`boolean | "mock"`
+
+默认值为 false.
+
+浏览器提供了一个 console 对象, 非常类似于 Node.js 的 console, 所以通常不需要 polyfill.
+
+## 15.3 node.process
+
+`boolean | "mock"`
+
+默认值为 true.
+
+## 15.4 node.global
+
+`boolean`
+
+默认值为 true.
+
+## 15.5 node.__filename
+
+`boolean | "mock"`
+
+默认值为 "mock"
+
+选项:
+
+- true: 输入文件的文件名, 是相对于 context 选项的.
+- false: 常规的 Node.js __filename 的行为. 在 Node.js 环境中运行时, 输出文件的文件名.
+- "mock": value 填充为 "index.js"
+
+## 15.6 node.__dirname
+
+`boolean | "mock"`
+
+默认值为 "mock"
+
+选项:
+
+- true: 输入文件的目录名, 是相对于 context 选项.
+- false: 常规的 Node.js __dirname 行为. 在 Node.js 环境中运行时, 输出文件的目录名.
+- "mock": value 填充为 "/".
+
+## 15.7 node.Buffer
+
+`boolean | "mock"`
+
+默认值为 true
+
+## 15.8 node.setImmediate
+
+`boolean | "mock" | "empty"`
+
+默认值为 true
+
+## 15.9 其他 Node.js 核心库 (Node.js core libraries)
+
+`boolean | "mock" | "empty"`
+
+只有当 target 是未指定, "web" 或 "webworker" 这三种情况时, 此选项才会被激活(通过 NodeSourcePlugin)
+
+当 NodeSourcePlugin 插件启用时, 则会使用 node-libs-browser 来对 Node.js 核心库 polyfill.
+
+# 16. 统计信息 (stats)
+
+如果不希望使用 `quiet`或 `noInfo`, 但又不想得到全部的信息, 只是想要获取某部分 bundle 的信息, 使用 stats 选项是比较好的折衷方式.
+
+> 对于  webpack-dev-server, 这个属性需要放在 devServer 对象里.
+>
+> 当使用 Node.js API 时, 此选项无效.
+
+## 16.1 stats
+
+`object | string`
+
+类型为 string 时的快捷方式:
+
+| Preset        | sd    | Description                    |
+| ------------- | ----- | ------------------------------ |
+| "errors-only" | none  | 只在发生错误时输出             |
+| "minimal"     | none  | 只在发生错误或有新的编译时输出 |
+| "none"        | false | 没有输出                       |
+| "normal"      | true  | 标准输出                       |
+| "verbose"     | none  | 全部输出                       |
+
+也可以使用对象精确控制:
+
+```js
+stats: {
+
+  // 未定义选项时，stats 选项的备用值(fallback value)（优先级高于 webpack 本地默认值）
+  all: undefined,
+
+  // 添加资源信息
+  assets: true,
+
+  // 对资源按指定的字段进行排序
+  // 你可以使用 `!field` 来反转排序。
+  assetsSort: "field",
+
+  // 添加构建日期和构建时间信息
+  builtAt: true,
+
+  // 添加缓存（但未构建）模块的信息
+  cached: true,
+
+  // 显示缓存的资源（将其设置为 `false` 则仅显示输出的文件）
+  cachedAssets: true,
+
+  // 添加 children 信息
+  children: true,
+
+  // 添加 chunk 信息（设置为 `false` 能允许较少的冗长输出）
+  chunks: true,
+
+  // 将构建模块信息添加到 chunk 信息
+  chunkModules: true,
+
+  // 添加 chunk 和 chunk merge 来源的信息
+  chunkOrigins: true,
+
+  // 按指定的字段，对 chunk 进行排序
+  // 你可以使用 `!field` 来反转排序。默认是按照 `id` 排序。
+  chunksSort: "field",
+
+  // 用于缩短 request 的上下文目录
+  context: "../src/",
+
+  // `webpack --colors` 等同于
+  colors: false,
+
+  // 显示每个模块到入口起点的距离(distance)
+  depth: false,
+
+  // 通过对应的 bundle 显示入口起点
+  entrypoints: false,
+
+  // 添加 --env information
+  env: false,
+
+  // 添加错误信息
+  errors: true,
+
+  // 添加错误的详细信息（就像解析日志一样）
+  errorDetails: true,
+
+  // 将资源显示在 stats 中的情况排除
+  // 这可以通过 String, RegExp, 获取 assetName 的函数来实现
+  // 并返回一个布尔值或如下所述的数组。
+  excludeAssets: "filter" | /filter/ | (assetName) => ... return true|false |
+    ["filter"] | [/filter/] | [(assetName) => ... return true|false],
+
+  // 将模块显示在 stats 中的情况排除
+  // 这可以通过 String, RegExp, 获取 moduleSource 的函数来实现
+  // 并返回一个布尔值或如下所述的数组。
+  excludeModules: "filter" | /filter/ | (moduleSource) => ... return true|false |
+    ["filter"] | [/filter/] | [(moduleSource) => ... return true|false],
+
+  // 和 excludeModules 相同
+  exclude: "filter" | /filter/ | (moduleSource) => ... return true|false |
+    ["filter"] | [/filter/] | [(moduleSource) => ... return true|false],
+
+  // 添加 compilation 的哈希值
+  hash: true,
+
+  // 设置要显示的模块的最大数量
+  maxModules: 15,
+
+  // 添加构建模块信息
+  modules: true,
+
+  // 按指定的字段，对模块进行排序
+  // 你可以使用 `!field` 来反转排序。默认是按照 `id` 排序。
+  modulesSort: "field",
+
+  // 显示警告/错误的依赖和来源（从 webpack 2.5.0 开始）
+  moduleTrace: true,
+
+  // 当文件大小超过 `performance.maxAssetSize` 时显示性能提示
+  performance: true,
+
+  // 显示模块的导出
+  providedExports: false,
+
+  // 添加 public path 的信息
+  publicPath: true,
+
+  // 添加模块被引入的原因
+  reasons: true,
+
+  // 添加模块的源码
+  source: true,
+
+  // 添加时间信息
+  timings: true,
+
+  // 显示哪个模块导出被用到
+  usedExports: false,
+
+  // 添加 webpack 版本信息
+  version: true,
+
+  // 添加警告
+  warnings: true,
+
+  // 过滤警告显示（从 webpack 2.4.0 开始），
+  // 可以是 String, Regexp, 一个获取 warning 的函数
+  // 并返回一个布尔值或上述组合的数组。第一个匹配到的为胜(First match wins.)。
+  warningsFilter: "filter" | /filter/ | ["filter", /filter/] | (warning) => ... return true|false
+};
+```
+
+# 17. 其他选项 (other options)
+
+## 17.1 amd
+
+设置 `require.amd`或 `define.amd`的值:
+
+```js
+amd: {
+    jQuery: true
+}
+```
+
+## 17.2 bail
+
+`boolean`
+
+在第一个错误出现时抛出失败结果, 而不是容忍它. 默认情况下, 当使用 HMR 时, webpack 会在终端和浏览器控制台中, 以红色文字记录这些错误, 但仍然继续进行打包. 如果启用了它, webpack 将退出打包过程.
+
+## 17.3 cache
+
+`boolean | object`
+
+缓存生成的 webpack 模块和 chunk, 来改善构建速度. 缓存默认在观察模式(watch mode)启用.
+
+如果传入一个对象, webpack 会在这个对象中缓存, 这样可以在 compiler 之间共享同一缓存:
+
+```js
+let SharedCache = {};
+
+export default {
+    // ...
+    cache: SharedCache
+}
+```
+
+## 17.4 loader
+
+`object`
+
+在 loader 上下文中暴露自定义值.
+
+## 17.5 parallelism
+
+`number`
+
+## 17.6 profile
+
+`boolean`
+
+捕获一个应用程序"配置文件", 包括统计和提示, 然后可以使用 Analyze 分析工具进行详细分析.
+
+> 使用 `StatsPlugin`可以更好地控制生成的配置文件.
+
+## 17.7 recordsPath
+
+开启这个选项可以生成一个 JSON 文件, 其中包含 webpack 的 "records"记录, 即用于存储跨多次构建(across multiple builds)的模块标识符的数据片段. 可以使用此文件来跟踪每次构建之间的模块变化.
+
+```js
+recordsPath: path.join(__dirname, 'records.json');
+```
+
+如果使用了代码分离(code splitting)这样的复杂配置, records 会特别有用. 这些数据用于确保拆分 bundle, 以便实现缓存(caching)行为.
+
+> 本质上讲设置 `recordsPath`会把 `recordsInputPath`和 `recordsOutputPath`都设置成相同的路径. 通常这也是符合逻辑的, 除非你决定改变记录文件的名称.
+
+## 17.8 recordsInputPath
+
+指定读取最后一条记录的文件的名称. 这可以用来重命名一个记录文件.
+
+## 17.9 recordsOutputPath
+
+指定记录要写入的位置.

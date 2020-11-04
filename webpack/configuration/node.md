@@ -1875,3 +1875,59 @@ ignored: "files/**/*.js"
 ### 在 WebStorm 中保存
 
 使用 JetBrains WebStorm IDE 时, 你可能会发现保存修改过的文件, 并不会按照预期触发观察者. 尝试在设置中禁用 `安全写入(safe write)`选项.
+
+# 13. 外部扩展 (externals)
+
+externals 配置选项提供了从输出的 bundle 中排除依赖的方法.
+
+## 13.1 externals
+
+`string | array | object | function | regex`
+
+防止将某些 `import`的包(package)打包到 bundle 中, 而是在运行时(runtime)再去从外部获取这些扩展依赖 (external dependencies).
+
+例如, 从 CDN 中引入 jQuery.
+
+index.html
+
+```html
+<script src="https://code.jquery.com/jquery-3.1.0.js"></script>
+```
+
+webpack.config.js
+
+```js
+externals: {
+    jquery: 'jQuery'
+}
+```
+
+这样的话在代码中
+
+```js
+import $ from 'jquery';
+
+// jquery 并不会打包到 bundle 中, 而是通过 index.html 的 script 标签引入的 jquery
+```
+
+```js
+// string 形式, 属性名 jquery 表示应该排除 import $ from 'jquery' 中的 jquery 模块. jQuery 或 $ 都是 jquery 模块内部提供的变量名
+externals: {
+    jquery: 'jQuery'
+}
+
+// object 形式, 表示在 AMD 和 CommonJS 模块系统下通过 lodash 访问, 但在全局变量形式下用 _ 访问.
+externals: {
+    lodash: {
+        commonjs: 'lodash',
+        amd: 'lodash',
+        root: '_'
+    }
+}
+
+// array 形式
+externals: {
+    subtract: ['lib/a', 'lib/b']
+}
+```
+

@@ -64,6 +64,8 @@ leetcode
 
 # parallax
 
+视觉差
+
 参考资料: [parallax.js](https://github.com/wagerfield/parallax) **(完成)**
 
 # particlesjs
@@ -143,6 +145,12 @@ U3D JobSystem
 # unityecs
 
 参考资料: [Unity3D Entity Component System 入门学习](https://blog.csdn.net/u012632851/category_7034956.html) **(完成)**
+
+# vivus
+
+SVG 路径动画
+
+参考资料: [vivus](https://github.com/maxwellito/vivus#vivusjs) **(完成)**
 
 # webpack
 

@@ -1931,3 +1931,53 @@ externals: {
 }
 ```
 
+# 14. 性能 (performance)
+
+这些选项可以控制 webpack 如何通知资源(asset)和入口起点超过指定文件限制.
+
+## 14.1 performance
+
+`object`
+
+配置如何展示性能提示.
+
+## 14.2 performance.hints
+
+`false | 'error' | 'warning'`
+
+打开/关闭提示. 当有提示时, 告诉 webpack 抛出一个错误或警告. 此属性默认设置为 `'warning'`.
+
+## 14.3 performance.maxEntrypointSize
+
+`int`
+
+针对指定的入口, 所有资源的初始加载时(initial load time). 默认值 `250000`(bytes).
+
+## 14.4 performance.maxAssetSize
+
+`int`
+
+单个资源体积. 默认值 `250000` (bytes).
+
+## 14.5 performance.assetFilter
+
+`function`
+
+控制 webpack 用于计算性能提示的文件. 默认函数如下:
+
+```js
+function(assetFilename) {
+    return !(/\.map$/.test(assetFilename));
+}
+```
+
+如果要改成只针对 .js 文件提示:
+
+```js
+performance: {
+    assetFilter: function(assetFilename) {
+        return assetFilename.endsWith('.js');
+    }
+}
+```
+

@@ -569,3 +569,31 @@ factorial(1000000);
 // 在支持 Tail Calls 的浏览器里不会出现堆栈溢出的报错
 ```
 
+# 2. 概览
+
+## 2.1 编辑器语法高亮
+
+目前, 大部分流行的编辑器都支持 ES2015+ 语法高亮, 并且开箱即用. 以下介绍一些编辑器可能需要安装额外的扩展来支持语法高亮功能.
+
+### Atom
+
+安装 `language-babel`软件包.
+
+### Sublime Text 3
+
+安装 `Package Control`, 然后从中安装 `Babel`软件包.
+
+### Vim
+
+安装 `vim-javascript`插件.
+
+或者使用 `yajs.vim`和 `es.next.syntax`.
+
+### Visual Studio Code
+
+安装 `sublime-babel-vscode`扩展.
+
+### WebStorm
+
+WebStorm 现在不需要安装任何扩展就能支持 ES2015+, 但是可能需要[开启此功能.](https://blog.jetbrains.com/webstorm/2015/05/ecmascript-6-in-webstorm-transpiling/)
+

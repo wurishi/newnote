@@ -232,3 +232,78 @@ require("core-js/modules/es7.promise.finally");
 Promise.resolve().finally();
 ```
 
+## 1.3 配置 Babel
+
+### 根据你的项目需求可以使用不同的配置.
+
+- 使用了 monorepo
+
+- 想要编译 `node_modules`
+
+  > 使用 `babel.config.json`
+
+- 仅项目中的某个单一部分
+
+  > 使用 `.babelrc.json`
+
+`babel.config.json`
+
+可以使用 json 配置, 或者使用 JavaScript 代码形式(最好将文件名改为 `babel.config.js`, json 文件和 js 文件 babel 都会去识别, 但同一目录下仅能存在两者之一 )
+
+`babel.config.js`
+
+```js
+module.exports = function (api) {
+  api.cache(true);
+
+  const presets = [];
+  const plugins = ['@babel/plugin-transform-arrow-functions'];
+
+  return {
+    presets,
+    plugins,
+  };
+};
+```
+
+`.babelrc.json`
+
+可以针对项目中的某一部分配置 babel.
+
+`package.json`
+
+另外, 还可以直接将 babel 的配置写在 `package.json`中, 使用 `babel`作为键即可:
+
+package.json:
+
+```json
+{
+    "name": "my-package",
+    "version": "1.0.0",
+    "babel": {
+        "presets": [],
+        "plugins": []
+    }
+}
+```
+
+### JavaScript 配置文件
+
+在 `babel.config.json`和 `.babelrc.json`文件中可以使用 JavaScript.
+
+如果使用了 JavaScript , 那么还支持使用 Node.js 的 API, 比如:
+
+```js
+const presets = [];
+const plugins = [];
+
+if(process.env['ENV'] === 'prod') {
+    plugins.push('@babel/plugin-transform-arrow-functions');
+}
+
+module.exports = {
+    presets,
+    plugins,
+};
+```
+

@@ -307,3 +307,265 @@ module.exports = {
 };
 ```
 
+## 1.4 ECMA Script 2015
+
+这里列出了 ECMAScript 2015 的新功能.
+
+### 箭头函数
+
+```js
+() => {}
+```
+
+### 类
+
+```js
+class Demo extends THREE.Mesh {
+    
+}
+```
+
+### 对象属性赋值
+
+```js
+const handler = () => {};
+const obj = {
+    handler, // 等同于 handler: handler
+}
+```
+
+### 模板字符串
+
+```js
+const name = 'Bob';
+const str = `Hello ${Bob}`;
+```
+
+### 解构
+
+```js
+const [a, , b] = [1, 2, 3]; // a === 1, b === 3
+const {p1, p2: { p3 }} = obj;
+function fn({x, y, z=10}) {
+    return x + y + z;
+}
+fn({x: 100, y: 200}); // return 310
+```
+
+### 函数参数默认值和 `rest`
+
+```js
+function fn(x, y = 12, ...rest) {
+    return x + y + rest.length;
+}
+```
+
+### 展开运算符
+
+```js
+function fn(x, y, z) {
+    return x + y + z;
+}
+fn(...[1, 2, 3]); // return 6
+```
+
+### `Let` 和 `Const`
+
+### 迭代器和 `for...of`
+
+```js
+let tmp = {
+    [Symbol.iterator]() {
+        let pre = 0, cur = 1;
+        return {
+            next() {
+                [pre, cur] = [cur, pre + cur];
+                return { done: false, value: cur };
+            }
+        }
+    }
+}
+
+for(const n of tmp) {
+    if(n > 1000)
+        break;
+    console.log(n);
+}
+```
+
+TypeScript 类型:
+
+```typescript
+interface IteratorResult {
+    done: boolean;
+    value: any;
+}
+interface Iterator {
+    next(): IteratorResult;
+}
+interface Iterable {
+    [Symbol.iterator](): Iterator;
+}
+```
+
+### 生成器函数
+
+```js
+const tmp = {
+    [Symbol.iterator]: function* () {
+        let pre = 0, cur = 1;
+        for(;;) {
+            [pre, cur] = [cur, pre + cur];
+            yield cur;
+        }
+    }
+};
+for(const n of tmp) {
+    if(n > 1000)
+        break;
+    console.log(n);
+}
+```
+
+TypeScript 类型:
+
+```typescript
+interface Generator extends Iterator {
+    next(value? :any): IteratorResult;
+    throw(exception: any);
+}
+```
+
+### UniCode
+
+### 模块
+
+```js
+export
+export default
+import
+```
+
+### 类型 `Map` `Set` `WeakMap` `WeakSet`
+
+### 代理
+
+```js
+const target = {};
+const handler = {
+  get: function (receiver, name) {
+    return `Hello, ${name}`;
+  },
+};
+
+const p = new Proxy(target, handler);
+console.log(p.world); // Hello, world
+```
+
+```js
+const target = () => 'I am the target';
+const handler = {
+  apply: (receiver, ...args) => 'I am the proxy',
+};
+const p = new Proxy(target, handler);
+console.log(p()); // I am the proxy
+```
+
+Proxy 的所有操作:
+
+| Proxy handler            | 行为                                                         |
+| ------------------------ | ------------------------------------------------------------ |
+| get                      | `target.prop`                                                |
+| set                      | `target.prop = value`                                        |
+| has                      | `'prop' in target`                                           |
+| deleteProperty           | `delete target.prop`                                         |
+| apply                    | `target(...args)`                                            |
+| construct                | `new target(...args)`                                        |
+| getOwnPropertyDescriptor | `Object.getOwnPropertyDescriptor(target, 'prop')`            |
+| defineProperty           | `Object.defineProperty(target, 'prop', descriptor)`          |
+| getPrototypeOf           | `Object.getPrototypeOf(target)`, `Reflect.getPrototypeOf(target)`, `target.__proto__`, `object.isPrototypeof(target)`, `object instanceof target` |
+| setPrototypeOf           | `Object.setPrototypeOf(target)`, `Reflect.setPrototypeOf(target)` |
+| enumerate                | `for(let i in target) {}`                                    |
+| ownKeys                  | `Object.keys(target)`                                        |
+| preventExtensions        | `Object.preventExtensions(target)`                           |
+| isExtensible             | `Object.isExtensible(target)`                                |
+
+### 符号
+
+```js
+const key = Symbol('key');
+```
+
+### 继承内置类
+
+```js
+class MyArray extends Array {
+    
+}
+// Array, Date, DOM 的 Element 都可以被继承
+```
+
+### Math, Number, String, Object API
+
+```js
+Number.EPSILON
+Number.isInteger(Infinity) // false
+Number.isNaN('NaN') // false
+
+Math.acosh(3) // 1.762xxxxx
+Math.hypot(3, 4) // 5
+Math.imul(Math.pow(2, 32) - 1, Math.pow(2, 32) - 2) // 2
+
+'abcde'.includes('cd') // true
+'abc'.repeat(3) // abcabcabc
+
+Array.from(document.querySelectorAll('*'))
+Array.of(1, 2, 3)
+[0, 0, 0].fill(7, 1) // [0, 7, 7]
+[1, 2, 3].findIndex(x => x == 2) // 1
+['a', 'b', 'c'].entries() // iterator [0, 'a'], [1, 'b'], [2, 'c']
+['a', 'b', 'c'].keys() // iterator 0, 1, 2
+['a', 'b', 'c'].values() // iterator 'a', 'b', 'c'
+
+Object.assign(Point, { origin: new Point(0, 0) })
+```
+
+### 二进制和八进制
+
+```js
+0b111110111 === 503
+0o767 === 503
+// Babel 只支持转换 0o767 不支持 Number('0o767')
+```
+
+### Promise
+
+### Reflect API
+
+```js
+const O = {a: 1};
+Object.defineProperty(O, 'b', {value: 2});
+O[Symbol('c')] = 3;
+
+Reflect.ownKeys(O); // ['a', 'b', Symbol(c)]
+
+function C(a, b) {
+    this.c = a + b;
+}
+var instance = Reflect.construct(C, [20, 22]);
+instance.c; // 43
+```
+
+### Tail Calls
+
+在尾部进行递归调用不会造成堆栈溢出.
+
+```js
+function factorial(n, acc = 1) {
+    if(n <= 1) return acc;
+    return factorial(n - 1, n * acc);
+}
+factorial(1000000);
+// 在支持 Tail Calls 的浏览器里不会出现堆栈溢出的报错
+```
+

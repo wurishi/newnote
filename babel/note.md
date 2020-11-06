@@ -1007,38 +1007,760 @@ Babel 是一个编译器 (输入源码 => 输出编译后的代码). 编译过�
 
   参数
 
+  | 参数名      | 类型                     | 作用                                          |
+  | ----------- | ------------------------ | --------------------------------------------- |
+  | loose       | boolean 默认值为 `false` |                                               |
+  | useBuiltIns | boolean 默认值为 `false` | 设置为 true 时, 直接使用 `Object.assign`实现. |
+
+- 处理重复键 (duplicate-keys)
+
+  处理的最终结果需要由 `@babel/plugin-transform-computed-properties`再处理.
+
+  In
+
+  ```js
+  var x = {a: 5, b: 6};
+  ```
+
+  Out
+
+  ```js
+  var x = {a: 5, ['a']: 6};
+  ```
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-duplicate-keys
+  ```
+
+- for-of
+
+  使用原生 for 循环遍历迭代器
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-for-of
+  ```
+
+  参数
+
+  | 参数名      | 类型                     | 作用 |
+  | ----------- | ------------------------ | ---- |
+  | loose       | boolean 默认值为 `false` |      |
+  | assumeArray | boolean 默认值为 `false` |      |
+
+- function-name
+
+  In
+
+  ```js
+  let number = (x) => x;
+  ```
+
+  Out
+
+  ```js
+  var number = function number(x) {
+  	return x;
+  };
+  ```
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-function-name
+  ```
+
+- instanceof
+
+  In
+
+  ```js
+  foo instanceof Bar;
+  ```
+
+  Out
+
+  ```js
+  function _instanceof(left, right) {
+      if(right != null && typeof Symbol !== 'undefined' && right[Symbol.hasInstance]) {
+          return right[Symbol.hasInstance](left);
+      } else {
+          return left instanceof right;
+      }
+  }
+  _instanceof(foo, Bar)
+  ```
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-instanceof
+  ```
+
+- 字面常量转换 (literals)
+
+  转换二进制, 八进制和 unicode 字面量.
+
+  In
+
+  ```js
+  var b = 0b11; // 二进制
+  var o = 0o7; // 八进制
+  const u = 'Hello\u{000A}\u{0009}!';
+  ```
+
+  Out
+
+  ```js
+  const b = 3;
+  const o = 7;
+  const u = 'Hello\n\t';
+  ```
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-literals
+  ```
+
+- new-target
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-new-target
+  ```
+
+- object-super
+
+  处理 super
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-object-super
+  ```
+
+- parameters
+
+  将 ES2015 的函数参数转换为 ES5 支持的版本. 包括:
+
+  - 参数解构
+  - 参数默认值
+  - 剩余参数
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-parameters
+  ```
+
+- shorthand-properties
+
+  对象简单赋值和对象方法简写
+
+  In
+
+  ```js
+  var o = {a, b, c};
+  var cat = {
+      getName() {
+          return name;
+      }
+  };
+  ```
+
+  Out
+
+  ```js
+  var o = {a: a, b: b, c: c};
+  var cat = {
+      getName: function() {
+          return name;
+      }
+  }
+  ```
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-shorthand-properties
+  ```
+
+- 转换展开运算符 (spread)
+
+  In
+
+  ```js
+  var a = ['a', 'b', 'c'];
+  var b = [...a, 'foo'];
+  var c = foo(...a);
+  ```
+
+  Out
+
+  ```js
+  var a = ['a', 'b', 'c'];
+  var b = a.concat(['foo']);
+  var c = foo.apply(void 0, a);
+  ```
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-spread
+  ```
+
+  参数
+
+  | 参数名 | 类型                     | 作用                                     |
+  | ------ | ------------------------ | ---------------------------------------- |
+  | loose  | boolean 默认值为 `false` | 在 loose 模式下, 所有迭代器都假定为数组. |
+
+- sticky-regex
+
+  正则表达式使用 `new RegExp`
+
+  In
+
+  ```js
+  const a = /o+/y;
+  ```
+
+  Out
+
+  ```js
+  var a = new RegExp('o+', 'y');
+  ```
+
+  安装
+
+  ```bash
+  npm i -D  @babel/plugin-transform-sticky-regex
+  ```
+
+- template-literals
+
+  In
+
+  ```js
+  `foo${bar}`
+  ```
+
+  Out
+
+  ```js
+  "foo".concat(bar)
+  ```
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-template-literals
+  ```
+
+  参数
+
+  | 参数名 | 类型                   | 作用                                     |
+  | ------ | ---------------------- | ---------------------------------------- |
+  | loose  | boolean 默认值为 false | 设置 true 时使用运算符 `+`代替 `concat`. |
+
+- typeof-symbol
+
+  In
+
+  ```js
+  typeof Symbol() === 'symbol';
+  ```
+
+  Out
+
+  ```js
+  var _typeof = function (obj) {
+      return obj && obj.constructor === Symbol ? 'symbol' : typeof obj;
+  };
+  _typeof(Symbol()) === 'symbol';
+  ```
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-typeof-symbol
+  ```
+
+- unicode-regex
+
+  In
+
+  ```js
+  var string = "foo💩bar";
+  var match = string.match(/foo(.)bar/u);
+  ```
+
+  Out
+
+  ```js
+  var string = "foo💩bar";
+  var match = string.match(/foo((?:[\0-\t\x0B\f\x0E-\u2027\u202A-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]))bar/);
+  ```
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-unicode-regex
+  ```
+
+### ES2016
+
+- exponentiation-operator
+
+  In
+
+  ```js
+  let x = 10 ** 2;
+  x **= 3;
+  ```
+
+  Out
+
+  ```js
+  let x = Math.pow(10, 2);
+  x = Math.pow(x, 3);
+  ```
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-exponentiation-operator
+  ```
+
+### ES2017
+
+- async-to-generator
+
+  > 在 Babel 7 中, `transform-async-to-module-method`被合并到这个插件中.
+
+  In
+
+  ```js
+  async function foo() {
+      await bar();
+  }
+  ```
+
+  Out
+
+  ```js
+  var _asyncToGenerator = function(fn) {};
+  var foo = _asyncToGenerator(function* () {
+      yield bar();
+  });
+  ```
+
+  如果使用 Bluebird coroutine 选项:
+
+  ```js
+  var Bluebird = require('bluebird');
+  var foo = Bluebird.coroutine(function* () {
+      yield bar();
+  });
+  ```
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-async-to-generator
+  ```
+
+  使用 bluebird:
+
+  ```json
+  {
+      "plugins": [
+          [
+              "@babel/plugin-transform-async-to-generator",
+              {
+                  "module": "bluebird",
+                  "method": "coroutine"
+              }
+          ]
+      ]
+  }
+  ```
+
+### ES2018
+
+- async-generator-functions
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-proposal-async-generator-functions
+  ```
+
+- dotall-regex
+
+  In
+
+  ```js
+  /./s;
+  /./su;
+  ```
+
+  Out
+
+  ```js
+  /[\0-\uFFFF]/;
+  /[\0-\u{10FFFF}]/u;
+  ```
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-dotall-regex
+  ```
+
+- named-capturing-groups-regex
+
+  此插件默认基于 ES6 的正则表达式, 如果要支持旧版本浏览器, 需要设置 `runtime: false`
+
+  In
+
+  ```js
+  var re = /(?<year>\d{4})-(?<month>\d{2})-?(?<day>\d{2})/;
+  console.log(re.exec('1999-02-29').groups.year);
+  ```
+
+  Out
+
+  ```js
+  var re = _wrapRegExp(/(\d{4})-(\d{2})-(\d{2})/, { year: 1, month: 2, day: 3});
+  console.log(re.exec('1999-02-29').groups.year);
+  ```
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-named-capturing-groups-regex
+  ```
+
+- object-rest-spread
+
+  ```js
+  let {x, y, ...z} = {x:1, y:2, a:3, b:4};
+  // x = 1, y = 2, z = {a: 3, b: 4}
+  ```
+
+  安装
+
+  ```bash
+  npm i -D  @babel/plugin-proposal-object-rest-spread
+  ```
+
+  参数
+
   | 参数名      | 类型                     | 作用 |
   | ----------- | ------------------------ | ---- |
   | loose       | boolean 默认值为 `false` |      |
   | useBuiltIns | boolean 默认值为 `false` |      |
 
+- optional-catch-binding
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-proposal-optional-catch-binding
+  ```
+
+- unicode-property-regex
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-proposal-unicode-property-regex
+  ```
+
+### Modules
+
+- modules-amd
+
+  ```bash
+  npm i -D @babel/plugin-transform-modules-amd
+  ```
+
+- modules-commonjs
+
+  ```bash
+  npm i -D @babel/plugin-transform-modules-commonjs
+  ```
+
+- modules-systemjs
+
+  ```bash
+  npm i -D @babel/plugin-transform-modules-systemjs
+  ```
+
+- modules-umd
+
+  ```bash
+  npm i -D @babel/plugin-transform-modules-umd
+  ```
+
+### Experimental
+
+- class-properties
+
+  ```bash
+  npm i -D @babel/plugin-proposal-class-properties
+  ```
+
+- decorators
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-proposal-decorators
+  ```
+
+  参数
+
+  | 参数名                 | 类型                     | 作用                              |
+  | ---------------------- | ------------------------ | --------------------------------- |
+  | decoratorsBeforeExport | boolean 默认值为 `false` | 见下                              |
+  | legacy                 | boolean 默认值为 `false` | 是否使用 legacy (stage 1)的装饰器 |
+
+  ```js
+  // decoratorBeforeExport: false
+  export @decorator class Bar {}
   
+  // decoratorBeforeExport: true
+  @decorator
+  export class Foo {}
+  ```
 
-- duplicate-keys
+- do-expressions
 
-- for-of
+  ```bash
+  npm i -D @babel/plugin-proposal-do-expressions
+  ```
 
-- function-name
+- export-default-from
 
-- instanceof
+  ```bash
+  npm i -D @babel/plugin-proposal-export-default-from
+  ```
 
-- literals
+- export-namespace-from
 
-- new-target
+  ```bash
+  npm i -D @babel/plugin-proposal-export-namespace-from
+  ```
 
-- object-super
+- function-bind
 
-- parameters
+  ```bash
+  npm i -D @babel/plugin-proposal-function-bind
+  ```
 
-- shorthand-properties
+- function-sent
 
-- spread
+  ```bash
+  npm i -D @babel/plugin-proposal-function-sent
+  ```
 
-- sticky-regex
+- logical-assignment-operators
 
-- template-literals
+  ```bash
+  npm i -D @babel/plugin-proposal-logical-assignment-operators
+  ```
 
-- typeof-symbol
+- nullish-coalescing-operator
 
-- unicode-regex
+  ```bash
+  npm i -D @babel/plugin-proposal-nullish-coalescing-operator
+  ```
 
+- numeric-separator
+
+  ```bash
+  npm i -D @babel/plugin-proposal-numeric-separator
+  ```
+
+- optional-chaining
+
+  ```bash
+  npm i -D @babel/plugin-proposal-optional-chaining
+  ```
+
+- partial-application
+
+  ```bash
+  npm i -D @babel/plugin-proposal-partial-application
+  ```
+
+- pipeline-operator
+
+  ```bash
+  npm i -D @babel/plugin-proposal-pipeline-operator
+  ```
+
+- private-methods
+
+  ```bash
+  npm i -D @babel/plugin-proposal-private-methods
+  ```
+
+- throw-expressions
+
+  ```bash
+  npm i -D @babel/plugin-proposal-throw-expressions
+  ```
+
+### Minification
+
+- inline-consecutive-adds
+
+  In
+
+  ```js
+  const foo = {};
+  foo.a = 42;
+  foo.b = ['hi'];
+  const bar = [];
+  bar.push(1);
+  bar.push(2);
+  ```
+
+  Out
+
+  ```js
+  const foo = {
+      a: 42,
+      b: ['hi'],
+  };
+  const bar = [1, 2];
+  ```
+
+  安装
+
+  ```bash
+  npm i -D babel-plugin-transform-inline-consecutive-adds
+  ```
+
+- inline-environment-variables
+
+  In
+
+  ```js
+  process.env.NODE_ENV
+  ```
+
+  Out
+
+  ```js
+  'development'
+  ```
+
+  安装
+
+  ```bash
+  npm i -D babel-plugin-transform-inline-environment-variables
+  ```
+
+- member-expression-literals
+
+  见 ES3
+
+- merge-sibling-variables
+
+  In
+
+  ```js
+  var foo = 'bar';
+  var bar = 'foo';
+  foobar();
+  var i = 0;
+  for(var x = 0; x < 10; x++) {}
+  ```
+
+  Out
+
+  ```js
+  var foo = 'bar',
+      bar = 'foo';
+  foobar();
+  for(var i = 0, x = 0; x < 10; x++) {}
+  ```
+
+  安装
+
+  ```bash
+  npm i -D babel-plugin-transform-merge-sibling-variables
+  ```
+
+- minify-booleans
+
+  In
+
+  ```js
+  true;
+  false;
+  ```
+
+  Out
+
+  ```js
+  !0;
+  !1;
+  ```
+
+  安装
+
+  ```bash
+  npm i -D babel-plugin-transform-minify-booleans
+  ```
+
+- minify-builtins
+
+- minify-constant-folding
+
+- minify-dead-code-elimination
+
+- minify-flip-comparisons
+
+- minify-guarded-expressions
+
+- minify-infinity
+
+- minify-mangle-names
+
+- minify-numeric-literals
+
+- minify-replace
+
+- minify-simplify
+
+- minify-type-constructors
+
+- node-env-inline
+
+- property-literals
+
+- regexp-constructors
+
+- remove-console
+
+- remove-debugger
+
+- remove-undefined
+
+- simplify-comparison-operators
+
+- undefined-to-void
+
+### React
+
+### 其他

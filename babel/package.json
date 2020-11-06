@@ -11,10 +11,12 @@
   "devDependencies": {
     "@babel/cli": "^7.12.1",
     "@babel/core": "^7.12.3",
+    "@babel/plugin-proposal-decorators": "^7.12.1",
     "@babel/plugin-transform-arrow-functions": "^7.12.1",
     "@babel/plugin-transform-block-scoping": "^7.12.1",
     "@babel/plugin-transform-classes": "^7.12.1",
     "@babel/plugin-transform-destructuring": "^7.12.1",
+    "@babel/plugin-transform-duplicate-keys": "^7.12.1",
     "@babel/preset-env": "^7.12.1"
   },
   "dependencies": {

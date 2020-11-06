@@ -597,3 +597,327 @@ factorial(1000000);
 
 WebStorm 现在不需要安装任何扩展就能支持 ES2015+, 但是可能需要[开启此功能.](https://blog.jetbrains.com/webstorm/2015/05/ecmascript-6-in-webstorm-transpiling/)
 
+## 2.2 插件
+
+Babel 是一个编译器 (输入源码 => 输出编译后的代码). 编译过程分为三个阶段: 解析, 转换和打印输出.
+
+现在, Babel 虽然开箱即用, 但是什么动作都不会做. 它基本上类似于 `const babel = code => code`, 即将代码解析之后原样输出. 如果想要 Babel 做一些实际工作, 就需要为其添加插件.
+
+除了一个一个的添加插件, 还可以以 preset (预设)的形式启用一组插件.
+
+### 转换插件
+
+这些插件用于转换你的代码.
+
+> 注意, 转换插件将启用相应的语法插件, 因此你不需要同时指定这两种插件.
+
+### ES3
+
+- 对象成员属性表达式 (member-expression-literals)
+
+  当对象属性名是关键字时, 转换为["关键字"]的形式.
+
+  In:
+
+  ```js
+  obj.foo = 'isValid';
+  obj.const = 'isKeyword';
+  obj["var"] = 'isKeyword';
+  ```
+
+  Out:
+
+  ```js
+  obj.foo = 'isValid';
+  obj["const"] = 'isKeyword';
+  obj["var"] = "isKeyword";
+  ```
+
+  安装:
+
+  ```bash
+  npm i -D @babel/plugin-transform-member-expression-literals
+  ```
+
+- 对象属性 (property-literals)
+
+  省略对象属性定义时的多余 `"`
+
+  In:
+
+  ```js
+  var foo = {
+      // 以下会转换
+      "bar": function() {},
+      "1": function() {},
+      // 以下不会转换
+      "default": 1, // 关键字
+      [a]: 2,
+      foo: 1
+  }
+  ```
+
+  Out:
+
+  ```js
+  var foo = {
+      bar: function() {},
+      1: function() {},
+      "default": 1,
+      [a]: 2,
+      foo: 1
+  }
+  ```
+
+  安装:
+
+  ```bash
+  npm i -D @babel/plugin-transform-property-literals
+  ```
+
+- 保留关键字 (reserved-words)
+
+  当变量名是保留关键字时, 增加前缀 `_`
+
+  In:
+
+  ```js
+  var abstract = 1;
+  var x = abstrace + 1;
+  ```
+
+  Out:
+
+  ```js
+  var _abstrace = 1;
+  var x = _abstrace + 1;
+  ```
+
+  安装:
+
+  ```bash
+  npm i -D @babel/plugin-transform-reserved-words
+  ```
+
+[ES3 关键字参考](http://www.ecma-international.org/publications/files/ECMA-ST-ARCH/ECMA-262,%203rd%20edition,%20December%201999.pdf#page=26)
+
+### ES5
+
+- 属性赋值函数 (property-mutators)
+
+  对象的 `get/set`替换成使用 `Object.defineProperties`API定义, 以明确该属性是否可枚举等.
+
+  In:
+
+  ```js
+  var foo = {
+      get bar() {
+          return this._bar;
+      },
+      set bar(value) {
+          this._bar = value;
+      }
+  }
+  ```
+
+  Out:
+
+  ```js
+  var foo = Object.defineProperties({}, {
+      bar: {
+          get: function() {
+              return this._bar;
+          },
+          set: function(value) {
+              this._bar = value;
+          },
+          configurable: true,
+          enumerable: true
+      }
+  });
+  ```
+
+  安装:
+
+  ```bash
+  npm i -D @babel/plugin-transform-property-mutators
+  ```
+
+### ES2015
+
+- 箭头函数转换 (arrow-functions)
+
+  将箭头函数转换为 ES5 的函数表达式, 并通过 `_this`来解决作用域问题.
+
+  In:
+
+  ```js
+  const a = () => {};
+  const b = (b) => b;
+  const bob = {
+      _name: 'Bob',
+      _friends: ['Sally', 'Tom'],
+      printFriends() {
+          this._friends.forEach(f => 
+              console.log(this._name + ' knows ' + f);
+          );
+      }
+  };
+  ```
+
+  Out:
+
+  ```js
+  const a = function() {};
+  const b = function(b) {
+      return b;
+  }
+  const bob = {
+      _name: 'Bob',
+      _friends: ['Sally', 'Tom'],
+      printFriends() {
+          var _this = this;
+          this._friends.forEach(function(f) {
+              return console.log(_this._name + ' knows ' + f);
+          });
+      }
+  };
+  ```
+
+  安装:
+
+  ```bash
+  npm i -D @babel/plugin-transform-arrow-functions
+  ```
+
+  ```json
+  {
+      "plugins": [
+          ["@babel/plugin-transform-arrow-functions", {"spec": true}]
+      ]
+  }
+  ```
+
+  参数:
+
+  | 参数名 | 类型                   | 作用                                                         |
+  | ------ | ---------------------- | ------------------------------------------------------------ |
+  | spec   | boolean 默认为 `false` | (1) 使用 `.bind(this)`修复函数的 `this`指向, 而不是用 `_this`.(2) 添加运行时检查, 确保函数没有实例化功能. (3) 给箭头函数添加名称. |
+
+- 块级作用域函数 (block-scoped-functions)
+
+  使用 `let fnName = function() {}`代替 `function fnName()`, 使得函数声明被正确放到了块级作用域内.
+
+  In
+
+  ```js
+  {
+      function name(n) {
+          return n;
+      }
+  }
+  ```
+
+  Out
+
+  ```js
+  {
+      let name = function (n) {
+          return n;
+      };
+  }
+  ```
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-block-scoped-functions
+  ```
+
+- 块级作用域 (block-scoping)
+
+  会将变量定义从 `let`转换为 `var`.
+
+  另外插件会把所有 `const`也转换为 `var`, 并且如果发现代码中有修改行为, 会在运行时报错.
+
+  In
+
+  ```js
+  {
+      let a = 3;
+  }
+  let a = 3;
+  ```
+
+  Out
+
+  ```js
+  {
+      var _a = 3;
+  }
+  var a = 3;
+  ```
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-block-scoping
+  ```
+
+  参数
+
+  | 参数名                 | 类型                   | 作用                                                         |
+  | ---------------------- | ---------------------- | ------------------------------------------------------------ |
+  | throwIfClosureRequired | boolean 默认值 `false` | 当 Bable 编译时, 如果代码中存在类似 `for(let i=0;i<5;i++){setTimeout(()=>console.log(i), 1)}`这种必须要 let 作用域的变量时, 会抛出错误. |
+  | tdz                    | boolean 默认值 `false` | 代码中如果存在先使用后定义的情况, 如果开启此选项, 会在运行时抛出一个变量未定义的错误. (默认情况下, 因为是 `var`所以不会报错) |
+
+  
+
+- 类转换 (classes)
+
+  将 `classes`转换成函数形式.
+
+  注意: 如果继承的是原生类(比如, `class MyArray extends Array`), 类的方法使用的是 `Object.setPrototypeOf`或 `__proto__`来定义的, 这在 IE 10 以下是不支持的. 所以在这些浏览器里面无法支持继承原生类.
+
+  In
+
+  ```js
+  class Test {
+      constructor(name) {
+          this.name = name;
+      }
+      logger() {
+          console.log('Hello', this.name);
+      }
+  }
+  ```
+
+  Out
+
+  ```js
+  function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+  
+  var Test = function() {
+      function Test(name) {
+          _classCallCheck(this, Test);
+          this.name = name;
+      }
+      Test.prototype.logger = function logger() {
+          console.log('Hello', this.name);
+      };
+      return Test;
+  }();
+  ```
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-classes
+  ```
+
+  
+
+- computed-properties
+
+- 
+

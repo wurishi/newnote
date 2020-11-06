@@ -14,6 +14,7 @@
     "@babel/plugin-transform-arrow-functions": "^7.12.1",
     "@babel/plugin-transform-block-scoping": "^7.12.1",
     "@babel/plugin-transform-classes": "^7.12.1",
+    "@babel/plugin-transform-destructuring": "^7.12.1",
     "@babel/preset-env": "^7.12.1"
   },
   "dependencies": {

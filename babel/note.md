@@ -915,9 +915,130 @@ Babel 是一个编译器 (输入源码 => 输出编译后的代码). 编译过�
   npm i -D @babel/plugin-transform-classes
   ```
 
+  参数
+
+  | 参数名 | 类型                     | 作用                                                         |
+  | ------ | ------------------------ | ------------------------------------------------------------ |
+  | loose  | boolean 默认值为 `false` | 设置为 true 将使用松散模式定义类的方法, (1) 这会让类的方法变成可枚举的, 这可能会造成一些错误. (2) 另外如果父类的方法是 `set bar()`那么子类如果将 bar 定义为普通方法, 会抛出错误. |
+
+- 转换计算属性 (computed-properties)
+
+  In
+
+  ```js
+  var obj = {
+      ['x' + foo]: 'heh',
+      ['y' + bar]: 'noo',
+      foo: 'foo',
+      bar: 'bar'
+  }
+  ```
+
+  Out
+
+  ```js
+  var _obj;
+  function _defineProperty(obj, key, value) {
+      if(key in obj) {
+          Object.defineProperty(obj, key, {
+              value: value,
+              enumerable: true,
+              configurable: true,
+              writable: true
+          });
+      } else {
+          obj[key] = value;
+      }
+      return obj;
+  }
+  var obj = (
+  	_obj = {},
+      _defineProperty(_obj, 'x' + foo, 'heh'),
+      _defineProperty(_obj, 'y' + bar, 'noo'),
+      _defineProperty(_obj, 'foo', 'foo'),
+      _defineProperty(_obj, 'bar', 'bar'),
+      _obj
+  );
+  ```
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-computed-properties
+  ```
+
+  参数
+
+  | 参数名 | 类型                     | 作用 |
+  | ------ | ------------------------ | ---- |
+  | loose  | boolean 默认值为 `false` |      |
+
+- 解构转换 (destructuring)
+
+  In
+
+  ```js
+  let {x, y} = obj;
+  let [a, b, ...rest] = arr;
+  ```
+
+  Out
+
+  ```js
+  function _toArray(arr) {
+  	// ...
+  }
+  
+  let _obj = obj;
+  x = _obj.x;
+  y = _obj.y;
+  
+  let _arr = arr, _arr2 = _toArray(_arr);
+  a = _arr2[0];
+  b = _arr2[1];
+  rest = _arr2.slice(2);
+  ```
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-destructuring
+  ```
+
+  参数
+
+  | 参数名      | 类型                     | 作用 |
+  | ----------- | ------------------------ | ---- |
+  | loose       | boolean 默认值为 `false` |      |
+  | useBuiltIns | boolean 默认值为 `false` |      |
+
   
 
-- computed-properties
+- duplicate-keys
 
-- 
+- for-of
+
+- function-name
+
+- instanceof
+
+- literals
+
+- new-target
+
+- object-super
+
+- parameters
+
+- shorthand-properties
+
+- spread
+
+- sticky-regex
+
+- template-literals
+
+- typeof-symbol
+
+- unicode-regex
 

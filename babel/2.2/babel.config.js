@@ -5,7 +5,8 @@ module.exports = function (api) {
   const plugins = [
     // ['@babel/plugin-transform-arrow-functions', { spec: true }], //
     // ['@babel/plugin-transform-block-scoping', { tdz: true }],
-    ['@babel/plugin-transform-classes', { losse: true }],
+    // ['@babel/plugin-transform-classes', { loose: true }],
+    ['@babel/plugin-transform-destructuring', { useBuiltIns: true }],
   ];
   // const plugins = [];
 

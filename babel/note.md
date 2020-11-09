@@ -1725,6 +1725,25 @@ Babel 是一个编译器 (输入源码 => 输出编译后的代码). 编译过�
 
 - minify-builtins
 
+  In
+
+  ```js
+  Math.floor(a) + Math.floor(b)
+  ```
+
+  Out
+
+  ```js
+  var _MathFloor = Math.floor;
+  _Mathfloor(a) + _MathFloor(b);
+  ```
+
+  安装
+
+  ```bash
+  npm i -D babel-plugin-minify-builtins
+  ```
+
 - minify-constant-folding
 
 - minify-dead-code-elimination

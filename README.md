@@ -4,7 +4,7 @@
 
 # babel
 
-[参考资料](https://www.babeljs.cn/docs/)
+[参考资料](https://www.babeljs.cn/docs/) (完成指南与概览部分)
 
 # babylon
 
@@ -44,6 +44,8 @@ electron
 参考资料: 《你所不知道的 Javascript》_(进行中)_
 
 # jest
+
+[参考资料](https://jestjs.io/docs/zh-Hans/getting-started)
 
 # jsgenerator
 

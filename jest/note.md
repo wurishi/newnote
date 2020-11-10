@@ -191,3 +191,82 @@ expect('Christoph').toMatch(/stop/);
 toThrow
 
 判断是否抛出错误.
+
+## 1.3 测试异步代码
+
+在 JavaScript 中执行异步代码是很常见的. 当要测试异步代码时, Jest 需要知道当前它测试的代码是否已经完成, 然后 Jest 才会转移到另一个测试. Jest 有若干方法来处理这种情况.
+
+### 回调
+
+最常见的异步模式是回调函数, 使用参数 `done`, Jest 会等到 `done`执行时才结束测试.
+
+```js
+test('the data is peanut butter', done => {
+    function callback(data) {
+        try {
+            expect(data).toBe('peanut butter');
+            done();
+        } catch (error) {
+            done(error);
+        }
+    }
+    fetchData(callback);
+});
+```
+
+若 `done()`未被调用, 测试用例会显示超时错误.
+
+若 `expect`执行失败, 它会抛出一个错误, 后面的 `done(error)`将会被执行. 如果执行成功能, 则 `done()`执行表示测试用例执行完成.
+
+### Promise
+
+返回一个 Promise, 如果 resolve 被调用, 表示测试用例执行完成. 如果 reject 被调用, 则表示测试失败.
+
+```js
+test('the data is peanut butter', () => {
+    return fetchData().then(data => {
+        expect(data).toBe('peanut butter');
+    });
+});
+```
+
+另外可以使用 `expect.assertions`来验证该测试用例至少有一定数量的断言被执行了. 
+
+```js
+test('the data is peanut butter', () => {
+    expect.assertions(1); // 断言至少要调用一次
+    return fetchData()
+        .then(data => {
+        	expect(data).toBe('peanut butter');
+    	})
+    	.catch(e => expect(e).toMatch('error')); // 因为断言必须调用一次, 所以 catch 中也需要执行一次断言
+});
+```
+
+### .resolves / .rejects
+
+也可以在 expect 语句中使用 `.resolves`匹配器, Jest 会等待此 Promise.
+
+```js
+test('the data is peanut butter', () => {
+    return expect(fetchData()).resolves.toBe('peanut butter');
+});
+```
+
+### async / await
+
+可以直接在测试用例中使用 `async`和 `await`
+
+```js
+test('the data is peanut butter', async () => {
+    expect.assertions(1);
+    try {
+        const data = await fetchData();
+        expect(data).toBe('peanut butter');
+    } catch (e) {
+        expect(e).toMatch('error');
+    }
+});
+```
+
+也可以组合使用 `async / await`和 `.resolves / .rejects`

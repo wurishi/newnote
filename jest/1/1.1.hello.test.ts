@@ -1,4 +1,4 @@
-/// <reference path="../node_modules/@jest/core/build/jest.d.ts" />
+/// <reference path="../node_modules/@types/jest/index.d.ts" />
 
 import { Hello } from './1.1.hello';
 

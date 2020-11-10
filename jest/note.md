@@ -270,3 +270,93 @@ test('the data is peanut butter', async () => {
 ```
 
 也可以组合使用 `async / await`和 `.resolves / .rejects`
+
+## 1.4 Setup and Teardown
+
+写测试时经常需要在运行测试之前做一些准备工作, 并在运行测试后进行一些整理工作. Jest 提供了辅助函数来处理这个问题.
+
+### 为多次测试重复设置
+
+如果有一些要为多个测试重复设置的工作, 可以使用 `beforeEach` 和 `afterEach`.
+
+```js
+beforeEach(() => {
+    initializeCityDatabase();
+});
+afterEach(() => {
+    clearCityDatabase();
+});
+test('city database has Vienna', () => {
+    expect(isCity('Vienna')).toBeTruthy();
+});
+```
+
+`beforeEach`和 `afterEach`能够通过与异步代码测试相同的方式处理异步代码, 可以使用 `done`参数或者返回一个 promise.
+
+### 一次性设置
+
+如果需要在测试开始前只做一次设置. 可以使用 `beforeAll`和 `afterAll`处理这种情况.
+
+### 作用域
+
+默认情况下, before 和 after 的块可以应用到文件中的每个测试. 此外可以通过 `describe`块来将测试分组, 在 `describe`块内部的 before 和 after, 将只适用于 `describe`块内的测试.
+
+```js
+describe('matching cities to foods', () => {
+    beforeEach(() => {
+        return initializeFoodDatabase();
+    });
+    test('Vienna <3 sausage', () => {
+        expect(isValidCityFoodPair('Vienna', 'Wiener Schnitzel')).toBe(true);
+    });
+});
+```
+
+### describe 和 test 块的执行顺序
+
+Jest 会在所有真正的测试开始之前先执行测试文件中所有的 describe 的处理程序(即 describe 中的代码). 所以任何准备和整理工作都应该放在 before 和 after 里面, 而不是直接扔在 describe 里面. 在准备工作执行后, Jest 会执照 test 出现的顺序依次执行所有的测试.
+
+```js
+describe('outer', () => {
+  console.log('describe outer-a');
+
+  describe('describe inner 1', () => {
+    console.log('describe inner 1');
+    test('test 1', () => {
+      console.log('test for describe inner 1');
+      expect(true).toEqual(true);
+    });
+  });
+
+  console.log('describe outer-b');
+
+  test('test 1', () => {
+    console.log('test for describe outer');
+    expect(true).toEqual(true);
+  });
+
+  describe('describe inner 2', () => {
+    console.log('describe inner 2');
+    test('test for describe inner 2', () => {
+      console.log('test for describe inner 2');
+      expect(false).toBeFalsy();
+    });
+  });
+  console.log('describe outer-c');
+});
+
+// describe outer-a
+// describe inner 1
+// describe outer-b
+// describe inner 2
+// describe outer-c
+// test for describe inner 1
+// test for describe outer
+// test for describe inner 2
+```
+
+### 通用建议
+
+如果测试失败, 第一件要检查的事就是, 当仅运行这条测试时, 它是否仍然失败.
+
+如果有一个测试, 它作为一个更大的用例中的一部分时, 经常运行失败. 但是如果单独运行它时, 并不会失败. 则需要考虑其他测试对这个测试的影响. 通过可以通过修改 `beforeEach`来清除一些共享的状态来修改这种问题.

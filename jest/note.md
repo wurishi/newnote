@@ -699,3 +699,53 @@ test('snap test2', () => {
 #### 2. 测试应该是确定性.
 
 #### 3. 快照名称应该始终是描述预期快照内容的.
+
+## 2.2 Timer Mocks
+
+原生的定时器函数(如: setTimeout, setInterval, clearTimeout, clearInterval) 因为程序需要等待对应的延迟, 所以并不是很方便测试.
+
+```js
+// timerGame.js
+export function timerGame(callback) {
+  console.log('Ready....go!');
+
+  setTimeout(() => {
+    console.log("Time's up -- stop!");
+    callback && callback();
+  }, 1000);
+}
+
+// timerGame.test.js
+beforeEach(() => {
+  jest.useFakeTimers(); // 模拟定时器函数
+});
+
+test('waits 1 second before ending the game', () => {
+  timerGame();
+
+  expect(setTimeout).toHaveBeenCalledTimes(1);
+  expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 1000);
+});
+```
+
+### Run All Timers
+
+```js
+test('calls the callback after 1 second', () => {
+    const timerGame = require('../timerGame');
+    const callback = jest.fn();
+    
+    timerGame(callback);
+    
+    expect(callback).not.toBeCalled(); // 此时, 回调未执行
+    
+    jest.runAllTimers(); // 快进时间使得所有定时器回调被执行
+    
+    expect(callback).toBeCalled();
+    expect(callback).toHaveBeenCalledTimes(1);
+    // 此时回调函数已经被调用了
+});
+```
+
+### Run Pending Timers
+

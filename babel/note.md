@@ -1703,6 +1703,8 @@ Babel 是一个编译器 (输入源码 => 输出编译后的代码). 编译过�
 
 - minify-booleans
 
+  `true/false` 转换为 `!0/!1`
+
   In
 
   ```js
@@ -1746,40 +1748,951 @@ Babel 是一个编译器 (输入源码 => 输出编译后的代码). 编译过�
 
 - minify-constant-folding
 
+  合并静态计算
+
+  In
+
+  ```js
+  'a' + 'b'
+  2 * 3
+  4 | 3
+  'b' + a + 'c' + 'd'
+  ```
+
+  Out
+
+  ```js
+  'ab'
+  6
+  7
+  'b' + a + 'cd'
+  ```
+
+  安装
+
+  ```bash
+  npm i -D babel-plugin-minify-constant-folding
+  ```
+
 - minify-dead-code-elimination
+
+  清理未使用的代码
+
+  In
+
+  ```js
+  function foo() { var x = 1; }
+  function bar() { var x = f(); }
+  ```
+
+  Out
+
+  ```js
+  function foo() {}
+  function bar() { f(); }
+  ```
+
+  安装
+
+  ```bash
+  npm i -D babel-plugin-minify-dead-code-elimination
+  ```
 
 - minify-flip-comparisons
 
+  In
+
+  ```js
+  const foo = a === 1;
+  if (bar !== null) {
+      var baz = 0;
+  }
+  ```
+
+  Out
+
+  ```js
+  const foo = 1 === a;
+  if (null !== bar) {
+      var baz = 0;
+  }
+  ```
+
+  安装
+
+  ```bash
+  npm i -D babel-plugin-minify-flip-comparisons
+  ```
+
 - minify-guarded-expressions
+
+  In
+
+  ```js
+  !x && foo();
+  alert(0 && new Foo());
+  ```
+
+  Out
+
+  ```js
+  x || foo();
+  alert(0);
+  ```
+
+  安装
+
+  ```bash
+  npm i -D babel-plugin-minify-guarded-expressions
+  ```
 
 - minify-infinity
 
+  In
+
+  ```js
+  Infinity;
+  ```
+
+  Out
+
+  ```js
+  1 / 0;
+  ```
+
+  安装
+
+  ```bash
+  npm i -D babel-plugin-minify-infinity
+  ```
+
 - minify-mangle-names
+
+  In
+
+  ```js
+  var lobalVariableName = 42;
+  function foo() {
+      var longLocalVariableName = 1;
+      if (longLocalVariableName) {
+          console.log(longLocalVariableName);
+      }
+  }
+  ```
+
+  Out
+
+  ```js
+  var globalVariableName = 43;
+  function foo() {
+      var a = 1;
+      if (a) {
+          console.log(a);
+      }
+  }
+  ```
+
+  安装
+
+  ```bash
+  npm i -D babel-plugin-minify-mangle-names
+  ```
+
+  参数
+
+  | 参数名        | 类型                   | 作用                       |
+  | ------------- | ---------------------- | -------------------------- |
+  | exclude       | Object 默认值为 {}     | 排除转换                   |
+  | eval          | boolean 默认值为 false | 在 eval 可访问的代码中禁用 |
+  | keepFnName    | boolean 默认值为 false | 保持方法名不转换           |
+  | topLevel      | boolean 默认值为 false |                            |
+  | keepClassName | boolean 默认值为 false | 保持类名不转换             |
 
 - minify-numeric-literals
 
+  In
+
+  ```js
+  [1000, -20000]
+  ```
+
+  Out
+
+  ```js
+  [1e3, -2e4]
+  ```
+
+  安装
+
+  ```bash
+  npm i -D babel-plugin-minify-numeric-literals
+  ```
+
 - minify-replace
+
+  配置
+
+  ```js
+  [
+      {
+          identifierName: '__DEV__',
+          replacement: {
+              type: 'numericLiteral',
+              value: 0
+          }
+      }
+  ]
+  ```
+
+  In
+
+  ```js
+  if(!__DEV__) {
+      foo();
+  }
+  if(a.__DEV__) {
+      foo();
+  }
+  ```
+
+  Out
+
+  ```js
+  if(!0) {
+      foo();
+  }
+  if(a.__DEV__) {
+      foo();
+  }
+  ```
+
+  安装
+
+  ```bash
+  npm i -D babel-plugin-minify-replace
+  ```
 
 - minify-simplify
 
+  In
+
+  ```js
+  function foo() {
+      if(x) a();
+  }
+  function foo2() {
+      if(x) a();
+      else b();
+  }
+  undefined
+  foo['bar']
+  Number(foo)
+  ```
+
+  Out
+
+  ```js
+  function foo() {
+      x && a();
+  }
+  function foo2() {
+      x ? a() : b();
+  }
+  void 0
+  foo.bar
+  +foo
+  ```
+
+  安装
+
+  ```bash
+  npm i -D babel-plugin-minify-simplify
+  ```
+
 - minify-type-constructors
+
+  In
+
+  ```js
+  Boolean(x);
+  Number(x);
+  String(x);
+  Array(3);
+  Array(3, 1);
+  Object({foo: 'bar'});
+  ```
+
+  Out
+
+  ```js
+  !!x;
+  +x;
+  x + '';
+  [,,,];
+  [3, 1];
+  {foo: 'bar'};
+  ```
+
+  安装
+
+  ```bash
+  npm i -D babel-plugin-minify-type-constructors
+  ```
+
+  参数
+
+  `array`/ `boolean`/ `number`/ `object`/ `string`
 
 - node-env-inline
 
+  In
+
+  ```js
+  process.env.NODE_ENV === 'development';
+  process.env.NODE_ENV === 'production';
+  ```
+
+  Out
+
+  ```bash
+  NODE_ENV=development babel in.js --plugins transform-node-env-inline
+  ```
+
+  ```js
+  true;
+  false;
+  ```
+
+  安装
+
+  ```bash
+  npm i -D babel-plugin-transform-node-env-inline
+  ```
+
 - property-literals
+
+  见 ES5
 
 - regexp-constructors
 
+  In
+
+  ```js
+  const foo = 'ab+';
+  var a = new RegExp(foo+'c', 'i');
+  ```
+
+  Out
+
+  ```js
+  const foo = 'ab+';
+  var a = /ab+c/i;
+  ```
+
+  安装
+
+  ```bash
+  npm i -D babel-plugin-transform-regexp-constructors
+  ```
+
 - remove-console
+
+  删除 console 语句 (非安全删除)
+
+  ```js
+  console.log(b=a+b);
+  c = b * 100;
+  // 无法识别 console.log 执行表达式, 删除 console.log 会导致 c 的结果不正确. 所以是非安全删除.
+  ```
+
+  安装
+
+  ```bash
+  npm i -D babel-plugin-transform-remove-console
+  ```
 
 - remove-debugger
 
+  安装
+
+  ```bash
+  npm i -D babel-plugin-transform-remove-debugger
+  ```
+
 - remove-undefined
+
+  In
+
+  ```js
+  let a = void 0;
+  function foo() {
+      var b = undefined;
+      return undefined;
+  }
+  ```
+
+  Out
+
+  ```js
+  let a;
+  function foo() {
+      var b;
+      return;
+  }
+  ```
+
+  安装
+
+  ```bash
+  npm i -D babel-plugin-transform-remove-undefined
+  ```
 
 - simplify-comparison-operators
 
+  In
+
+  ```js
+  typeof foo === 'object';
+  ```
+
+  Out
+
+  ```js
+  typeof foo == 'object';
+  ```
+
+  安装
+
+  ```bash
+  npm i -D babel-plugin-transform-simplify-comparison-operators
+  ```
+
 - undefined-to-void
+
+  In
+
+  ```js
+  foo === undefined;
+  ```
+
+  Out
+
+  ```js
+  foo === void 0;
+  ```
+
+  安装
+
+  ```bash
+  npm i -D babel-plugin-transform-undefined-to-void
+  ```
 
 ### React
 
+- react-constant-elements
+
+  In
+
+  ```jsx
+  const Hr = () => {
+      return <hr className="hr" />
+  }
+  ```
+
+  Out
+
+  ```jsx
+  const _ref = <hr className="hr" />;
+  const Hr = () => {
+      return _ref;
+  }
+  ```
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-react-constant-elements
+  ```
+
+- react-display-name
+
+  In
+
+  ```js
+  var foo = React.createClass({}); // React <= 15
+  var bar = createReactClass({}); // React 16+
+  ```
+
+  Out
+
+  ```js
+  var foo = React.createClass({
+      displayName: 'foo'
+  });
+  var bar = createReactClass({
+      displayName: 'bar'
+  });
+  ```
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-react-display-name
+  ```
+
+- react-inline-elements
+
+  In
+
+  ```jsx
+  <Baz foo="bar" key="1"></Baz>;
+  ```
+
+  Out
+
+  ```js
+  babelHelpers.jsx(Bax, {
+      foo: "bar"
+  }, "1");
+  
+  /* Instead of
+  *  React.createElement(Baz, {
+  *    foo: "bar", key: "1"
+  *  });
+  */
+  ```
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-react-inline-elements
+  ```
+
+- react-jsx
+
+  In
+
+  ```jsx
+  const profile = (
+  	<div>
+      	<img src="avatar.png" className="profile" />
+          <h3>{[user.firstName, user.lastName].join(' ')}</h3>
+      </div>
+  );
+  ```
+
+  Out
+
+  ```js
+  const profile = React.createElement('div', null,
+  	React.createElement('img', { src: 'avatar.png', className: 'profile' }),
+  	React.createElement('h3', null, [user.firstName, user.lastName].join(' '))
+  );
+  ```
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-react-jsx
+  ```
+
+  参数
+
+  | 参数名           | 类型                                  | 作用 |
+  | ---------------- | ------------------------------------- | ---- |
+  | pragma           | string 默认值为 `React.createElement` |      |
+  | pragmaFrag       | string 默认值为 `React.Fragment`      |      |
+  | useBuiltIns      | boolean 默认值为 `false`              |      |
+  | useSpread        | boolean 默认值为 `false`              |      |
+  | throwIfNamespace | boolean 默认值为 `true`               |      |
+
+- react-jsx-compat
+
+  In
+
+  ```jsx
+  var profile = <div>
+      <img src="avatar.png" class="profile" />
+      <h3>{[user.firstName, user.lastName].join(' ')}</h3>
+  </div>;
+  ```
+
+  Out
+
+  ```js
+  var profile = React.DOM.div(null,
+  	React.DOM.img({src: 'avatar.png', 'class': 'profile' }),
+  	React.DOM.h3(null, [user.firstName, user.lastName].join(' '))
+  );
+  ```
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-react-jsx-compat
+  ```
+
+- react-jsx-self
+
+  In
+
+  ```jsx
+  <sometag />
+  ```
+
+  Out
+
+  ```jsx
+  <sometag __self={this} />
+  ```
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-react-jsx-self
+  ```
+
+- react-jsx-source
+
+  In
+
+  ```jsx
+  <sometag />
+  ```
+
+  Out
+
+  ```jsx
+  <sometag __source={{fileName: 'this/file.js', lineNumber: 10}} />
+  ```
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-react-jsx-source
+  ```
+
 ### 其他
+
+- external-helpers
+
+  ```bash
+  npm i -D @babel/plugin-external-helpers
+  ```
+
+- flow-strip-types
+
+  In
+
+  ```js
+  function foo(one: any, two: number, three?): string {}
+  ```
+
+  Out
+
+  ```js
+  function foo(one, two, three) {}
+  ```
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-flow-strip-types
+  ```
+
+  参数
+
+  | 参数名           | 类型                    | 作用 |
+  | ---------------- | ----------------------- | ---- |
+  | all              | boolean, 默认值为 false |      |
+  | requireDirective | boolean, 默认值为 false |      |
+
+- jscript
+
+  In
+
+  ```js
+  var foo = function bar() {};
+  ```
+
+  Out
+
+  ```js
+  "use strict";
+  var foo = (function () {
+      function bar() {};
+      return bar;
+  })();
+  ```
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-jscript
+  ```
+
+- object-assign
+
+  In
+
+  ```js
+  Object.assign(a, b);
+  ```
+
+  Out
+
+  ```js
+  var _extends = ...;
+  _extends(a, b);
+  ```
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-object-assign
+  ```
+
+- object-set-prototype-of-to-assign
+
+  In
+
+  ```js
+  Object.setPrototypeOf(bar, foo);
+  ```
+
+  Out
+
+  ```js
+  var _defaults = ...;
+  _defaults(bar, foo);
+  ```
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-object-set-prototype-of-to-assign
+  ```
+
+- proto-to-assign
+
+  ```bash
+  npm i -D @babel/plugin-transform-proto-to-assign
+  ```
+
+- regenerator
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-regenerator
+  ```
+
+  参数
+
+  | 参数名          | 类型 | 作用 |
+  | --------------- | ---- | ---- |
+  | asyncGenerators | true |      |
+  | generators      | true |      |
+  | async           | true |      |
+
+- runtime
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-runtime
+  ```
+
+  参数
+
+  | 参数名          | 类型                            | 作用                                                         |
+  | --------------- | ------------------------------- | ------------------------------------------------------------ |
+  | corejs          | `false`/ `2` / `3`              | false: `npm i @babel/runtime`; 2: `npm i @babel/runtime-corejs2`; 3: `npm i @babel/runtime-corejs3` |
+  | helpers         | true                            |                                                              |
+  | polyfill        | v7 版本开始选项已经被删除       |                                                              |
+  | regenerator     | true                            |                                                              |
+  | useBuiltIns     | v7 版本开始选项已经被删除       |                                                              |
+  | useESModules    | false                           |                                                              |
+  | absoluteRuntime | boolean / string 默认值为 false |                                                              |
+  | version         |                                 |                                                              |
+
+- strict-mode
+
+  In
+
+  ```js
+  foo();
+  ```
+
+  Out
+
+  ```js
+  "use strict";
+  foo();
+  ```
+
+  安装
+
+  ```bash
+  npm i -D @babel/plugin-transform-strict-mode
+  ```
+
+- typescript
+
+  In
+
+  ```typescript
+  const x:number = 0;
+  ```
+
+  Out
+
+  ```js
+  const x = 0;
+  ```
+
+  安装
+
+  ```bash
+  npm i -D  @babel/plugin-transform-typescript
+  ```
+
+  参数
+
+  | 参数名          | 类型                  | 作用 |
+  | --------------- | --------------------- | ---- |
+  | isTSX           | false                 |      |
+  | jsxPragma       | string 默认值为 React |      |
+  | allowNamespaces | false                 |      |
+
+### 语法插件
+
+语法插件只允许 Babel 解析(parse)特定类型的语法(而不是转换).
+
+注意: 转换插件会自动启用语法插件.
+
+### 插件 / Preset 路径
+
+如果插件在 npm 上, 可以直接输入插件的名称, babel 会自动检查它们是否已经被安装到 `node_modules`目录下.
+
+```json
+{
+    "plugins": ["babel-plugin-myPlugin"]
+}
+```
+
+也可以指定插件的相对/绝对路径.
+
+```json
+{
+    "plugins": ["./node_modules/asdf/plugin"]
+}
+```
+
+### 插件的短名称
+
+如果插件名称的前缀为 `babel-plugin-`, 你还可以使用它的短名称:
+
+```json
+{
+    "plugins": [
+        "myPlugin",
+        "babel-plugin-myPlugin" // 两个插件实际是同一个
+    ]
+}
+```
+
+这也适用于带有冠名 (scope) 的插件:
+
+```json
+{
+    "plugins": [
+        "@org/babel-plugin-name",
+        "@org/name" // 两个插件实际是同一个
+    ]
+}
+```
+
+### 插件顺序
+
+插件的排列排序很重要.
+
+如果两个转换插件都将处理程序中的某个代码片段, 则将根据转换插件或 preset 的排列顺序依次执行.
+
+- 插件在 Presets 前运行.
+- 插件顺序从前往后排列.
+- Preset 顺序是颠倒的 (从后往前).
+
+例如:
+
+```json
+{
+    "plugins": ["transform-decorators-legacy", "transform-class-properties"]
+}
+```
+
+先执行 `transform-decorators-legacy`, 再执行 `transform-class-properties`
+
+重要的是, preset 的顺序是颠倒的.
+
+```json
+{
+    "plugins": ["es2015", "react", "stage-2"]
+}
+```
+
+ 将按如下顺序执行: `stage-2`, `react`最后是 `es2015`
+
+### 插件参数
+
+插件和 preset 都可以接受参数, 参数由插件名和参数对象组成一个数组, 可以在配置文件中设置.
+
+```json
+{
+    "plugins": [
+        [
+            "transform-async-to-module-method",
+            {
+                "module": "bluebird",
+                "method": "coroutine"
+            }
+        ]
+    ]
+}
+```
+
+preset 的设置参数的工作原理是完全相同的:
+
+```json
+{
+    "presets": [
+        [
+            "env",
+            {
+                "loose": true,
+                "modules": false
+            }
+        ]
+    ]
+}
+```
+
+### 插件开发
+
+请参考 [babel-handbook](https://github.com/jamiebuilds/babel-handbook)
+
+一个简单的用于反转名称顺序的插件:
+
+```js
+export default function() {
+    return {
+        visitor: {
+            Identifier(path) {
+                const name = path.node.name;
+                path.node.name = name.split("").reverse().join("");
+            }
+        }
+    };
+}
+```
+

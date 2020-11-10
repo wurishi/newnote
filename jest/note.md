@@ -360,3 +360,170 @@ describe('outer', () => {
 如果测试失败, 第一件要检查的事就是, 当仅运行这条测试时, 它是否仍然失败.
 
 如果有一个测试, 它作为一个更大的用例中的一部分时, 经常运行失败. 但是如果单独运行它时, 并不会失败. 则需要考虑其他测试对这个测试的影响. 通过可以通过修改 `beforeEach`来清除一些共享的状态来修改这种问题.
+
+## 1.5 Mock Functions
+
+Mock 函数允许测试代码之间的连接, 包括: 擦除函数的实际实现, 捕获对函数的调用(以及在这些调用中传递的参数), 在使用 `new`实例化时捕获构造函数的实例, 允许测试时配置返回值等.
+
+有两种方法可以模拟函数: 要么在测试代码中创建一个 mock 函数, 要么编写一个手动 mock 来覆盖模块依赖.
+
+### 使用 mock 函数
+
+假设我们要测试函数 `forEach`的内部实现, 这个函数为传入的数组中的每个元素调用一次回调函数.
+
+```js
+function forEach(items, callback) {
+    for(let index = 0; index < items.length; index++) {
+        callback(items[index]);
+    }
+}
+```
+
+为了测试此函数, 我们可以使用一个 mock 函数, 然后检查 mock 函数的状态来确保回调函数如期望地调用.
+
+```js
+const mockCallback = jest.fn(x => 42 + x);
+forEach([0, 1], mockCallback);
+
+expect(mockCallback.mock.calls.length).toBe(2); // mock 函数被调用了两次
+
+expect(mockCallback.mock.calls[0][0]).toBe(0); // 第一次调用函数时的第一个参数是 0
+
+expect(mockCallback.mock.calls[1][0]).toBe(1); // 第二次调用函数时的第一个参数是 1
+
+expect(mockCallback.mock.results[0].value).toBe(42); // 第一次函数调用的返回值是 42
+```
+
+#### .mock 属性
+
+所有的 mock 函数都有这个特殊的 `.mock`属性, 它保存了关于此函数如何被调用, 调用时的返回值信息. `.mock`属性还追踪了每次调用时 `this`的值.
+
+```js
+const myMock = jest.fn();
+
+const a = new MyMock();
+const b = {};
+const bound = myMock.bind(b);
+bound();
+
+console.log(myMock.mock.instances);
+// [ <a>, <b> ]
+```
+
+#### Mock 的返回值
+
+Mock 函数也可以用于在测试期间将测试值注入代码:
+
+```js
+const myMock = jest.fn();
+console.log(myMock());
+// undefined
+
+myMock.mockReturnValueOnce(10).mockReturnValueOnce('x').mockReturnValue(true);
+
+console.log(myMock(), myMock(), myMock(), myMock());
+// 10, 'x', true, true
+```
+
+### 模拟模块
+
+假定有一个 API 是使用 axios 从后端请求数据的, 在测试时, 一般不实际去调用后端(否则会导致测试缓慢与脆弱), 此时可以用 `jest.mock(...)`函数自动模拟 axios 模块.
+
+```js
+import axios from 'axios';
+import Users from './users';
+
+jest.mock('axios');
+
+test('should fetch users', () => {
+    const users = [{name: 'Bob'}];
+    const resp = {data: users};
+    axios.get.mockResolvedValue(resp); // 为 .get 提供一个 mockResolvedValue
+    
+    return Users.all().then(data => expect(data).toEqual(users));
+});
+```
+
+### Mock 实现
+
+除了让 mock 函数模拟返回值外, 有时候还可以模拟具体的函数实现. 使用 `mockImplementation`模拟 mock 实现.
+
+```js
+// foo.js
+module.exports = function() {
+    
+};
+
+// test.js
+jest.mock('../foo');
+const foo = require('../foo');
+
+foo.mockImplementation(() => 42);
+foo();
+// 42
+```
+
+另外可以使用 `mockImplementationOnce`多次模拟函数.
+
+```js
+const myMockFn = jest
+.fn()
+.mockImplementationOnce(cb => cb(null, true))
+.mockImplementationOnce(cb => cb(null, false));
+
+myMockFn((err, val) => console.log(val));
+// true
+
+myMockFn((err, val) => console.log(val));
+// false
+```
+
+```js
+const myMockFn = jest
+.fn(() => 'default')
+.mockImplementationOnce(() => 'first call')
+.mockImplementationOnce(() => 'second call');
+
+console.log(myMockFn(), myMockFn(), myMockFn(), myMockFn());
+// 'first call', 'second call', 'default', 'default'
+```
+
+另外有一个 `.mockReturnThis()`用来返回 `this`
+
+```js
+const myObj = {
+    myMethod: jest.fn().mockReturnThis(),
+};
+
+// 等价于
+const otherObj = {
+    myMethod: jest.fn(function() {
+        return this;
+    });
+}
+```
+
+### Mock 名称
+
+可以设置 mock 函数的名称, 这个名字会在测试出错时打印, 方便查找问题.
+
+```js
+const myMockFn = jest
+.fn()
+.mockReturnValue('default')
+.mockImplementation(scalar => 42 + scalar)
+.mockName('add42');
+```
+
+### Mock 匹配器
+
+```js
+expect(mockFunc).toHaveBeenCalled(); // mock 函数至少被调用过一次
+
+expect(mockFunc).toHaveBeenCalledWith(arg1, arg2); // mock 至少被指定的参数 arg1, arg2 调用过一次
+
+expect(mockFunc).toHaveBeenLastCalledWith(arg1, arg2); // mock 最后一次是被参数 arg1, arg2 调用的.
+
+expect(mockFunc).toMatchSnapshot(); // mock 的所有调用都会被写入快照
+```
+

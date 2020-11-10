@@ -527,3 +527,86 @@ expect(mockFunc).toHaveBeenLastCalledWith(arg1, arg2); // mock 最后一次是�
 expect(mockFunc).toMatchSnapshot(); // mock 的所有调用都会被写入快照
 ```
 
+## 1.6 Jest Platform
+
+### jest-changed-files
+
+识别 git/hg 仓库中被修改过的文件.
+
+```js
+const {getChangedFilesForRoots} = require('jest-changed-files');
+
+// 打印出当前目录最后修改过的一组文件
+getChangedFilesForRoots(['./'], {lastCommit: true})
+.then(result => console.log(result.changedFiles));
+```
+
+### jest-diff
+
+比较差异
+
+```js
+const diff = require('jest-diff').default;
+
+const a = {a: {b: {c: 5}}};
+const b = {a: {b: {c: 6}}};
+
+const result = diff(a, b);
+
+console.log(result);
+```
+
+### jest-docblock
+
+用于提取和解析 JavaScript 文件顶部的注释.
+
+```js
+const {parseWithComments} = require('jest-docblock');
+
+const parsed = parseWithCommens(code);
+
+console.log(parsed);
+```
+
+### jest-get-type
+
+标识所有 JavaScript 的类型.
+
+```js
+const getType = require('jest-get-type');
+
+const array = [1, 2, 3];
+const nullValue = null;
+const undefinedValue = undefined;
+
+console.log(getType(array)); // array
+console.log(getType(nullValue)); // null
+console.log(getType(undefinedValue)); // undefined
+```
+
+### jest-validate
+
+用于验证用户提交的配置.
+
+### jest-worker
+
+用于任务并行化的模块.
+
+```js
+const JestWorker = require('jest-worker').default;
+
+async function main() {
+  const worker = new JestWorker(require.resolve('./1.6.work.js'));
+  const result = await Promise.all([
+    worker.hello('Bob'), //
+    worker.getWorkerId(),
+  ]);
+  console.log(result);
+}
+
+main();
+```
+
+### jest-format
+
+格式化代码

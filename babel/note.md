@@ -3112,3 +3112,41 @@ module.exports = () => ({
 ### Preset 的参数
 
 插件和 preset 都可以接受参数, 参数由插件名和参数对象组成一个数组
+
+## 2.4 附加说明
+
+### Polyfills
+
+为了使某些功能能够正常工作. 可以通过引入 `@babel/polyfill`来满足 Babel 功能的所有需求:
+
+| 功能                        | 需求                               |
+| --------------------------- | ---------------------------------- |
+| Async functions, Generators | regenerator runtime                |
+| Array destructuring, For of | Symbol, prototype[Symbol.iterator] |
+| Spread                      | Array.from                         |
+
+### 类 (Classes)
+
+内置类, 例如 `Date`, `Array`, `DOM`等, 是无法正确的进行子类化的, 这是由于 ES5 的限制 (针对 `transform-classes`插件而言). 可以尝试使用基于 `Ojbect.setPrototypeOf`和 `Reflect.construct`而构建的 `babel-plugin-transform-builtin-extend`插件, 不过仍然会存在一些限制.
+
+### ES5
+
+由于 Babel 假定代码在 ES5 环境中执行, 因此使用的都是 ES5 函数. 如果使用的运行环境对 ES5 的支持有限或不支持, 例如低版本的 IE, 那么就需要使用 `@babel/polyfill`来满足需求.
+
+### IE 浏览器
+
+#### 类 (Classes) (版本 10 及以下)
+
+如果继承自一个类 (class), 那么静态属性 (static properties) 也会通过 `__proto__`一起被继承. 这种方式是被广泛支持的, 但是在很老旧的浏览器上可能会遇到问题.
+
+注意: IE <= 10 不支持 `__proto__`, 因此静态属性将不会被继承. 请参考 protoToAssig 了解可用的解决方案.
+
+对于有 `父类(super)`的类 (classes), 父类不能被正确解析. 可以通过 `transform-classes`插件中开启 `loose`参数来解决这个问题.
+
+#### Getters/Setters (版本 8 及以下)
+
+IE8 的 `Object.defineProperty`只能用在 DOM 对象上. 如果你打算支持 IE8 以更低版本的话, 不建议使用 getter 和 setter .
+
+#### 模块 (Modules)
+
+默认情况下, 当在 Babel 下使用模块 (modules)时, 将导出(export)一个不可枚举的 `__esModule`属性. 这是通过 `Object.defineProperty`实现的, 但是在 IE8 及以下版本中不支持. 解决方法是在相应的用于支持模块 (module) 的插件中开启 `loose`参数.

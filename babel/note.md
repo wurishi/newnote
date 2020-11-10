@@ -2402,10 +2402,10 @@ Babel 是一个编译器 (输入源码 => 输出编译后的代码). 编译过�
 
   参数
 
-  | 参数名           | 类型                    | 作用 |
-  | ---------------- | ----------------------- | ---- |
-  | all              | boolean, 默认值为 false |      |
-  | requireDirective | boolean, 默认值为 false |      |
+  | 参数名           | 类型                    | 作用                                                         |
+  | ---------------- | ----------------------- | ------------------------------------------------------------ |
+  | all              | boolean, 默认值为 false | 如果设置 true, 将只解析 Flow 的特定功能. 如果不设置, 则会将 `f<T>(e)`解析为一个嵌套的二元表达式 `f < T > e` |
+  | requireDirective | boolean, 默认值为 false |                                                              |
 
 - jscript
 
@@ -2696,3 +2696,419 @@ export default function() {
 }
 ```
 
+## 2.3 预设 (Presets)
+
+### 官方 Preset
+
+#### @babel/preset-env
+
+预设将根据指定的目标环境, 将检索并传递给 Babel 需要参与编译的插件列表.
+
+该预设不支持 `stage-x`插件.
+
+##### 安装
+
+```bash
+npm i -D @babel/preset-env
+```
+
+##### Browserslist 集成
+
+对于基于浏览器或 Electron 的项目, 建议使用 `.browserslistrc`文件来指定目标. 该配置文件还会被生态系统中的许多工具使用到, 比如 `autoprefixer`, `stylelint`, `eslint-plugin-compat`等.
+
+默认情况下, 除非设置了 `targets`或 `ignoreBrowserslistConfig`选项, 否则该预设将使用browserslist作为配置源.
+
+例如, 仅包括浏览器具有 > 0.25% 市场份额的用户需要的 polyfill 和代码转换. (将忽略 IE10, BlackBerry等没有安全更新的浏览器)
+
+```json
+{
+    "presets": [
+        [
+            "@babel/preset-env",
+            {
+                "useBuiltIns": "entry"
+            }
+        ]
+    ]
+}
+```
+
+.browserslistrc
+
+```
+> 0.25%
+not dead
+```
+
+或 package.json
+
+```json
+{
+    "browserslist": "> 0.25%, not dead"
+}
+```
+
+##### 选项
+
+###### targets
+
+`string` | `Array<string>` | `{ [string]: string }`, 默认为 `{}`.
+
+描述了项目支持的目标环境.
+
+```json
+{
+    "targets": "> 0.25%, not deat", // 可以是兼容的浏览器查询字符串
+    "targets": { // 可以是最低环境版本的对象
+        "chorme": "58",
+        "ie": "11"
+        // 具体的值可以是: chrome, opera, edge, firefox, safari, ie, ios, android, node, electron
+    }
+}
+```
+
+如果未指定目标, 默认将转换所有 ECMAScript 2015+ 的代码.
+
+###### targets.esmodules
+
+`boolean`
+
+指定为支持 ES 模块的浏览器. 指定此选项后, 目标浏览器配置将被忽略.
+
+```json
+{
+    "presets": [
+        [
+            "@babel/preset-env",
+            {
+                "targets": {
+                    "esmodules": true
+                }
+            }
+        ]
+    ]
+}
+```
+
+###### targets.node
+
+`string`| `"current"`| `true`
+
+如果要针对当前 Node.js 版本进行编译, 可以指定 `true`/ `"current"`. 它们等价于 `"node": process.versions.node`
+
+###### targets.safari
+
+`string`| `"tp"`
+
+如果要针对 Safari 的预览版(technology preview)进行编译, 可以指定 `"safari": "tp"`
+
+###### targets.browsers
+
+`string`| `Array<string>`
+
+浏览器结果会覆盖 `targets`中的项目, 在更高版本中将删除该字段.
+
+###### spec
+
+`boolean` 默认值为 false
+
+允许预设中所有支持的插件启用更多符合规范的选项.
+
+###### loose
+
+`boolean`默认值为 false
+
+允许预设中所有插件启用宽松(loose)转换.
+
+###### modules
+
+`"amd" | "umd" | "systemjs" | "commonjs" | "cjs" | "auto" | false` 默认为 `"auto"`.
+
+启用将 ES6 模块语法转换为其他模块类型的功能.
+
+设置为 `false`不会转换模块.
+
+`cjs`只是 `commonjs`的别名.
+
+###### debug
+
+`boolean` 默认 false
+
+将使用到的插件的版本数据输出到 `console.log`.
+
+###### include
+
+`Array<string|RegExp>` 默认为 []
+
+总是要包含的一些插件. 包括:
+
+- Babel 插件
+- 内置插件 (如 `es.map` , `es.set`, `es.object.assign`等)
+
+###### exclude
+
+`Array<string|RegExp>` 默认为 []
+
+总是要排除的一些插件.
+
+###### useBuiltIns
+
+`"usage" | "entry" | false` 默认为 false
+
+此选项用来配置如何处理 polyfill.
+
+由于从 v7.4.0 开始 `@babel/polyfill`已弃用, 建议使用 `core-js`并通过 `corejs`选项添加和设置版本.
+
+```bash
+npm i -D core-js@3
+# or
+npm i -D core-js@2
+```
+
+###### (一): useBuiltIns: 'entry'
+
+> 注意: `import "core-js"`和 `import "regenerator-runtime/runtime"`在整个应用程序中只能执行一次. 所以如果已经使用了 `@babel/polyfill`, 则它已经包含了 `core-js`和 `regenerator-runtime`, 两次导入将引发错误, 所以建议在项目中创建一个仅包含 `import`语句的单个文件.
+
+此选项将启用一个新插件, 该插件可以根据环境替换 `import "core-js/stable"`等.
+
+In
+
+```js
+import 'core-js';
+```
+
+Out (根据环境而异)
+
+```js
+import "core-js/modules/es.string.pad-start";
+import "core-js/modules/es.string.pad-end";
+```
+
+`core-js`为每个可能的 ECMAScript 功能导入 polyfill, 如果只需要其中一部分的话, 可以使用 `core-js@3`, 预设将会优化每个单个 `core-js`的入口点及其组合. 
+
+In
+
+```js
+import 'core-js/es/array';
+import 'core-js/proposals/math-extensions';
+```
+
+Out (根据环境而异)
+
+```js
+import 'core-js/modules/es.array.unscopables.flat';
+import 'core-js/modules/es.array.unscopables.flat-map';
+import "core-js/modules/esnext.math.clamp";
+import "core-js/modules/esnext.math.deg-per-rad";
+import "core-js/modules/esnext.math.degrees";
+import "core-js/modules/esnext.math.fscale";
+import "core-js/modules/esnext.math.rad-per-deg";
+import "core-js/modules/esnext.math.radians";
+import "core-js/modules/esnext.math.scale";
+```
+
+###### (二): useBuiltIns: 'usage'
+
+在每个文件中, 如果需要使用 polyfill, 将添加特定的导入. 利用了 bundle 最终只会加载一次相同 polyfill 的特性.
+
+In
+
+```js
+// a.js
+var a = new Promise();
+
+// b.js
+var b = new Map();
+```
+
+Out (如果环境不支持)
+
+```js
+// a.js
+import 'core-js/modules/es.promise';
+var a = new Promise();
+
+// b.js
+import 'core-js/modules/es.map';
+var b = new Map();
+```
+
+Out (如果环境支持)
+
+```js
+// a.js
+var a = new Promise();
+
+// b.js
+var b = new Map();
+```
+
+###### (三): useBuiltIns: false
+
+不为每个文件自动添加 polyfill, 也不要将 `import 'core-js'`或 `import '@babel/polyfill'`更改为单个 polyfill.
+
+###### corejs
+
+`2 | 3` 默认为 2
+
+###### forceAllTransforms
+
+`boolean` 默认为 false
+
+默认情况下, 预设将针对目标环境进行转换. 如果要强制运行所有的转换, 请启用该选项. 如果通过 UglifyJS 或仅支持 ES5 的环境运行, 则很有用.
+
+###### configPath
+
+`string` 默认为 `process.cwd()`
+
+配置开始搜索 browserslist 配置的起点路径, 然后不断的往上一直提升到系统根目录直到找到配置.
+
+###### ignoreBrowserslistConfig
+
+`boolean` 默认为 false
+
+是否切换 browserslist 配置源.
+
+###### shippedProposals
+
+`boolean` 默认为 false
+
+切换启用对浏览器附带的内置功能建议的支持. 
+
+#### @babel/preset-flow
+
+此预设包含如下插件:
+
+- @babel/plugin-transform-flow-strip-types
+
+#### @babel/preset-react
+
+此预设包含如下插件:
+
+- @babel/plugin-syntax-jsx
+- @babel/plugin-transform-react-jsx
+- @babel/plugin-transform-react-display-name
+
+并带有以下 `development`选项
+
+- @babel/plugin-transform-react-jsx-self
+- @babel/plugin-transform-react-jsx-source
+
+注意, 在 v7 中不再启用 flow 语法支持, 如果需要请自行安装.
+
+##### 安装
+
+```bash
+npm i -D @babel/preset-react
+```
+
+#### @babel/preset-typescript
+
+该预设包含如下插件:
+
+- @babel/plugin-transform-typescript
+
+### Stage-X (实验性质的 Presets)
+
+stage-x 预设中的任何语法转换都是对语言本身的更改, 而这些更改尚未被纳入 JavaScript 标准中.
+
+> 注意: 这些提案可能会发生变化. 因此, 特别是处于 stage-3 之前的任何提案, **请务必谨慎使用**. Babel 计划在每次 TC39 会议之后, 如果有可能, 根据提案变更更新 stage-x 的 预设.
+
+TC39 将提案分为以下几个阶段:
+
+- Stage 0 - 设想 (Strawman): 只是一个想法, 可能有 Babel 插件.
+- Stage 1 - 建议 (Proposal): 这是值得跟进的.
+- Stage 2 - 草案 (Draft): 初始规范.
+- Stage 3 - 候选 (Candidate): 完成规范并在浏览器上初步实现.
+- Stage 4 - 完成 (Finished): 将添加到下一个年度版本发布中.
+
+### 创建 Preset
+
+如需创建一个自己的预设, 只需导出一份配置即可.
+
+```js
+module.exports = function() {
+    return {
+        plugins: [
+            'pluginA',
+            'pluginB',
+            'pluginC',
+        ]
+    }
+}
+```
+
+preset 也可以包含其他的 preset, 以及带有参数的插件.
+
+```js
+module.exports = () => ({
+    presets: [
+        require('@babel/preset-env'),
+    ],
+    plugins: [
+        [require('@babel/plugin-proposal-class-properties'), {loose: true}],
+        require('@babel/plugin-proposal-object-rest-spread'),
+        'pluginA'
+    ]
+});
+```
+
+### Preset 的路径
+
+如果预设在 npm 上, 可以输入 preset 的名称, babel 将检查是否已经将其安装到 `node_modules`目录下.
+
+```json
+{
+    "presets": ["babel-preset-myPreset"]
+}
+```
+
+ 还可以指定为 preset 的绝对或相对路径.
+
+```json
+{
+    "presets": ["./myProject/myPreset"]
+}
+```
+
+### Preset 的短名称
+
+如果预设的名称前缀为 `babel-preset-`, 则还可以使用它的短名称:
+
+```json
+{
+    "presets": [
+        "myPreset",
+        "babel-preset-myPreset"
+    ]
+}
+```
+
+这也适用于带有冠名 (scope) 的预设:
+
+```json
+{
+    "presets": [
+        "@org/babel-preset-name",
+        "@org/name"
+    ]
+}
+```
+
+### Preset 的排列顺序
+
+预设是逆序排列的 (从后往前)
+
+```json
+{
+    "presets": [
+        "a", "b", "c"
+    ]
+}
+```
+
+将按如下顺序执行: c -> b -> a
+
+### Preset 的参数
+
+插件和 preset 都可以接受参数, 参数由插件名和参数对象组成一个数组

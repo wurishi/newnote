@@ -610,3 +610,92 @@ main();
 ### jest-format
 
 格式化代码
+
+# 2. 指南
+
+## 2.1 快照测试
+
+快照测试对于确保 UI 不会有意外的改变会非常有用.
+
+### 用 Jest 进行快照测试
+
+```js
+it('snap correctly', () => {
+  const tree = `<div>
+  <h1>标题</h1>
+  </div>`;
+  expect(tree).toMatchSnapshot();
+});
+
+test('snap test', () => {
+  const tree = `<div>
+  <h2>Hell world</h2>
+  </div>`;
+  expect(tree).toMatchSnapshot();
+});
+```
+
+第一次运行此测试时, Jest 会创建一个快照文件.
+
+在随后的测试运行时, Jest 会将渲染的输出与先前的快照进行比较. 如果它们匹配, 测试将通过. 如果不匹配, 则会提示错误. (或者, 如果实现已经修改, 则快照也需要更新).
+
+#### 更新快照
+
+如果实现已经修改, 则需要执行命令更新快照.
+
+```bash
+npx jest --updateSnapshot
+```
+
+如果要限制重新生成哪些快照测试用例, 则可以传递一个附加的 `--testNamePattern`标志来针对那些与模式匹配的测试用例重新记录快照. 比如:
+
+```bash
+npx jest --updateSnapshot --testNamePattern test.ts
+```
+
+#### 互动快照模式
+
+```bash
+npx jest --watch
+```
+
+可能通过快捷键 `u`在 `--watch`模式下更新快照.
+
+#### 内联快照
+
+内联快照的行为与外部快照(.snap文件)相同, 但快照值会自动写回源代码.
+
+```
+该功能由 Prettier(https://prettier.io/) 提供支持. 如果 Prettier 安装在 Jest 找不到的位置, 使用配置 prettierPath 告知 Jest 如何找到 Prettier.
+```
+
+```js
+test('snap test2', () => {
+  const tree = '<hr />';
+  expect(tree).toMatchInlineSnapshot();
+});
+```
+
+首先运行后, 快照会直接写回源代码:
+
+```diff
+test('snap test2', () => {
+  const tree = '<hr />';
+- expect(tree).toMatchInlineSnapshot();
++ expect(tree).toMatchInlineSnapshot(`<hr />`);
+});
+```
+
+#### 属性匹配
+
+快照对象中某些字段(例如 ID, Date)等是会不断变化的, 所以直接使用快照将会导致每次运行测试都失败.
+
+对于这种情况, Jest 允许为属性提供匹配器, 在写入或测试快照之前, 会将匹配器的内容保存到快照文件中, 而不是实际的值.
+
+### 最佳实践
+
+#### 1. 将快照视为代码.
+
+#### 2. 测试应该是确定性.
+
+#### 3. 快照名称应该始终是描述预期快照内容的.

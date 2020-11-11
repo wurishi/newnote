@@ -7,7 +7,7 @@ import { fn2 } from './2.3';
 
 describe('mock', () => {
   beforeEach(() => {
-    // jest.mock('./user');
+    jest.mock('./user');
     jest.mock('lodash');
     jest.mock('@d-fischer/deprecate');
   });

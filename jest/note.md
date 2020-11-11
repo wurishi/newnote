@@ -824,3 +824,101 @@ test('ad test', () => {
 如果要模拟的是类似 `lodash`这样的 Node 模块, 则应该将 mock 代码放在与 `node_modules`目录相邻的目录 `__mocks__`中.
 
 另外如果要模拟的模块有作用域, 那么 `__mocks__`中的目录结构应该是与作用域对应的, 即如果要模拟的作用域模块为 `@scope/project-name`, 那么模拟的模块路径就应该是这样的: `__mocks__/@scope/project-name.js`.
+
+## 2.4 模拟 ES6 类
+
+例如有如下二个类:
+
+```js
+// sound-player.js
+export default class SoundPlayer {
+    constructor() {
+        this.foo = 'bar';
+    }
+    playSoundFile(fileName) {
+        console.log('Playing sound file ' + fileName);
+    }
+}
+// sound-player-consumer.js
+export default class SoundPlayerConsumer {
+    constructor() {
+        this.soundPlayer = new SoundPlayer();
+    }
+    playSomethingCool() {
+        const coolSoundFileName = 'song.mp3';
+        this.soundPlayer.playSoundFile(coolSoundFileName);
+    }
+}
+```
+
+有四种方式来创建 ES6 模拟类
+
+### 自动 Mock
+
+直接使用 `jest.mock`
+
+```js
+import SoundPlayer from './sound-player';
+import SoundPlayerConsumer from './sound-player-consumer';
+
+jest.mock('./sound-player');
+
+test('check class constructor', () => {
+  new SoundPlayerConsumer(); // mock 的 soundplayer 被调用了一次
+
+  expect(SoundPlayer).toHaveBeenCalledTimes(1);
+});
+```
+
+### 手动 Mock
+
+在 `__mocks__`目录中添加手动 mock 的代码.
+
+### 调用 `jest.mock()`时提供模块工厂方法
+
+```js
+import SoundPlayer from './sound-player';
+const mockPlaySoundFile = jest.fn();
+jest.mock('./sound-player', () => {
+    return jest.fn().mockImplementation(() => {
+        return {playSoundFile: mockPlaySoundFile};
+    });
+});
+```
+
+使用工厂方法有一个局限, 因为 `jest.mock()`的调用会被提升到文件的顶部, 所以除了以 `'mock'`开头的变量也会被自动提升到顶部之外, 其他变量并不会提升到顶部, 这就有可能导致 mock 中的工厂方法访问未初始化的变量, 比如:
+
+```js
+import SoundPlayer from './sound-player';
+const fakePlaySoundFile = jest.fn();
+jest.mock('./sound-player', () => {
+    return jest.fn().mockImplementation(() => {
+        return {playSoundFile: fakePlaySoundFile}; // 出错, 因为 mock 被提升到文件顶部了, 但 fakePlaySoundFile 此时可能尚未定义.
+    });
+});
+```
+
+另外要注意, 工厂方法必须返回的是一个构造函数, 也就是说不能返回箭头函数(因为不能 new 箭头函数). 除非代码是通过 `@babel/preset-env`已经全部编译成 ES5 的代码了.
+
+### 使用 `mockImplementation()`或 `mockImplementationOnce()`
+
+```js
+import SoundPlayer from './sound-player';
+jest.mock('./sound-player');
+beforeAll(() => {
+    SoundPlayer.mockImplementation(() => {
+        return {
+            playSoundFile: () => {
+                // mock method
+                return 'A'
+            }
+        }
+    });
+});
+test('test', () => {
+    const soundPlayerConsumer = new SoundPlayerConsumer();
+    expect(() => soundPlayerConsumer.playSomethingCool()).toBe('A');
+});
+```
+
+如果有多个测试用例, 不要忘了在 `beforeEach()`中调用 `mockClear()`用来清理模拟方法的记录信息.

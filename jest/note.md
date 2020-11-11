@@ -921,4 +921,18 @@ test('test', () => {
 });
 ```
 
-如果有多个测试用例, 不要忘了在 `beforeEach()`中调用 `mockClear()`用来清理模拟方法的记录信息.
+如果有多个测试用例, 可以在 `beforeEach()`中调用 `mockClear()`用来清理模拟方法的记录信息.
+
+## 2.5 跳过模块模拟
+
+在 Jest 中可以模拟整个模块, 但有时候在某些测试用例中还是会遇到想使用原始版本而非模拟版本的情况.
+
+此时, 你可以使用 `jest.requireAcual`
+
+```diff
+  jest.mock('node-fetch');
+- import fetch, {Response} from 'node-fetch';
++ import fetch from 'node-fetch';
++ const {Response} = jest.requireActual('node-fetch'); 
+```
+

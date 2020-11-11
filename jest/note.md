@@ -936,3 +936,11 @@ test('test', () => {
 + const {Response} = jest.requireActual('node-fetch'); 
 ```
 
+## 2.6 ECMAScript 模块
+
+在 ESM 中使用 Jest 需要这样:
+
+```js
+import {jest, test} from '@jest/globals';
+```
+

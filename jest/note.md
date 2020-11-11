@@ -944,3 +944,126 @@ test('test', () => {
 import {jest, test} from '@jest/globals';
 ```
 
+## 2.7 与 webpack 一起使用 (Using with webpack)
+
+### Webpack 示例
+
+webpack.config.js
+
+```js
+module.exports = {
+    module: {
+        loaders: [
+            {loader: 'babel', test: /\.jsx?$/, exclude: ['node_modules']},
+            {loader: 'style-loader!css-loader', test: /\.css$/},
+            {loader: 'url-loader', test: /\.gif$/},
+            {loader: 'file-loader', test: /\.(ttf|eot|svg)$/}
+        ]
+    },
+    resolve: {
+        alias: {
+            config$: './configs/app-config.js',
+            react: './vendor/react-master',
+        },
+        extensions: ['', 'js', 'jsx'],
+        modules: [
+            'node_modules',
+            'bower_components',
+            'shared',
+            '/shared/vendor/modules'
+        ]
+    }
+};
+```
+
+### 处理静态文件
+
+接下来配置 Jest 使其优雅地处理资源文件, 如样式表和图像. 通常这些文件在测试中无足轻重, 因此我们可以安全地 mock 他们. 当然, 如果使用了 CSS 模块, 那么最好给类名查找模拟一个代理.
+
+package.json
+
+```json
+{
+    "jest": {
+        "moduleNameMapper": {
+            "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__mocks__/fileMock.js",
+      "\\.(css|less)$": "<rootDir>/__mocks__/styleMock.js"
+        }
+    }
+}
+```
+
+mock 文件:
+
+```js
+// __mocks__/styleMock.js
+module.exports = {};
+
+// __mocks__/fileMock.js
+module.exports = 'test-file-stub';
+```
+
+### 模拟 CSS 模块
+
+可以使用 ES6 Proxy 来模拟一个 CSS
+
+```bash
+npm i -D identity-obj-proxy
+```
+
+package.json
+
+```json
+{
+    "jest": {
+        "moduleNameMapper": {
+            "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__mocks__/fileMock.js",
+      "\\.(css|less)$": "identity-obj-proxy"
+        }
+    }
+}
+```
+
+### 配置 Jest 来查找文件
+
+通过 `moduleDirectories`和 `moduleFileExtensions`选项来告诉 Jest 如何查找文件.
+
+package.json
+
+```json
+{
+    "jest": {
+        "moduleFileExtensions": ["js", "jsx"],
+        "moduleDirectories": ["node_modules", "bower_components", "shared"]
+    }
+}
+```
+
+## 2.8 Using with puppeteer
+
+## 2.9 Using with MongoDB
+
+## 2.10 Using with DynamoDB
+
+## 2.11 监听插件
+
+Jest 提供了监听插件, 使得 Jest 运行时可以根据行为运行一些自定义的行为.
+
+```js
+class MyWatchPlugin {
+    apply(jestHooks) {}
+    getUsageInfo(globalConfig) {}
+    run(globalConfig, updateConfigAndRun) {}
+}
+```
+
+jest.config.js
+
+```js
+module.exports = {
+    watchPlugins: ['path/to/yourWatchPlugin']
+}
+```
+
+# 3. 框架指南
+

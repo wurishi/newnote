@@ -793,7 +793,7 @@ describe('infiniteTimerGame', () => {
 
 ### Advance Timers by Time
 
-另一种可选方式是使用 `jest.advancertimersbytime(ms)`, 该 API 执行后, 模拟所有 timers 执行了 `ms`毫秒. 所有通过 `setTimeout`或 `setInterval`而处于任务队列中等待中的宏任务和其他一切应该在本时间片中被执行的任务都会执行完毕.
+另一种可选方式是使用 `jest.advancertimersbytime(msToRun)`, 该 API 执行后, 将模拟所有 timers 执行了 `msToRun`毫秒. 所有通过 `setTimeout`或 `setInterval`而处于任务队列中等待中的宏任务和其他一切应该在本时间片中被执行的任务都会执行完毕. 包括了在宏任务中新添加的宏任务, 直到任务队列中不再有应该在 `msToRun`时间内运行的宏任务为止.
 
 ```js
 test('ad test', () => {
@@ -809,3 +809,18 @@ test('ad test', () => {
   });
 ```
 
+另外可以在测试用例执行完毕之后使用 `jest.clearAllTimers()`进行清理工作.
+
+## 2.3 手动 Mock
+
+### 模拟用户模块
+
+手动模拟用户模块是通过将模块写在对应需要模拟的模块相邻的 `__mocks__`目录下实现的. 比如想要模拟的模块 `user`是放在 `models`目录下的, 则 mock 模块应该是 `models/__mocks__/user.js`.
+
+> 注意: `__mocks__`文件夹区分大小写
+
+### 模拟 Node.js 模块
+
+如果要模拟的是类似 `lodash`这样的 Node 模块, 则应该将 mock 代码放在与 `node_modules`目录相邻的目录 `__mocks__`中.
+
+另外如果要模拟的模块有作用域, 那么 `__mocks__`中的目录结构应该是与作用域对应的, 即如果要模拟的作用域模块为 `@scope/project-name`, 那么模拟的模块路径就应该是这样的: `__mocks__/@scope/project-name.js`.

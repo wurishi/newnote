@@ -9,7 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "jest-worker": "^26.6.2"
+    "@d-fischer/deprecate": "^2.0.2",
+    "jest-worker": "^26.6.2",
+    "lodash": "^4.17.20"
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",

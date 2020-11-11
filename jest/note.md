@@ -749,3 +749,63 @@ test('calls the callback after 1 second', () => {
 
 ### Run Pending Timers
 
+在某些场景下, 可能还会有在定时器的回调函数中再设置一个新的定时器的情况. 对于这种情况, 如果让定时器一直运行下去可能会造成死循环. 所以此时不能再使用 `jest.runAllTimers()`, 而是使用 `jest.runOnlyPendingTimers()`
+
+```js
+// infiniteTimerGame.js
+export function infiniteTimerGame(callback) {
+  console.log('Ready...go!');
+
+  setTimeout(() => {
+    console.log("Time's up! 10 seconds before the next game starts...");
+    callback && callback();
+
+    setTimeout(() => {
+      infiniteTimerGame(callback);
+    }, 10000);
+  }, 1000);
+}
+// test.js
+describe('infiniteTimerGame', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  test('schedule a 10-second timer after 1 second', () => {
+    const callback = jest.fn();
+
+    infiniteTimerGame(callback);
+
+    expect(setTimeout).toHaveBeenCalledTimes(1);
+    expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 1000);
+
+    expect(callback).not.toBeCalled();
+
+    jest.runOnlyPendingTimers();
+
+    expect(callback).toBeCalled();
+
+    expect(setTimeout).toHaveBeenCalledTimes(2);
+    expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 10000);
+  });
+});
+```
+
+### Advance Timers by Time
+
+另一种可选方式是使用 `jest.advancertimersbytime(ms)`, 该 API 执行后, 模拟所有 timers 执行了 `ms`毫秒. 所有通过 `setTimeout`或 `setInterval`而处于任务队列中等待中的宏任务和其他一切应该在本时间片中被执行的任务都会执行完毕.
+
+```js
+test('ad test', () => {
+    const callback = jest.fn();
+    timerGame(callback);
+
+    expect(callback).not.toBeCalled();
+
+    jest.advanceTimersByTime(1000); // 快进 1000 毫秒
+
+    expect(callback).toBeCalled();
+    expect(callback).toHaveBeenCalledTimes(1);
+  });
+```
+

@@ -45,7 +45,7 @@ electron
 
 # jest
 
-[参考资料](https://jestjs.io/docs/zh-Hans/getting-started)
+[参考资料](https://jestjs.io/docs/zh-Hans/getting-started) _(进行中 2/4)_
 
 # jsgenerator
 

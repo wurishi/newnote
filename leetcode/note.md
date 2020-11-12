@@ -1,8 +1,12 @@
-[link](https://labuladong.gitbook.io/algo/shu-ju-jie-gou-xi-lie/2.5-shou-ba-shou-shua-shu-zu-ti-mu/twosum-wen-ti-de-he-xin-si-xiang)
+[link](https://labuladong.gitbook.io/algo/)
 
 [leetcode](https://leetcode-cn.com/problemset/all/)
 
 # 0. 必读系列
+
+## 滑动窗口
+
+[模板](src/slidingwindow.ts)
 
 # 1. 动态规划系列
 

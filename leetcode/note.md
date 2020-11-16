@@ -1,5 +1,7 @@
 [link](https://labuladong.gitbook.io/algo/)
 
+[link2](https://github.com/Alex660/leetcode)
+
 [leetcode](https://leetcode-cn.com/problemset/all/)
 
 # 0. 必读系列
@@ -87,6 +89,10 @@ export function binarySearch(nums: number[], target: number): number {
    如果有序数组存在重复数字, 即 `nums = [1, 2, 2, 2, 3]`, `target`为 2, 此时, 算法返回的索引是正确的结果 2, 但是我们无法得知 `target`左侧或右侧的边界.
 
    当然也可以在找到 `target`后, 向左或向右线性搜索, 但是这样就难以保证二分查找的 O(log(n)) 的时间复杂度了.
+
+#### 二: 寻找左侧边界的二分搜索
+
+#### 三: 寻找右侧边界的二分搜索
 
 ### 滑动窗口
 

@@ -98,6 +98,10 @@ export function binarySearch(nums: number[], target: number): number {
 
 ###### [Q 704.二分查找](src/704.ts)
 
+###### [Q 875.爱吃香蕉的珂珂](src/875.ts)
+
+###### [Q 1011.在 D 天内送达包裹的能力](src/1011.ts)
+
 ### 滑动窗口
 
 ###### [Q 3.无重复字符的最长子串](src/3.ts)

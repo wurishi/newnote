@@ -96,6 +96,8 @@ export function binarySearch(nums: number[], target: number): number {
 
 ###### [Q 34.在排序数组中查找元素的第一个和最后一个位置](src/34.ts)
 
+###### [Q 704.二分查找](src/704.ts)
+
 ### 滑动窗口
 
 ###### [Q 3.无重复字符的最长子串](src/3.ts)

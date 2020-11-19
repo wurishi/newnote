@@ -38,6 +38,7 @@ export function addTwoNumbers(
     }
   }
   if (current.next && current.next.val === 0) {
+    // 0 开头要去掉, 或者在上面.next 处使用 tmpval 代替 new ListNode 减少节点的创建销毁的消耗
     current.next = null;
   }
   return res;

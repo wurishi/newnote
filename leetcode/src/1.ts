@@ -7,7 +7,7 @@
  */
 export default function twoSum(nums: number[], target: number): number[] {
   const res: number[] = [];
-  const map = new Map<number, number>();
+  const map = new Map<number, number>(); // 使用 map 使的后续查找时间为 O(1)
   const len = nums.length;
   for (let i = 0; i < len; i++) {
     const v = nums[i];

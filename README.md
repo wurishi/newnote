@@ -156,6 +156,12 @@ SVG 路径动画
 
 参考资料: [vivus](https://github.com/maxwellito/vivus#vivusjs) **(完成)**
 
+# vue3
+
+[参考资料](https://www.vue3js.cn/docs/zh/guide/installation.html)
+
+[组合式 API](https://composition-api.vuejs.org/zh/api.html#setup)
+
 # webpack
 
 - 指南: [webpack 指南](https://www.webpackjs.com/guides/installation/)  **(完成)**

@@ -538,3 +538,77 @@ const foo = inject(key); // foo 的类型: string | undefined
 const foo = inject<string>('foo') // string || undefined
 ```
 
+## 5. 模板 Refs
+
+```vue
+<template>
+	<div ref="root"></div>
+</template>
+
+<script>
+	import { ref, onMounted } from 'vue';
+    export default {
+        setup() {
+            const root = ref(null);
+            
+            onMounted(() => {
+                console.log(root.value);
+            });
+            
+            return {
+                root,
+            }
+        }
+    }
+</script>
+```
+
+这里将 `root`暴露在渲染上下文中, 并通过 `ref="root"`将 `div`绑定到对应的 `ref`. 在 Virtual DOM patch 算法中, 如果一个 VNode 的 `ref`对应一个渲染上下文中的 ref, 则该 VNode 对应的元素或组件实例将被分配给该 ref. 因为是在 Virtual DOM 的 mount / patch 过程中执行的. 因此模板 ref 仅在渲染初始化后才能访问.
+
+ref 被用在模板中时和其他 ref 一样, 都是响应式的, 并可以传递进组合函数(或从其中返回).
+
+### 配合 render 函数 / JSX 语法
+
+```jsx
+export default {
+    setup() {
+        const root = ref(null);
+        return () => h('div', {ref: root});
+        
+        // 或 JSX
+        return () => <div ref={root} />
+    }
+}
+```
+
+### 在 `v-for`中使用
+
+模板 ref 在 `v-for`中使用 vue 没有做特殊处理, 需要使用函数型的 ref (3.0 提供的新功能) 来自定义处理方式:
+
+```vue
+<template>
+	<div v-for="(item, i) in list" :ref="el => { divs[i] = el }">
+        {{ item }}
+    </div>
+</template>
+<script>
+	import { ref, reactive, onBeforeUpdate } from 'vue';
+    
+    export default {
+        setup() {
+            const list = reactive([1, 2, 3]);
+            const divs = ref([]);
+            
+            onBeforeUpdate(() => {
+                divs.value = [];
+            });
+            
+            return {
+                list,
+                divs,
+            }
+        }
+    }
+</script>
+```
+

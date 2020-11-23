@@ -612,3 +612,112 @@ export default {
 </script>
 ```
 
+## 6. 响应式系统工具集
+
+### unref
+
+如果参数是一个 ref 则返回它的 `value`, 否则返回参数本身. 它是 `val = isRef(val) ? val.value : val`的语法糖.
+
+```js
+function useFoo(x:number | Ref<number>) {
+    const unwrapped = unref(x); // unwrapped 肯定是 number 类型
+}
+```
+
+### toRef
+
+`toRef`可以用来为一个 reactive 对象的属性创建一个 ref. 这个 ref 可以被传递并保持响应性.
+
+```js
+const state = reactive({
+    foo: 1,
+    bar: 2,
+});
+const fooRef = toRef(state, 'foo');
+
+fooRef.value ++;
+console.log(state.foo); // 2
+
+state.foo ++;
+console.log(fooRef.value); // 3
+```
+
+将 prop 中的属性作为 ref 传给组合逻辑函数时, `toRef`就派上了用场:
+
+```js
+export default {
+    setup(props) {
+        useSomeFeature(toRef(props, 'foo'));
+    }
+}
+```
+
+### toRefs
+
+把一个响应式对象转换成普通对象, 该普通对象的每个 property 都是一个 ref, 和响应式对象 property 一一对应.
+
+```js
+const state = reactive({
+    foo: 1,
+    bar: 2,
+});
+const stateAsRefs = toRefs(state);
+/*
+stateAsRefs 的类型如下:
+{
+	foo: Ref<number>,
+	bar: Ref<number>,
+}
+*/
+state.foo ++;
+console.log(stateAsRefs.foo.value); // 2
+
+stateAsRefs.foo.value ++;
+console.log(state.foo); // 3
+```
+
+当想要从一个组合逻辑函数中返回响应式对象时, 用 `toRefs`是很有效的, 该 API 让消费组件时可以解构/扩展(使用 ... 操作符)返回的对象, 且不会丢失响应性.
+
+```js
+function useFeatureX() {
+    const state = reactive({
+        foo: 1,
+        bar: 2,
+    })
+    
+    return toRefs(state);
+}
+
+export default {
+    setup() {
+        // 解构不会丢失响应性
+        const { foo, bar } = useFeatureX();
+        
+        return {
+            foo,
+            bar,
+        }
+    }
+}
+```
+
+### isRef
+
+检查一个值是否为一个 ref 对象.
+
+### isProxy
+
+检查一个对象是否是由 `reactive`或 `readonly`方法创建的代理.
+
+### isReactive
+
+检查一个对象是否是由 `reactive`创建的响应式代理.
+
+如果这个代理是由 `readonly`创建的, 但又被 `reactive`创建的另一个代理包裹了一层, 那么同样也会返回 `true`.
+
+### isReadonly
+
+检查一个对象是否是由 `readonly`创建的只读代理.
+
+
+

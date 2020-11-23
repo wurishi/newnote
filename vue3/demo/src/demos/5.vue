@@ -1,5 +1,5 @@
 <template>
-  <div ref="root">55555</div>
+  <div ref="root">{{ name }}</div>
 </template>
 
 <script lang="ts">
@@ -16,6 +16,15 @@ export default defineComponent({
     return {
       root,
     };
+  },
+  data() {
+    return {
+      name: 'Hello',
+    };
+  },
+  mounted() {
+    this.name = 100;
+    console.log(this.name, this.root);
   },
 });
 </script>

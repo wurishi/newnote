@@ -388,3 +388,43 @@ watchEffect(() => {}, {
 - 依赖项变更导致副作用被触发时, 将调用 `onTrigger`
 
 仅在开发模式下生效.
+
+### watch
+
+`watch`API 完全等效于 2.x `this.$watch`. `watch`需要侦听特定的数据源, 并在回调函数中执行副作用. 默认情况下是懒执行的, 即只有在侦听源发生变更时才执行回调.
+
+对比 `watchEffect`, `watch`允许我们:
+
+- 懒执行副作用.
+- 更明确哪些状态的改变会触发侦听器重新运行副作用.
+- 访问侦听状态变化前后的值.
+
+#### 侦听单个数据源
+
+侦听器的数据源可以是一个拥有返回值的 getter 函数, 也可以是 ref.
+
+```js
+const state = reactive({ count: 0 });
+watch(
+	() => state.count,
+    (count, prevCount) => {
+        // 侦听state.count的变化
+    }
+);
+const count = ref(0);
+watch(count, (count, prevCount) => {
+    // 侦听 count ref
+});
+```
+
+#### 侦听多个数据源
+
+可以使用数组来同时侦听多个源.
+
+```js
+watch([fooRef, barRef], ([foo, bar], [prevFoo, prevBar]) => {});
+```
+
+#### 与 `watchEffect`共享的行为
+
+watch 和 watchEffect 在停止侦听, 清除副作用, 副作用刷新时机和侦听器调试等方面的行为一致.

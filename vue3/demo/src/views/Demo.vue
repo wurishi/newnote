@@ -1,19 +1,45 @@
 <template>
   <div class="demo">
-    <component :is="'Demo_1'" />
-    <D1 :value="1010" name="HEHE" enum="C" />
-    <Com name="Com" />
+    <div class="list">
+      <div
+        v-for="demo in demoList"
+        :key="demo"
+        @click="changeDemo(demo)"
+        :style="{ color: currentDemo == demo ? 'red' : '' }"
+      >
+        {{ demo }}
+      </div>
+    </div>
+    <hr />
+    <component v-if="currentDemo" :is="currentDemo" />
   </div>
 </template>
 
 <script lang="ts">
 import { ref } from 'vue';
 import main from '../main';
-import D1, { Com } from '../demos/1.vue';
 export default {
-  components: {
-    D1,
-    Com,
+  setup() {
+    const { demoList } = main;
+    const demo = ref('');
+    const changeDemo = (d: string) => {
+      demo.value = d;
+    };
+
+    return {
+      demoList,
+      currentDemo: demo,
+      changeDemo,
+    };
   },
 };
 </script>
+
+<style scoped>
+.demo .list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+</style>

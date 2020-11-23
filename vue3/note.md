@@ -428,3 +428,39 @@ watch([fooRef, barRef], ([foo, bar], [prevFoo, prevBar]) => {});
 #### 与 `watchEffect`共享的行为
 
 watch 和 watchEffect 在停止侦听, 清除副作用, 副作用刷新时机和侦听器调试等方面的行为一致.
+
+## 3. 生命周期钩子函数
+
+可以直接导入 `onXXX`的函数来注册生命周期钩子. 这些生命周期钩子注册函数只能在 `setup()`期间同步使用, 因为它们依赖于内部的全局状态来定位当前组件实例 (即正在调用 `setup()`的组件实例), 不在当前组件下调用这些函数会抛出一个错误.
+
+组件实例上下文也是在生命周期钩子同步执行期间设置的. 因此, 在卸载组件时, 在生命周期钩子内部同步创建的侦听器和计算状态也将自动删除.
+
+### 与 2.x 版本生命周期相对应的组合式 API
+
+| 2.x版本生命周期钩子 | 组合式 API      |
+| ------------------- | --------------- |
+| beforeCreate        | setup()         |
+| created             | setup()         |
+| beforeMount         | onBeforeMount   |
+| mounted             | onMounted       |
+| beforeUpdate        | onBeforeUpdate  |
+| update              | onUpdate        |
+| beforeDestroy       | onBeforeUnmount |
+| destroyed           | onUnmounted     |
+| errorCaptured       | onErrorCaptured |
+
+### 新增的钩子函数
+
+- onRenderTracked
+- onRenderTriggered
+
+两个钩子函数都接收一个 `DebuggerEvent`, 与 `watchEffect`参数选项中的 `onTrack`和 `onTrigger`类似.
+
+```js
+export default {
+    onRenderTriggered(e) {
+        debugger // 检查哪个依赖项导致组件重新渲染
+    }
+}
+```
+

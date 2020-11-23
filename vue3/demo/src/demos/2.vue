@@ -16,7 +16,14 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive, ref, watchEffect } from 'vue';
+import {
+  computed,
+  defineComponent,
+  onMounted,
+  reactive,
+  ref,
+  watchEffect,
+} from 'vue';
 
 export default defineComponent({
   setup: () => {

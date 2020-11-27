@@ -160,7 +160,7 @@ SVG 路径动画
 
 [参考资料](https://www.vue3js.cn/docs/zh/guide/installation.html)
 
-[组合式 API](https://composition-api.vuejs.org/zh/api.html#setup)
+[组合式 API](https://composition-api.vuejs.org/zh/api.html#setup) **(完成)**
 
 # webpack
 

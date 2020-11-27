@@ -719,5 +719,117 @@ export default {
 
 检查一个对象是否是由 `readonly`创建的只读代理.
 
+## 7. 高级响应式系统 API
 
+### customRef
+
+用于自定义一个 `ref`, 可以显式地控制依赖追踪和触发响应, 接受一个工厂函数, 两个参数分别是用于追踪的 `track`和用于触发响应的 `trigger`, 并返回一个带有 `get`和 `set`属性的对象.
+
+以下是一个使用自定义 ref 实现带防抖功能的 `v-model`:
+
+```vue
+<template>
+	<input v-model="text" />
+</template>
+<script>
+function useDebouncedRef(value, delay = 200) {
+    let timeout;
+    return customRef((track, trigger) => {
+        return {
+            get() {
+                track();
+                return value;
+            },
+            set(newValue) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    value = newValue;
+                    trigger()
+                }, delay);
+            }
+        }
+    });
+}
+    
+export default {
+    setup: () => {
+        return {
+            text: useDebouncedRef('hello'),
+        }
+    }
+}
+</script>
+```
+
+### markRaw
+
+显示标记一个对象为"永远不会转为响应式代理", 函数返回这个对象本身.
+
+```js
+const foo = markRaw({});
+console.log(isReactive(reactive(foo))); // false
+
+const bar = reactive({ foo });
+console.log(isReactive(bar.foo)); // false
+```
+
+- 一些值的实际上的用法非常简单, 并没有必要转换为响应式, 比如某个复杂的第三方类库的实例, 或者 Vue 组件对象.
+- 当渲染一个元素数量庞大, 但是数据是不可变的, 跳过 Proxy 的转换可以带来性能提升.
+
+### shallowReactive
+
+只为某个对象的自有(第一层)属性创建浅层的响应式代理, 不会对"属性的属性"做深层次, 递归地响应式代理, 而只是保留原样.
+
+```js
+const state = shallowReactive({
+    foo: 1,
+    nested: {
+        bar: 2,
+    }
+});
+
+state.foo++; // 响应式的
+
+isReactive(state.nested); // false
+state.nested.bar++; // 非响应式的
+```
+
+### shallowReadonly
+
+只为某个对象的自有(第一层)属性创建浅层的只读响应式代理, 同样也不会做深层次, 递归地代理, 深层次的属性并不是只读的.
+
+```js
+const state = shallowReadonly({
+    foo: 1,
+    nested: {
+        bar: 2,
+    }
+});
+
+state.foo++; // 只读属性, 修改会报错
+
+isReadonly(state.nested); // false
+state.nested.bar++; // 嵌套属性仍然可以修改
+```
+
+### shallowRef
+
+创建一个 ref, 将会追踪它的 `.value`更改操作, 但是并不会把变更后的 `.value`做响应式代理转换 (即变更不会调用 `reactive`)
+
+```js
+const foo = shallowRef({});
+foo.value = {}; // 更改操作会触发响应
+isReactive(foo.value); // false 但重新赋值后的对象并不会变成响应式对象
+```
+
+### toRaw
+
+返回由 `reactive`或 `readonly`方法转换成响应式代理的普通对象. 这是一个还原方法, 可用于临时读取, 访问不会被代理/跟踪, 写入时也不会触发更改. (不建议一直持有原始对象的引用, 请谨慎使用)
+
+```js
+const foo = {};
+const reactiveFoo = reactive(foo);
+
+console.log(toRaw(reactiveFoo) === foo); // true
+```
 

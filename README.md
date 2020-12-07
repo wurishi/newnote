@@ -62,6 +62,10 @@ leetcode
 
 [labuladong的算法小抄](https://labuladong.gitbook.io/algo/)
 
+# mobx
+
+参考资料: [cn.mobx](https://cn.mobx.js.org/)
+
 # mocha
 
 参考资料: [mochajs.cn](https://mochajs.cn/)

@@ -68,7 +68,7 @@ leetcode
 
 # mocha
 
-参考资料: [mochajs.cn](https://mochajs.cn/)
+参考资料: [mochajs.cn](https://mochajs.cn/) **(完成)**
 
 # parallax
 

@@ -2434,3 +2434,899 @@ const disposer2 = observe(person, 'lastName', (change) => {
 |                              |          | oldValue     | observable 的前一个值                                        |                          |                       |
 
 *注意, 对象的 update 事件不会为更新的计算值(因为它们没有变化)触发. 但是可以通过使用 `observe(object, 'computedPropertyName', listener)`明确地订阅特定属性来观察它们.
+
+## mobx-utils
+
+```bash
+npm i mobx-utils
+```
+
+## 6.5 mobxUtils.fromPromise
+
+用法:
+
+`fromPromise(promise): observable`
+
+用于包装 promise, 返回的 observable 有两个属性:
+
+- `state`: `pending / fulfilled / rejected`.
+- `value`: promise 在不同状态(state)下的值.
+
+它还有两个方法:
+
+- `case({fulfilled, rejected, pending})`: 可以用于 map 不同状态下的值, 即不同的状态, 返回一个不同的内容.
+- `then((value: TValue) => TResult, [(rejectReason:any) => any])`: 返回的 observable 也可以做为 promise 继续处理.
+
+## 6.6 mobxUtils.fromResource
+
+用法:
+
+`fromResource(subscriber, unsubscriber, initialValue)`
+
+## 6.7 mobxUtils.toStream
+
+用法:
+
+`toStream(expression, fireImmediately = false)`
+
+## 6.8 mobxUtils.fromStream
+
+## 6.9 mobxUtils.now
+
+## 6.10 mobxUtils.createTransformer
+
+ 用法:
+
+`createTransformer<A, B>(transformation: (value:A) => B, onCleanup?: (result:B, value?:A) => void): (value:A) => B`
+
+将一个函数转换为响应式且有记忆功能的函数. 换句话说, 如果给 `transformation`函数一个具体的 A 值, 那么它将计算出 B 值, 只要保持 A 值不变, 那么今后任何时候的转换调用返回的 B 值也是不变的. 但是, 如果 A 值改变了, 将会重新应用转换, 以便相应地更新 B 值. 最后, 如果没有人在使用具体的 A 值转换了, 则将此条转换从内部记忆表中删除.
+
+使用 `createTransformer`可以很容易的将一个完整数据图转换成另一个数据图. 转换函数可以组合, 这样可以使用很多小的转换函数来构建一棵响应树. 生成的数据图会一直保持更新, 它将通过结果图应用小补丁来与源同步. 这使得它很容易实现强大的模式类似于 `sideways data loading`, `map-reduce`, 使用不可变的数据结构跟踪状态历史等.
+
+可选的 `onCleanup`函数可以用于在不再需要对象的转换时获取通知. 如果需要, 这里可以用于清理附加到结果对象上的资源.
+
+永远在 `@observer`或 `autorun`这样的 reaction 中使用转换. 如果任何其他计算值一样, 如果没有被某些东西观察的话, 这些转换也将会回退到惰性求值.
+
+### 使用不可变的, 同享的数据结构来追踪可变状态
+
+```js
+// store 保存领域对象: boxes 和 arrows
+const store = observable({
+    boxes: [],
+    arrows: [],
+    selection: null
+});
+// 每次更改会把 store 序列化成 json 并将其添加到状态列表中
+const states = [];
+
+autorun(() => {
+    states.push(serializeState(store));
+});
+
+const serializeState = createTransformer(store => ({
+    boxes: store.boxes.map(serializeBox),
+    arrows: store.arrows.map(serializeArrow),
+    selection: store.selection ? store.selection.id : null
+}));
+
+const serializeBox = createTransformer(box => ({...box}));
+
+const serializeArrow = createTransformer(arrow => ({
+    id: arrow.id,
+    to: arrow.to.id,
+    from: arrow.from.id
+}));
+```
+
+state 是通过组合三个不同的转换函数序列化过的. autorun 触发 store 对象的序列化, 也就是依次对 boxes 和 arrows 序列化. 接下来对 boxes 假想它的生命周期.
+
+1. boxes 通过 map 传递给 `serializeBox`, 执行 serializeBox 转换然后 boxes 的条目及序列化内容会被添加到 `serializeBox`的内部记忆表中.
+2. 假如有另一个 box 被添加到 store.boxes 列表中. 这会导致 `serializeState`重新计算, 结果就是所有 boxes 全部重新映射. 然而, 所有已经在 `serializeBox`内部记忆表中的旧值会直接返回, 转换函数不会(需要)再次运行.
+3. 接下来, 如果改变了 boxes[1] 的内容, 会导致这个 box 对应的 `serializeBox`重新计算, 在示例中会重新执行 `serializeState`转换, 其中会依次对 boxes 作重新映射, 但是除了 boxes[1] 之外, 其他所有的 boxes 都还是从内部记忆表中直接返回的.
+4. 最的, 如果 box 从 store.boxes 中移除了, 那么 `serializeBox`会重新计算. 但是由于这个 box 不再使用 `serializeBox`了, 响应式函数会回退成非响应模式. 然后通知内部记忆表, 该条目可以被删除, 以便准备好 GC.
+
+### 将数据图转换为响应式数据图
+
+转换函数返回的是普通值, 作为替代还可以返回 observable 对象. 这个可以用来把一个 observable 数据图转换成另外一个 observable 数据图.
+
+以下示例, 是对一个响应式文件探测器进行编码, 它将在每次更改时进行更新. 以这种方式构建的数据图通常反应更快, 并且与使用自己的代码更新的衍生数据图相比, 代码会更为直观.
+
+在下面的示例中, state 图的所有变化都会被自动处理. 一些示例:
+
+1. 改变文件夹的名称会更新对应的 path 属性和其所有后代的 path 属性.
+2. 折叠文件夹会将从树中删除所有后代的 `DisplayFolder`.
+3. 展开文件夹将再次恢复.
+4. 设置搜索过滤器将删除不匹配过滤器的所有节点, 除非它们有与过滤器匹配的后代节点.
+
+[代码](src/6.10_folder.ts)
+
+## 6.11 mobxUtils.expr
+
+可以用来在计算值中创建临时性的计算值. 嵌套计算值有助于创建低廉的计算以防止运行昂贵的计算.
+
+在下面示例中, 如果 selection 在其他地方改变, 表达式会阻止 `TodoView`组件重新渲染. 相反, 只有当相关待办事项被取消时, 组件才会重新渲染, 这样渲染频率要低很多.
+
+```jsx
+const TodoView = observer(({todo, editorState}) => {
+    const isSelected = mobxUtils.expr(() => editorState.selection === todo);
+    return <div className={isSelected ? 'todo todo-selected': 'todo'}>{todo.title}</div>
+});
+```
+
+`expr(func)`是 `computed(func).get()`的别名.
+
+请注意, 传给 `expr`的函数将在整个表达式值更改的情况下评估两次. 当它依赖的任何 observables 变化时, 它会进行首次评估. 当其值的变化触发外部计算或反应评估时, 将对其进行第二次评估, 这将重新创建和重新评估表达式.
+
+# 7. [博客, 视频及相关项目](https://github.com/mobxjs/awesome-mobx#examples)
+
+# 8. 贴士与技巧
+
+## 8.1 常见问题解答
+
+### 支持哪些浏览器?
+
+MobX 只能在 ES5 环境中运行. 这意味着支持 Node.js, Rhino 和所有浏览器(除了 IE8 及以下). 参见 [caniuse](https://caniuse.com/es5)
+
+### MobX 可以和 RxJS 一起使用吗?
+
+可以, MobX 可以通过 mobx-utils 中的 toStream 和 fromStream 使用 RxJS 和其它 TC 39 兼容的 observable.
+
+### 何时使用 RxJS 替代 MobX ?
+
+对于任何涉及及明确使用时间的概念, 或者当你需要推理一个 observable 历史值/事件(而不仅仅是最新的)时, 建议使用 RxJS, 因为它提供了更多的低层级的原始类型. 当你想对状态作出反应, 而不是事件时, MobX 提供了一种更容易而且高层级处理方法. 实际上, 结合 RxJS 和 MobX 可能会生产真正强大的架构. 例如使用 RxJS 来处理和节流用户事件, 并作为更新状态的结果. 如果状态已经被 MobX 转变成 observable, 则它将相应地处理更新 UI 和其它衍生.
+
+### 支持 React Native 吗?
+
+当然, mobx 和 mobx-react 都可以在 React Native 中使用. 后者通过导入 `mobx-react/native`. 开发者工具还不支持 React Native. 注意, 如果你打算将状态存储在你希望能够与热重新加载一起使用的组件中, 那么不要在组件中使用装饰器(注解), 使用函数替代.
+
+### MobX 是框架吗?
+
+MobX 不是一个框架. 它不会告诉你如何去组织你的代码, 在哪存储状态或者如何处理事件. 然而, 它可能将你从以性能的名义对你的代码提出各种限制的框架中解放出来.
+
+### MobX 可以和 Flux 一起使用吗?
+
+假设 store 中的数据是不可变的, 这很适合使用 MobX, 而 Flux 的实现并不能很好的工作. 然而, 使用 MobX 时, 减少了对 Flux 的需求. MobX 已经优化了渲染, 它适用于大多数类型的数据, 包括循环和类. 因此, 其他编程范例(如经典的MVC)现在也可以轻松应用于使用 ReactJS + MobX 的应用之中.
+
+### MobX 可以和其他框架一起使用吗?
+
+或许吧. MobX 是框架无关的, 可以应用在任何现代 JS 环境中. 为了方便起见, 它只是用一个小函数来将 ReactJS 组件转换为响应式视图函数. MobX 同样可以在服务器端使用, 并且它已经可以和 [jQuery](http://jsfiddle.net/mweststrate/vxn7qgdw) 和 [Deku](https://gist.github.com/mattmccray/d8740ea97013c7505a9b) 一起使用了.
+
+## 8.2 常见陷阱与最佳实践
+
+### 导入的路径有误
+
+因为 MobX 自带了 TypeScript 的 typings, 一些导入自动完成工具可能会这样:
+
+```js
+// 错误的
+import { observable } from 'mobx/lib/mobx';
+```
+
+导入 mobx 包中任何东西的唯一正确方式是:
+
+```js
+// 正确的
+import { observable } from 'mobx';
+```
+
+### 装饰器问题?
+
+```js
+Array.isArray(observable([1, 2, 3])) === false
+```
+
+此限制只适用于 MobX 4 及以下版本
+
+在 ES5 中没有继承数组的可靠方法, 因此 observable 数组继承自对象. 这意味着一般的库没有办法识别出 observable 数组就是普通数组. 要解决这个问题也很容易, 在把 observable 数组传递给其它库之前先调用 `observable.toJS()`或 `observable.slice()`将其转化为普通数组. 只要外部库没有修改数组的意图, 那么一切都将如预期一样的正常运行. 可以使用 `isObservableArray(observable)`来检查是否是 observable 数组.
+
+### `object.someNewProp = value`不起作用
+
+此限制只适用于 MobX 4 及以下版本
+
+在 MobX 5 中, 此限制只适用于类实例及其它并非使用 `observable()`/ `observable.object()`创建的对象.
+
+对于声明 observable 时未分配的属性, MobX observable 对象检测不到, 也无法作出反应. 因此 MobX observable 对象充当具有预定义键的记录. 可以使用 `extendObservable(target, props)`来为一个对象引入新的 observable 属性. 但是像 `for...in`或 `Object.keys()`这样的对象迭代不会自动地对这样的改变作出反应. 如果需要在 MobX 4 及以下版本中使用动态键对象, 例如通过 id 来存储用户, 可以使用 `observable.map`或由 工具函数来创建 observable 映射.
+
+### 在所有渲染 `@observable`的组件上使用 `@observer`
+
+`@observer`只会增强你正在装饰的组件, 而不是内部使用了的组件. 所以通常你的所有组件都应该是装饰了的. 这样并不会降低效率, 相反 `observer`组件越多, 渲染效率越高.
+
+### 不要拷贝 observables 属性并存储在本地
+
+Observer 组件只会追踪在 render 方法中存取的数据. 常见的错误的是从 observable 属性中提取数据并存储, 这样的数据是不会被追踪的.
+
+```jsx
+class User {
+    @observable name;
+}
+
+class Profile extends React.Component {
+    name
+    
+    componentWillMount() {
+        // 错误的
+        // 这会间接引用 user.name 并只拷贝值一次!
+        // 未来的更新不会被追踪, 因为生命周期钩子不是响应的.
+        this.name = this.props.user.name;
+    }
+    
+    render() {
+        return <div>{this.name}</div>
+    }
+}
+```
+
+正确的方法是不将 observable 的值存储在本地, 或通过将其定义为计算属性
+
+```jsx
+class User {
+    @observable name;
+}
+
+class Profile extends React.Component {
+    @computed get name() {
+        return this.props.user.name;
+    }
+    
+    render() {
+        return <div>{this.name}</div>
+    }
+}
+```
+
+### render 回调函数不是 render 方法的一部分
+
+因为 `observer`只作用于当前组件的 `render`函数, 传递一个 render 回调函数或组件给子组件不会自动地变成响应的.
+
+### 间接引用值尽可能晚的使用
+
+MobX 可以做许多事, 但是它无法将原始类型值转变成 observable(尽管可以用对象来包装它们). 所以说值不是 observable, 而对象的属性才是. 这意味着 `@observer`实际上是对间接引用值作出反应. 所以如果你下面这样初始化的话, `Timer`组件是不会作出任何反应的.
+
+```jsx
+ReactDom.render(<Timer timerData={timerData.secondsPassed} />, document.body);
+```
+
+在这行代码中, 只是将 `secondsPassed`的当前值传递给了 `Timer`, 这个值是不可变值 `0`. 这个值永远不会改变, 所以组件也永远不会更新. 要组件根据 `secondsPassed`属性来改变, 需要在组件内访问它.
+
+### 计算值的运行次数要比预想中频繁的多
+
+如果一个计算属性没有被 reaction(autorun, observer 等)使用, 计算表达式将会延迟执行;每次它们的值被请求(它们只是作为正常属性). 计算值将仅追踪那些它们已被观察的依赖. 这允许 MobX 自动暂停非使用状态的计算.
+
+要强制计算值保持活动, 可以使用 `keepAlive: true`选项.
+
+### 永远要清理 reaction
+
+所有形式的 autorun, observer, intercept, 只有所有它们观察的对象都垃圾回收了, 它们才会被垃圾回收. 所以当不财需要使用它们的时候, 推荐使用清理函数(这些方法返回的函数)来停止它们继续运行. 对于 observer 和 intercept 来说, 当目标是 this 时通常不需要清理它们. 对于像 autorun 这样的 reaction 要棘手得多, 因为它们可观察到许多不同的 observable, 并且只要其中一个仍在作用域内, reaction 要保持在作用域内, 这意味着其使用的其他 observable 也保持活跃以支持将来的重新计算. 所以当你不再需要 reaction 的时候, 千万要清理掉它们!
+
+```js
+const VAT = observable(1.20);
+
+class OrderLine {
+    @observable price = 10;
+	@observable amount = 1;
+	constructor() {
+        // 这个 autorun 将与当前的命令行实例一起进行垃圾回收
+        this.handler = autorun(() => {
+            doSomethingWith(this.price * this.amount);
+        });
+        
+        // 这个 autorun 将不会与当前的命令行实例一起进行垃圾回收
+        // 因为 VAT 保留了引用以通知这个 autorun
+        // 这反过来在作用域中保留了 'this'
+        this.handler = autorun(() => {
+            doSomethingWith(this.price * this.amount * VAT.get());
+        });
+        
+        // 所以为了避免内存问题, 当 reaction 不再需要时, 总是调用清理函数
+        this.handler();
+    }
+}
+```
+
+### 当在 React 组件中使用 `@observable`时有一个奇怪的异常
+
+`Uncaught TypeError: Cannot assign to read only property '__mobxLazyInitializers' of object` `react-hot-loader`不支持装饰器, 当使用时出现这个错误, 解决方法是: 在 `componentWillMount`中使用 `extendObservable`替代 `@observable`或者把 `react-hot-loader`更新到 `^3.0.0-beta.2`版本或者更高.
+
+### 未设置 React 组件的显示名称
+
+如果使用 `export const MyComponent = observer((props => <div>hi</div>))`, 那么在开发者工具中看不到显示名称. 下列方法可以用来解决此问题:
+
+```jsx
+// 1. 显示设置 displayName
+export const MyComponent = observer((props => <div>hi</div>));
+myComponent.displayName = 'MyComponent';
+
+// 2. MobX 根据函数名推断出组件名
+export const MyComponent = observer(function MyComponent(props) {
+    return <div>hi</div>
+});
+
+// 3. 编译器根据变量名推断出组件名
+const _MyComponent = observer((props => <div>hi</div>));
+export const MyComponent = observer(_MyComponent);
+
+// 4. 默认导出
+const MyComponent = observer((props => <div>hi</div>));
+export default observer(MyComponent);
+```
+
+### observable 数组的 propType 是对象
+
+observable 数组实际上是对象, 所以它遵循 `propTypes.object`而不是 `propTypes.array`. `mobx-react`为 observable 数据结构提供了明确的 `PropTypes`.
+
+### 在 React Native 中渲染 ListViews
+
+React Native 的 `ListView.DataSource`接收真正的数组. observable 数组实际上是对象, 要确保在传给 ListViews 之前先使用 `.slice()`方法. 此外, `ListView.DataSource`本身可以移到 store 之中并使用 `@computed`自动地更新, 这步操作同样可以在组件层完成.
+
+```jsx
+class ListStore {
+    @observable list = [
+        'Hello World!',
+        'Hello React Native!',
+        'Hello MobX!'
+    ];
+
+	ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
+	
+	@computed get dataSource() {
+        return this.ds.cloneWithRows(this.list.slice());
+    }
+}
+
+const listStore = new ListStore();
+
+@observer class List extends Component {
+    render() {
+        return (
+        	<ListView
+                dataSource={listStore.dataSource}
+                renderRow={row => <Text>{row}</Text>}
+                enableEmptySections={true}
+             />
+        );
+    }
+}
+```
+
+### 开发模式下声明 propTypes 可能会引起不必要的渲染
+
+### 不要对 Observer 过的 React 组件中(某些)生命周期方法装饰成 action.bound
+
+## 8.3 如果(不)使用装饰器
+
+使用装饰器语法的优势:
+
+- 样板文件最小化, 声明式代码
+- 易于使用和阅读. 大多数 MobX 用户都在使用.
+
+使用装饰器语法的劣势:
+
+- ES.next 2 阶段特性.
+- 需要设置和编译, 目前只有 Babel / TypeScript 编译器支持
+
+在 MobX 中使用装饰器有两种方式:
+
+1. 开启编译器的实验性装饰器语法.
+2. 不启用装饰器语法, 而是利用 MobX 内置的工具 `decorate`来对类和对象进行装饰.
+
+使用装饰器语法:
+
+```js
+class Timer {
+    @observable start = Date.now();
+	@observable current = Date.now();
+
+	@computed
+	get elapsedTime() {
+        return this.current - this.start + 'milliseconds';
+    }
+
+	@action
+	tick() {
+        this.current = Date.now();
+    }
+}
+```
+
+使用 decorate 工具:
+
+```js
+class Timer {
+    start = Date.now();
+	current = Date.now();
+
+	get elapsedTime() {
+        return this.current - this.start + 'mmilliseconds';
+    }
+
+	tick() {
+        this.current = Date.now();
+    }
+}
+decorate(Timer, {
+    start: observable,
+    current: observable,
+    elapsedTime: computed,
+    tick: action
+});
+```
+
+### 启用装饰器语法
+
+#### TypeScript
+
+在 `tsconfig.json`中启用编译器选项 `"experimentalDecorators": true`.
+
+#### Babel
+
+##### 使用 `babel-preset-mobx`
+
+这种方式更方便, 其中包含了装饰器及其他几个经常与 mobx 一起使用的插件.
+
+```bash
+npm i -D babel-preset-mobx
+```
+
+.babelrc:
+
+```json
+{
+    "presets": ["mobx"]
+}
+```
+
+##### 手动启用装饰器
+
+要启用装饰器的支持而不使用 mobx preset 的话, 需要安装:
+
+```bash
+npm i -D babel-plugin-transform-decorators-legacy
+```
+
+并在 .babelrc 文件中启用:
+
+```json
+{
+    "presets": ["es2015", "stage-1"],
+    "plugins": ["transform-decorators-legacy"]
+}
+```
+
+注意, 插件的顺序很重要, `transform-decorators-legacy`应该放在首位.
+
+### 装饰器语法和 Create React App
+
+目前还没有内置的装饰器支持. 要解决这个问题, 可以使用 eject 命令或使用 [react-app-rewired](https://github.com/timarney/react-app-rewired/blob/master/README_zh.md).
+
+### 装饰器语法的局限性
+
+当前编译器所实现的装饰器语法是有一些限制的, 而且与实际的装饰器语法表现并非完全一致. 此外, 在所有编译器都实现第二阶段的提议之前, 许多组合模式目前都无法与装饰器一起使用. 出于这个原因, 目前在 MobX 中对装饰器语法支持的范围进行了限定, 以确保支持的特性在所有环境中始终保持一致.
+
+MobX 社区并没有正式支持以下模式:
+
+- 重新定义继承树中的装饰类成员
+- 装饰静态类成员
+- 将 MobX 提供的装饰器与其他装饰器组合
+- 热更新(HMR) / React-hot-loader 可能不能正常运行
+
+在第一次读/写装饰属性之前, 该属性在实际上可能是不可见的.
+
+注意: 不支持并不意味着不能运行, 它的意义在于如果不能正常运行的话, 在官方规范的推进之前, 提出的 issues 是不会被处理的.
+
+## 8.4 使用 trace 进行调试
+
+trace 是一个小工具, 它能帮你查找为什么计算值, reactions 或组件会重新计算.
+
+可以通过简单的导入 `import { trace } from 'mobx'`来使用它, 然后将其放置在 reaction 或计算值中. 它会打印出当前衍生重新计算的原因.
+
+可以通过传入 true 作为最后的参数来自动地进行 debugger. 这种方式使得导致 reaction 重新运行的确切变化仍然在堆栈中. 在 debugger 模式中, 调试信息还会透露出影响当前计算或 reaction 的完整衍生树.
+
+## 8.5 定义数据存储
+
+store 可以在任何 Flux 系架构中找到, 可以与 MVC 模式中的控制器进行比较. store 的主要职责是将逻辑和状态从组件中移至一个独立的, 可测试的单元, 这个单元在 JavaScript 前端和后端中都可以使用.
+
+### 用户界面状态的 store
+
+至少两个 store 可以让绝大多数应用从中受益. 一个用于 UI 状态, 一个或多个用于领域状态. 分离这两个 store 的优点是可以测试领域状态, 并且可以很好地在其他应用中重用它. 然而, UI 状态 store 对于应用来说通常非常特别. 但通常也很简单, 这个 store 通常没有太多的逻辑, 但会存储大量的松散耦合的 UI 相关的信息. 这是理想状况下的, 因为大多数应用在开发过程中经常性地改变 UI 状态.
+
+通常可以在 UI stores 中找到:
+
+- Session 信息
+- 应用已经加载了的相关信息
+- 不会存储到后端的信息
+- 全局性影响 UI 的信息
+  - 窗口尺寸
+  - 可访问性信息
+  - 当前语言
+  - 当前活动主题
+- 用户界面状态瞬时影响多个, 毫不相关的组件
+  - 当前选择
+  - 工具栏可见性等
+  - 向导的状态
+  - 全局叠加的状态
+
+这些信息开始作为某个特定组件的内部状态会是不错的选择. 但过了一段时间, 你会发现应用中的其他地方也需要这些信息. 只需要将状态移动到 UI 状态 store, 而不是在组件树中向上推动状态, 就像在普通的 React 应用中所做的那样.
+
+对于同构应用程序, 可能还希望使用正常默认值提供这个 store 的存根实现, 以便所有组件按预期呈现. 可以通过在应用中传递属性到组件树或使用 `mobx-react`包中的 `Provider`和 `inject`来分发 UI 状态 store.
+
+```js
+export class UIState {
+    @observable language = 'en_US';
+	@observable pendingRequestCount = 0;
+
+	// .struct 确保不会通知观察者, 除非尺寸对象以深度相等的方式改变
+	@observable.struce windowDimensions = {
+        width: jquery(window).width(),
+        height: jquery(window).height()
+    }
+
+	constructor() {
+        jquery.resize(() => {
+            this.windowDimensions = getWindowDimensions();
+        });
+    }
+
+	@computed get appIsInSync() {
+        return this.pendingRequestCount === 0;
+    }
+}
+```
+
+### 领域 store
+
+应用应该包含一个或多个领域 store. 这些 store 存储应用所关心的数据. 待办事项, 用户, 书, 电影, 订单, 凡是你能说出的. 应用很有可能至少有一个领域 store.
+
+单个领域 store 应该负责应用中的单个概念. 然而, 单个概念可以采取多个子类型的形式, 并且它们通常是(循环)树结构的. 举例来说, 一个领域 store 负责产品, 一个负责订单. 根据经验来说, 如果两个概念之间的关系的本质是包含的, 则它们通常应该放在同一个 store 中. 所以说, store 只是管理领域对象.
+
+store 的职责:
+
+- 实例化领域对象, 确保领域对象知道它们所属的 store.
+- 确保每个领域对象只有一个实例. 同一个用户, 订单或者待办事项不应该在内存中存储两次. 这样, 可以安全地使用引用, 并确保正在查看的实例是最新的, 而无需解析引用. 当调试时这十分快速, 简单, 方便.
+- 提供后端集成, 当需要时存储数据.
+- 如果从后端接收以更新, 则更新现有实例.
+- 为应用提供一个独立, 通用, 可测试的组件.
+- 要确保 store 是可测试的并且可以在服务端运行, 可能需要将实际的 websocket/http 请示移到单独的对象, 以便可以通过通信层抽象.
+- sotre 应该只有一个实例
+
+#### 领域对象
+
+每个领域对象应使用自己的类(或构造函数)来表示. 建议以非规范化形式存储数据. 不必把客户端应用的状态看做数据库的一种. 真实引用, 循环数据结构和实例方法都是 JavaScript 中非常强大的概念. 允许领域对象直接引用来自其他 store 的领域对象. 记住: 保持操作和视图应该尽可能地简单, 并且需要管理引用和自己做垃圾回收可能是一种倒退. 不同于其他 Flux 系统架构, 使用 MobX 不需要对数据进行标准化, 而且这使得构建应用本质上复杂的部分变得更简单: 业务规则, 操作和用户界面.
+
+领域对象可以将其所有逻辑委托给它们所属的 store, 如果这更符合你的应用的话. 可以将领域对象表示成普通对象, 但类比普通对象有一些重要的优势:
+
+- 它可以有方法. 这使得领域概念更容易独立使用, 并减少应用所需的上下文感知的数量. 只是传递对象. 你不需要传递 store, 或者必须弄清楚哪些操作可以在对象上应用, 如果它们只是作为实例方法可用.
+- 对于属性和方法的可见性, 提供了细粒度的控制.
+- 使用构造函数创建的对象可以自由地混合 observable 属性和函数, 以及非 observable 属性和方法.
+- 它们易于识别, 并且可以进行严格的类型检查.
+
+#### 领域 store 示例
+
+```js
+import {observable, autorun} from 'mobx';
+import uuid from 'node-uuid';
+
+export class TodoStore {
+    authorStore;
+    transportLayer;
+    @observable todos = [];
+	@observable isLoading = true;
+	
+	constructor(transportLayer, authorStore) {
+        this.authorStore = authorStore;
+        this.transportLayer = transportLayer;
+        this.transportLayer.onReceiveTodoUpdate(updateTodo => this.updateTodoFromServer(updatedTodo));
+        this.loadTodos();
+    }
+
+	// 从服务端拉取所有 todos
+	loadTodos() {
+        this.isLoading = true;
+        this.transportLayer.fetchTodos().then(fetchedTodos => {
+            fetchedTodos.forEach(json => this.updateTodoFromServer(json));
+            this.isLoading = false;
+        });
+    }
+	
+	// 可能构造新的 todo, 更新现有的 todo, 或删除 todo
+	updateTodoFromServer(json) {
+        const todo = this.todos.find(todo => todo.id === json.id);
+        if(!todo) {
+            todo = new Todo(this, json.id);
+            this.todos.push(todo);
+        }
+        if(json.isDeleted) {
+            this.removeTodo(todo);
+        } else {
+            todo.updateFromJson(json);
+        }
+    }
+
+	createTodo() {
+        const todo = new Todo(this);
+        this.todos.push(todo);
+        return todo;
+    }
+
+	removeTodo(todo) {
+        this.todos.splice(this.todos.indexOf(todo), 1);
+        todo.dispose();
+    }
+}
+
+export class Todo {
+    id = null;
+	@observable completed = false;
+	@observable task = '';
+	@observable author = null;
+	store = null;
+	autoSave = true;
+	saveHandler = null;
+
+	constructor(store, id=uuid.v4()) {
+        this.store = store;
+        this.id = id;
+        this.saveHandler = reaction(
+        	() => this.asJson,
+            json => {
+                if(this.autoSave) {
+                    this.store.transportLayer.saveTodo(json);
+                }
+            }
+        );
+    }
+
+	delete() {
+        this.store.transportLayer.deleteTodo(this.id);
+        this.store.removeTodo(this);
+    }
+
+	@computed get asJson() {
+        return {
+            id: this.id,
+            completed: this.completed,
+            task: this.task,
+            authorId: this.author ? this.author.id : null
+        }
+    }
+
+	updateFromJson(json) {
+        this.autoSave = false;
+        this.completed = json.completed;
+        this.task = json.task;
+        this.author = this.store.authorStore.resolveAuthor(json.authorId);
+        this.autoSave = true;
+    }
+
+	dispose() {
+        this.aveHandler();
+    }
+}
+```
+
+### 组合多个 stores
+
+一个经常被问到的问题就是, 如果不使用单独来组合多个 stores. 它们之间如何通信?
+
+一种高效的模式是创建一个 RootStore 来实例化所有 stores, 并共享引用. 这种模式的优势是:
+
+1. 设置简单.
+2. 很好的支持强类型.
+3. 很得复杂的单元测试变得简单, 因为你只需要实例化一个根 store.
+
+```js
+class RootStore {
+    constructor() {
+        this.userStore = new UserStore(this);
+        this.todoStore = new TodoStore(this);
+    }
+}
+
+class UserStore {
+    constructor(rootStore) {
+        this.rootStore = rootStore;
+    }
+    
+    getTodos(user) {
+        // 通过根 store 来访问 todoStore
+        return this.rootStore.todoStore.todos.filter(todo => todo.author === user);
+    }
+}
+
+class TodoStore {
+    @observable todos = [];
+
+	constructor(rootStore) {
+        this.rootStore = rootStore;
+    }
+}
+```
+
+当使用 React 时, 这个根 store 通常会通过使用 `<Provider rootStore={new RootStore()}><App /></Provider>`来插入到组件树之中.
+
+## 8.6 优化 React 组件
+
+### 使用大量的小组件
+
+`@observer`组件会追踪它们使用的所有值, 并且当它们中的任何一个改变时重新渲染. 所以你的组件越小, 它们需要重新渲染产生的变化则越小. 这意味着用户界面的更多部分具备彼此独立渲染的可能性.
+
+### 在专用组件中渲染列表
+
+这点在渲染大型数据集合时尤为重要. React 在渲染大型数据集合时表现非常糟糕, 因为协调器必须评估每个集合变化的集合所产生的组件. 因此, 建议使用专门的组件来映射集合并渲染这个组件, 且不再渲染其他组件.
+
+不好的:
+
+```jsx
+@observer class MyComponent extends Component {
+    render() {
+        const {todos, user} = this.props;
+        return (
+        	<div>
+            	{user.name}
+                <ul>
+                	{todos.map(todo=><TodoView todo={todo} key={todo.id} />)}
+                </ul>
+            </div>
+        );
+    }
+}
+```
+
+在上面的示例中, 当 `user.name`改变时, React 会不必要地协调所有的 TodoView 组件, 尽管 `TodoView`组件不会重新渲染, 但是协调的过程本身也是非常昂贵的.
+
+好的:
+
+```jsx
+@observer class MyComponent extends Component {
+    render() {
+        const {todos, user} = this.props;
+        return (
+        	<div>
+            	{user.name}
+                <TodosView todos={todos} />
+            </div>
+        );
+    }
+}
+
+@observer class TodosView extends Component {
+    render() {
+        const {todos} = this.props;
+        return (
+        	<ul>
+            	{todos.map(todo => <TodoView todo={todo} key={todo.id} />)}
+            </ul>
+        );
+    }
+}
+```
+
+### 不要使用数组的索引作为 key
+
+不要使用数组索引或任何将来可能会改变的值作为 key. 如果需要的话为你的对象生成 ids.
+
+### 晚一点使用间接引用值
+
+使用 `mobx-react`时, 推荐尽可能晚的使用间接引用值. 这是因为当使用 observable 间接引用值时 MobX 会自动重新渲染组件. 如果间接引用值发生在组件树的层级越深, 那么需要重新渲染的组件就越少.
+
+快的
+
+`<DisplayName person={person} />`
+
+慢的
+
+`<DisplayName name={person.name} />`
+
+后者并没有什么错, 但是当 name 属性变化时, 第一种情况只会触发 `DisplayName`组件重新渲染, 而第二种情况组件的拥有者需要重新渲染. 如果组件的拥有者渲染足够快的话, 这种方式也能很好的运行. 为了获得最佳的性能, 不得不创建大量小的 observer 组件, 每个组件用来渲染特定数据的不同部分, 如果数据模型比较庞大的话, 会有非常冗长的类定义. 此时可以选择使用函数来返回想要渲染的数据的组件.
+
+```jsx
+const GenericNameDisplayer = observer((props) => <DisplayName name={props.getNameTracked()} />);
+                                      
+@observer class MyComponent extends Component {
+	render() {
+    	const {person, car} = this.props;
+    	return (
+        	<>
+            	<GenericNameDisplayer getNameTracked={() => person.name} />
+            	<GenericNameDisplayer getNameTracked={car.getModelTracked} />
+            	<GenericNameDisplayer getNameTracked={this.getManufacturerNameTracked} />
+            </>
+        );
+    }
+
+	getManufactureNameTracked = () => this.props.car.manufacturer.name;
+} 
+```
+
+这种方式允许 `GenericNameDisplayer`渲染任何名称的组件, 从而整个应用中复用. 现在, 还需要解决的是这些函数的放置问题. 示例中展示了三种可能性, 可以直接在 render 方法里创建函数(不推荐), 也可以将函数放置在组件中(getManufactureNameTracked), 或者将函数直接放在包含数据的对象之中(car.getModelTracked).
+
+### 尽早绑定函数
+
+适用于普通的 React 和特别是使用了 `PureRenderMixin`的库, 尽量避免在 render 方法中创建新的闭包.
+
+不好的:
+
+```jsx
+render() {
+    return (
+    	<MyWidget onClick={() => { alert('hi') }} />
+    );
+}
+// shouldComponent 的返回值永远是 false, 因为父组件每次重新渲染都会创建一个新的函数
+```
+
+好的:
+
+```jsx
+render() {
+    return (
+    	<MyWidget onClick={this.handleClick} />
+    );
+}
+
+handleClick = () => {
+    alert('hi');
+}
+```
+
+## 8.7 开发工具
+
+MobX 附带的开发者工具可以用来追踪应用的渲染行为和数据依赖关系.
+
+用法:
+
+```bash
+npm i mobx-react-devtools
+```
+
+要启用开发者工具, 导入 devtools 组件并在代码的某个地方进行渲染.
+
+```jsx
+import DevTools from 'mobx-react-devtools';
+
+const App = () => (
+	<div>
+    	...
+        <DevTools />
+    </div>
+);
+```
+
+## 8.8 spy
+
+用法:
+
+`spy(listener)`
+
+注册一个全局间谍监听器, 用来监听所有 MobX 中的事件. 它类似于同时在所有 observable 上附加了一个 observe 监听器, 而且还通知关于运行中的事务/反应和计算.
+
+```js
+spy((event) => {
+    if(event.type === 'action') {
+        console.log(`${event.name} with args: ${event.arguments}`);
+    }
+})
+```
+
+监听器永远接收一个对象, 通常至少有一个 type 字段. 默认情况下, spy 会发出以下事件.
+
+| 事件                     | 字段                                                         | 嵌套的 |
+| ------------------------ | ------------------------------------------------------------ | ------ |
+| action                   | name, object(作用域), arguments                              | yes    |
+| scheduled-reaction       | name                                                         | no     |
+| reaction                 | name                                                         | yes    |
+| compute                  | name                                                         | no     |
+| error                    | message                                                      | no     |
+| update(数组)             | object(数组), index, newValue, oldValue                      | yes    |
+| update(映射)             | object(observable map 实例), name, newValue, oldValue        | yes    |
+| update(对象)             | object(实例), name, newValue, oldValue                       | yes    |
+| splice(数组)             | object(数组), index, added, removed, addedCount, removedCount | yes    |
+| add(映射)                | object, name, newValue                                       | yes    |
+| add(对象)                | object, name, newValue                                       | yes    |
+| delete(映射)             | object, name, oldValue                                       | yes    |
+| create(boxed observable) | object(observablevalue 实例), newValue                       | yes    |
+
+注意签名是 `{ spyReportEnd: true, time? }`的事件. 这些事件可能没有 type 字段, 但是它们是具有 `spyReportStart: true`的早期触发事件的一部分. 该事件指示事件的结束, 并且以这种方式创建具有子事件的事件组. 此事件同样也可以报告总执行时间.
+
+observable 值的间谍事件与传递给 observe 的事件相同.
+
+在打包生产版本时, `spy`API 将会成为空函数, 从而实现最小化.

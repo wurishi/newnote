@@ -2,7 +2,7 @@ import { observable, makeObservable, autorun, makeAutoObservable } from 'mobx';
 
 // const depcol = require('./depcol.ts');
 // const d2 = require('./2.ts');
-require('./6.3.ts');
+require('./6.11.ts');
 class Todo {
   id = Math.random();
   @observable title = '';

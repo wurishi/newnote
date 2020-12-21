@@ -10,7 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "mobx": "^6.0.4"
+    "mobx": "^6.0.4",
+    "mobx-utils": "^6.0.3"
   },
   "devDependencies": {
     "html-webpack-plugin": "^4.5.0",

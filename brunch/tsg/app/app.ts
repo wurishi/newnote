@@ -1,4 +1,6 @@
 import Demo1_1 from './1';
+import test from './test';
+test();
 
 class App {
   constructor() {

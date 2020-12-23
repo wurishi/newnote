@@ -126,7 +126,7 @@ brunch 的配置是声明性的, 而不是命令性的. 你只需要告诉 brunc
 
 为什么使用 brunch 而不是 webpack, grunt 或 gulp 等.
 
-## 3.1 brunch 的目标
+## 3.1 Brunch 的目标
 
 brunch 在构建时考虑了两点: 速度和简单性.
 
@@ -466,3 +466,329 @@ brunch new 会先查找命令中提供的框架名, 然后再查找 env 变量 B
 - 这是一开始使用 brunch 创建项目的最佳选择.
 - 它提供了 brunch 的初始配置, 并已经可以正常工作.
 - 干净的文件夹结构, 简单的 brunch 配置以及很少的默认插件.
+
+# 8. 配置
+
+brunch 使用配置文件 brunch-config.js (或 .coffee)来管理项目.
+
+- paths: 从哪里获取文件以及将生成的文件放置在哪里.
+- files: brunch 应该确切地生成哪些文件以及如何生成.
+- npm: npm 依赖项设置.
+- plugins: 单个插件的设置.
+
+不常见的选项:
+
+- modules: 指定 js 模块的细节, 比如 wrapper, definition, autoRequire 和 nameCleaner 等.
+- conventions: 定义哪些文件可以被视为资源文件, 哪些文件应该被忽略.
+- watcher: brunch 文件监视程序的底层配置.
+- server: 允许使用自定义的 web 服务器.
+- notifications: 配置通知级别, 标题, 图标等.
+- sourceMaps, optimize: 一样简单的开关项.
+- hooks: 允许在构建期间的不同时刻指定程序.
+
+配置的所有默认设置, 可以在[这里](https://github.com/brunch/brunch/blob/master/lib/utils/config-validate.js#L9)查看源代码.
+
+### 示例
+
+最简单的 brunch 配置只有 6 行:
+
+```js
+module.exports = {
+    files: {
+        javascripts: {joinTo: 'app.js'},
+        stylesheets: {joinTo: 'app.css'},
+    }
+}
+```
+
+每个配置都是一个可执行的脚本, 因此可以在 brunch 里面导入 node.js 模块并执行任意的 js 代码.
+
+### 模式匹配
+
+在 brunch 内部, 使用 [anymatch](https://github.com/micromatch/anymatch) 进行模式匹配, 它可以是字符串, glob, 正则表达式或函数.
+
+- 字符串: 直接匹配源文件的路径, 可以使用 glob, 所以字符串中可以包含通配符 (*, ? 等).
+
+  ```js
+  joinTo: {
+      'app.css': 'path/to/*.css' // 目录下所有的 css 文件
+  }
+  ```
+
+- 正则表达式:
+
+  ```js
+  jsonTo: {
+      'app.js': /\.js$/ // 匹配所有 js 文件
+  }
+  ```
+
+- 函数: 如果需要特定的模式, 可以使用函数, 它接收文件名的字符串, 并返回 true / false 以确定是否要使用(就像 Array.filter 函数一样):
+
+  ```js
+  jsonTo: {
+      'app.js': path => path.endsWith('.js') && path.length > 3 // 必须是 .js 结尾的文件, 并且文件名至少要有三个字符
+  }
+  ```
+
+- 数组: 可以是任意数量的上述类型的混合数组.
+
+  ```js
+  jsonTo: {
+      'app.js': [
+          'path/to/specific/file.js',
+          'any/**/*.js',
+          /\.test\.js$/,
+          path => path.incluces('tmp')
+      ]
+  }
+  ```
+
+  
+
+## 8.1 paths
+
+包含应用程序路径, 路径是简单的字符串.
+
+- public: 构建目录的路径, 该目录包含编译输出的所有文件.
+- watched: brunch 观察的所有路径, 默认: `['app', 'test', 'vendor']`.
+
+例如:
+
+```js
+paths: {
+    public: '/user/www/deploy',
+}
+// 如果改变了代码的默认目录, 不要忘记将此目录添加到 watched 中
+paths: {
+    watched: ['src']
+}
+```
+
+## 8.2 files
+
+配置了哪个编译器用于哪个文件, 输出文件应该具有什么名称等等.
+
+- 选项类型`<type>(javascripts, stylesheets, templates)`
+  - joinTo: 描述了如果编译文件并将它们连接在一起. 可用格式:
+    - 'outputFilePath' 为了将所有源文件编译为一个
+    - map 'outputFilePath'
+  - entryPoints: (可选) 描述应用程序的入口, 将指定文件及其所有依赖合并为一个文件. 和 joinTo 类似, 但前者只包含必需的文件. 大多数情况下只需要选择使用其中之一即可, 可用格式:
+    - 'entryFile.js': 'outputFilePath'
+    - 'entryFile.js': map 'outputFilePath'
+  - order: (可选) 定义编译顺序, vendor 文件即使该配置不存在, 它们也会比其他文件先编译.
+    - before: 在匹配的文件之前加载定义的文件
+    - after: 在匹配的文件之后加载
+  - pluginHelpers: (可选) 指定插件包含的文件连接到输出文件(或文件数组)中.
+
+所有 vendor 目录下的文件都会优先于项目中的文件. 所以, 即使没有 order 配置, vendor/scripts/jquery.js 文件也将优先于 app/scripts.js.
+
+总体的排序规则为:
+
+[before] -> [bower] -> [vendor] -> [其他文件] -> [after]
+
+### entryPoints 说明
+
+entryPoints 有一些限制:
+
+- 只能分析静态的 require.
+
+  ```js
+  require('something'); // 可以
+  ['a','b','c'].forEach(dep => require(dep)); // 不可以
+  if(route == '/') {
+      require('app/Home'); // 不可以
+  }
+  ```
+
+- 两个入口不能写入同一个文件.
+
+  ```js
+  javascripts: {
+      entryPoints: {
+          'app/1.js': 'js/bundle.js',
+          'app/2.js': 'js/bundle.js', // 不可以
+      }
+  }
+  ```
+
+- 每个入口都会包含 `config.npm.globals`.
+
+- entryPoints 只能针对 javascripts 文件, 其他文件比如 templates 还是需要使用 joinTo.
+
+## 8.3 npm
+
+配置 npm 集成.
+
+- npm.enabled(boolean): 是否启用集成的开关, 默认为 true.
+- npm.globals(object): 往全局对象中增加模块.
+- npm.styles(object): 将包名称(字符串)到相对于包根目录的样式表(路径数组)加入构建.
+- npm.static(array): 直接原样包含的 npm 包中的 js 文件列表, 而无需分析它们的依赖性.
+- npm.aliases(object): 别名映射.
+
+```js
+npm: {
+    styles: {pikaday: ['css/pikaday.css']},
+    globals: {Pikaday: 'pikaday'}
+}
+```
+
+## 8.4 plugins
+
+用于配置如何加载插件, 以及包含特定插件的配置.
+
+- off: 已安装但不应该运行的插件.
+- on: 即使 optimize 标识关闭, 也强制运行的插件.
+- only: 明确列出要使用的插件, 而忽略其他已经安装的插件.
+- npm: 将要编译的插件名称的数组列表. 默认为 `[]`.
+- `<plugin>`: 指定插件的配置.
+
+```js
+plugins: {
+    on: ['postcss-brunch'],
+    off: ['jade-brunch', 'handlebars-brunch'],
+    npm: ['babel-brunch'],
+    autoReload: {enabled: true}
+}
+```
+
+## 8.5 conventions
+
+检查所有文件路径名.
+
+- ignored: brunch 编译器应该忽略的文件. 默认情况下, 以下划线(_)开头的文件和目录将被忽略.
+- assets: 如果匹配将不会编译文件, 而是直接拷贝到 public 目录.
+- vendor: 如果匹配将不会打包到模块中.
+
+默认的正则表达式中会将所有 vendor 目录视为第三方模块. 因此 `app/views/vendor/thing/file.js`将被视为第三方模块.
+
+```js
+conventions: {
+    ignored: () => false, // 默认情况下没有需要忽略的文件
+    assets: /files\// // 比如 vendor/jquery/files/jq.img
+}
+```
+
+## 8.6 modules
+
+- wrapper(string, boolean, function): 项目中非第三方模块代码如何 require. 值:
+
+  - commonjs(默认): CommonJS require.
+  - amd: 类似 AMD 的 require.
+  - false: 文件直接按原样编译.
+  - function
+
+- definition(string, boolean, function): 为每个生成的 js 文件顶部添加的代码. 值:
+
+  - commonjs(默认)
+  - amd, false : 无定义
+  - function
+
+  ```js
+  modules: {
+      wrapper: (path, data) => {
+          return `require.define({${path}: function(exports, require, module) {
+  ${data}
+  }});\n\n`;
+      }
+  }
+  ```
+
+- autoRequire: 在连接的文件未尾自动添加指定的模块.
+
+  ```js
+  modules: {
+      autoRequire: {
+          'js/app.js': ['app', 'foo'] // 在打包后的连接文件 js/app.js 的未尾自动添加 require('app') 和 require('foo')
+      }
+  }
+  ```
+
+- nameCleaner: 为模块名称设置过滤器.
+
+  ```js
+  modules: {
+      nameCleaner: path => path.replace(/^app\//, '')
+  }
+  ```
+
+## 8.7 notifications
+
+通知默认为开启.
+
+- false: 停用通知.
+- 数组:
+  - levels(array): 默认情况下, 只有错误会触发通知. 如果要显示成功, 警告或信息消息, 可以设置为: `['error', 'warn', 'info']`
+  - app(string): 通知中使用的标题, 默认为 brunch.
+  - icon(string): 设置通知弹出窗口的图标.
+
+## 8.8 optimize
+
+boolean: 是否启用优化器. 默认为 false. (如果运行了 `brunch build --production`则为 true).
+
+## 8.9 server
+
+自定义 brunch 服务器. 
+
+## 8.10 sourceMaps
+
+boolean: 启用或禁用代码 map 生成. 默认值为 true(启用), 当运行 `brunch build --production`时为 false(禁用).
+
+string:
+
+- 设置为 'old' 使用 @ 代替 #.
+- 设置为 'absoluteUrl' 将设置 sourceMappingURL 为完整的 URL 路径.
+- 设置为 'inline' 将设置为 sourceMappingURL 包含数据的 URI.
+
+## 8.11 fileListInterval
+
+设置一个以毫秒为单位的间隔, 该间隔用于确定 brunch 检查文件列表中文件的频率, 默认为 65.
+
+## 8.12 overrides
+
+备用配置设置, 通过命令行开关 (`--env`)激活. 使用逗号分隔列表可以一次应用多组( `--env foo,bar` ).
+
+默认值:
+
+```js
+overrides: {
+    production: {
+        optimize: true,
+        sourceMaps: false,
+        plugins: {
+            autoReload: {enabled: false}
+        }
+    }
+}
+```
+
+## 8.13 watcher
+
+brunch 使用 [chokidar](https://github.com/paulmillr/chokidar) 文件监视库的可选设置.
+
+- usePolling (默认为 false): 是否使用 fs.watchFile(轮询) 或 fs.watch. 轮询速度较慢, 但更可靠.
+
+## 9.14 hooks
+
+用于构建周期的不同时刻执行指定的代码.
+
+- preCompile: 在 brunch 开始编译之前调用, 如果返回 promise, 则会等待它结束.
+
+  ```js
+  hooks: {
+      preCompile() {
+          console.log('开始编译');
+          return Promise.resolve();
+      }
+  }
+  ```
+
+- onCompile: 每次完成编译是调用, 回调函数包含了二个入参:
+
+  - generatedFiles 数组, 每个数组对象包含如下属性:
+    - path: 编译文件的路径
+    - sourceFiles: 每个源文件的对象数组
+    - allSourceFiles: 每个源文件的对象数组, 还包括了不属于原始类型的文件.
+  - changedAssets 数组, 每个数组对象包含如下属性:
+    - path: 资源的原始路径
+    - destinationPath: 输出到 public 目录下的资源路径

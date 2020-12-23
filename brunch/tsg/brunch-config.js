@@ -5,6 +5,9 @@ module.exports = {
         'js/app.js': /^app/,
         'js/vendor.js': /^(?!app)/,
       },
+      // entryPoints: {
+      //   'app/app.ts': 'js/app.js',
+      // },
     },
     stylesheets: {
       joinTo: {

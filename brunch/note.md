@@ -73,3 +73,108 @@ npm i -D babel-brunch
 然后就能在代码里面使用 ES6 的语法了.
 
 # 2. Brunch 核心概念
+
+所有的 Brunch 创建的项目都包含以下内容:
+
+- brunch-config: 用于配置 brunch 以及相关插件配置.
+- package.json: 记录了 brunch 使用的相关插件以及项目本身依赖.
+  - brunch 相关插件允许你自定义行为用以处理 js 或 css 等文件.
+- source files:  源代码文件, 最终会编译成 js 或 css.
+- assets: 资源文件会直接在编译时拷贝到发布目录下. (在某些情况下, 也可以编译这些文件, 例如 Jade -> HTML)
+- vendor files: 不需要任何处理的 js 和 css 文件.
+- output files: 通过源文件打包生成的最终使用的 js 和 css 文件.
+
+Brunch 本质上就做以下几件事情:
+
+1. 使用合适的插件编译你的源代码文件.
+2. 将多个编译好的文件合并到一起.
+3. 将结果写入文件.
+4. 拷贝资源文件.
+
+唯一需要做的就是通过配置告诉 brunch 所需的输出文件:
+
+```js
+module.exports = {
+    files: {
+        javascripts: {joinTo: 'app.js'},
+        stylesheets: {joinTo: 'app.css'}
+    }
+}
+```
+
+这会将所有的 javascript 文件连接到 public/app.js 目录下.
+
+如果想要更多的配置, 例如将代码拆分成不同的独立文件:
+
+```js
+module.exports = {
+    files: {
+        javascripts: {
+            joinTo: {
+                'app.js': /^app/, // 所有 app/ 目录下的代码
+                'vendor.js': /^(?!app)/ // 所有除了 app/ 目录以外的代码, 比如 'vendor/', 'node_modules/' 等
+            }
+        },
+        stylesheets: {jointTo: 'app.css'}
+    },
+}
+```
+
+brunch 的配置是声明性的, 而不是命令性的. 你只需要告诉 brunch 你需要获得什么, 而不是如何执行.
+
+# 3. 为什么使用 Brunch
+
+为什么使用 brunch 而不是 webpack, grunt 或 gulp 等.
+
+## 3.1 brunch 的目标
+
+brunch 在构建时考虑了两点: 速度和简单性.
+
+与 webpack, grunt 或 gulp 相比, brunch 的配置要简单一个数量级.
+
+编译花费的时间更少. 特别是运行观察程序时, 它只会重建更改的内容, 而不是所有内容, 这可以使得增量编译在 500 毫秒内完成.
+
+为了实现以上两个目标, brunch 确实必须对应用程序做出某些假设, 这也是 brunch 核心概念中涉及的相关配置以及配置是声明性的原因.
+
+除了配置, brunch 在命令方面也更简单, brunch 总共只有三个命令: `new`, `build`和 `watch`. 另外 `build`和 `watch`可能会接收可选的 `production`标记, 该标记用于告知 brunch 优化 javascript 和样式表.
+
+
+
+## 3.2 Brunch vs Webpack
+
+两者相似的地方:
+
+- 一流的模块支持
+- 可以进行热更新(HMR)
+- 有一个编译器(compiler) / 加载器(loader)的概念
+- 可以 `require`样式表
+
+brunch 无法做到的事情:
+
+- 异步模块加载 / 代码拆分, 但 brunch 可以指定入口并生成多个 js 包.
+- 可以定制处理非 js 或 css 资源.
+
+brunch 与 webpack 不同的是:
+
+- 不需要每次使用一个新插件时都需要指定如何编译文件. 只需要添加一个编译器插件, 就能正常工作.
+- 缩短构建时间.
+
+## 3.3 Brunch vs Grunt/Gulp
+
+他们使用任务的概念用于运行程序, 使得你要使用大量的代码创建自定义管道.
+
+要获得模块支持, 必须另外配置或使用 Browserify 之类的东西.
+
+即使如此, 观察模式下的重建过程也不会是增量的, 它们会始终重新编译导致运行缓慢.
+
+## 3.4 Brunch vs Rails Asset pipeline / LiveReload / CodeKit
+
+使用 pipeline 都有类似的缺点, 使用 brunch 可以:
+
+- 使用任何的后端, 例如 node.js, Rails 或 Lift. 甚至可以将前端和后端分离为单独的项目.
+- 获得自动模块支持.
+- 获得 npm 和 Bower 支持.
+- 重新构建将是快速且增量的.
+
+# 
+

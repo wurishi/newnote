@@ -2,17 +2,25 @@ module.exports = {
   files: {
     javascripts: {
       joinTo: {
-        'app.js': /^app/,
-        'vendor.js': /^(?!app)/,
+        'js/app.js': /^app/,
+        'js/vendor.js': /^(?!app)/,
       },
     },
     stylesheets: {
-      joinTo: 'app.css',
+      joinTo: {
+        'css/app.css': /^app/,
+        'css/vendor.css': /^node_modules/,
+      },
     },
   },
   modules: {
     autoRequire: {
-      'app.js': ['app'],
+      'js/app.js': ['babylonjs'],
+    },
+  },
+  npm: {
+    styles: {
+      'hover.css': ['css/hover.css'],
     },
   },
 };

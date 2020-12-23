@@ -250,3 +250,219 @@ const style = require('./button.styl');
 
 不要包含不使用的插件, 它们可能会不必要地减慢构建过程.
 
+# 5. 使用 JS 模块和 NPM
+
+## 5.1 介绍
+
+按模块组织代码是 brunch 的中心思想. 它允许你的文件具有各自的范围, 并且仅在需要时执行.
+
+文件名也是它的模块名, 例如: app/config.js 模块名为 config.js. 使用 CommonJS, 可以直接让模块通过将它们放入 module.exports 来使用, 就像 node 一样.
+
+```js
+// app/config.js
+module.exports = {
+    api: {
+        host: 'brunch.io'
+    }
+}
+```
+
+要在其他模块中使用它, 直接 `require`即可. 请注意, 有可能需要使用带扩展名的名称(config.js)或不带扩展名的名称(config):
+
+```js
+const config = require('config');
+
+makeRequest(config.api, 'GET', 'plugins');
+```
+
+项目应该有一个入口模块, 该模块将加载其他模块并运行. 在浏览器中加载 HTML 时, 需要告知它加载这个入口模块. 有两种方法可以实现:
+
+- 在 html 添加 `<script>require('initialize')</script>`, 入口模块将位于 `app/initialize.js`.
+
+- 在配置中添加一个 autoRequire.
+
+  ```js
+  // brunch-config
+  module.exports = {
+      modules: {
+          autoRequire: {
+              // outputFileName : [ entryModule ]
+              'javascripts/app.js': ['initialize']
+          }
+      }
+  }
+  ```
+
+## 5.2 模块类型
+
+brunch 支持以下几种 js 模块:
+
+- CommonJS (默认)
+- AMD
+- 自定义模块
+
+可以在项目中使用其中任何一种, 但是 CommonJS 正在成为通用标准, 并且 brunch 的某些功能(如 npm 集成) 仅适用于 CommonJS. 另外, 大部分文档假定使用的是 CommonJS.
+
+### 5.2.1 使用 node 模块
+
+默认情况下, brunch 2.3 开始启用 npm 集成, 因为不需要其他设置, 只需要 `npm i`, 然后像平时一样简单地使用 `require`引入项目中, brunch 便会找到其他的程序包.
+
+```js
+files: {
+    javascripts: {
+        joinTo: {
+            'js/app.js': /^app/,
+            'js/vendor.js': /^(?!app)/ // 正则也可以使用 /node_modules/
+        }
+    }
+}
+```
+
+### 5.2.2 导入模块样式
+
+通过配置 styles 属性可以让 brunch 导入模块中的样式.
+
+```js
+module.exports = {
+  files: {
+    javascripts: {
+      joinTo: {
+        'js/app.js': /^app/,
+        'js/vendor.js': /^(?!app)/,
+      },
+    },
+    stylesheets: {
+      joinTo: {
+        'css/app.css': /^app/,
+        'css/vendor.css': /^node_modules/, // 必须指定, 将 npm.styles 中指定的 css 打包到 vendor.css 中, 另外在 index.html 中不要忘了 link
+      },
+    },
+  },
+  modules: {
+    autoRequire: {
+      'js/app.js': ['babylonjs'],
+    },
+  },
+  npm: {
+    styles: {
+      'hover.css': ['css/hover.css'], // 导入 node_modules 下 hover.css 目录下的 css
+    },
+  },
+};
+```
+
+注意, 对于来自于 npm 包的其他资源(例如图像, 字体等), 必须手动将其复制到公用的文件夹中. 可以使用 npm 的 postinstall hook 进行复制.
+
+### 5.3.3 将第三方包变成全局
+
+可以将 npm 提供的第三方包, 公开给全局变量 window, 这样使用时就不需要引入该模块了. 具体操作见 brunch 配置.
+
+## 5.3 模块热替换
+
+brunch 使用 hmr-brunch 插件提供模块热替换
+
+## 5.4 使用 Bower
+
+虽然 npm 已经成为前端软件包的标准, 但 brunch 仍然可以支持 Bower, 要将包添加到项目中需要以下几步:
+
+- 确保有 bower.json 文件, 可以使用 bower init 生成.
+- 将软件包添加到 bower.json 文件中的 dependencies 字段.
+- 为不使用的软件包在 bower.json 中设置 overrides 属性.
+- overrides 不会影响 Bower 的行为, 但是它会改变实际构建时项目的依赖项.
+
+使用 npm post-install 脚本:
+
+```json
+"scripts": {
+    "postinstall": "cp -r node_modules/font-awesome/fonts public/fonts"
+}
+```
+
+使用 overrides 属性覆盖某些依赖:
+
+```json
+"dependecies": {
+    "some-awesome-package": "~0.0.1"
+},
+"overrides": {
+    "some-awesome-package": {
+        "main": "./lib/just_one_component.js"
+    }
+}
+```
+
+# 6. 测试
+
+## 6.1 单元测试
+
+当前的单元测试包括:
+
+- 在外部 node 使用构建好的 bundle.
+- 在浏览器中运行单元测试.
+
+目前不支持在 node 中运行单元测试.
+
+## 6.2 集成测试
+
+在浏览器进行集成测试, 不需要其他步骤.
+
+下面是一个加载所有以 -test 结尾的文件的示例:
+
+```js
+require.list()
+	.filter(name => /-test$/.test(name))
+	.forEach(require);
+```
+
+# 7. Brunch 命令
+
+## brunch new / brunch n
+
+使用 brunch 创建项目, 完整语法:
+
+`brunck new [path] [-s skeleton]`
+
+- path (可选, 默认值: `.`): 创建项目目录的名称.
+- -s --skeleton (可选, 默认值: simple): 框架名称或来自 [brunch.io/skeletons](https://brunch.io/skeletons) 的 URL.
+
+比如:
+
+- `brunch new`: 默认框架不会添加任何库或框架
+- `brunch new -s es6`: 创建一个使用 Babel 编译支持的 ECMAScript 6 项目.
+- `brunch new -s react`/ `brunch new -s redux`: react 用户最爱.
+
+可以通过 BRUNCH_INIT_SKELETON 为 new 命令指定环境变量.
+
+```bash
+BRUNCH_INIT_SKELETON = es6
+# 以后的 brunch new 将等同于 brunch new -s es6
+```
+
+brunch new 会先查找命令中提供的框架名, 然后再查找 env 变量 BRUNCH_INIT_SKELETON, 如果仍未提供框架名, 则应用默认的框架.
+
+## brunch build / brunch b
+
+构建项目并将输出放置到 public 目录中.
+
+参数:
+
+- -e, --env: 使用 config.overrides[SETTING] 中的配置.
+- -p, --production: 创建优化的生产版本. 和 -e production 相同.
+- -j, --jobs WORKERS: 启用实验性质的多进程支持. 可能会提供大型项目的编译速度. 尝试不同的 WORKERS 数量, 找到最适合自己操作系统.
+- -d, --debug: 启用详细的调试输出.
+
+## brunch watch / brunch w
+
+监视项目目录中的更改, 并在更改发生时重新构建整个项目.
+
+参数:
+
+- brunch build 中所有可用的选项.
+- -s, --server: 运行一个简单的 HTTP + pushstate 服务器, 该服务器运行在 public 目录下.
+- -P, --port: 指定服务器运行在哪个端口上.
+
+## 默认框架
+
+- 这是一开始使用 brunch 创建项目的最佳选择.
+- 它提供了 brunch 的初始配置, 并已经可以正常工作.
+- 干净的文件夹结构, 简单的 brunch 配置以及很少的默认插件.

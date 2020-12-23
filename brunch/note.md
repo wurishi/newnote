@@ -176,5 +176,77 @@ brunch 与 webpack 不同的是:
 - 获得 npm 和 Bower 支持.
 - 重新构建将是快速且增量的.
 
-# 
+# 4. 使用插件
+
+brunch 使用 node.js 插件来提供编译, 检查, 优化功能.
+
+brunch 有一个插件生态系统, 可以通过各种插件实现与各种工具的互操作性.
+
+## 4.1 插件类型
+
+brunch 插件可以分为三大类 (一个插件可以同时属于多种)
+
+- 编译器(Compilers): 负责将源文件编译成浏览器可以理解的内容. 例如: CoffeeScript 到 JavaScript 编译器, 或 Stylus 到 CSS 编译器.
+- 代码检查(Linters): 允许在构建时防止某些类型的错误或强制执行特定的编码样式.
+- 优化器(Optimizers): 优化已经编译的 JS 或 CSS 文件.
+
+## 4.2 插件安装
+
+通过 npm 命令安装插件:
+
+```bash
+npm i -D sass-brunch
+# 安装尚未发布到 npm 且只能通过 git 访问的插件
+npm i -D brunch/sass-brunch
+# 删除插件
+npm un sass-brunch # 或直接从 package.json 中删除
+```
+
+## 4.3 插件配置
+
+brunch 的插件是开箱即用的. 但有时可能需要自定义它们的工作方式, 以使其适合你的项目. 一般插件的 README 中都有相关配置的详细信息. 通常情况下配置位置是在 `config.plugins.<plugin>`:
+
+```js
+module.exports = {
+    plugins: {
+        babel: {
+            presets: ['react']
+        }
+    }
+}
+```
+
+## 4.4 插件执行顺序
+
+插件的执行顺序按照 package.json中定义, 当它们在相同文件(通常是目标文件)上运行时, 其顺序可能会影响其工作. 例如: `groundskeeper-brunch`要求在所有 minifiers 之前运行, 因为它们会混淆前者所依赖的某些代码结构, 以检测可修剪的代码.
+
+## 4.5 高级插件功能
+
+### 4.5.1: 从样式表导出到 JS
+
+CSS 编译器插件可以为样式表生成一些 JS 输出.
+
+比如 css 样式可能会变成类似这样:
+
+```css
+._button_xkplk_42 {
+    margin: 0;
+}
+```
+
+为了让 js 组件获得实际的类名, 编译器允许使用 `require`获得该 css 文件的类映射信息:
+
+```jsx
+const style = require('./button.styl');
+
+<div className={style.button}></div>
+```
+
+### 4.5.2: 编译资源
+
+有时候会想要将资源转换成另一种文件, 而这种文件本身不适合 brunch 的常规 js / css / template 流程. 例如将 Jade 编译成 HTML.
+
+## 4.6 提示
+
+不要包含不使用的插件, 它们可能会不必要地减慢构建过程.
 

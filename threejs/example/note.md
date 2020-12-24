@@ -122,6 +122,12 @@ webgl/geometry/webgl_geometry_convex
 
 ![webgl_geometry_convex](assets/webgl_geometry_convex.jpg)
 
+# webgl_geometry_cube
+
+webgl/geometry/webgl_geometry_cube
+
+![webgl_geometry_cube](assets/webgl_geometry_cube.jpg)
+
 # brunch 运行的项目:
 
 ```bash

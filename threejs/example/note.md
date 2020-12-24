@@ -110,6 +110,12 @@ npx webpack-dev-server
 
 ![webgl_geometry_colors](assets/webgl_geometry_colors.jpg)
 
+# webgl_geometry_colors_lookuptable
+
+webgl/geometry/webgl_geometry_colors_lookuptable
+
+![webgl_geometry_colors_lookuptable](assets/webgl_geometry_colors_lookuptable.jpg)
+
 # brunch 运行的项目:
 
 ```bash

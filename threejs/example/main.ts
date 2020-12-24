@@ -101,7 +101,7 @@ export class Main {
       far
     );
     this.camera.position.set(pos.x, pos.y, pos.z);
-    this.camera.lookAt(look);
+    look && this.camera.lookAt(look);
   }
 
   protected initHemiLight(

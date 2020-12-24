@@ -128,6 +128,12 @@ webgl/geometry/webgl_geometry_cube
 
 ![webgl_geometry_cube](assets/webgl_geometry_cube.jpg)
 
+# webgl_geometry_dynamic
+
+webgl/geomerty/webgl_geometry_dynamic
+
+![webgl_geometry_dynamic](assets/webgl_geometry_dynamic.jpg)
+
 # brunch 运行的项目:
 
 ```bash

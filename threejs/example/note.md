@@ -17,6 +17,8 @@ gltf 包含模型文件, 文件较大故单独放到网盘上了.
 
 ![webgl-animation-skinning-blending](assets/webgl-animation-skinning-blending.png)
 
+# webpack 运行的项目:
+
 ```bash
 # 首次运行先生成 dll
 npx webpack --config webpack.dll.config.js
@@ -95,3 +97,15 @@ npx webpack-dev-server
 # webgl_effects_stereo
 
 ![webgl_effects_stereo](assets/webgl_effects_stereo.jpg)
+
+# brunch 运行的项目:
+
+```bash
+brunch new -s threeJS
+
+npm start
+```
+
+# webgl_framebuffer_texture
+
+![webgl_framebuffer_texture](assets/webgl_framebuffer_texture.jpg)

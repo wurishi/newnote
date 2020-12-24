@@ -12,11 +12,11 @@
 
 # bfs
 
-参考资料: [BFS 算法框架套路详解](https://mp.weixin.qq.com/s/Gse3M1P0OJGZj4OmnidLkA) (已完成)
+参考资料: [BFS 算法框架套路详解](https://mp.weixin.qq.com/s/Gse3M1P0OJGZj4OmnidLkA) **(完成)**
 
 # brunch
 
-参考资料: [Brunch Quick Start](https://brunch.io/docs/getting-started)
+参考资料: [Brunch Quick Start](https://brunch.io/docs/getting-started) **(完成)**
 
 # d3js
 
@@ -64,7 +64,7 @@ leetcode
 
 # mobx
 
-参考资料: [cn.mobx](https://cn.mobx.js.org/)
+参考资料: [cn.mobx](https://cn.mobx.js.org/) **(完成)**
 
 # mocha
 

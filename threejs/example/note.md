@@ -116,6 +116,12 @@ webgl/geometry/webgl_geometry_colors_lookuptable
 
 ![webgl_geometry_colors_lookuptable](assets/webgl_geometry_colors_lookuptable.jpg)
 
+# webgl_geometry_convex
+
+webgl/geometry/webgl_geometry_convex
+
+![webgl_geometry_convex](assets/webgl_geometry_convex.jpg)
+
 # brunch 运行的项目:
 
 ```bash

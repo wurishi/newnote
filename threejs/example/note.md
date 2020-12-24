@@ -98,6 +98,10 @@ npx webpack-dev-server
 
 ![webgl_effects_stereo](assets/webgl_effects_stereo.jpg)
 
+# webgl_geometries
+
+![webgl_geometries](assets/webgl_geometries.jpg)
+
 # brunch 运行的项目:
 
 ```bash

@@ -102,6 +102,10 @@ npx webpack-dev-server
 
 ![webgl_geometries](assets/webgl_geometries.jpg)
 
+# webgl_geometries_parametric
+
+![webgl_geometries_parametric](assets/webgl_geometries_parametric.jpg)
+
 # brunch 运行的项目:
 
 ```bash

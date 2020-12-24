@@ -52,20 +52,39 @@ export class Main {
     this.animate();
   }
 
-  protected initRenderer(antialias = true) {
+  protected initRenderer(
+    antialias = true,
+    other = {
+      shadowEnabled: true,
+      shadowType: THREE.PCFSoftShadowMap,
+      outputEncoding: THREE.sRGBEncoding,
+    }
+  ) {
     this.renderer = new THREE.WebGLRenderer({ antialias });
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(window.innerWidth, window.innerHeight);
-    this.renderer.outputEncoding = THREE.sRGBEncoding;
-    this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    if (other) {
+      other.hasOwnProperty('outputEncoding') &&
+        (this.renderer.outputEncoding = other.outputEncoding);
+      other.hasOwnProperty('shadowEnabled') &&
+        (this.renderer.shadowMap.enabled = other.shadowEnabled);
+      other.hasOwnProperty('shadowType') &&
+        (this.renderer.shadowMap.type = other.shadowType);
+    }
     this.container.appendChild(this.renderer.domElement);
   }
 
-  protected initScene(color = 0xa0a0a0, near = 10, far = 22): void {
+  protected initScene(
+    color = 0xa0a0a0,
+    near = 10,
+    far = 22,
+    hasFog = true
+  ): void {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(color);
-    this.scene.fog = new THREE.Fog(color, near, far);
+    if (hasFog) {
+      this.scene.fog = new THREE.Fog(color, near, far);
+    }
   }
 
   protected initCamera(
@@ -155,7 +174,11 @@ export class Main {
     const mixerUpdateDelta = this.clock.getDelta();
     this.mixers.forEach((mixer) => mixer.update(mixerUpdateDelta));
 
+    this.render();
+
     this.stats.update();
     this.renderer.render(this.scene, this.camera);
   }
+
+  protected render(): void {}
 }

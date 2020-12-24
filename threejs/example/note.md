@@ -140,6 +140,12 @@ webgl/geomerty/webgl_geometry_extrude_shapes
 
 ![webgl_geometry_extrude_shapes](assets/webgl_geometry_extrude_shapes.jpg)
 
+# webgl_geometry_extrude_shapes2
+
+webgl/geomerty/webgl_geometry_extrude_shapes2
+
+![webgl_geometry_extrude_shapes2](assets/webgl_geometry_extrude_shapes2.jpg)
+
 # brunch 运行的项目:
 
 ```bash

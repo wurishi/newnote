@@ -134,6 +134,12 @@ webgl/geomerty/webgl_geometry_dynamic
 
 ![webgl_geometry_dynamic](assets/webgl_geometry_dynamic.jpg)
 
+# webgl_geometry_extrude_shapes
+
+webgl/geomerty/webgl_geometry_extrude_shapes
+
+![webgl_geometry_extrude_shapes](assets/webgl_geometry_extrude_shapes.jpg)
+
 # brunch 运行的项目:
 
 ```bash

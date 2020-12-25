@@ -146,6 +146,12 @@ webgl/geomerty/webgl_geometry_extrude_shapes2
 
 ![webgl_geometry_extrude_shapes2](assets/webgl_geometry_extrude_shapes2.jpg)
 
+# webgl_geometry_extrude_splines
+
+webgl/geometry/webgl_geometry_extrude_splines
+
+![webgl_geometry_extrude_splines](assets/webgl_geometry_extrude_splines.jpg)
+
 # brunch 运行的项目:
 
 ```bash

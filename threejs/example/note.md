@@ -170,6 +170,12 @@ webgl/geometry/webgl_geometry_minecraft
 
 ![webgl_geometry_minecraft](assets/webgl_geometry_minecraft.jpg)
 
+# webgl_geometry_minecraft_ao
+
+webgl/geometry/webgl_geometry_minecraft_ao
+
+![webgl_geometry_minecraft_ao](assets/webgl_geometry_minecraft_ao.jpg)
+
 # brunch 运行的项目:
 
 ```bash

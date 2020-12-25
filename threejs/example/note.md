@@ -182,6 +182,12 @@ webgl/geometry/webgl_geometry_normals
 
 ![webgl_geometry_normals](assets/webgl_geometry_normals.jpg)
 
+# webgl_geometry_nurbs
+
+webgl/geometry/webgl_geometry_nurbs
+
+![webgl_geometry_nurbs](assets/webgl_geometry_nurbs.jpg)
+
 # brunch 运行的项目:
 
 ```bash

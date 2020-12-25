@@ -164,6 +164,12 @@ webgl/geometry/webgl_geometry_hierarchy2
 
 ![webgl_geometry_hierarchy2](assets/webgl_geometry_hierarchy2.jpg)
 
+# webgl_geometry_minecraft
+
+webgl/geometry/webgl_geometry_minecraft
+
+![webgl_geometry_minecraft](assets/webgl_geometry_minecraft.jpg)
+
 # brunch 运行的项目:
 
 ```bash

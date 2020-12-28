@@ -188,6 +188,12 @@ webgl/geometry/webgl_geometry_nurbs
 
 ![webgl_geometry_nurbs](assets/webgl_geometry_nurbs.jpg)
 
+# webgl_geometry_shapes
+
+webgl/geometry/webgl_geometry_shapes
+
+![webgl_geometry_shapes](assets/webgl_geometry_shapes.jpg)
+
 # brunch 运行的项目:
 
 ```bash

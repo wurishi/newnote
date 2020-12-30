@@ -200,6 +200,12 @@ webgl/geometry/webgl_geometry_spline_editor
 
 ![webgl_geometry_spline_editor](assets/webgl_geometry_spline_editor.jpg)
 
+# webgl_geometry_teapot
+
+webgl/geometry/webgl_geometry_teapot
+
+![webgl_geometry_teapot](assets/webgl_geometry_teapot.jpg)
+
 # brunch 运行的项目:
 
 ```bash

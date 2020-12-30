@@ -194,6 +194,12 @@ webgl/geometry/webgl_geometry_shapes
 
 ![webgl_geometry_shapes](assets/webgl_geometry_shapes.jpg)
 
+# webgl_geometry_spline_editor
+
+webgl/geometry/webgl_geometry_spline_editor
+
+![webgl_geometry_spline_editor](assets/webgl_geometry_spline_editor.jpg)
+
 # brunch 运行的项目:
 
 ```bash

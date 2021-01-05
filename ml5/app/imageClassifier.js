@@ -46,4 +46,6 @@ const s = (p) => {
   }
 };
 
-new p5(s);
+export default function () {
+  new p5(s);
+}

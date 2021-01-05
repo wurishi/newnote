@@ -74,6 +74,10 @@ leetcode
 
 参考资料: [mochajs.cn](https://mochajs.cn/) **(完成)**
 
+# p5.js
+
+[参考资料](https://p5js.org/zh-Hans/)
+
 # parallax
 
 视觉差

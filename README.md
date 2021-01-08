@@ -74,7 +74,7 @@ leetcode
 
 参考资料: [mochajs.cn](https://mochajs.cn/) **(完成)**
 
-# p5.js
+# p5js
 
 [参考资料](https://p5js.org/zh-Hans/)
 

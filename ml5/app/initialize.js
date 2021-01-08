@@ -3,7 +3,8 @@
 // import fn from './bodyPix';
 // import fn from './unet';
 // import fn from './handpose';
-import fn from './facemesh';
+// import fn from './facemesh';
+import fn from './faceApi';
 
 document.addEventListener('DOMContentLoaded', () => {
   fn();

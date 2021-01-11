@@ -5,8 +5,9 @@
 // import fn from './handpose';
 // import fn from './facemesh';
 // import fn from './faceApi';
-import fn from './styleTransfer';
+// import fn from './styleTransfer';
+// import fn from './pix2Pix';
 
 document.addEventListener('DOMContentLoaded', () => {
-  fn();
+  // fn();
 });

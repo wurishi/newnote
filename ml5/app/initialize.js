@@ -7,7 +7,8 @@
 // import fn from './faceApi';
 // import fn from './styleTransfer';
 // import fn from './pix2Pix';
+import fn from './cvae';
 
 document.addEventListener('DOMContentLoaded', () => {
-  // fn();
+  fn();
 });

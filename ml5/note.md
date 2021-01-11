@@ -27,3 +27,16 @@
 # FaceApi
 
 脸部捕捉
+
+# StyleTransfer
+
+图像风格化 (可训练)
+
+# Pix2Pix
+
+线条填色 (可训练)
+
+# CVAE
+
+多图片压缩
+

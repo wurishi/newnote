@@ -1,51 +1,75 @@
 [link](https://learn.ml5js.org/#/)
 
-# ImageClassifier
+# Helpers
+
+# Image
+
+## ImageClassifier
 
 图像分类
 
-# PostNet
+## PostNet
 
 动作捕捉
 
-# BodyPix
+## BodyPix
 
 真人捕捉
 
-# UNET
+## UNET
 
 真人捕捉
 
-# Handpose
+## Handpose
 
 手势捕捉
 
-# Facemesh
+## Facemesh
 
 脸部mesh
 
-# FaceApi
+## FaceApi
 
 脸部捕捉
 
-# StyleTransfer
+## StyleTransfer
 
 图像风格化 (可训练)
 
-# Pix2Pix
+### 训练步骤: 
+
+(需先安装 python3)
+
+1. 下载仓库
+
+   ```bash
+   git clone https://github.com/ml5js/training_styletransfer.git
+   ```
+
+2. 安装依赖
+
+## Pix2Pix
 
 线条填色 (可训练)
 
-# CVAE
+## CVAE
 
 多图片压缩
 
-# DCGAN
+## DCGAN
 
-# SketchRNN
+*未成功*
+
+## SketchRNN
 
 涂鸦学习
 
-# ObjectDetector
+## ObjectDetector
 
 对象探测
+
+# Sound
+
+# Text
+
+# Utils

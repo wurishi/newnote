@@ -9,7 +9,8 @@
 // import fn from './pix2Pix';
 // import fn from './cvae';
 // import fn from './dcgan';
-import fn from './sketchrnn';
+// import fn from './sketchrnn';
+import fn from './objectDetector';
 
 document.addEventListener('DOMContentLoaded', () => {
   fn();

@@ -4,6 +4,7 @@ import { ImprovedNoise } from 'three/examples/jsm/math/ImprovedNoise';
 import {
   CanvasTexture,
   ClampToEdgeWrapping,
+  FogExp2,
   Mesh,
   MeshBasicMaterial,
   PlaneBufferGeometry,
@@ -138,4 +139,11 @@ class Demo extends Main {
   }
 }
 
-new Demo();
+class DemoFog extends Demo {
+  initScene() {
+    super.initScene();
+    this.scene.fog = new FogExp2(0xefd1b5, 0.0025);
+  }
+}
+
+new DemoFog();

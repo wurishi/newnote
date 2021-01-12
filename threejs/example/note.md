@@ -212,6 +212,12 @@ webgl/geometry/webgl_geometry_terrain
 
 ![webgl_geometry_terrain](assets/webgl_geometry_terrain.jpg)
 
+# webgl_geometry_terrain_fog
+
+webgl/geometry/webgl_geometry_terrain[DemoFog]
+
+![webgl_geometry_terrain_fog](assets/webgl_geometry_terrain_fog.jpg)
+
 # brunch 运行的项目:
 
 ```bash

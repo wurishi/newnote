@@ -4,13 +4,18 @@ import { ImprovedNoise } from 'three/examples/jsm/math/ImprovedNoise';
 import {
   CanvasTexture,
   ClampToEdgeWrapping,
+  ConeBufferGeometry,
   FogExp2,
   Mesh,
   MeshBasicMaterial,
+  MeshNormalMaterial,
   PlaneBufferGeometry,
+  Raycaster,
   Texture,
+  Vector2,
   Vector3,
 } from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 const worldWidth = 256,
   worldDepth = 256,
@@ -59,6 +64,8 @@ class Demo extends Main {
       new MeshBasicMaterial({ map: this.texture })
     );
     this.scene.add(this.mesh);
+
+    return data;
   }
 
   generateHeight(width: number, height: number) {
@@ -146,4 +153,65 @@ class DemoFog extends Demo {
   }
 }
 
-new DemoFog();
+class DemoRaycast extends Demo {
+  helper: Mesh;
+  mouse: Vector2 = new Vector2();
+  raycaster = new Raycaster();
+  controls: OrbitControls;
+  data: Uint8Array;
+
+  initPlane() {
+    const data = super.initPlane();
+
+    const geometryHelper = new ConeBufferGeometry(20, 100, 3);
+    geometryHelper.translate(0, 50, 0);
+    geometryHelper.rotateX(Math.PI / 2);
+
+    this.helper = new Mesh(geometryHelper, new MeshNormalMaterial());
+    this.scene.add(this.helper);
+
+    this.container.addEventListener(
+      'mousemove',
+      this.onMouseMove.bind(this),
+      false
+    );
+
+    this.data = data;
+    return data;
+  }
+
+  initControls() {
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    this.controls.minDistance = 1000;
+    this.controls.maxDistance = 10000;
+    this.controls.maxPolarAngle = Math.PI / 2;
+
+    this.controls.target.y =
+      this.data[worldHalfWidth + worldHalfDepth * worldWidth] + 500;
+    this.camera.position.y = this.controls.target.y + 2000;
+    this.camera.position.x = 2000;
+    this.controls.update();
+  }
+
+  onMouseMove(event: MouseEvent) {
+    const { clientWidth, clientHeight } = this.renderer.domElement;
+    const { clientX, clientY } = event;
+    this.mouse.x = (clientX / clientWidth) * 2 - 1;
+    this.mouse.y = (clientY / clientHeight) * 2 + 1;
+
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+
+    const intersects = this.raycaster.intersectObject(this.mesh);
+    // console.log(intersects.length);
+    if (intersects.length > 0) {
+      this.helper.position.set(0, 0, 0);
+      this.helper.lookAt(intersects[0].face.normal);
+
+      this.helper.position.copy(intersects[0].point);
+    }
+  }
+}
+
+new Demo(); //
+// new DemoFog(); // Fog
+// new DemoRaycast(); // Raycast

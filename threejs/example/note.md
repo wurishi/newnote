@@ -218,6 +218,10 @@ webgl/geometry/webgl_geometry_terrain[DemoFog]
 
 ![webgl_geometry_terrain_fog](assets/webgl_geometry_terrain_fog.jpg)
 
+# webgl_geometry_terrain_raycast
+
+webgl/geometry/webgl_geometry_terrain[DemoRaycast]
+
 # brunch 运行的项目:
 
 ```bash

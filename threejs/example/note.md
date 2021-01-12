@@ -206,6 +206,12 @@ webgl/geometry/webgl_geometry_teapot
 
 ![webgl_geometry_teapot](assets/webgl_geometry_teapot.jpg)
 
+# webgl_geometry_terrain
+
+webgl/geometry/webgl_geometry_terrain
+
+![webgl_geometry_terrain](assets/webgl_geometry_terrain.jpg)
+
 # brunch 运行的项目:
 
 ```bash

@@ -8,6 +8,7 @@ import {
   Material,
   MeshNormalMaterial,
   Object3D,
+  Vector3,
 } from 'three';
 import { Main } from '../../../main';
 
@@ -19,6 +20,19 @@ class Demo extends Main {
 
   dummy: Object3D;
   mesh: InstancedMesh;
+
+  initCamera() {
+    super.initCamera(60, 0.1, 100, new Vector3(9, 9, 9));
+    this.camera.lookAt(0, 0, 0);
+  }
+
+  initScene() {
+    super.initScene(0, 0, 0, false);
+  }
+
+  initRenderer() {
+    super.initRenderer(true, null);
+  }
 
   initPlane() {
     this.params = {
@@ -59,6 +73,7 @@ class Demo extends Main {
       const amount = this.params.amount;
       let i = 0;
       const offset = (amount - 1) / 2;
+      // (this.mesh.instanceMatrix as any).needsUdpdate = false;
       for (let x = 0; x < amount; x++) {
         for (let y = 0; y < amount; y++) {
           for (let z = 0; z < amount; z++) {
@@ -74,7 +89,7 @@ class Demo extends Main {
           }
         }
       }
-      (this.mesh.instanceMatrix as any).needsUdpdate = true;
+      (this.mesh.instanceMatrix as any).needsUpdate = true;
     }
   }
 }

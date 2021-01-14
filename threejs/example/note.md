@@ -222,6 +222,12 @@ webgl/geometry/webgl_geometry_terrain[DemoFog]
 
 webgl/geometry/webgl_geometry_terrain[DemoRaycast]
 
+# webgl_geometry_text
+
+webgl/geometry/webgl_geometry_text
+
+![webgl_geometry_text](assets/webgl_geometry_text.jpg)
+
 # brunch 运行的项目:
 
 ```bash

@@ -240,6 +240,12 @@ webgl/geometry/webgl_geometry_text_stroke
 
 ![webgl_geometry_text_stroke](assets/webgl_geometry_text_stroke.png)
 
+# webgl_helpers
+
+webgl/helpers/webgl_helpers
+
+![webgl_helpers](assets/webgl_helpers.jpg)
+
 # brunch 运行的项目:
 
 ```bash

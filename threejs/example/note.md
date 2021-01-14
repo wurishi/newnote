@@ -234,6 +234,12 @@ webgl/geometry/webgl_geometry_text_shapes
 
 ![webgl_geometry_text_shapes](assets/webgl_geometry_text_shapes.png)
 
+# webgl_geometry_text_stroke
+
+webgl/geometry/webgl_geometry_text_stroke
+
+![webgl_geometry_text_stroke](assets/webgl_geometry_text_stroke.png)
+
 # brunch 运行的项目:
 
 ```bash

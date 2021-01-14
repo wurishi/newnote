@@ -246,6 +246,12 @@ webgl/helpers/webgl_helpers
 
 ![webgl_helpers](assets/webgl_helpers.jpg)
 
+# webgl_instancing_dynamic
+
+webgl/instancing/webgl_instancing_dynamic
+
+![webgl_instancing_dynamic](assets/webgl_instancing_dynamic.jpg)
+
 # brunch 运行的项目:
 
 ```bash

@@ -228,6 +228,12 @@ webgl/geometry/webgl_geometry_text
 
 ![webgl_geometry_text](assets/webgl_geometry_text.jpg)
 
+# webgl_geometry_text_shapes
+
+webgl/geometry/webgl_geometry_text_shapes
+
+![webgl_geometry_text_shapes](assets/webgl_geometry_text_shapes.png)
+
 # brunch 运行的项目:
 
 ```bash

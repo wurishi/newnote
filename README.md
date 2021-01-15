@@ -74,6 +74,10 @@ leetcode
 
 参考资料: [mochajs.cn](https://mochajs.cn/) **(完成)**
 
+# nginx
+
+参考资料: [nginx.conf](http://www.ha97.com/5194.html)
+
 # p5js
 
 [参考资料](https://p5js.org/zh-Hans/)

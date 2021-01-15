@@ -252,6 +252,12 @@ webgl/instancing/webgl_instancing_dynamic
 
 ![webgl_instancing_dynamic](assets/webgl_instancing_dynamic.jpg)
 
+# webgl_instancing_performance
+
+webgl/instancing/webgl_instancing_performance
+
+![webgl_instancing_performance](assets/webgl_instancing_performance.jpg)
+
 # brunch 运行的项目:
 
 ```bash

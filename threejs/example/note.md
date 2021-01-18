@@ -276,6 +276,12 @@ webgl/instancing/webgl_interactive_buffergeometry
 
 ![webgl_interactive_buffergeometry](assets/webgl_interactive_buffergeometry.jpg)
 
+# webgl_interactive_cubes
+
+webgl/instancing/webgl_interactive_cubes
+
+![webgl_interactive_cubes](assets/webgl_interactive_cubes.jpg)
+
 # brunch 运行的项目:
 
 ```bash

@@ -294,6 +294,12 @@ webgl/interactive/webgl_interactive_cubes_ortho
 
 ![webgl_interactive_cubes_ortho](assets/webgl_interactive_cubes_ortho.jpg)
 
+# webgl_interactive_lines
+
+webgl/interactive/webgl_interactive_lines
+
+![webgl_interactive_lines](assets/webgl_interactive_lines.png)
+
 # brunch 运行的项目:
 
 ```bash

@@ -182,3 +182,8 @@ export class Main {
 
   protected render(): void {}
 }
+
+export function randomLR(n: number) {
+  const half = n / 2;
+  return Math.random() * n - half;
+}

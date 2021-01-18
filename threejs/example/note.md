@@ -288,6 +288,12 @@ webgl/interactive/webgl_interactive_cubes_gpu
 
 ![webgl_interactive_cubes_gpu](assets/webgl_interactive_cubes_gpu.jpg)
 
+# webgl_interactive_cubes_ortho
+
+webgl/interactive/webgl_interactive_cubes_ortho
+
+![webgl_interactive_cubes_ortho](assets/webgl_interactive_cubes_ortho.jpg)
+
 # brunch 运行的项目:
 
 ```bash

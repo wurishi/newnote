@@ -270,6 +270,12 @@ webgl/instancing/webgl_instancing_scatter
 
 ![webgl_instancing_scatter](assets/webgl_instancing_scatter.jpg)
 
+# webgl_interactive_buffergeometry
+
+webgl/instancing/webgl_interactive_buffergeometry
+
+![webgl_interactive_buffergeometry](assets/webgl_interactive_buffergeometry.jpg)
+
 # brunch 运行的项目:
 
 ```bash

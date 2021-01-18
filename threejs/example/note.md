@@ -318,6 +318,10 @@ webgl/interactive/webgl_interactive_voxelpainter
 
 ![webgl_interactive_voxelpainter](assets/webgl_interactive_voxelpainter.jpg)
 
+# webgl_layers
+
+![webgl_layers](assets/webgl_layers.png)
+
 # brunch 运行的项目:
 
 ```bash

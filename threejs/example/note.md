@@ -300,6 +300,12 @@ webgl/interactive/webgl_interactive_lines
 
 ![webgl_interactive_lines](assets/webgl_interactive_lines.png)
 
+# webgl_interactive_points
+
+webgl/interactive/webgl_interactive_points
+
+![webgl_interactive_points](assets/webgl_interactive_points.png)
+
 # brunch 运行的项目:
 
 ```bash

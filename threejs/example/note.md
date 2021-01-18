@@ -258,6 +258,12 @@ webgl/instancing/webgl_instancing_performance
 
 ![webgl_instancing_performance](assets/webgl_instancing_performance.jpg)
 
+# webgl_instancing_raycast
+
+webgl/instancing/webgl_instancing_raycast
+
+![webgl_instancing_raycast](assets/webgl_instancing_raycast.jpg)
+
 # brunch 运行的项目:
 
 ```bash

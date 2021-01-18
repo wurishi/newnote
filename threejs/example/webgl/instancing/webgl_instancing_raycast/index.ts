@@ -59,7 +59,7 @@ class Demo extends Main {
     };
     const gui = new GUI();
     gui.add(params, 'count', 0, count).onChange((v) => {
-      this.mesh.count = count;
+      this.mesh.count = v;
       this.mesh.instanceMatrix.needsUpdate = true;
     });
 

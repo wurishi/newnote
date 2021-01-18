@@ -306,6 +306,12 @@ webgl/interactive/webgl_interactive_points
 
 ![webgl_interactive_points](assets/webgl_interactive_points.png)
 
+# webgl_interactive_raycasting_points
+
+webgl/interactive/webgl_interactive_raycasting_points
+
+![webgl_interactive_raycasting_points](assets/webgl_interactive_raycasting_points.jpg)
+
 # brunch 运行的项目:
 
 ```bash

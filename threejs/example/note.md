@@ -312,6 +312,12 @@ webgl/interactive/webgl_interactive_raycasting_points
 
 ![webgl_interactive_raycasting_points](assets/webgl_interactive_raycasting_points.jpg)
 
+# webgl_interactive_voxelpainter
+
+webgl/interactive/webgl_interactive_voxelpainter
+
+![webgl_interactive_voxelpainter](assets/webgl_interactive_voxelpainter.jpg)
+
 # brunch 运行的项目:
 
 ```bash

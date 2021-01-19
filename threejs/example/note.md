@@ -326,6 +326,12 @@ webgl/interactive/webgl_interactive_voxelpainter
 
 ![webgl_lensflares](assets/webgl_lensflares.jpg)
 
+# webgl_lightprobe
+
+webgl/lightprobe/webgl_lightprobe
+
+![webgl_lightprobe](assets/webgl_lightprobe.jpg)
+
 # brunch 运行的项目:
 
 ```bash

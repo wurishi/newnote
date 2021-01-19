@@ -332,6 +332,12 @@ webgl/lightprobe/webgl_lightprobe
 
 ![webgl_lightprobe](assets/webgl_lightprobe.jpg)
 
+# webgl_lightprobe_cubecamera
+
+webgl/lightprobe/webgl_lightprobe_cubecamera
+
+![webgl_lightprobe_cubecamera](assets/webgl_lightprobe_cubecamera.jpg)
+
 # brunch 运行的项目:
 
 ```bash

@@ -344,6 +344,12 @@ webgl/lights/webgl_lights_hemisphere
 
 ![webgl_lights_hemisphere](assets/webgl_lights_hemisphere.jpg)
 
+# webgl_lights_physical
+
+webgl/lights/webgl_lights_physical
+
+![webgl_lights_physical](assets/webgl_lights_physical.jpg)
+
 # brunch 运行的项目:
 
 ```bash

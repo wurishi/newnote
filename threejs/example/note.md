@@ -378,6 +378,12 @@ webgl/lights/webgl_lights_pointlights2
 
 ![webgl_lights_pointlights2](assets/webgl_lights_pointlights2.jpg)
 
+# webgl_lights_spotlight
+
+webgl/lights/webgl_lights_spotlight
+
+![webgl_lights_spotlight](assets/webgl_lights_spotlight.jpg)
+
 # brunch 运行的项目:
 
 ```bash

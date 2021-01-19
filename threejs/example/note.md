@@ -26,6 +26,22 @@ npx webpack --config webpack.dll.config.js
 npx webpack-dev-server
 ```
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # webgl_animation_skinning_morph
 
 ![webgl_animation_skinning_morph](assets/webgl_animation_skinning_morph.png)
@@ -355,6 +371,12 @@ webgl/lights/webgl_lights_physical
 webgl/lights/webgl_lights_pointlights
 
 ![webgl_lights_pointlights](assets/webgl_lights_pointlights.jpg)
+
+# webgl_lights_pointlights2
+
+webgl/lights/webgl_lights_pointlights2
+
+![webgl_lights_pointlights2](assets/webgl_lights_pointlights2.jpg)
 
 # brunch 运行的项目:
 

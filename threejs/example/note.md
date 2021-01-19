@@ -322,6 +322,10 @@ webgl/interactive/webgl_interactive_voxelpainter
 
 ![webgl_layers](assets/webgl_layers.png)
 
+# webgl_lensflares
+
+![webgl_lensflares](assets/webgl_lensflares.jpg)
+
 # brunch 运行的项目:
 
 ```bash

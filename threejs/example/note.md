@@ -350,6 +350,12 @@ webgl/lights/webgl_lights_physical
 
 ![webgl_lights_physical](assets/webgl_lights_physical.jpg)
 
+# webgl_lights_pointlights
+
+webgl/lights/webgl_lights_pointlights
+
+![webgl_lights_pointlights](assets/webgl_lights_pointlights.jpg)
+
 # brunch 运行的项目:
 
 ```bash

@@ -402,6 +402,12 @@ webgl/lines/webgl_lines_colors
 
 ![webgl_lines_colors](assets/webgl_lines_colors.png)
 
+# webgl_lines_dashed
+
+webgl/lines/webgl_lines_dashed
+
+![webgl_lines_dashed](assets/webgl_lines_dashed.png)
+
 # brunch 运行的项目:
 
 ```bash

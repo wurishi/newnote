@@ -408,6 +408,12 @@ webgl/lines/webgl_lines_dashed
 
 ![webgl_lines_dashed](assets/webgl_lines_dashed.png)
 
+# webgl_lines_fat
+
+webgl/lines/webgl_lines_fat
+
+![webgl_lines_fat](assets/webgl_lines_fat.png)
+
 # brunch 运行的项目:
 
 ```bash

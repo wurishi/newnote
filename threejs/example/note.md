@@ -396,6 +396,12 @@ webgl/lights/webgl_lights_rectarealight
 
 ![webgl_lights_rectarealight](assets/webgl_lights_rectarealight.jpg)
 
+# webgl_lines_colors
+
+webgl/lines/webgl_lines_colors
+
+![webgl_lines_colors](assets/webgl_lines_colors.png)
+
 # brunch 运行的项目:
 
 ```bash

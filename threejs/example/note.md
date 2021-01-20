@@ -390,6 +390,12 @@ webgl/lights/webgl_lights_spotlights
 
 ![webgl_lights_spotlights](assets/webgl_lights_spotlights.jpg)
 
+# webgl_lights_rectarealight
+
+webgl/lights/webgl_lights_rectarealight
+
+![webgl_lights_rectarealight](assets/webgl_lights_rectarealight.jpg)
+
 # brunch 运行的项目:
 
 ```bash

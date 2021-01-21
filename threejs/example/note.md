@@ -494,6 +494,12 @@ webgl/loader/webgl_loader_assimp
 
 ![webgl_loader_assimp](assets/webgl_loader_assimp.jpg)
 
+# webgl_loader_bvh
+
+webgl/loader/webgl_loader_bvh
+
+![webgl_loader_bvh](assets/webgl_loader_bvh.png)
+
 # brunch 运行的项目:
 
 ```bash

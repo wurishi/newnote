@@ -500,6 +500,12 @@ webgl/loader/webgl_loader_bvh
 
 ![webgl_loader_bvh](assets/webgl_loader_bvh.png)
 
+# webgl_loader_collada
+
+webgl/loader/webgl_loader_collada
+
+![webgl_loader_collada](assets/webgl_loader_collada.jpg)
+
 # brunch 运行的项目:
 
 ```bash

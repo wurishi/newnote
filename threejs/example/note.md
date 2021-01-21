@@ -512,6 +512,12 @@ webgl/loader/webgl_loader_collada_kinematics
 
 ![webgl_loader_collada_kinematics](assets/webgl_loader_collada_kinematics.jpg)
 
+# webgl_loader_collada_skinning
+
+webgl/loader/webgl_loader_collada_skinning
+
+![webgl_loader_collada_skinning](assets/webgl_loader_collada_skinning.jpg)
+
 # brunch 运行的项目:
 
 ```bash

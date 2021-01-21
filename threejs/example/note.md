@@ -414,6 +414,12 @@ webgl/lines/webgl_lines_fat
 
 ![webgl_lines_fat](assets/webgl_lines_fat.png)
 
+# webgl_lines_fat_wireframe
+
+webgl/lines/webgl_lines_fat_wireframe
+
+![webgl_lines_fat_wireframe](assets/webgl_lines_fat_wireframe.png)
+
 # brunch 运行的项目:
 
 ```bash

@@ -420,6 +420,12 @@ webgl/lines/webgl_lines_fat_wireframe
 
 ![webgl_lines_fat_wireframe](assets/webgl_lines_fat_wireframe.png)
 
+# webgl_lines_sphere
+
+webgl/lines/webgl_lines_sphere
+
+![webgl_lines_sphere](assets/webgl_lines_sphere.jpg)
+
 # brunch 运行的项目:
 
 ```bash

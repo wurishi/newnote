@@ -482,6 +482,12 @@ webgl/loader/webgl_loader_3mf_materials
 
 ![webgl_loader_3mf_materials](assets/webgl_loader_3mf_materials.jpg)
 
+# webgl_loader_amf
+
+webgl/loader/webgl_loader_amf
+
+![webgl_loader_amf](assets/webgl_loader_amf.jpg)
+
 # brunch 运行的项目:
 
 ```bash

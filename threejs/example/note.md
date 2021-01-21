@@ -474,6 +474,14 @@ webgl/loader/webgl_loader_3mf
 
 ![webgl_loader_3mf](assets/webgl_loader_3mf.jpg)
 
+# webgl_loader_3mf_materials
+
+webgl/loader/webgl_loader_3mf_materials
+
+需要网盘资源
+
+![webgl_loader_3mf_materials](assets/webgl_loader_3mf_materials.jpg)
+
 # brunch 运行的项目:
 
 ```bash

@@ -9,11 +9,15 @@
 
 # webgl_animation_keyframes
 
+网盘资源
+
 ![webgl_animation_keyframes](assets/webgl_animation_keyframes.jpg)
 
 gltf 包含模型文件, 文件较大故单独放到网盘上了.
 
 # webgl-animation-skinning-blending
+
+网盘资源
 
 ![webgl-animation-skinning-blending](assets/webgl-animation-skinning-blending.png)
 
@@ -44,13 +48,19 @@ npx webpack-dev-server
 
 # webgl_animation_skinning_morph
 
+网盘资源
+
 ![webgl_animation_skinning_morph](assets/webgl_animation_skinning_morph.png)
 
 # webgl_animation_skinning_additive_blending
 
+网盘资源
+
 ![webgl_animation_skinning_additive_blending](assets/webgl_animation_skinning_additive_blending.png)
 
 # webgl_animation_multiple
+
+网盘资源
 
 ![webgl_animation_multiple](assets/webgl_animation_multiple.png)
 
@@ -67,6 +77,8 @@ npx webpack-dev-server
 ![webgl_camera_cinematic](assets/webgl_camera_cinematic.png)
 
 # webgl_camera_logarithmicdepthbuffer
+
+网盘资源
 
 ![webgl_camera_logarithmicdepthbuffer](assets/webgl_camera_logarithmicdepthbuffer.png)
 
@@ -88,6 +100,8 @@ npx webpack-dev-server
 
 # webgl_decals
 
+网盘资源
+
 ![webgl_decals](assets/webgl_decals.png)
 
 # webgl_depth_texture
@@ -95,6 +109,8 @@ npx webpack-dev-server
 ![webgl_depth_texture](assets/webgl_depth_texture.png)
 
 # webgl_effects_anaglyph
+
+网盘资源
 
 ![webgl_effects_anaglyph](assets/webgl_effects_anaglyph.jpg)
 
@@ -104,6 +120,8 @@ npx webpack-dev-server
 
 # webgl_effects_parallaxbarrier
 
+网盘资源
+
 ![webgl_effects_parallaxbarrier](assets/webgl_effects_parallaxbarrier.jpg)
 
 # webgl_effects_peppersghost
@@ -112,13 +130,19 @@ npx webpack-dev-server
 
 # webgl_effects_stereo
 
+网盘资源
+
 ![webgl_effects_stereo](assets/webgl_effects_stereo.jpg)
 
 # webgl_geometries
 
+网盘资源
+
 ![webgl_geometries](assets/webgl_geometries.jpg)
 
 # webgl_geometries_parametric
+
+网盘资源
 
 ![webgl_geometries_parametric](assets/webgl_geometries_parametric.jpg)
 
@@ -362,6 +386,8 @@ webgl/lights/webgl_lights_hemisphere
 
 # webgl_lights_physical
 
+网盘资源
+
 webgl/lights/webgl_lights_physical
 
 ![webgl_lights_physical](assets/webgl_lights_physical.jpg)
@@ -425,6 +451,14 @@ webgl/lines/webgl_lines_fat_wireframe
 webgl/lines/webgl_lines_sphere
 
 ![webgl_lines_sphere](assets/webgl_lines_sphere.jpg)
+
+# webgl_loader_3dm
+
+网盘资源
+
+webgl/lines/webgl_loader_3dm
+
+![webgl_loader_3dm](assets/webgl_loader_3dm.jpg)
 
 # brunch 运行的项目:
 

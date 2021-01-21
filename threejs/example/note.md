@@ -456,9 +456,15 @@ webgl/lines/webgl_lines_sphere
 
 网盘资源
 
-webgl/lines/webgl_loader_3dm
+webgl/loader/webgl_loader_3dm
 
 ![webgl_loader_3dm](assets/webgl_loader_3dm.jpg)
+
+# webgl_loader_3ds
+
+webgl/loader/webgl_loader_3ds
+
+![webgl_loader_3ds](assets/webgl_loader_3ds.jpg)
 
 # brunch 运行的项目:
 

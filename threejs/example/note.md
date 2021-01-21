@@ -518,6 +518,12 @@ webgl/loader/webgl_loader_collada_skinning
 
 ![webgl_loader_collada_skinning](assets/webgl_loader_collada_skinning.jpg)
 
+# webgl_loader_draco
+
+webgl/loader/webgl_loader_draco
+
+![webgl_loader_draco](assets/webgl_loader_draco.jpg)
+
 # brunch 运行的项目:
 
 ```bash

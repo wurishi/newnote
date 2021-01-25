@@ -542,6 +542,12 @@ webgl/loader/webgl_loader_gcode
 
 ![webgl_loader_gcode](assets/webgl_loader_gcode.jpg)
 
+# webgl_loader_gltf
+
+webgl/loader/webgl_loader_gltf
+
+![webgl_loader_gltf](assets/webgl_loader_gltf.jpg)
+
 # brunch 运行的项目:
 
 ```bash

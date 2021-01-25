@@ -524,6 +524,12 @@ webgl/loader/webgl_loader_draco
 
 ![webgl_loader_draco](assets/webgl_loader_draco.jpg)
 
+# webgl_loader_fbx
+
+webgl/loader/webgl_loader_fbx
+
+![webgl_loader_fbx](assets/webgl_loader_fbx.jpg)
+
 # brunch 运行的项目:
 
 ```bash

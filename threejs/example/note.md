@@ -536,6 +536,12 @@ webgl/loader/webgl_loader_fbx_nurbs
 
 ![webgl_loader_fbx_nurbs](assets/webgl_loader_fbx_nurbs.png)
 
+# webgl_loader_gcode
+
+webgl/loader/webgl_loader_gcode
+
+![webgl_loader_gcode](assets/webgl_loader_gcode.jpg)
+
 # brunch 运行的项目:
 
 ```bash

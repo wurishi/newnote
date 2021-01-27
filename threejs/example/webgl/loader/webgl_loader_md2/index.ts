@@ -3,6 +3,7 @@ import { Main } from '../../../main';
 import { MD2Character } from 'three/examples/jsm/misc/MD2Character';
 import {
   AnimationClip,
+  Clock,
   Geometry,
   Mesh,
   MeshPhongMaterial,
@@ -105,7 +106,7 @@ class Demo extends Main {
   }
 
   render() {
-    character && character.update(this.clock.getDelta() * 300);
+    character && character.update(clock.getDelta());
   }
 }
 
@@ -169,5 +170,6 @@ function labelize(text: string) {
 
 let character: MD2Character;
 let gui: GUI;
+let clock = new Clock();
 
 new Demo();

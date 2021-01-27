@@ -596,6 +596,12 @@ webgl/loader/webgl_loader_md2_control
 
 ![webgl_loader_md2_control](assets/webgl_loader_md2_control.jpg)
 
+# webgl_loader_mdd
+
+webgl/loader/webgl_loader_mdd
+
+![webgl_loader_mdd](assets/webgl_loader_mdd.jpg)
+
 # brunch 运行的项目:
 
 ```bash

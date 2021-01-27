@@ -560,6 +560,12 @@ webgl/loader/webgl_loader_gltf_variants
 
 ![webgl_loader_gltf_variants](assets/webgl_loader_gltf_variants.jpg)
 
+# webgl_loader_imagebitmap
+
+webgl/loader/webgl_loader_imagebitmap
+
+![webgl_loader_imagebitmap](assets/webgl_loader_imagebitmap.jpg)
+
 # brunch 运行的项目:
 
 ```bash

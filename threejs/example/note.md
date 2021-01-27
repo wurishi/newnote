@@ -572,6 +572,12 @@ webgl/loader/webgl_loader_kmz
 
 ![webgl_loader_kmz](assets/webgl_loader_kmz.jpg)
 
+# webgl_loader_ldraw
+
+webgl/loader/webgl_loader_ldraw
+
+![webgl_loader_ldraw](assets/webgl_loader_ldraw.jpg)
+
 # brunch 运行的项目:
 
 ```bash

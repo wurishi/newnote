@@ -614,6 +614,12 @@ webgl/loader/webgl_loader_mmd_pose
 
 ![webgl_loader_mmd_pose](assets/webgl_loader_mmd_pose.jpg)
 
+# webgl_loader_mmd_audio
+
+webgl/loader/webgl_loader_mmd_audio
+
+![webgl_loader_mmd_audio](assets/webgl_loader_mmd_audio.jpg)
+
 # brunch 运行的项目:
 
 ```bash

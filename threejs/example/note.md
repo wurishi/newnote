@@ -608,6 +608,12 @@ webgl/loader/webgl_loader_mmd
 
 ![webgl_loader_mmd](assets/webgl_loader_mmd.jpg)
 
+# webgl_loader_mmd_pose
+
+webgl/loader/webgl_loader_mmd_pose
+
+![webgl_loader_mmd_pose](assets/webgl_loader_mmd_pose.jpg)
+
 # brunch 运行的项目:
 
 ```bash

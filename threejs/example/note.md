@@ -620,6 +620,12 @@ webgl/loader/webgl_loader_mmd_audio
 
 ![webgl_loader_mmd_audio](assets/webgl_loader_mmd_audio.jpg)
 
+# webgl_loader_nrrd
+
+webgl/loader/webgl_loader_nrrd
+
+![webgl_loader_nrrd](assets/webgl_loader_nrrd.jpg)
+
 # brunch 运行的项目:
 
 ```bash

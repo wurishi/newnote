@@ -644,6 +644,12 @@ webgl/loader/webgl_loader_pcd
 
 ![webgl_loader_pcd](assets/webgl_loader_pcd.jpg)
 
+# webgl_loader_pdb
+
+webgl/loader/webgl_loader_pdb
+
+![webgl_loader_pdb](assets/webgl_loader_pdb.jpg)
+
 # brunch 运行的项目:
 
 ```bash

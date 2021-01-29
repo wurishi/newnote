@@ -674,6 +674,12 @@ webgl/loader/webgl_loader_svg
 
 ![webgl_loader_svg](assets/webgl_loader_svg.jpg)
 
+# webgl_loader_tilt
+
+webgl/loader/webgl_loader_tilt
+
+![webgl_loader_tilt](assets/webgl_loader_tilt.jpg)
+
 # brunch 运行的项目:
 
 ```bash

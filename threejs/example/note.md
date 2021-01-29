@@ -680,6 +680,12 @@ webgl/loader/webgl_loader_tilt
 
 ![webgl_loader_tilt](assets/webgl_loader_tilt.jpg)
 
+# webgl_loader_texture_basis
+
+webgl/loader/webgl_loader_texture_basis
+
+![webgl_loader_texture_basis](assets/webgl_loader_texture_basis.jpg)
+
 # brunch 运行的项目:
 
 ```bash

@@ -650,6 +650,12 @@ webgl/loader/webgl_loader_pdb
 
 ![webgl_loader_pdb](assets/webgl_loader_pdb.jpg)
 
+# webgl_loader_ply
+
+webgl/loader/webgl_loader_ply
+
+![webgl_loader_ply](assets/webgl_loader_ply.jpg)
+
 # brunch 运行的项目:
 
 ```bash

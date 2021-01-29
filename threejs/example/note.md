@@ -704,6 +704,12 @@ webgl/loader/webgl_loader_texture_hdr
 
 ![webgl_loader_texture_hdr](assets/webgl_loader_texture_hdr.jpg)
 
+# webgl_loader_texture_ktx
+
+webgl/loader/webgl_loader_texture_ktx
+
+![webgl_loader_texture_ktx](assets/webgl_loader_texture_ktx.jpg)
+
 # brunch 运行的项目:
 
 ```bash

@@ -716,6 +716,12 @@ webgl/loader/webgl_loader_texture_ktx2
 
 ![webgl_loader_texture_ktx2](assets/webgl_loader_texture_ktx2.jpg)
 
+# webgl_loader_texture_lottie
+
+webgl/loader/webgl_loader_texture_lottie
+
+![webgl_loader_texture_lottie](assets/webgl_loader_texture_lottie.jpg)
+
 # brunch 运行的项目:
 
 ```bash

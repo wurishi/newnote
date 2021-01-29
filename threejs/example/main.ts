@@ -21,6 +21,15 @@ export class StyleRule {
   }
 }
 
+export function linkScript(link: string, cb: any) {
+  const s = document.createElement('script');
+  s.src = link;
+  document.body.appendChild(s);
+  s.onload = () => {
+    cb && cb();
+  };
+}
+
 export class Main {
   protected container: HTMLDivElement;
   protected clock: THREE.Clock;

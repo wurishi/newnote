@@ -692,6 +692,12 @@ webgl/loader/webgl_loader_texture_dds
 
 ![webgl_loader_texture_dds](assets/webgl_loader_texture_dds.jpg)
 
+# webgl_loader_texture_exr
+
+webgl/loader/webgl_loader_texture_exr
+
+![webgl_loader_texture_exr](assets/webgl_loader_texture_exr.jpg)
+
 # brunch 运行的项目:
 
 ```bash

@@ -734,6 +734,12 @@ webgl/loader/webgl_loader_texture_rgbm
 
 ![webgl_loader_texture_rgbm](assets/webgl_loader_texture_rgbm.jpg)
 
+# webgl_loader_texture_tga
+
+webgl/loader/webgl_loader_texture_tga
+
+![webgl_loader_texture_tga](assets/webgl_loader_texture_tga.jpg)
+
 # brunch 运行的项目:
 
 ```bash

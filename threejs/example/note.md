@@ -722,6 +722,12 @@ webgl/loader/webgl_loader_texture_lottie
 
 ![webgl_loader_texture_lottie](assets/webgl_loader_texture_lottie.jpg)
 
+# webgl_loader_texture_pvrtc
+
+webgl/loader/webgl_loader_texture_pvrtc
+
+pvrtc 仅限iOS
+
 # brunch 运行的项目:
 
 ```bash

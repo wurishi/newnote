@@ -728,6 +728,12 @@ webgl/loader/webgl_loader_texture_pvrtc
 
 pvrtc 仅限iOS
 
+# webgl_loader_texture_rgbm
+
+webgl/loader/webgl_loader_texture_rgbm
+
+![webgl_loader_texture_rgbm](assets/webgl_loader_texture_rgbm.jpg)
+
 # brunch 运行的项目:
 
 ```bash

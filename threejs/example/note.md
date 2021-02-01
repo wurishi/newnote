@@ -764,6 +764,12 @@ webgl/loader/webgl_loader_vrml
 
 ![webgl_loader_vrml](assets/webgl_loader_vrml.jpg)
 
+# webgl_loader_vtk
+
+webgl/loader/webgl_loader_vtk
+
+![webgl_loader_vtk](assets/webgl_loader_vtk.jpg)
+
 # brunch 运行的项目:
 
 ```bash

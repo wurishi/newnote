@@ -782,6 +782,10 @@ webgl/loader/webgl_loader_xyz
 
 ![webgl_loader_xyz](assets/webgl_loader_xyz.jpg)
 
+# webgl_lod
+
+![webgl_lod](assets/webgl_lod.jpg)
+
 # brunch 运行的项目:
 
 ```bash

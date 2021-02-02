@@ -820,6 +820,12 @@ webgl/materials/webgl_materials_car
 
 ![webgl_materials_car](assets/webgl_materials_car.jpg)
 
+# webgl_materials_channels
+
+webgl/materials/webgl_materials_channels
+
+![webgl_materials_channels](assets/webgl_materials_channels.jpg)
+
 # brunch 运行的项目:
 
 ```bash

@@ -802,6 +802,12 @@ webgl/materials/webgl_materials_blending
 
 ![webgl_materials_blending](assets/webgl_materials_blending.jpg)
 
+# webgl_materials_blending_custom
+
+webgl/materials/webgl_materials_blending_custom
+
+![webgl_materials_blending_custom](assets/webgl_materials_blending_custom.jpg)
+
 # brunch 运行的项目:
 
 ```bash

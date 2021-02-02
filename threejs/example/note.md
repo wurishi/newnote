@@ -808,6 +808,12 @@ webgl/materials/webgl_materials_blending_custom
 
 ![webgl_materials_blending_custom](assets/webgl_materials_blending_custom.jpg)
 
+# webgl_materials_bumpmap
+
+webgl/materials/webgl_materials_bumpmap
+
+![webgl_materials_bumpmap](assets/webgl_materials_bumpmap.jpg)
+
 # brunch 运行的项目:
 
 ```bash

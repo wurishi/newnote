@@ -832,6 +832,12 @@ webgl/materials/webgl_materials_cubemap
 
 ![webgl_materials_cubemap](assets/webgl_materials_cubemap.jpg)
 
+# webgl_materials_cubemap_balls_reflection
+
+webgl/materials/webgl_materials_cubemap_balls_reflection
+
+![webgl_materials_cubemap_balls_reflection](assets/webgl_materials_cubemap_balls_reflection.jpg)
+
 # brunch 运行的项目:
 
 ```bash

@@ -790,6 +790,12 @@ webgl/loader/webgl_loader_xyz
 
 ![webgl_marchingcubes](assets/webgl_marchingcubes.jpg)
 
+# webgl_materials
+
+webgl/materials/webgl_materials
+
+![webgl_materials](assets/webgl_materials.jpg)
+
 # brunch 运行的项目:
 
 ```bash

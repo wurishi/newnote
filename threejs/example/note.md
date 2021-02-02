@@ -814,6 +814,12 @@ webgl/materials/webgl_materials_bumpmap
 
 ![webgl_materials_bumpmap](assets/webgl_materials_bumpmap.jpg)
 
+# webgl_materials_car
+
+webgl/materials/webgl_materials_car
+
+![webgl_materials_car](assets/webgl_materials_car.jpg)
+
 # brunch 运行的项目:
 
 ```bash

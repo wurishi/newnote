@@ -826,6 +826,12 @@ webgl/materials/webgl_materials_channels
 
 ![webgl_materials_channels](assets/webgl_materials_channels.jpg)
 
+# webgl_materials_cubemap
+
+webgl/materials/webgl_materials_cubemap
+
+![webgl_materials_cubemap](assets/webgl_materials_cubemap.jpg)
+
 # brunch 运行的项目:
 
 ```bash

@@ -796,6 +796,12 @@ webgl/materials/webgl_materials
 
 ![webgl_materials](assets/webgl_materials.jpg)
 
+# webgl_materials_blending
+
+webgl/materials/webgl_materials_blending
+
+![webgl_materials_blending](assets/webgl_materials_blending.jpg)
+
 # brunch 运行的项目:
 
 ```bash

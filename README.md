@@ -145,6 +145,7 @@ Rust
 - coures: [three.js 教程](http://www.yanhuangxueyuan.com/Three.js_course.html) **(完成)**
 - example: [three.js examples](https://threejs.org/examples/) (*进行中*)
 - https://alteredqualia.com/
+- fundamentals: [fundamentals](https://threejsfundamentals.org/threejs/lessons/zh_cn/)
 
 # u3decs
 

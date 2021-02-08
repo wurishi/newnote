@@ -1,7 +1,8 @@
 import { Demo } from './constant';
 import * as THREE from 'three';
+import { DoubleSide } from 'three';
 
-export default class implements Demo {
+export default class extends Demo {
   getAPI() {
     return {
       radius: 7,
@@ -30,7 +31,7 @@ export default class implements Demo {
     this.mesh && this.scene.remove(this.mesh);
     this.mesh = new THREE.Mesh(
       new THREE.CircleGeometry(radius, segments, thetaStart, thetaLength),
-      new THREE.MeshPhongMaterial({ color: 0x44aa88 })
+      new THREE.MeshPhongMaterial({ color: 0x44aa88, side: DoubleSide })
     );
     this.scene.add(this.mesh);
   }

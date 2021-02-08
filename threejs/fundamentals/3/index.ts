@@ -4,6 +4,7 @@ import { Demo } from './constant';
 import BoxGeometry from './boxgeometry';
 import CircleGeometry from './circlegeometry';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import ConeGeometry from './conegeometry';
 
 const style = document.createElement('style');
 document.head.appendChild(style);
@@ -20,6 +21,13 @@ camera.position.set(0, 0, 20);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.update();
+
+const ignoreArr: THREE.Object3D[] = [];
+
+const light = new THREE.HemisphereLight(0xffffff, 0xffffff);
+scene.add(light);
+light.position.set(0, 10, 0);
+ignoreArr.push(light);
 
 function render() {
   requestAnimationFrame(render);
@@ -41,6 +49,7 @@ const gui = new GUI();
 const demo: any = {
   盒子: BoxGeometry,
   平面圆: CircleGeometry,
+  锥形: ConeGeometry,
 };
 const api: any = {
   demo: '',
@@ -50,7 +59,11 @@ gui.add(api, 'demo', Object.keys(demo)).onChange((val) => {
   f = null;
   const Class = demo[val];
   if (Class) {
-    scene.remove(...scene.children);
+    for (let i = scene.children.length - 1; i >= 0; i--) {
+      if (ignoreArr.indexOf(scene.children[i]) < 0) {
+        scene.remove(scene.children[i]);
+      }
+    }
     const demo: Demo = new Class();
     f = gui.addFolder('Params');
     demo.main(scene);

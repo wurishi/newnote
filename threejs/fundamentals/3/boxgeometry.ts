@@ -1,7 +1,7 @@
 import { Demo } from './constant';
 import * as THREE from 'three';
 
-export default class implements Demo {
+export default class extends Demo {
   getAPI() {
     return {
       width: 8,

@@ -17,6 +17,12 @@ import PlaneGeometry from './planegeometry';
 import PolyhedronGeometry from './polyhedrongeometry';
 import RingGeometry from './ringgeometry';
 import ShapeGeometry from './shapegeometry';
+import SphereGeometry from './spheregeometry';
+import TetrahedronGeometry from './tetrahedrongeometry';
+import TextGeometry from './textgeometry';
+import TorusGeometry from './torusgeometry';
+import TorusKnotGeometry from './torusknotgeometry';
+import TubeGeometry from './tubegeometry';
 
 const style = document.createElement('style');
 document.head.appendChild(style);
@@ -74,6 +80,12 @@ const demo: any = {
   多面体: PolyhedronGeometry,
   环状体: RingGeometry,
   形状体: ShapeGeometry,
+  球体: SphereGeometry,
+  四面体: TetrahedronGeometry,
+  文字: TextGeometry,
+  圆环: TorusGeometry,
+  环结: TorusKnotGeometry,
+  管状体: TubeGeometry,
 };
 const api: any = {
   demo: '',

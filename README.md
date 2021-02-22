@@ -146,6 +146,7 @@ Rust
 - example: [three.js examples](https://threejs.org/examples/) (*进行中*)
 - https://alteredqualia.com/
 - fundamentals: [fundamentals](https://threejsfundamentals.org/threejs/lessons/zh_cn/)
+- webgl - webglfundamentals: [webglfundamentals](https://webglfundamentals.org/webgl/lessons/zh_cn/)
 
 # u3decs
 

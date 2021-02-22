@@ -15,6 +15,15 @@ export class Demo implements Demo1 {
     light.position.set(-1, 2, 4);
     scene.add(light);
   }
+
+  createMaterial() {
+    const material = new THREE.MeshPhongMaterial({
+      side: THREE.DoubleSide,
+    });
+    const hue = Math.random();
+    material.color.setHSL(hue, 1, 0.5);
+    return material;
+  }
 }
 
 interface Demo1 {

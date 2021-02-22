@@ -11,6 +11,12 @@ import ExtrudeGeometry from './extrudegeometry';
 import ExtrudeGeometryOutline from './extrudegeometryoutline';
 import IcosahedronGeometry from './icosahedrongeometry';
 import LatheGeometry from './lathegeometry';
+import OctahedronGeometry from './octahedrongeometry';
+import ParametricGeometry from './parametricgeometry';
+import PlaneGeometry from './planegeometry';
+import PolyhedronGeometry from './polyhedrongeometry';
+import RingGeometry from './ringgeometry';
+import ShapeGeometry from './shapegeometry';
 
 const style = document.createElement('style');
 document.head.appendChild(style);
@@ -62,6 +68,12 @@ const demo: any = {
   受挤压体Outline: ExtrudeGeometryOutline,
   二十面体: IcosahedronGeometry,
   旋转线体: LatheGeometry,
+  八面体: OctahedronGeometry,
+  函数曲面: ParametricGeometry,
+  '2D平面': PlaneGeometry,
+  多面体: PolyhedronGeometry,
+  环状体: RingGeometry,
+  形状体: ShapeGeometry,
 };
 const api: any = {
   demo: '',

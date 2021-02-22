@@ -5,6 +5,8 @@ import BoxGeometry from './boxgeometry';
 import CircleGeometry from './circlegeometry';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import ConeGeometry from './conegeometry';
+import CylinderGeometry from './cylindergeometry';
+import DodecahedronGeometry from './dodecahedrongeometry';
 
 const style = document.createElement('style');
 document.head.appendChild(style);
@@ -50,6 +52,8 @@ const demo: any = {
   盒子: BoxGeometry,
   平面圆: CircleGeometry,
   锥形: ConeGeometry,
+  圆柱: CylinderGeometry,
+  十二面体: DodecahedronGeometry,
 };
 const api: any = {
   demo: '',

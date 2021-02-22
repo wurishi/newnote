@@ -7,6 +7,10 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import ConeGeometry from './conegeometry';
 import CylinderGeometry from './cylindergeometry';
 import DodecahedronGeometry from './dodecahedrongeometry';
+import ExtrudeGeometry from './extrudegeometry';
+import ExtrudeGeometryOutline from './extrudegeometryoutline';
+import IcosahedronGeometry from './icosahedrongeometry';
+import LatheGeometry from './lathegeometry';
 
 const style = document.createElement('style');
 document.head.appendChild(style);
@@ -54,6 +58,10 @@ const demo: any = {
   锥形: ConeGeometry,
   圆柱: CylinderGeometry,
   十二面体: DodecahedronGeometry,
+  受挤压体: ExtrudeGeometry,
+  受挤压体Outline: ExtrudeGeometryOutline,
+  二十面体: IcosahedronGeometry,
+  旋转线体: LatheGeometry,
 };
 const api: any = {
   demo: '',

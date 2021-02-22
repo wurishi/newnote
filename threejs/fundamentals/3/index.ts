@@ -23,6 +23,8 @@ import TextGeometry from './textgeometry';
 import TorusGeometry from './torusgeometry';
 import TorusKnotGeometry from './torusknotgeometry';
 import TubeGeometry from './tubegeometry';
+import EdgesGeometry from './edgesgeometry';
+import WireframeGeometry from './wireframegeometry';
 
 const style = document.createElement('style');
 document.head.appendChild(style);
@@ -86,6 +88,8 @@ const demo: any = {
   圆环: TorusGeometry,
   环结: TorusKnotGeometry,
   管状体: TubeGeometry,
+  边缘: EdgesGeometry,
+  线框: WireframeGeometry,
 };
 const api: any = {
   demo: '',

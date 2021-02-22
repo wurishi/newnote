@@ -307,7 +307,7 @@ function resizeRendererToDisplaySize(renderer: THREE.WebGLRenderer) {
 
 # Fundamentals
 
-## 图元
+## 3. 图元
 
 three.js 有很多图元. 图元就是一些 3D 的形状, 在运行时根据大量参数生成.
 

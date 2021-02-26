@@ -41,7 +41,251 @@ WebGL 在电脑的 GPU 中运行. 因此你需要使用能够在 GPU 上运行�
 
 WebGL 只关心两件事, 裁剪空间中的坐标值和颜色值. 使用 WebGL 只需要给它提供这两个东西. 你需要提供两个着色器来做这两件事, 一个顶点着色器提供裁剪空间坐标值, 一个片断着色器提供颜色值.
 
-无论你的画布有多大, 裁剪空间的坐标范围永远是-1到1.
+要注意, 无论你的画布有多大, 裁剪空间的坐标范围永远是-1到1.
+
+##### 初始化代码
+
+###### 1. 顶点着色器
+
+```glsl
+// 一个属性值, 将会从缓冲中获取数据
+attribute vec4 a_position;
+
+// 所有着色器都有一个 main 方法
+void main() {
+  // gl_Position 是一个顶点着色器主要设置的变量
+  gl_Position = a_position;
+}
+```
+
+如果用 JavaScript 代替 GLSL, 当它运行时, 它做了类似的事情:
+
+```js
+// 伪代码
+const positionBuffer = [
+    0, 0, 0, 0,
+    0, 0.5, 0, 0,
+    0.7, 0, 0, 0,
+];
+const attributes = {};
+let gl_Position;
+
+function drawArrays(..., offset, count) {
+    const stride = 4;
+    const size = 4;
+    for(let i = 0; i < count; i++) {
+        // 从 positionBuffer 复制接下来的4个值给a_position属性
+        const start = offset + i * stride;
+        attributes.a_position = positionBuffer.slice(start, start + size);
+        runVertexShader(); // 运行顶点着色器
+        
+        doSomethingWith_gl_Position();
+    }
+}
+```
+
+实际情况没有这么简单, 因为 `positionBuffer`将会被转换成二进制数据, 所以真实情况下从缓冲中读取数据会有些麻烦, 这个例子只是用来参考顶点着色器是怎么执行的.
+
+###### 2. 片断着色器
+
+```glsl
+// 片断着色器没有默认精度, 需要设置一个精度
+// mediump 代表 "medium precision" 中等精度
+precision mediump float;
+
+void main() {
+  // gl_FragColor 是一个片断着色器主要设置的变量
+  gl_FragColor = vec4(1, 0, 0.5, 1); // 红紫色
+}
+```
+
+这里我们设置 `gl_FragColor`为 `1, 0, 0.5, 1`它们分别代表红色, 绿色, 蓝色和阿尔法通道值. 在 WebGL 中的颜色范围从 0 到 1.
+
+有了两个着色器方法后, 就可以开始使用 WebGL 了.
+
+###### 3. 创建 WebGL 渲染上下文 (WebGLRenderingContext)
+
+首先需要一个 canvas (画布)对象, 并从中创建一个 WebGL 渲染上下文.
+
+```js
+const canvas = WebGLUtils.createCanvas();
+const gl = canvas.getContext('webgl');
+if (!gl) {
+  // 不能使用 WebGL!
+}
+```
+
+###### 4. 编译着色器并提交到 GPU
+
+获得 gl 后, 需要编译着色器然后提交到 GPU. 着色器的代码本质上就是字符串, 你可以通过利用 JavaScript 创建字符串的方式创建 GLSL 字符串, 用 AJAX, 用多行文本数据等都可以.
+
+事实上, 大多数三维引擎是在运行时利用模板, 串联等方式创建 GLSL 的. 本例中不需要这么复杂.
+
+```js
+// 编译顶点着色器
+const vertexShader = WebGLUtils.compileShader(gl, vertex, gl.VERTEX_SHADER);
+// 编译片断着色器
+const fragmentShader = WebGLUtils.compileShader(gl, fragment, gl.FRAGMENT_SHADER);
+```
+
+###### 5. 将两个着色器链接到一个着色程序
+
+```js
+const program = WebGLUtils.createProgram(gl, vertexShader, fragmentShader);
+```
+
+现在我们已经在 GPU 上创建了一个 GLSL 着色程序, 我们还需要给它提供数据. WebGL 的主要任务就是设置好状态并为 GLSL 着色程序提供数据. 
+
+###### 6. 寻找属性位置
+
+在这个例子中, GLSL 着色程序的唯一输入是一个属性值 `a_position`, 所以接下来做的第一件事就是从刚才创建的 GLSL 着色程序中找到这个属性值所在的位置.
+
+```js
+const positionAttributeLocation = gl.getAttribLocation(program, 'a_position');
+```
+
+寻找属性位置应该在初始化的时候完成, 而不是在渲染循环中.
+
+###### 7. 创建缓冲
+
+属性值是从缓冲中获取数据的, 所以要创建一个缓冲.
+
+```js
+const positionBuffer = gl.createBuffer();
+```
+
+###### 8. 绑定缓冲
+
+WebGL 通过绑定点来操控全局范围内的数据, 你可以把绑定点想象成一个 WebGL 内部的全局变量. 首先绑定一个数据源到绑定点, 然后可以引用绑定点指向该数据源. 绑定位置信息缓冲 (下面的绑定点就是 `ARRAY_BUFFER`).
+
+```js
+gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+```
+
+###### 9. 通过绑定点向缓冲中存放数据
+
+```js
+const positions = [
+    0, 0, 
+    0, 0.5, 
+    0.7, 0,
+];
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+```
+
+这里首先有一个 JavaScript 数组的 `positions`, 因为 WebGL 需要强类型数据, 所以用 `new Float32Array(positions)`创建了 32 位浮点型数据序列, 并从 `positions`中复制数据到序列中, 然后 `gl.bufferData`复制这些数据到 GPU 的 `positionBuffer`对象上. 它最终会传递到 `positionBuffer`上是因为在前一步已经将它绑定到 `ARRAY_BUFFER`这个绑定点上了.
+
+最后一个参数 `gl.STATIC_DRAW`是提示 WebGL 我们将怎么使用这些数据. WebGL 会根据提示做出一些优化. `gl.STATIC_DRAW`提示 WebGL 我们不会经常改变这些数据.
+
+以上的代码是**初始化代码**, 这些代码在页面加载时只会运行一次, 接下来的代码是**渲染代码**, 这些代码需要在每次渲染或者绘制时执行.
+
+##### 渲染代码
+
+###### 10. 调整画布尺寸
+
+在绘制之前, 我们应该调整画布的尺寸以匹配它的显示尺寸(画布和图片一样有两个尺寸, 一个是它拥有的实际像素个数, 另一个是它显示的大小). 应该尽可能的使用 CSS 设置所需画布的显示大小, 因为它相对其他方式更灵活.
+
+```js
+WebGLUtils.resizeCanvasToDisplaySize(canvas, true);
+```
+
+###### 11. 裁剪空间坐标对应到画布像素坐标
+
+```js
+gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+```
+
+这样等于告诉 WebGL 裁剪空间的 `-1 -> +1` 分别对应到 x 轴的 `0 -> gl.canvas.width`和 y 轴的 `0 -> gl.canvas.height`.
+
+###### 12. 清空画布
+
+```js
+gl.clearColor(0, 0, 0, 0);
+gl.clear(gl.COLOR_BUFFER_BIT);
+```
+
+###### 13. 运行着色程序
+
+```js
+gl.useProgram(program);
+```
+
+###### 14. 告诉 WebGL 怎么从缓冲中获取数据给着色器中的属性
+
+首先要启用对应的属性
+
+```js
+gl.enableVertexAttribArray(positionAttributeLocation);
+```
+
+然后指定从缓冲中读取数据的方式
+
+```js
+// 将绑定点绑定到缓冲数据
+gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+
+// 告诉属性怎么从 positionBuffer 中读取数据 (ARRAY_BUFFER)
+const size = 2; // 每次迭代运行提取两个单位数据
+const type = gl.FLOAT; // 每个单位数据类型是 32位浮点型
+const normalize = false; // 不需要归一化数据
+const stride = 0; // 0 = 移动单位数量 * 每个单位占用内存 (sizeof(type)), 即每次迭代运行运行多少内存到下一个数据开始点
+let offset = 0; // 从缓冲起始位置开始读取
+gl.vertexAttribPointer(
+    positionAttributeLocation,
+    size,
+    type,
+    normalize,
+    stride,
+    offset
+);
+```
+
+一个隐藏信息是, `gl.vertexAttribPointer`是将属性绑定到当前的 `ARRAY_BUFFER`. 换句话说, 就是属性绑定到了 `positionBuffer`上. 这就意味着, 在这之后即使将绑定点 `ARRAY_BUFFER`绑定到其他数据上, 该属性 `positionAttributeLocation`依然是从 `positionBuffer`上读取数据的.
+
+要注意在 GLSL 的顶点着色器中的 `a_position`属性的数据类型是 `vec4`, `vec4`是一个有四个浮点数据的数据类型, 在 JavaScript 中可以把它想象成 `a_position = {x:0, y:0, z:0, w:0}`. 之前设置了 `size = 2`, 由于属性的默认值是 `0,0,0,1`, 所以属性将会从缓冲中获取前两个值(x和y), z和w还会是默认值0和1.
+
+###### 15. 运行 GLSL 着色程序
+
+```js
+const primitiveType = gl.TRIANGLES; // 图元类型
+offset = 0;
+const count = 3;
+gl.drawArrays(primitiveType, offset, count);
+```
+
+因为 `count = 3`, 所以顶点着色器将会运行三次, 每次从缓冲中读取两个值赋值给属性 `a_position.x`和 `a_position.y`
+
+另外因为我们设置了图元类型为 `gl.TRIANGLES(三角形)`, 顶点着色器每运行三次, WebGL 将会根据三个 `gl_Position`值绘制一个三角形, 并且不论画布大小是多少, 在裁剪空间中每个方向的坐标范围都是 -1 到 1.
+
+WebGL 将会把顶点着色器中的值转换到屏幕空间上, 所以如果画布大小是 400x300, 我们会得到类似以下的转换.
+
+```
+裁剪空间			屏幕空间
+0  , 0		->		200, 150
+0  , 0.5	->		200, 225
+0.7, 0		->		340, 150
+```
+
+现在 WebGL 将渲染出这个三角形, 绘制每个像素时, WebGL 都会调用片断着色器, 因为片断着色器只是简单设置 `gl_FragColor = vec4(1, 0, 0.5, 1) `, 由于画布每个通道宽度为8位, 这表示 WebGL 最终在画布上会绘制 `rgba(255, 0, 127, 255)`.
+
+上例中, 顶点着色器只是简单的传递了位置信息, 如果想做三维渲染, 其实需要提供合适的着色器将三维坐标转换到裁剪空间坐标上, 因为 WebGL 只是一个光栅化 API.
+
+#### 像素坐标转换到裁剪空间
+
+[代码](./webglhelloworldp/index.ts)
+
+WebGL 认为左下角是 0, 0. 如果想像传统二维 API 那样起点在左上角, 只需要翻转 y 轴即可.
+
+```diff
+- gl_Position = vec4(clipSpace, 0, 1);
++ gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
+```
+
+#### 随机位置, 随机大小, 随机颜色的矩形
+
+[代码](./webglhelloworld2/index.ts)
+
+
 
 # 杂项
 

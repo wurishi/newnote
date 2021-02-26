@@ -125,7 +125,33 @@ export function createProgramFromScripts(
   return createProgram(gl, vertexShader, fragmentShader);
 }
 
-export function resize(canvas: HTMLCanvasElement, pixelRatio:boolean = true): void {
+export function createProgram2(
+  gl: WebGLRenderingContext,
+  vertex: string,
+  fragment: string
+) {
+  const vertexShader = compileShader(
+    gl,
+    vertex,
+    WebGLRenderingContext.VERTEX_SHADER
+  );
+  const fragmentShader = compileShader(
+    gl,
+    fragment,
+    WebGLRenderingContext.FRAGMENT_SHADER
+  );
+  return createProgram(gl, vertexShader, fragmentShader);
+}
+
+/**
+ *
+ * @param canvas
+ * @param pixelRatio
+ */
+export function resizeCanvasToDisplaySize(
+  canvas: HTMLCanvasElement,
+  pixelRatio: boolean = true
+): boolean {
   // 1个CSS像素对应多少个实际像素
   const realToCSSPixels = pixelRatio ? window.devicePixelRatio : 1;
 
@@ -138,5 +164,16 @@ export function resize(canvas: HTMLCanvasElement, pixelRatio:boolean = true): vo
     // 设置为相同尺寸
     canvas.width = displayWidth;
     canvas.height = displayHeight;
+    return true;
   }
+  return false;
+}
+
+export function createCanvas(): HTMLCanvasElement {
+  const canvas = document.createElement('canvas');
+  canvas.id = 'c';
+  canvas.style.width = '100%';
+  canvas.style.height = '100%';
+  document.body.appendChild(canvas);
+  return canvas;
 }

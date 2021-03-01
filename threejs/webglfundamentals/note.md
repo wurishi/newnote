@@ -308,6 +308,8 @@ gl.drawArrays(primitiveType, offset, count);
 
 使用它们可以做出非常有趣的东西, 到目前为止的例子中, 处理每个像素时片断着色器可用的信息很少, 幸运的是可以给它传递更多信息, 想要从顶点着色器传值到片断着色器, 可以定义"可变量 (varyings)".
 
+### 从顶点着色器传值到片断着色器
+
 [代码](./2/index.ts)
 
 首先在顶点着色器定义一个 varying(可变量)用来给片断着色器传值.
@@ -369,7 +371,115 @@ WebGL 先获得顶点着色器中计算的三个颜色值, 在光栅化三角形
 | 0.8750 | 0.086 | 0.5  |
 | 0.0625 | 0.170 | 0.5  |
 
+最后利用这三个值进行插值后传进每个像素运行的片断着色器中.
 
+[2D代码模拟](2-fragment-shader-anim/index.ts)
+
+### 从外部(JS)传值到片断着色器
+
+如果想要直接通过 JavaScript 传值给片断着色器, 可以先把值传递给顶点着色器, 然后由顶点着色器再传给片断着色器.
+
+[代码](2-1/index.ts)
+
+```typescript
+function setColors(gl: WebGLRenderingContext) {
+    const [r1, b1, g1, r2, b2, g2] = [0, 0, 0, 0, 0, 0].map((v) => Math.random());
+
+    gl.bufferData(
+        gl.ARRAY_BUFFER,
+        new Float32Array([
+            r1,b1,g1,1,
+            r1,b1,g1,1,
+            r1,b1,g1,1,
+            r2,b2,g2,1,
+            r2,b2,g2,1,
+            r2,b2,g2,1
+        ]),
+        gl.STATIC_DRAW
+    );
+}
+// 需要给每个顶点传一个颜色值, 因为传给每个三角形的点的颜色是相同的, 所以插值结果就是相同的颜色. 只需要给每个顶点传递不同的颜色, 就可以看到插值的颜色了.
+
+function setColors(gl: WebGLRenderingContext) {
+    const [r1, b1, g1, r2, b2, g2] = [0, 0, 0, 0, 0, 0].map((v) => Math.random());
+
+    gl.bufferData(
+        gl.ARRAY_BUFFER,
+        new Float32Array([ // 每个顶点都随机一个颜色
+            Math.random(), Math.random(), Math.random(), 1,
+            Math.random(), Math.random(), Math.random(), 1,
+            Math.random(), Math.random(), Math.random(), 1,
+            Math.random(), Math.random(), Math.random(), 1,
+            Math.random(), Math.random(), Math.random(), 1,
+            Math.random(), Math.random(), Math.random(), 1,
+        ]),
+        gl.STATIC_DRAW
+    );
+}
+
+```
+
+### 关于 buffer 和 attribute 的代码是干什么的?
+
+缓冲操作是在 GPU 上获取顶点和其他顶点数据的一种方式. `gl.createBuffer`创建一个缓冲. `gl.bindBuffer`是设置缓冲为当前使用的缓冲. `gl.bufferData`会将数据拷贝到缓冲, 这个操作一般在初始化时完成.
+
+一旦数据存到缓冲中, 还需要告诉 WebGL 怎么从缓冲中提取数据传给顶点着色器的属性.
+
+要做这些, 首先需要获取 WebGL 给属性分配的地址:
+
+```js
+// 询问顶点数据应该放在哪里
+const positionLocation = gl.getAttribLocation(program, 'a_position');
+```
+
+一旦知道了属性的地址, 在绘制前还需要发出三个命令:
+
+```js
+gl.enableVertexAttribArray(location); // 告诉 WebGL 我们想从缓冲中提供数据.
+
+gl.bindBuffer(gl.ARRAY_BUFFER, someBuffer); // 将缓冲绑定到 ARRAY_BUFFER 绑定点, 它是 WebGL 内部的一个全局变量
+
+gl.vertexAttribPointer(location, numComponents, typeOfData, normalizeFlag, strideToNextPieceOfData, offsetIntoBuffer);
+// 告诉 WebGL 从 ARRAY_BUFFER 绑定点当前绑定的缓冲中获取数据. (将从 ARRAY_BUFFER 绑定点绑定的 buffer 中获取数据放到 location 里)
+// 每个顶点有几个单位的数据(1-4之间)
+// 单位数据类型是什么(BYTE, FLOAT, INT, UNSIGNED_SHORT 等)
+// 是否标准化
+// 每个数据之间要跳过多少位
+// 数据在缓冲的超始位置
+```
+
+如果每个类型的数据都用一个缓冲存储, stride 和 offset 都是 0. 
+
+对于 stride 来说, 0 表示用符合单位类型和单位个数的大小. 
+
+对于 offset 来说, 0 表示从缓冲起始位置开始读取.
+
+标准化标记 (normalizeFlag)适用于所有非浮点型数据. 如果传递 false 就解读原数据类型. BYTE 类型的范围是从 -128 到 127, UNSIGNED_BYTE 类型的范围是从 0 到 255, SHORT 类型的范围是从 - 32768 到 32767 等等.
+
+如果设置为 true, 所有类型都会被转换到 -1.0 到 +1.0 之间. (UNSIGNED_BYTE 则变成 0.0 到 +1.0 之间).
+
+最常用的标准化数据是颜色, 大多数情况颜色值范围为 0.0 到 +1.0. 如果使用4个浮点型数据存储颜色, 每个顶点的颜色将会占用 16 字节空间, 如果转换为使用4个 UNSIGNED_BYTE, 则每个顶点只需要4字节存储颜色, 省了 75% 空间.
+
+```js
+gl.vertexAttribPointer(colorLocation, 4, gl.UNSIGNED_BYTE, true, 0, 0);
+
+// 这些数据在存入缓冲时将被截取成 Uint8Array 类型
+const r1 = Math.random() * 256;
+const g1 = Math.random() * 256;
+const b1 = Math.random() * 256;
+const r2 = Math.random() * 256;
+const g2 = Math.random() * 256;
+const b2 = Math.random() * 256;
+
+gl.bufferData(gl.ARRAY_BUFFER, new Uint8Array([
+    r1, b1, g1, 255,
+    r1, b1, g1, 255,
+    r1, b1, g1, 255,
+    r2, b2, g2, 255,
+    r2, b2, g2, 255,
+    r2, b2, g2, 255,
+]), gl.STATIC_DRAW);
+```
 
 # 杂项
 

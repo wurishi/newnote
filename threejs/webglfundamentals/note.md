@@ -862,6 +862,20 @@ vec4 m = vec4(
 
 [GLSL规范](assets/opengles_shading_language.pdf)
 
+## 四. WebGL 演示
+
+[链接](https://webglfundamentals.org/webgl/lessons/resources/webgl-state-diagram.html)
+
+# 图像处理
+
+## 五. WebGL 图像处理
+
+在 WebGL 中绘制图片需要使用纹理. 和 WebGL 渲染时需要裁剪空间坐标相似, 渲染纹理时需要纹理坐标, 而不是像素坐标. 无论纹理是什么尺寸, 纹理坐标范围始终是 0.0 到 1.0.
+
+因为我们只用画一个矩形 (其实是两个三角形), 所以需要告诉 WebGL 矩形中每个顶点对应的纹理坐标. 我们将使用 Varying 可变量将纹理坐标从顶点着色器传到片断着色器, WebGL 会对顶点着色器中可变量的值进行插值, 然后传给对应像素执行的片断着色器.
+
+
+
 # 杂项
 
 ## WebGL 设置和安装

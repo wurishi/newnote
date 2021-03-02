@@ -481,6 +481,387 @@ gl.bufferData(gl.ARRAY_BUFFER, new Uint8Array([
 ]), gl.STATIC_DRAW);
 ```
 
+## 三. WebGL 着色器和 GLSL
+
+WebGL 每次绘制需要两个着色器, 一个顶点着色器和一个片断着色器, 每一个着色器都是一个方法. 一个顶点着色器和一个片断着色器链接在一起放入一个着色程序中. 一个典型的 WebGL 应用会有多个着色程序.
+
+### 顶点着色器
+
+一个顶点着色器的工作是生成裁剪空间坐标值, 通常是以下的形式:
+
+```glsl
+void main() {
+    gl_Position = doMathToMakeClipspaceCoordinates;
+}
+```
+
+每个顶点调用一次顶点着色器, 每次调用都需要设置一个特殊的全局变量 `gl_Position`, 该变量的值就是裁减空间坐标值.
+
+顶点着色器需要的数据, 可以通过以下三种方式获得.
+
+1. Attributes 属性: 从缓冲中获取的数据.
+2. Uniforms 全局变量: 在一次绘制中对所有顶点保持一致值.
+3. Textures 纹理: 从像素或纹理元素中获取的数据.
+
+#### Attributes 属性
+
+最常用的方法是缓冲和属性.
+
+创建缓冲:
+
+```js
+const buf = gl.createBuffer(); 
+```
+
+将数据存入缓冲:
+
+```js
+gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+gl.bufferData(gl.ARRAY_BUFFER, someData, gl.STATIC_DRAW);
+```
+
+在初始化时, 从着色器程序中找到属性所在地址:
+
+```js
+const positionLoc = gl.getAttribLocation(someShaderProgram, 'a_position');
+```
+
+在渲染时告诉 WebGL 怎么从缓冲中获取数据传递给属性:
+
+```js
+// 开启从缓冲中获取数据
+gl.enableVertexAttribArray(positionLoc);
+
+const numComponents = 3; // (x, y, z)
+const type = gl.FLOAT; // 32位浮点数据
+const normalize = false; // 不标准化
+const offset = 0; // 从缓冲起始位置开始获取
+const stride = 0; // 到下一个数据跳多少位内存
+// 0 = 表示使用当前单位个数和单位长度 (3 * Float32Array.BYTES_PER_ELEMENT)
+gl.vertexAttribPointer(positionLoc, numComponents, type, false, stride, offset);
+```
+
+最后将数据传递给 `gl_Position`:
+
+```glsl
+attribute vec4 a_position;
+
+void main() {
+    gl_Position = a_position;
+}
+```
+
+属性可以用 `float, vec2, vec3, vec4, mat2, mat3, mat4`数据类型.
+
+#### Uniforms 全局变量
+
+全局变量在一次绘制过程中传递给着色器的值都是一样的.
+
+在上一个例子的基础上, 给顶点着色器添加一个偏移量:
+
+```glsl
+attribute vec4 a_position;
+uniform vec4 u_offset;
+
+void main() {
+    gl_Position = a_position + u_offset;
+}
+```
+
+先找到全局变量的地址:
+
+```js
+const offsetLoc = gl.getUniformLocation(someProgram, 'u_offset');
+```
+
+然后在绘制前设置全局变量:
+
+```js
+gl.uniform4fv(offsetLoc, [1, 0, 0, 0]); // 向右偏移一半屏幕宽度
+```
+
+要注意的是全局变量属于单个着色程序, 如果有多个着色程序有相同的全局变量, 需要找到每个全局变量并设值. 每次调用 `gl.uniform???`时, 只会设置**当前着色程序**的全局变量, **当前着色程序**是指传递给 `gl.useProgram`的最后一个程序.
+
+全局变量有很多类型, 对应的类型有对应的设置方法.
+
+```js
+gl.uniform1f (floatUniformLoc, v);                 // float
+gl.uniform1fv(floatUniformLoc, [v]);               // float 或 float array
+gl.uniform2f (vec2UniformLoc,  v0, v1);            // vec2
+gl.uniform2fv(vec2UniformLoc,  [v0, v1]);          // vec2 或 vec2 array
+gl.uniform3f (vec3UniformLoc,  v0, v1, v2);        // vec3
+gl.uniform3fv(vec3UniformLoc,  [v0, v1, v2]);      // vec3 或 vec3 array
+gl.uniform4f (vec4UniformLoc,  v0, v1, v2, v4);    // vec4
+gl.uniform4fv(vec4UniformLoc,  [v0, v1, v2, v4]);  // vec4 或 vec4 array
+
+gl.uniformMatrix2fv(mat2UniformLoc, false, [  4x element array ])  // mat2 或 mat2 array
+gl.uniformMatrix3fv(mat3UniformLoc, false, [  9x element array ])  // mat3 或 mat3 array
+gl.uniformMatrix4fv(mat4UniformLoc, false, [ 16x element array ])  // mat4 或 mat4 array
+
+gl.uniform1i (intUniformLoc,   v);                 // int
+gl.uniform1iv(intUniformLoc, [v]);                 // int 或 int array
+gl.uniform2i (ivec2UniformLoc, v0, v1);            // ivec2
+gl.uniform2iv(ivec2UniformLoc, [v0, v1]);          // ivec2 或 ivec2 array
+gl.uniform3i (ivec3UniformLoc, v0, v1, v2);        // ivec3
+gl.uniform3iv(ivec3UniformLoc, [v0, v1, v2]);      // ivec3 or ivec3 array
+gl.uniform4i (ivec4UniformLoc, v0, v1, v2, v4);    // ivec4
+gl.uniform4iv(ivec4UniformLoc, [v0, v1, v2, v4]);  // ivec4 或 ivec4 array
+
+gl.uniform1i (sampler2DUniformLoc,   v);           // sampler2D (textures)
+gl.uniform1iv(sampler2DUniformLoc, [v]);           // sampler2D 或 sampler2D array
+
+gl.uniform1i (samplerCubeUniformLoc,   v);         // samplerCube (textures)
+gl.uniform1iv(samplerCubeUniformLoc, [v]);         // samplerCube 或 samplerCube array
+```
+
+##### 数组
+
+一个数组可以一次设置所有的全局变量.
+
+```js
+// 着色器里
+uniform vec2 u_someVec2[3];
+
+// JavaScript 初始化时
+const someVec2Loc = gl.getUniformLocation(someProgram, 'u_someVec2');
+
+// 渲染时, 设置数组 u_someVec2
+gl.uniform2fv(someVec2Loc, [1, 2, 3, 4, 5, 6]);
+```
+
+如果想单独设置数组中的某个值, 就要单独找到该值的地址.
+
+```js
+// JavaScript 初始化时
+const someVec2Element0Loc = gl.getUniformLocation(someProgram, 'u_someVec2[0]');
+const someVec2Element1Loc = gl.getUniformLocation(someProgram, 'u_someVec2[1]');
+const someVec2Element2Loc = gl.getUniformLocation(someProgram, 'u_someVec2[2]');
+
+// 渲染时
+gl.uniform2fv(someVec2Element0Loc, [1, 2]); // set element 0
+gl.uniform2fv(someVec2Element1Loc, [3, 4]); // set element 1
+gl.uniform2fv(someVec2Element2Loc, [5, 6]); // set element 2
+```
+
+##### 结构体
+
+在顶点着色器中还可以创建一个结构体:
+
+```glsl
+struct SomeStruct {
+    bool active;
+    vec2 someVec2;
+};
+uniform SomeStruce u_someThing;
+```
+
+这时在 JavaScript 需要找到每个元素的地址:
+
+```js
+const someThingActiveLoc = gl.getUniformLocation(someProgram, 'u_someThing.active');
+const someThingSomeVec2Loc = gl.getUniformLocation(someProgram, 'u_someThing.someVec2');
+```
+
+#### Textures 纹理
+
+同片断着色器中的 Textures 纹理.
+
+### 片断着色器
+
+一个片断着色器的工作是为当前光栅化的像素提供颜色值, 通常是以下的形式:
+
+```glsl
+precision mediump float;
+
+void main() {
+    gl_FragColor = doMathToMakeAColor;
+}
+```
+
+每个像素都将调用一次片断着色器, 每次调用需要会从特殊的全局变量 `gl_FragColor`中获取颜色信息.
+
+片断着色器所需的数据, 可以通过以下三种方式获取.
+
+1. Uniforms 全局变量: 在一次绘制中, 所有像素保持相同的值.
+2. Textures 纹理: 从像素或纹理元素中获取的数据.
+3. Varyings 可变量: 从顶点着色器传递过来并进行插值的数据.
+
+#### Uniforms 全局变量
+
+同顶点着色器中的 Uniforms 全局变量.
+
+#### Textures 纹理
+
+先创建一个 `sampler2D`类型的全局变量, 然后用 GLSL 的方法 `texture2D`从纹理中提取信息.
+
+```glsl
+precision mediump float;
+
+uniform sampler2D u_texture;
+
+void main() {
+    vec2 texcoord = vec2(0.5, 0.5); // 中心点
+    gl_FragColor = texture2D(u_texture, texcoord); // 获取纹理中心的值
+}
+```
+
+从纹理中获取的数据取决于很多设置, 至少需要创建并给纹理填充数据.
+
+```js
+const tex = gl.createTexture();
+gl.bindTexture(gl.TEXTURE_2D, tex);
+
+const level = 0;
+const width = 2;
+const height = 1;
+const data = new Uint8Array([
+    255, 0, 0, 255, // 一个红色的像素
+    0, 255, 0, 255, // 一个绿色的像素
+]);
+gl.texImage2D(gl.TEXTURE_2D, level, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
+```
+
+然后在初始化时找到全局变量的地址:
+
+```js
+const someSamplerLoc = gl.getUniformLocation(someProgram, 'u_texture');
+```
+
+在渲染的时候, WebGL 要求纹理必须绑定到一个纹理单元上:
+
+```js
+const unit = 5; // 挑选一个纹理单元
+gl.activeTexture(gl.TEXTURE0 + unit);
+gl.bindTexture(gl.TEXTURE_2D, tex);
+```
+
+最后告诉着色器你要使用的纹理在哪个纹理单元中.
+
+```js
+gl.uniform1i(someSamplerLoc, unit);
+```
+
+#### Varyings 可变量
+
+可变量是一种顶点着色器给片断着色器传值的方式.
+
+为了使用可变量, 要在两个着色器中定义同名的可变量. 然后给顶点着色器中可变量设置的值, 会作为参考值进行内插, 在绘制像素时传给片断着色器的可变量.
+
+顶点着色器
+
+```glsl
+attribute vec4 a_position;
+uniform vec4 u_offset;
+varying vec4 v_positionWithOffset;
+
+void main() {
+    gl_Position = a_position + u_offset;
+    v_positionWithOffset = a_position + u_offset;
+}
+```
+
+片断着色器
+
+```glsl
+precision mediump float;
+
+varying vec4 v_positionWithOffset;
+
+void main() {
+    // 从裁剪空间(-1 -> +1) 转换到颜色空间(0 -> 1)
+    vec4 color = v_positionWithOffset * 0.5 + 0.5;
+    gl_FragColor = color;
+}
+```
+
+### GLSL
+
+GLSL 全称是 Graphics Library Shader Language (图形库着色器语言), 是着色器使用的语言. 它有一些不同于 JavaScript 的特性, 主要目的是为栅格化图形提供常用的计算功能. 所以它内建的数据类型例如 `vec2`, `vec3`和 `vec4`分别代表两个值, 三个值和四个值, 类似的还有 `mat2`, `mat3`和 `mat4`分别代表 2x2, 3x3 和 4x4 矩阵. 你可以做一些运算例如常量和矢量的乘法.
+
+```glsl
+vec4 a = vec4(1, 2, 3, 4);
+vec4 b = a * 2.0;
+// b 现在是 vec4(2, 4, 6, 8);
+```
+
+同样也可以做矩阵乘法以及矢量和矩阵的乘法
+
+```glsl
+mat4 a = ???;
+mat4 b = ???;
+mat4 c = a * b;
+
+vec4 v = ???;
+vec4 y = c * v;
+```
+
+对矢量数据还提供多种分量选择器, 例如 vec4:
+
+- v.x 和 v.s 以及 v.r, v[0] 表达的是同一个分量.
+- v.y 和 v.t 以及 v.g, v[1] 表达的是同一个分量.
+- v.z 和 v.p 以及 v.b, v[2] 表达的是同一个分量.
+- v.w 和 v.q 以及 v.a, v[3] 表达的是同一个分量.
+
+它还支持矢量调制, 意味着你可以交换或重复分量.
+
+```glsl
+v.yyyy;
+vec4(v.y, v.y, v.y, v.y);
+// 是一样的
+
+v.bgra;
+vec4(v.b, v.g, v.r, v.a);
+// 是一样的
+
+vec4(v.rgb, 1);
+vec4(v.r, v.g, v.b, 1);
+// 是一样的
+
+vec4(1);
+vec4(1, 1, 1, 1);
+// 是一样的
+```
+
+GLSL 是一个强类型的语言.
+
+```glsl
+float f = 1; // 错误, 1是int类型, 不能将int型赋值给float
+
+// 正确的方式
+float f = 1.0; // 使用 float
+float f = float(1); // 将 integer 转换为 float
+
+vec4(v.rgb, 1); // 不会因为 1 报错, 因为 vec4 内部使用了类似 float(1) 进行了转换
+```
+
+GLSL 有一系列内置方法, 其中大多数运行支持多种数据类型, 并且一次可以运算多个分量, 例如:
+
+```glsl
+T sin(T angle);
+// T 可以是 float, vec2, vec3, vec4
+
+vec4 v = vec4(1, 1, 1, 1);
+
+vec4 s = sin(v);
+vec4 s = vec4(sin(v.x), sin(v.y), sin(v.z), sin(v.w));
+// 是一样的
+
+vec4 m = mix(v1, v2, f);
+vec4 m = vec4(
+	mix(v1.x, v2.x, f),
+    mix(v1.y, v2.y, f),
+    mix(v1.z, v2.z, f),
+    mix(v1.w, v2.w, f)
+);
+// 是一样的
+```
+
+### 参考
+
+[WebGL 引用表](assets/webgl-reference-card-1_0.pdf)
+
+[GLSL规范](assets/opengles_shading_language.pdf)
+
 # 杂项
 
 ## WebGL 设置和安装

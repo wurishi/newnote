@@ -1018,6 +1018,225 @@ rotation[1] = Math.cos(angleInRadians);
 
 所以类似的, 圆的一圈用角度计算不容易, 因为它是360度, 但用弧度表示就很简单就是 2π. 所以一半就是 1π 弧度, 90度就是 1/2π 弧度. 如果想旋转90度, 只需要使用 `Math.PI * 0.5`, 45度只需要使用 `Math.PI * 0.25`.
 
+## WebGL 二维缩放
+
+## WebGL 二维矩阵
+
+# 三维
+
+## WebGL 三维正射投影
+
+## WebGL 三维透视投影
+
+## WebGL 三维相机
+
+# 光照
+
+## WebGL 三维方向光源
+
+## WebGL 三维点光源
+
+## WebGL 三维聚光灯
+
+# 组织和重构
+
+## WebGL 码少趣多
+
+## WebGL 绘制多个物体
+
+## WebGL 场景图
+
+# 几何
+
+## WebGL 三维几何加工
+
+## WebGL 加载 .obj 文件
+
+## WebGL 加载带 .mtl 的 .obj 文件
+
+# 纹理
+
+## WebGL 三维纹理
+
+## WebGL 数据纹理
+
+## WebGL 使用多个纹理
+
+## WebGL 跨域图像
+
+## WebGL 纹理映射的透视纠正
+
+## 平面和透视的投影映射
+
+# 渲染到纹理
+
+## WebGL 渲染到纹理
+
+# Shadows
+
+## 阴影
+
+# 技术
+
+## 二维
+
+### WebGL 二维 DrawImage
+
+### WebGL 二维矩阵栈
+
+### 精灵
+
+## 三维
+
+### WebGL 立方体贴图
+
+### WebGL 环境贴图
+
+### WebGL 天空盒
+
+### WebGL 蒙皮
+
+### WebGL 雾
+
+### Picking (clicking on stuff)
+
+## 文字
+
+### WebGL 文件 - HTML
+
+### WebGL 文字 - 二维 Canvas
+
+### WebGL 文字 - 使用纹理
+
+### WebGL 方字 - 使用字形纹理
+
+## 纹理
+
+### Ramp Textures (Toon Shading)
+
+## GPGPU
+
+### GPGPU
+
+# Tips
+
+## WebGL 最小的程序
+
+## Drawing Without Data
+
+## WebGL Shadertoy
+
+[shadertoy1](shadertoy1/index.ts)
+
+**可变颜色**
+
+WebGL 提供了一个全局变量 `gl_FragCoord`, 该变量等于当前正在绘制的像素的坐标.
+
+```diff
+precision highp float;
+
+void main() {
+-    gl_FragColor = vec4(1, 0, 0.5, 1);
++    gl_FragColor = vec4(fract(gl_FragCoord.xy / 50.0), 0, 1);
+}
+```
+
+`fract`用来获取数字的小数部分(类似%), 
+
+显示的结果就是红色与绿色值, 每50像素从0变化到1.
+
+**根据画布大小渐进**
+
+新增一个 `u_resolution`用来接收画布的大小, 保证红色和绿色散布到整个画布大小.
+
+```diff
+precision highp float;
+
++ uniform vec2 u_resolution;
+
+void main() {
+-	gl_FragColor = vec4(fract(gl_FragCoord.xy / 50.0), 0, 1);
++	gl_FragColor = vec4(fract(gl_FragCoord.xy / u_resolution), 0, 1);
+}
+
+...
+
++	const u_resolution = webglUtils.getUniformLocation(gl, program, 'u_resolution');
+
+...
+
++	u_resolution.uniform2f(canvas.width, canvas.height);
+```
+
+**传递鼠标位置**
+
+```diff
++	uniform vec2 u_mouse;
+
+void main() {
+-	gl_FragColor = vec4(fract(gl_FragCoord.xy / u_resolution), 0, 1);
++	gl_FragColor = vec4(fract((gl_FragCoord.xy - u_mouse) / u_resolution), 0, 1);
+}
+
+...
+
++	const u_mouse = webglUtils.getUniformLocation(gl, program, 'u_mouse');
+
+...
+
++    canvas.addEventListener('mousemove', (e) => {
++        const rect = canvas.getBoundingClientRect();
++        mouseX = e.clientX - rect.left;
++        mouseY = rect.height - (e.clientY - rect.top) - 1; // 在 WebGL 中, 底部为0
++        render();
++    });
+```
+
+如果要兼容触屏设备还需要监听 `touchmove`等事件.
+
+**时间动画**
+
+```diff
+precision highp float;
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
++	uniform float u_time;
+
+void main() {
+-	gl_FragColor = vec4(fract((gl_FragCoord.xy - u_mouse) / u_resolution), 0, 1);
++	gl_FragColor = vec4(fract((gl_FragCoord.xy - u_mouse) / u_resolution), fract(u_time), 1);
+}
+
+...
+
++	  const u_time = webglUtils.getUniformLocation(gl, program, 'u_time');
+
+...
+
++	time *= 0.001; // 毫秒转换为秒
+
+...
+
++	u_time.uniform1f(time);
+
+...
+
++	requestAnimationFrame(render);
+```
+
+### shadertoy.com demo
+
+
+
+## Pulling Vertices
+
+# Optimization
+
+## 顶点索引 (gl.drawElements)
+
+## 实例化绘制
+
 # 杂项
 
 ## WebGL 设置和安装

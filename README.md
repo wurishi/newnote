@@ -147,6 +147,7 @@ Rust
 - https://alteredqualia.com/
 - fundamentals: [fundamentals](https://threejsfundamentals.org/threejs/lessons/zh_cn/) (*进行中*)
 - webgl - webglfundamentals: [webglfundamentals](https://webglfundamentals.org/webgl/lessons/zh_cn/)
+- [shadertoy](https://www.shadertoy.com/)
 
 # u3decs
 

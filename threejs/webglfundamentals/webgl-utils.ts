@@ -229,3 +229,56 @@ export function createAndSetupTexture(gl: WebGLRenderingContext) {
 
   return texture;
 }
+
+export function getAttribLocation(
+  gl: WebGLRenderingContext,
+  program: WebGLProgram,
+  name: string
+) {
+  const loc = gl.getAttribLocation(program, name);
+  let buffer: WebGLBuffer = null;
+  let size: number;
+  let type: number;
+  let normalize = false;
+  return {
+    setFloat32(arr: Float32Array) {
+      if (!buffer) {
+        size = 2;
+        type = gl.FLOAT;
+        normalize = false;
+        buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, arr, gl.STATIC_DRAW);
+      }
+    },
+    bindBuffer() {
+      if (buffer) {
+        gl.enableVertexAttribArray(loc);
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        gl.vertexAttribPointer(loc, size, type, normalize, 0, 0);
+      }
+    },
+  };
+}
+
+export function getUniformLocation(
+  gl: WebGLRenderingContext,
+  program: WebGLProgram,
+  name: string
+) {
+  const loc = gl.getUniformLocation(program, name);
+  return {
+    uniform2f(x: number, y: number) {
+      gl.uniform2f(loc, x, y);
+    },
+    uniform4fv(v: Float32List) {
+      gl.uniform4fv(loc, v);
+    },
+    uniform2fv(v: Float32List) {
+      gl.uniform2fv(loc, v);
+    },
+    uniform1f(x: number) {
+      gl.uniform1f(loc, x);
+    },
+  };
+}

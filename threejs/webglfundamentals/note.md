@@ -926,6 +926,75 @@ gl.bindTexture(gl.TEXTURE_2D, someTexture);
 
 调用 `gl.bindFramebuffer`设置为 `null`是告诉 WebGL 要在画布上绘制, 而不是在帧缓冲上.
 
+# 二维
+
+## 七. WebGL 二维平移
+
+平移就是普通意义的"移动"物体.
+
+假设我们想要平移一个由六个三角形组成的 'F', 像这样:
+
+![7.polygon-f](assets/7.polygon-f.png)
+
+可以这样写:
+
+```js
+function setGeometry(gl, x, y) {
+    const width = 100;
+    const height = 150;
+    const thickness = 30;
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+        // 左竖
+        x,y,
+        x+thinckness,y,
+        x,y+height,
+        x,y+height,
+        x+thickness,y,
+        x+thickness,y+height,
+        
+        // 上横
+        x+thickness,y,
+        x+width,y,
+        x+thickness,y+thickness,
+        x+thickness,y+thickness,
+        x+width,y,
+        x+width,y+thickness,
+        
+        // 中横
+        x+thickness,y+thickness*2,
+        x+width*2/3,y+thickness*2,
+        x+thickness,y+thickness*3,
+        x+thickness,y+thickness*3,
+        x+width*2/3,y+thickness*2,
+        x+width*2/3,y+thickness*3
+    ]), gl.STATIC_DRAW);
+}
+```
+
+这样做会有一个问题, 如果我们想绘制一个含有成百上千个线条的几何图形, 将会有很复杂的代理, 最重要的是, 每次绘制 JavaScript 都要更新所有的点.
+
+更好的方案是将平移代码放进顶点着色器:
+
+```glsl
+attribute vec2 a_position;
+
+uniform vec2 u_resolution;
+// 平移坐标
+uniform vec2 u_translation;
+
+void main() {
+    // 整体平移
+    vec2 position = a_position + u_translation;
+    vec2 zeroToOne = position / u_resolution;
+    vec2 zeroToTwo = zeroToOne * 2.0;
+    vec2 clipSpace = zeroToTwo - 1.0;
+
+    gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
+}
+```
+
+[代码](7/index.ts)
+
 # 杂项
 
 ## WebGL 设置和安装

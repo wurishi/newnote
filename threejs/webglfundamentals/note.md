@@ -874,7 +874,35 @@ vec4 m = vec4(
 
 因为我们只用画一个矩形 (其实是两个三角形), 所以需要告诉 WebGL 矩形中每个顶点对应的纹理坐标. 我们将使用 Varying 可变量将纹理坐标从顶点着色器传到片断着色器, WebGL 会对顶点着色器中可变量的值进行插值, 然后传给对应像素执行的片断着色器.
 
+[代码](5/index.ts)
 
+[卷积内核](5-1/index.ts)
+
+### 为什么 `u_image`没有设置还能正常运行?
+
+全局变量默认为 0, 所以 u_image 默认使用纹理单元 0. 纹理单元 0 默认为当前活跃纹理, 所以调用 `bindTexture`会将纹理绑定到单元 0.
+
+WebGL 有一个纹理单元队列, 每个 sampler 全局变量的值对应着一个纹理单元, 它会从对应的单元寻找纹理数据, 你可以将纹理设置到你想要用的纹理单元.
+
+```js
+const textureUnitIndex = 6; // 使用单元 6
+const u_imageLoc = gl.getUniformLocation(program, 'u_image');
+gl.uniform1i(u_imageLoc, textureUnitIndex);
+
+// 纹理纹理到单元 6
+gl.activeTexture(gl.TEXTURE6);
+gl.bindTexture(gl.TEXTURE_2D, someTexture);
+
+// 或者
+gl.activeTexture(gl.TEXTURE0 + textureUnitIndex);
+gl.bindTexture(gl.TEXTURE_2D, someTexture);
+```
+
+所有支持 WebGL 的环境, 在片断着色器中至少有8个纹理单元, 顶点着色器中可以是0个. 所以如果要使用超过8个纹理单元就应该调用 `gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS)`查看单元个数, 或者调用 `gl.getParameter(gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS)`查看顶点着色器中可以用几个纹理单元. 超过 99% 的机器在顶点着色器中至少有4个纹理单元.
+
+### 在 GLSL 中为什么变量的前缀都是 `a_`, `u_`或 `v_`?
+
+这只是一个命名约定, `a_`代表属性, 值从缓冲中提供. `u_`代表全局变量, 直接使用 API 进行设置. `v_`代表可变量, 是从顶点着色器的顶点中插值出来的.
 
 # 杂项
 

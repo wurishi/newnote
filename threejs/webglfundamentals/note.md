@@ -1022,7 +1022,23 @@ rotation[1] = Math.cos(angleInRadians);
 
 位置乘以期望的缩放值. 当缩放值为负数时, 会翻转显示.
 
-## WebGL 二维矩阵
+## 十. WebGL 二维矩阵
+
+之前对二维物体进行了平移, 旋转和缩放. 每种变换都会改变着色器, 并且这些变换还受先后顺序的影响. 
+
+例如, 这是缩放 `[2,1]`, 旋转30度, 然后平移 `[100,0]`的结果.
+
+![10.f-scale-rotation-translation](assets/10.f-scale-rotation-translation.png)
+
+这是平移 `[100,0]`, 旋转30度, 然后缩放 `[2,1]`的结果.
+
+![10.f-translation-rotation-scale](assets/10.f-translation-rotation-scale.png)
+
+结果截然不同, 如果要实现第二种转换顺序, 就需要重新写一个新的着色器.
+
+要解决这个问题, 会使用到矩阵. 对于二维来说, 会使用 3x3 的矩阵. 3x3 的矩阵就像是有9个格子的格网.
+
+![10.mat3](assets/10.mat3.png)
 
 # 三维
 

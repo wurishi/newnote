@@ -18,7 +18,7 @@ void main() {
 }
 `;
 
-const precision = 'highp';
+const precision = 'mediump'; // mediump, highp
 
 // 3l23Rh
 const fragment = `

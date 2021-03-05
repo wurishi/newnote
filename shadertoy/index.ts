@@ -16,6 +16,7 @@ const menuList: string[] = [];
 const menuMap: any = {};
 
 let uuid: number = -1;
+let _sub: iSub = null;
 let canvas: HTMLCanvasElement = null;
 let gl: WebGLRenderingContext = null;
 
@@ -41,6 +42,11 @@ function destoryPrev() {
   uuid = -1;
   if (canvas) {
     document.body.removeChild(canvas);
+    canvas = null;
+  }
+  if (_sub) {
+    _sub.destory();
+    _sub = null;
   }
   gl = null;
 }
@@ -48,6 +54,7 @@ function destoryPrev() {
 function activeSub(name: string) {
   uuid = Date.now();
   const sub = menuMap[name] as iSub;
+  _sub = sub;
 
   canvas = sub.main();
   document.body.appendChild(canvas);
@@ -87,10 +94,11 @@ function activeSub(name: string) {
 
     now *= 0.001;
     const elapsedTime = Math.min(now - then, 0.1);
-    time += elapsedTime;
     then = now;
 
     if (api.run) {
+      time += elapsedTime;
+
       webglUtils.resizeCanvasToDisplaySize(canvas);
 
       gl.viewport(0, 0, canvas.width, canvas.height);

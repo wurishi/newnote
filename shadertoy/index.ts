@@ -1,4 +1,5 @@
 import { GUI } from 'dat.gui';
+import * as Stats from 'stats.js';
 import { iSub, fragment, vertex, PRECISION_MEDIUMP } from './libs';
 import * as webglUtils from './webgl-utils';
 
@@ -6,6 +7,12 @@ const context = (require as any).context('./subs', false, /.ts$/);
 const keys = context.keys();
 
 const gui = new GUI();
+gui.domElement.style.marginTop = '50px';
+const stats = new Stats();
+stats.dom.style.left = '';
+stats.dom.style.right = '0';
+document.body.appendChild(stats.dom);
+
 const mainFolder = gui.addFolder('主菜单');
 const api: any = {
   menu: '',
@@ -114,6 +121,7 @@ function activeSub(name: string) {
       gl.drawArrays(gl.TRIANGLES, 0, 6);
     }
 
+    stats.update();
     requestAnimationFrame(render);
   }
 }

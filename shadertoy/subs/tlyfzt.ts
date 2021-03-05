@@ -44,7 +44,7 @@ export default class implements iSub {
     return 'yonatan fractal';
   }
   tags?(): string[] {
-    return [];
+    return ['fractal'];
   }
   main(): HTMLCanvasElement {
     return createCanvas('400px', '200px');

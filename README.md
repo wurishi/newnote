@@ -124,6 +124,10 @@ Rust
 
 参考资料: [30 天精通 RxJS](https://blog.jerry-hong.com/series/rxjs/) **(完成)**
 
+# shadertoy
+
+参考网站: [shadertoy](https://www.shadertoy.com/)
+
 # tensorflowjs
 
 参考资料: [TensorFlow For JavaScript](https://tensorflow.google.cn/js/tutorials/setup?hl=zh-cn) **(完成)**
@@ -147,7 +151,6 @@ Rust
 - https://alteredqualia.com/
 - fundamentals: [fundamentals](https://threejsfundamentals.org/threejs/lessons/zh_cn/) (*进行中*)
 - webgl - webglfundamentals: [webglfundamentals](https://webglfundamentals.org/webgl/lessons/zh_cn/)
-- [shadertoy](https://www.shadertoy.com/)
 
 # u3decs
 

@@ -280,5 +280,8 @@ export function getUniformLocation(
     uniform1f(x: number) {
       gl.uniform1f(loc, x);
     },
+    uniformMatrix3fv(matrix: number[], transpose = false) {
+      gl.uniformMatrix3fv(loc, transpose, matrix);
+    },
   };
 }

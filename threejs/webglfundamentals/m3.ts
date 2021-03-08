@@ -1,4 +1,8 @@
-export function multiply(a: number[], b: number[]) {
+export function identity(): number[] {
+  return [1, 0, 0, 0, 1, 0, 0, 0, 1];
+}
+
+export function multiply(a: number[], b: number[]): number[] {
   const a00 = a[0 * 3 + 0];
   const a01 = a[0 * 3 + 1];
   const a02 = a[0 * 3 + 2];
@@ -31,32 +35,32 @@ export function multiply(a: number[], b: number[]) {
   ];
 }
 
-export function projection(width: number, height: number) {
+export function projection(width: number, height: number): number[] {
   return [2 / width, 0, 0, 0, -2 / height, 0, -1, 1, 1];
 }
 
-export function translation(tx: number, ty: number) {
+export function translation(tx: number, ty: number): number[] {
   return [1, 0, 0, 0, 1, 0, tx, ty, 1];
 }
 
-export function translate(m: number[], tx: number, ty: number) {
+export function translate(m: number[], tx: number, ty: number): number[] {
   return multiply(m, translation(tx, ty));
 }
 
-export function rotation(angleInRadians: number) {
+export function rotation(angleInRadians: number): number[] {
   const c = Math.cos(angleInRadians);
   const s = Math.sin(angleInRadians);
   return [c, -s, 0, s, c, 0, 0, 0, 1];
 }
 
-export function rotate(m: number[], angleInRadians: number) {
+export function rotate(m: number[], angleInRadians: number): number[] {
   return multiply(m, rotation(angleInRadians));
 }
 
-export function scaling(sx: number, sy: number) {
+export function scaling(sx: number, sy: number): number[] {
   return [sx, 0, 0, 0, sy, 0, 0, 0, 1];
 }
 
-export function scale(m: number[], sx: number, sy: number) {
+export function scale(m: number[], sx: number, sy: number): number[] {
   return multiply(m, scaling(sx, sy));
 }

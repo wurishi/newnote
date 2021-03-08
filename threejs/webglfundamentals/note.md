@@ -1036,9 +1036,165 @@ rotation[1] = Math.cos(angleInRadians);
 
 结果截然不同, 如果要实现第二种转换顺序, 就需要重新写一个新的着色器.
 
-要解决这个问题, 会使用到矩阵. 对于二维来说, 会使用 3x3 的矩阵. 3x3 的矩阵就像是有9个格子的格网.
+要解决不同转换顺序就要重新写一个新的着色器这个问题, 就会使用到矩阵. 对于二维来说, 会使用 3x3 的矩阵. 3x3 的矩阵就像是有9个格子的格网.
 
 ![10.mat3](assets/10.mat3.png)
+
+```js
+newX = x * 1.0 + y * 4.0 + 1 * 7.0;
+newY = x * 2.0 + y * 5.0 + 1 * 8.0;
+extra = x * 3.0 + y * 6.0 + 1 * 9.0;
+```
+
+平移矩阵
+
+假设要平移的量为 tx 和 ty.
+
+![10.translate](assets/10.translate.png)
+
+则计算结果为:
+
+```js
+newX = x * 1.0 + y * 0.0 + 1 * tx;
+newY = x * 0.0 + y * 1.0 + 1 * ty;
+extra = x * 0.0 + y * 0.0 + 1 * 1.0;
+// 去掉0相乘的部分, 以及1相乘没有变化的部分
+newX = x + tx;
+newY = y + ty;
+```
+
+旋转矩阵
+
+旋转只需要和旋转角对应的正弦和余弦值.
+
+```js
+s = Math.sin(angleToRotateInRadians);
+c = Math.cos(angleToRotateInRadians);
+```
+
+![10.rotation](assets/10.rotation.png)
+
+```js
+newX = x * c + y * s + 1 * 0.0;
+newY = x * -s + y * s + 1 * 0.0;
+extra = x * 0.0 + y * 0.0 + 1 * 0.0;
+// 简化后
+newX = x * c + y * s;
+newY = x * -s + y * c;
+```
+
+缩放矩阵
+
+将两个缩放因子叫做 sx 和 sy.
+
+![10.scale](assets/10.scale.png)
+
+使用矩阵计算:
+
+```js
+newX = x * sx + y * 0.0 + 1 * 0.0;
+newY = x * 0.0 + y * sy + 1 * 0.0;
+extra = x * 0.0 + y * 0.0 + 1 * 1.0;
+// 简化后
+newX = x * sx;
+newY = x * sy;
+```
+
+使用矩阵计算, 不同的顺序, 只需要改变矩阵相乘的顺序即可:
+
+```js
+const translationMatrix = m3.translation(tx, ty);
+const rotationMatrix = m3.rotation(angleInRadians);
+const scaleMatrix = m3.scaling(sx, sy);
+
+// 矩阵相乘(multiply), 先平移, 后旋转最后缩放
+let matrix = m3.multiply(translationMatrix, rotationMatrix);
+matrix = m3.multiply(matrix, scaleMatrix);
+
+// 矩阵相乘, 先缩放, 后旋转最后平移
+let matrix = m3.multiply(scaleMatrix, rotationMatrix);
+matrix = m3.multiply(matrix, translationMatrix);
+
+```
+
+另外可以通过额外的矩阵相乘, 设置旋转锚点.
+
+```js
+const moveOriginMatrix = m3.translation(-50, -75); // 设置锚点
+
+let matrix = m3.multiply(translationMatrix, rotationMatrix);
+matrix = m3.multiply(matrix, scaleMatrix);
+matrix = m3.multiply(matrix ,moveOriginMatrix);
+```
+
+另外, 之前顶点着色器中将像素坐标转换到裁剪坐标的操作, 其实也是一个缩放变换.
+
+```js
+const projectionMatrix = m3.projection(canvas.clientWidth, canvas.clientHeight);
+```
+
+### 矩阵顺序理解
+
+```js
+translation * rotation * scale // 平移 * 旋转 * 缩放
+```
+
+对于上述这个矩阵顺序运算, 可以给出这样一个表达式
+
+```js
+projectionMat * translationMat * rotationMat * scaleMat * position
+```
+
+#### 1. 从右向左解释
+
+```js
+// 首先将位置乘以缩放矩阵获得缩放后的位置
+scaledPosition = scaleMat * position;
+// 然后将缩放后的位置和旋转矩阵相乘得到缩放旋转位置
+rotatedScaledPosition = rotationMat * scaledPosition;
+// 然后将缩放旋转位置和平移矩阵相乘得到缩放旋转平移位置
+translatedRotatedScaledPosition = translationMat * rotatedScaledPosition;
+// 最后和投影矩阵相乘得到裁剪空间中的坐标
+clipspacePosition = projectionMatrix * translatedRotatedScaledPosition;
+```
+
+#### 2. 从左往右解释
+
+第一步, 没有矩阵(或单位矩阵)
+
+中间区域是画布, 蓝色是画布以外, 传递的点需要在裁剪空间中.
+
+![10-1](assets/10-1.png)
+
+第二步, `matrix = m3.projection(canvas.clientWidth, canvas.clientHeight)`
+
+假设像素空间是(400, 300), (0,0)点在左上角, 要注意 Y 轴作了一次上下颠倒.
+
+![10-2](assets/10-2.png)
+
+第三步, `matrix = m3.translate(matrix, tx, ty)`
+
+原点被移动到 (tx, ty), 所以空间移动了.
+
+![10-3](assets/10-3.png)
+
+第四步, `matrix = m3.rotate(matrix, rotationInRadians)`
+
+空间绕 tx, ty 旋转
+
+![10-4](assets/10-4.png)
+
+第五步, `matrix = m3.scale(matrix, sx, sy)`
+
+在旋转空间中心的 tx, ty 处, x方向缩放2, y方向缩放1.5
+
+![10-5](assets/10-5.png)
+
+最后着色器执行 `gl_Position = matrix * position;` `position`将被直接转换到这个空间.
+
+### `clientWidth`和 `clientHeight`是什么?
+
+画布的显示宽高会受到页面布局的影响, 导致 `width`和 `height`并不能真实反应画布的实际尺寸. 而 `clientWidth`和 `clientHeight`返回的是画布在浏览器中实际显示的大小.
 
 # 三维
 

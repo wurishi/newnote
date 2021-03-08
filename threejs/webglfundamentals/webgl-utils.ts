@@ -281,6 +281,9 @@ export function getUniformLocation(
     uniform2f(x: number, y: number) {
       gl.uniform2f(loc, x, y);
     },
+    uniform3fv(v: Float32List) {
+      gl.uniform3fv(loc, v);
+    },
     uniform4fv(v: Float32List) {
       gl.uniform4fv(loc, v);
     },

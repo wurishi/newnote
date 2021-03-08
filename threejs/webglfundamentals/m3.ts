@@ -64,3 +64,11 @@ export function scaling(sx: number, sy: number): number[] {
 export function scale(m: number[], sx: number, sy: number): number[] {
   return multiply(m, scaling(sx, sy));
 }
+
+export function radToDeg(r: number): number {
+  return (r * 180) / Math.PI;
+}
+
+export function degToRad(d: number): number {
+  return (d * Math.PI) / 180;
+}

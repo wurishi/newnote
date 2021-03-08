@@ -241,11 +241,21 @@ export function getAttribLocation(
   let type: number;
   let normalize = false;
   return {
-    setFloat32(arr: Float32Array) {
+    setFloat32(arr: Float32Array, _s = 2, _n = false) {
       if (!buffer) {
-        size = 2;
+        size = _s;
         type = gl.FLOAT;
-        normalize = false;
+        normalize = _n;
+        buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, arr, gl.STATIC_DRAW);
+      }
+    },
+    setUInt8(arr: Uint8Array, _s: number, _n = false) {
+      if (!buffer) {
+        size = _s;
+        type = gl.UNSIGNED_BYTE;
+        normalize = _n;
         buffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
         gl.bufferData(gl.ARRAY_BUFFER, arr, gl.STATIC_DRAW);
@@ -282,6 +292,9 @@ export function getUniformLocation(
     },
     uniformMatrix3fv(matrix: number[], transpose = false) {
       gl.uniformMatrix3fv(loc, transpose, matrix);
+    },
+    uniformMatrix4fv(matrix: number[], transpose = false) {
+      gl.uniformMatrix4fv(loc, transpose, matrix);
     },
   };
 }

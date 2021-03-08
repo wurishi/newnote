@@ -1198,7 +1198,41 @@ clipspacePosition = projectionMatrix * translatedRotatedScaledPosition;
 
 # 三维
 
-## WebGL 三维正射投影
+## 十一. WebGL 三维正射投影
+
+二维例子中是二维点(x, y) 与 3x3 的矩阵相乘. 在三维中, 则需要三维点(x, y, z)与 4x4 的矩阵相乘.
+
+新的顶点着色器:
+
+```glsl
+attribute vec4 a_position;
+
+uniform mat4 u_matrix;
+
+void main() {
+  gl_Position = u_matrix * a_position;
+}
+```
+
+在二维中我们提供 `x`和 `y`并设置 `z`为 1, 在三维中我们会提供 `x`, `y`和 `z`, 并且将 `w`设置为 1, 由于属性中 `w`的默认值就是1, 所以可以不再显式设置.
+
+另外要将矩阵运算升级到三维的版本, 其中旋转将化为三个旋转方法, 这是因为在二维中, 只需要绕 Z 轴旋转, 但在三维中还可以绕 X 轴和 Y 轴旋转.
+
+```js
+// 绕 Z 轴旋转
+newX = x * c + y * s;
+newY = x * -s + y * c;
+
+// 绕 Y 轴旋转
+newX = x * c + z * s;
+newZ = x * -s + z * c;
+
+// 绕 X 轴旋转
+newY = y * c + z * s;
+newZ = y * -s + z * c;
+```
+
+![11-r](assets/11-r.png)
 
 ## WebGL 三维透视投影
 

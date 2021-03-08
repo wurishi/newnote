@@ -1234,7 +1234,54 @@ newZ = y * -s + z * c;
 
 ![11-r](assets/11-r.png)
 
-## WebGL 三维透视投影
+## 十二. WebGL 三维透视投影
+
+什么是透视投影? 它的基础特性就是离得越远显得越小.
+
+事实上 WebGL 会将提供给 `gl_Position`的 x, y, z, w 值自动除以 `w`.
+
+```diff
+-	float zToDivideBy = 1.0 + position.z * u_fudgeFactor;
+-	gl_Position = vec4(position.xy / zToDivideBy, position.zw);
++      gl_Position = position;
+
+...
+
++    function makeZToWMatrix(fudgeFactor: number): number[] {
++        return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, fudgeFactor, 0, 0, 0, 1];
++    }
+
+...
+
++    let matrix = makeZToWMatrix(fudgeFactor);
++        matrix = m4.multiply(matrix, m4.projection(canvas.clientWidth, canvas.clientHeight, 400));
+-    let matrix = m4.projection(canvas.clientWidth, canvas.clientHeight, 400);
+```
+
+更好的方式是使用一个矩阵来代替 `fudgeFactor`.
+
+```js
+export function perspective(
+  fieldOfViewInRadians: number,
+  aspect: number,
+  near: number,
+  far: number
+): number[] {
+  const f = Math.tan(Math.PI * 0.5 - 0.5 * fieldOfViewInRadians);
+  const rangeInv = 1.0 / (near - far);
+
+  return [
+    f / aspect, 0, 0, 0,
+    0, f, 0, 0,
+    0, 0, (near + far) * rangeInv, -1,
+    0, 0, near * far * rangeInv*2,0
+  ]
+}
+```
+
+![12-v](assets/12-v.png)
+
+正方体所在的有四个侧面的锥体叫做"视锥", 矩阵将视锥中的空间转换成裁剪空间中, `zNear`决定了被正面切割的位置, `zFar`决定了被背面切割的位置.
 
 ## WebGL 三维相机
 

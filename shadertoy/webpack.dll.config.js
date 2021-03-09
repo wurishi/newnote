@@ -2,7 +2,7 @@ const webpack = require('webpack');
 const path = require('path');
 
 const options = webpack({
-  entry: ['stats.js', 'dat.gui'],
+  entry: ['stats.js', 'dat.gui', 'three'],
   output: {
     filename: '[name].dll.js',
     path: path.resolve(__dirname, 'dist/dll'),

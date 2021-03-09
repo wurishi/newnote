@@ -31,6 +31,7 @@ export interface iSub {
   fragmentPrecision?(): string;
   destory(): void;
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function;
+  ignore?(): boolean;
 }
 
 export function createCanvas(

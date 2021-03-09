@@ -2,6 +2,8 @@ import { GUI } from 'dat.gui';
 import * as Stats from 'stats.js';
 import { iSub, fragment, vertex, PRECISION_MEDIUMP } from './libs';
 import * as webglUtils from './webgl-utils';
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 const context = (require as any).context('./subs', false, /.ts$/);
 const keys = context.keys();
@@ -31,9 +33,12 @@ keys.forEach((key: string) => {
   const Cls = context(key).default;
   const sub: iSub = new Cls();
   if (sub.name) {
-    const name = sub.name();
-    menuList.push(name);
-    menuMap[name] = sub;
+    if (sub.ignore && sub.ignore()) {
+    } else {
+      const name = sub.name();
+      menuList.push(name);
+      menuMap[name] = sub;
+    }
   }
 });
 mainFolder.add(api, 'menu', menuList).onChange((name) => {
@@ -58,6 +63,52 @@ function destoryPrev() {
   gl = null;
 }
 
+let threeRenderer: THREE.WebGLRenderer;
+let threeScene: THREE.Scene;
+let threeCamera: THREE.PerspectiveCamera;
+let threeMesh: THREE.Mesh;
+let threeSM: THREE.ShaderMaterial;
+
+function initTHREE() {
+  if (!threeRenderer) {
+    threeRenderer = new THREE.WebGLRenderer({ antialias: true });
+    threeRenderer.setPixelRatio(400 / 300);
+    threeRenderer.setSize(400, 300);
+
+    threeScene = new THREE.Scene();
+
+    threeCamera = new THREE.PerspectiveCamera(60, 1, 0.1, 10000);
+    threeCamera.position.z = -100;
+
+    const controls = new OrbitControls(threeCamera, threeRenderer.domElement);
+    controls.update();
+
+    // const light = new THREE.HemisphereLight(0xffffff, 0x444444);
+    // light.position.set(0, 20, 0);
+    // threeScene.add(light);
+  }
+  threeRenderer.domElement.parentElement &&
+    document.body.removeChild(threeRenderer.domElement);
+  document.body.appendChild(threeRenderer.domElement);
+}
+
+function addThreeBox(fragment: string): void {
+  threeMesh && threeScene.remove(threeMesh);
+
+  const shaderMaterial = new THREE.ShaderMaterial({
+    fragmentShader: fragment,
+    uniforms: {
+      iResolution: { value: [400, 300, 1] },
+      iTime: { value: 0 },
+    },
+  });
+
+  threeMesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), shaderMaterial);
+  threeScene.add(threeMesh);
+
+  threeSM = shaderMaterial;
+}
+
 function activeSub(name: string) {
   uuid = Date.now();
   const sub = menuMap[name] as iSub;
@@ -71,6 +122,8 @@ function activeSub(name: string) {
   let _uuid = uuid;
 
   if (!gl) return;
+
+  initTHREE();
 
   let f = fragment.replace(
     '{PRECISION}',
@@ -89,6 +142,8 @@ function activeSub(name: string) {
   const iTime = webglUtils.getUniformLocation(gl, program, 'iTime');
 
   let fn = sub.initial ? sub.initial(gl, program) : null;
+
+  addThreeBox(f);
 
   requestAnimationFrame(render);
 
@@ -119,6 +174,10 @@ function activeSub(name: string) {
       fn && fn();
 
       gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+      threeSM && (threeSM.uniforms.iTime.value = time);
+
+      threeRenderer.render(threeScene, threeCamera);
     }
 
     stats.update();

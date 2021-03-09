@@ -52,3 +52,7 @@ npx webpack-dev-server
 # 7. Star Nest
 
 ![7](assets/7.jpg)
+
+# 8. Fractal Land
+
+![8](assets/8.jpg)

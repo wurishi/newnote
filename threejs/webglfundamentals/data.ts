@@ -1,4 +1,6 @@
-export const geometryArr = new Float32Array([
+import * as m4 from './m4';
+
+const arr = [
   // left column front
   0,
   0,
@@ -318,7 +320,9 @@ export const geometryArr = new Float32Array([
   0,
   150,
   0,
-]);
+];
+
+export const geometryArr = new Float32Array(arr);
 
 export const normalsArr = new Float32Array([
   // left column front
@@ -641,3 +645,22 @@ export const normalsArr = new Float32Array([
   0,
   0,
 ]);
+
+export function getGeometry() {
+  let matrix = m4.xRotation(Math.PI);
+  matrix = m4.translate(matrix, -50, -75, -15);
+
+  const positions = new Float32Array(arr);
+  for (let i = 0; i < positions.length; i += 3) {
+    const vector = m4.transformPoint(matrix, [
+      positions[i + 0],
+      positions[i + 1],
+      positions[i + 2],
+      1,
+    ]);
+    positions[i] = vector[0];
+    positions[i + 1] = vector[1];
+    positions[i + 2] = vector[2];
+  }
+  return positions;
+}

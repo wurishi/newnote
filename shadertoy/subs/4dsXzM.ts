@@ -72,6 +72,9 @@ export default class implements iSub {
   key(): string {
     return '4dsXzM';
   }
+  sort() {
+    return 1;
+  }
   name(): string {
     return 'Fovea detector';
   }
@@ -79,7 +82,7 @@ export default class implements iSub {
     return [];
   }
   main(): HTMLCanvasElement {
-    return createCanvas('400px', '300px');
+    return createCanvas();
   }
   userFragment(): string {
     return fragment;

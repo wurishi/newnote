@@ -4,34 +4,30 @@ import * as webglUtils from '../webgl-utils';
 
 const fragment = `
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-  vec3 c;
-  float l, z = iTime;
-  for(int i=0;i<3;i++) {
-    vec2 uv, p = fragCoord.xy / iResolution.xy;
-    uv = p;
-    p -= 0.5;
-    p.x *= iResolution.x / iResolution.y;
-    z += 0.07;
-    l = length(p);
-    uv += p / l * (sin(z) + 1.0) * abs(sin(l*9.0-z*2.0));
-    c[i] = 0.01 / length(abs(mod(uv, 1.0) - 0.5));
-  }
-  fragColor = vec4(c/l, iTime);
+  vec2 uv = fragCoord / iResolution.xy;
+  float color = 0.0;
+
+  color += sin(uv.x * cos(iTime / 3.0) * 60.0) + cos(uv.y * cos(iTime / 2.80) * 10.0);
+  color += sin(uv.y * sin(iTime / 2.0) * 40.0) + cos(uv.x * sin(iTime / 1.70) * 40.0);
+  color += sin(uv.x * sin(iTime / 1.0) * 10.0) + sin(uv.y * sin(iTime / 3.50) * 80.0);
+  color *= sin(iTime / 10.0) * 0.5;
+
+  fragColor = vec4(vec3(color * 0.5, sin(color + iTime / 2.5) * 0.75, color), 1.0);
 }
 `;
 
 export default class implements iSub {
   key(): string {
-    return 'XsXXDn';
-  }
-  sort() {
-    return 4;
+    return '';
   }
   name(): string {
-    return 'Creation by Silexars';
+    return 'tiny';
+  }
+  sort() {
+    return 5;
   }
   tags?(): string[] {
-    return ['intro', 'silexars', '1k', 'demojs'];
+    return [];
   }
   main(): HTMLCanvasElement {
     return createCanvas();

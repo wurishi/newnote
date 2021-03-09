@@ -15,13 +15,19 @@ stats.dom.style.left = '';
 stats.dom.style.right = '0';
 document.body.appendChild(stats.dom);
 
+const link = document.createElement('a');
+document.body.appendChild(link);
+link.href = 'https://www.shadertoy.com';
+link.textContent = 'SHADERTOY';
+document.body.appendChild(document.createElement('br'));
+
 const mainFolder = gui.addFolder('主菜单');
 const api: any = {
   menu: '',
   run: true,
 };
 
-const menuList: string[] = [];
+const menuList: { name: string; sort: number }[] = [];
 const menuMap: any = {};
 
 let uuid: number = -1;
@@ -35,16 +41,24 @@ keys.forEach((key: string) => {
   if (sub.name) {
     if (sub.ignore && sub.ignore()) {
     } else {
-      const name = sub.name();
-      menuList.push(name);
+      const sort = sub.sort ? sub.sort() : Number.MAX_SAFE_INTEGER;
+      const name = `(${sort}) ${sub.name()}`;
+      menuList.push({ name, sort });
       menuMap[name] = sub;
     }
   }
 });
-mainFolder.add(api, 'menu', menuList).onChange((name) => {
-  destoryPrev();
-  activeSub(name);
-});
+menuList.sort((a, b) => a.sort - b.sort);
+mainFolder
+  .add(
+    api,
+    'menu',
+    menuList.map((v) => v.name)
+  )
+  .onChange((name) => {
+    destoryPrev();
+    activeSub(name);
+  });
 
 mainFolder.add(api, 'run');
 
@@ -113,6 +127,15 @@ function activeSub(name: string) {
   uuid = Date.now();
   const sub = menuMap[name] as iSub;
   _sub = sub;
+
+  const key = sub.key();
+  if (key) {
+    link.href = 'https://www.shadertoy.com/view/' + key;
+    link.textContent = key;
+  } else {
+    link.href = '';
+    link.textContent = '无';
+  }
 
   canvas = sub.main();
   document.body.appendChild(canvas);

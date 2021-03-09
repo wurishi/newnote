@@ -1,3 +1,5 @@
+[shadertoy](https://www.shadertoy.com)
+
 | 类型      | 名称                  | 描述                                          |
 | --------- | --------------------- | --------------------------------------------- |
 | vec3      | iResolution           | 视口分辨率 (z 为 像素对应的实际像素, 默认为1) |
@@ -23,3 +25,22 @@ npx webpack --config webpack.dll.config.js
 npx webpack-dev-server
 ```
 
+# 1. Fovea detector
+
+![1](assets/1.png)
+
+# 2. yonatan fractal
+
+![2](assets/2.jpg)
+
+# 3. Trig-less Hash
+
+![3](assets/3.jpg)
+
+# 4. Creation by Silexars
+
+![4](assets/4.jpg)
+
+# 5. tiny
+
+![5](assets/5.jpg)

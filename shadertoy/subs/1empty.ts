@@ -15,6 +15,9 @@ export default class implements iSub {
   name(): string {
     return '空';
   }
+  sort() {
+    return 0;
+  }
   tags?(): string[] {
     return [];
   }

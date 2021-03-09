@@ -40,6 +40,9 @@ export default class implements iSub {
   key(): string {
     return 'WlyBRd';
   }
+  sort() {
+    return 3;
+  }
   name(): string {
     return 'Trig-less Hash';
   }
@@ -49,7 +52,7 @@ export default class implements iSub {
   main(): HTMLCanvasElement {
     gui = new GUI();
     gui.add(api, 'useHash3');
-    return createCanvas('300px', '200px');
+    return createCanvas();
   }
   userFragment(): string {
     return fragment;

@@ -40,6 +40,9 @@ export default class implements iSub {
   key(): string {
     return 'tlyfzt';
   }
+  sort() {
+    return 2;
+  }
   name(): string {
     return 'yonatan fractal';
   }
@@ -47,7 +50,7 @@ export default class implements iSub {
     return ['fractal'];
   }
   main(): HTMLCanvasElement {
-    return createCanvas('400px', '200px');
+    return createCanvas();
   }
   userFragment(): string {
     return fragment;

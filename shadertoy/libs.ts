@@ -32,11 +32,12 @@ export interface iSub {
   destory(): void;
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function;
   ignore?(): boolean;
+  sort?(): number;
 }
 
 export function createCanvas(
-  width = '100%',
-  height = '100%'
+  width = '400px',
+  height = '300px'
 ): HTMLCanvasElement {
   const canvas = document.createElement('canvas');
   canvas.style.width = width;

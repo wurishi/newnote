@@ -11,6 +11,7 @@ precision {PRECISION} float;
 
 uniform vec3 iResolution;
 uniform float iTime;
+uniform vec4 iMouse;
 
 {USER_FRAGMENT}
 

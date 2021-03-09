@@ -1,18 +1,18 @@
 [shadertoy](https://www.shadertoy.com)
 
-| 类型      | 名称                  | 描述                                          |
-| --------- | --------------------- | --------------------------------------------- |
-| vec3      | iResolution           | 视口分辨率 (z 为 像素对应的实际像素, 默认为1) |
-| float     | iTime                 | 当前时间 (秒)                                 |
-| float     | iTimeDelta            |                                               |
-| int       | iFrame                |                                               |
-| float     | iFrameRate            |                                               |
-| float     | iChannelTime[4]       |                                               |
-| vec3      | iChannelResolution[4] |                                               |
-| vec4      | iMouse                |                                               |
-| sampler2D | iChannel{i}           |                                               |
-| vec4      | iDate                 |                                               |
-| float     | iSampleRate           |                                               |
+| 类型      | 名称                  | 描述                                                         |
+| --------- | --------------------- | ------------------------------------------------------------ |
+| vec3      | iResolution           | 视口分辨率 (z 为 像素对应的实际像素, 默认为1)                |
+| float     | iTime                 | 当前时间 (秒)                                                |
+| float     | iTimeDelta            | Time it takes to render a frame, in seconds                  |
+| int       | iFrame                | Current frame                                                |
+| float     | iFrameRate            | Number of frames rendered per second                         |
+| float     | iChannelTime[4]       | Time for channel (if video or sound), in seconds             |
+| vec3      | iChannelResolution[4] | Input texture resolution for each channel                    |
+| vec4      | iMouse                | xy = current pixel coords (if LMB is down). zw = click pixel |
+| sampler2D | iChannel{i}           | Sampler for input textures i                                 |
+| vec4      | iDate                 | Year, month, day, time in seconds in .xyzw                   |
+| float     | iSampleRate           | The sound sample rate (typically 44100)                      |
 
 `gl_FragCoord`
 
@@ -44,3 +44,11 @@ npx webpack-dev-server
 # 5. tiny
 
 ![5](assets/5.jpg)
+
+# 6. Flame
+
+![6](assets/6.jpg)
+
+# 7. Star Nest
+
+![7](assets/7.jpg)

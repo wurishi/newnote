@@ -67,6 +67,7 @@ mainFolder.open();
 function destoryPrev() {
   uuid = -1;
   if (canvas) {
+    canvas.removeEventListener('mousemove', mouseMove);
     document.body.removeChild(canvas);
     canvas = null;
   }
@@ -123,6 +124,14 @@ function addThreeBox(fragment: string): void {
   threeSM = shaderMaterial;
 }
 
+let mouseX = 0;
+let mouseY = 0;
+
+function mouseMove(e: MouseEvent) {
+  // mouseX = e.clientX / canvas.clientWidth;
+  // mouseY = e.clientY / canvas.clientHeight;
+}
+
 function activeSub(name: string) {
   uuid = Date.now();
   const sub = menuMap[name] as iSub;
@@ -139,6 +148,7 @@ function activeSub(name: string) {
 
   canvas = sub.main();
   document.body.appendChild(canvas);
+  canvas.addEventListener('mousemove', mouseMove);
 
   gl = canvas.getContext('webgl');
 
@@ -163,6 +173,7 @@ function activeSub(name: string) {
 
   const iResolution = webglUtils.getUniformLocation(gl, program, 'iResolution');
   const iTime = webglUtils.getUniformLocation(gl, program, 'iTime');
+  const iMouse = webglUtils.getUniformLocation(gl, program, 'iMouse');
 
   let fn = sub.initial ? sub.initial(gl, program) : null;
 
@@ -193,6 +204,7 @@ function activeSub(name: string) {
 
       iResolution.uniform3f(canvas.width, canvas.height, 1);
       iTime.uniform1f(time);
+      iMouse.uniform4fv([mouseX, mouseY, 0, 0]);
 
       fn && fn();
 

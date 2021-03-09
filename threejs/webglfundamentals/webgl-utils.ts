@@ -301,3 +301,204 @@ export function getUniformLocation(
     },
   };
 }
+
+export function getBindPointForSamplerType(
+  gl: WebGLRenderingContext,
+  type: number
+) {
+  if (type === gl.SAMPLER_2D) return gl.TEXTURE_2D;
+  if (type === gl.SAMPLER_CUBE) return gl.TEXTURE_CUBE_MAP;
+  return undefined;
+}
+
+export function createUniformSetters(
+  gl: WebGLRenderingContext,
+  program: WebGLProgram
+) {
+  let textureUnit = 0;
+
+  function createUniformSetter(
+    program: WebGLProgram,
+    uniformInfo: WebGLActiveInfo
+  ): (v: any) => void {
+    const location = gl.getUniformLocation(program, uniformInfo.name);
+    const type = uniformInfo.type;
+
+    const isArray =
+      uniformInfo.size > 1 && uniformInfo.name.substr(-3) === '[0]';
+
+    if (type === gl.FLOAT && isArray) {
+      return (v: Float32Array) => gl.uniform1fv(location, v);
+    }
+    if (type === gl.INT && isArray) {
+      return (v) => gl.uniform1iv(location, v);
+    }
+    switch (type) {
+      case gl.FLOAT:
+        return (v: number) => gl.uniform1f(location, v);
+      case gl.FLOAT_VEC2:
+        return (v: Float32Array) => gl.uniform2fv(location, v);
+      case gl.FLOAT_VEC3:
+        return (v: Float32Array) => gl.uniform3fv(location, v);
+      case gl.FLOAT_VEC4:
+        return (v: Float32Array) => gl.uniform4fv(location, v);
+      case gl.INT:
+        return (v) => gl.uniform1i(location, v);
+      case gl.INT_VEC2:
+        return (v) => gl.uniform2iv(location, v);
+      case gl.INT_VEC3:
+        return (v) => gl.uniform3iv(location, v);
+      case gl.INT_VEC4:
+        return (v) => gl.uniform4iv(location, v);
+      case gl.BOOL:
+        return (v) => gl.uniform1i(location, v);
+      case gl.BOOL_VEC2:
+        return (v) => gl.uniform2iv(location, v);
+      case gl.BOOL_VEC3:
+        return (v) => gl.uniform3iv(location, v);
+      case gl.BOOL_VEC4:
+        return (v) => gl.uniform4iv(location, v);
+      case gl.FLOAT_MAT2:
+        return (v) => gl.uniformMatrix2fv(location, false, v);
+      case gl.FLOAT_MAT3:
+        return (v) => gl.uniformMatrix3fv(location, false, v);
+      case gl.FLOAT_MAT4:
+        return (v) => gl.uniformMatrix4fv(location, false, v);
+    }
+    if ((type === gl.SAMPLER_2D || type === gl.SAMPLER_CUBE) && isArray) {
+      const units = [];
+      for (let i = 0; i < uniformInfo.size; i++) {
+        units.push(textureUnit++);
+      }
+      return ((bindPoint: number, units: number[]) => (
+        textures: WebGLTexture[]
+      ) => {
+        gl.uniform1iv(location, units);
+        textures.forEach((texture, index) => {
+          gl.activeTexture(gl.TEXTURE0 + units[index]);
+          gl.bindTexture(bindPoint, texture);
+        });
+      })(getBindPointForSamplerType(gl, type), units);
+    }
+    if (type === gl.SAMPLER_2D || type === gl.SAMPLER_CUBE) {
+      return ((bindPoint: number, unit: number) => (texture: WebGLTexture) => {
+        gl.uniform1i(location, unit);
+        gl.activeTexture(gl.TEXTURE0 + unit);
+        gl.bindTexture(bindPoint, texture);
+      })(getBindPointForSamplerType(gl, type), textureUnit++);
+    }
+    throw new Error('未知类型: 0x' + type.toString(16));
+  }
+
+  const uniformSetters: { [key: string]: (v: any) => void } = {};
+  const numUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+
+  for (let i = 0; i < numUniforms; i++) {
+    const uniformInfo = gl.getActiveUniform(program, i);
+    if (!uniformInfo) break;
+
+    let name = uniformInfo.name;
+    if (name.substr(-3) === '[0]') {
+      name = name.substr(0, name.length - 3);
+    }
+    const setter = createUniformSetter(program, uniformInfo);
+    uniformSetters[name] = setter;
+  }
+
+  return uniformSetters;
+}
+
+interface iAttrib {
+  value?: Float32Array; //
+  buffer?: WebGLBuffer;
+  numComponents?: number;
+  size?: number;
+  type?: number;
+  normalize?: boolean;
+  stride?: number;
+  offset?: number;
+}
+
+export function createAttributeSetters(
+  gl: WebGLRenderingContext,
+  program: WebGLProgram
+) {
+  const attribSetters: { [key: string]: (b: iAttrib) => void } = {};
+
+  function createAttribSetter(index: number) {
+    return (b: iAttrib) => {
+      if (b.value) {
+        gl.disableVertexAttribArray(index);
+        switch (b.value.length) {
+          case 4:
+            gl.vertexAttrib4fv(index, b.value);
+            break;
+          case 3:
+            gl.vertexAttrib3fv(index, b.value);
+            break;
+          case 2:
+            gl.vertexAttrib2fv(index, b.value);
+            break;
+          case 1:
+            gl.vertexAttrib1fv(index, b.value);
+            break;
+          default:
+            throw new Error('长度必须在1-4之间');
+        }
+      } else {
+        gl.bindBuffer(gl.ARRAY_BUFFER, b.buffer);
+        gl.enableVertexAttribArray(index);
+        gl.vertexAttribPointer(
+          index,
+          b.numComponents || b.size,
+          b.type || gl.FLOAT,
+          b.normalize || false,
+          b.stride || 0,
+          b.offset || 0
+        );
+      }
+    };
+  }
+
+  const numAttribs = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
+  for (let i = 0; i < numAttribs; i++) {
+    const attribInfo = gl.getActiveAttrib(program, i);
+    if (!attribInfo) break;
+    const index = gl.getAttribLocation(program, attribInfo.name);
+    attribSetters[attribInfo.name] = createAttribSetter(index);
+  }
+
+  return attribSetters;
+}
+
+// export function createBuffersFromArrays(
+//   gl: WebGLRenderingContext,
+//   arrays: any
+// ) {
+//   const buffers = {};
+
+//   Object.keys(arrays).forEach((key) => {
+//     const type = key === 'indices' ? gl.ELEMENT_ARRAY_BUFFER : gl.ARRAY_BUFFER;
+//     const array = makeTypedArray(arrays[key], key);
+//   });
+// }
+
+// export function makeTypedArray(array: any, name: string) {
+//   if (isArrayBuffer(array)) {
+//     return array;
+//   }
+
+//   if (array.data && isArrayBuffer(array.data)) {
+//     return array.data;
+//   }
+
+//   if (Array.isArray(array)) {
+//     array = {
+//       data: array,
+//     };
+//   }
+// }
+
+// export function isArrayBuffer(a: any) {
+//   return a.buffer && a.buffer instanceof ArrayBuffer;
+// }

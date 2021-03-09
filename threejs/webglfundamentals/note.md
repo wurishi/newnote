@@ -1391,7 +1391,7 @@ function step(a, b) {
 
 # 组织和重构
 
-## WebGL 码少趣多
+## 十七. WebGL 码少趣多 (未完成)
 
 ## WebGL 绘制多个物体
 

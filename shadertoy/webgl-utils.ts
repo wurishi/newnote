@@ -283,6 +283,9 @@ export function getUniformLocation(
     uniform1f(x: number) {
       gl.uniform1f(loc, x);
     },
+    uniform1i(x: number) {
+      gl.uniform1i(loc, x);
+    },
   };
 }
 

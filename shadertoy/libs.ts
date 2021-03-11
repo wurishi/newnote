@@ -12,6 +12,8 @@ precision {PRECISION} float;
 uniform vec3 iResolution;
 uniform float iTime;
 uniform vec4 iMouse;
+uniform float iFrameRate;
+uniform int iFrame;
 
 uniform sampler2D iChannel0;
 

@@ -174,6 +174,8 @@ async function activeSub(name: string) {
   const iResolution = webglUtils.getUniformLocation(gl, program, 'iResolution');
   const iTime = webglUtils.getUniformLocation(gl, program, 'iTime');
   const iMouse = webglUtils.getUniformLocation(gl, program, 'iMouse');
+  const iFrameRate = webglUtils.getUniformLocation(gl, program, 'iFrameRate');
+  const iFrame = webglUtils.getUniformLocation(gl, program, 'iFrame');
 
   const channelList = await createChannelList(gl, program, sub);
 
@@ -185,6 +187,7 @@ async function activeSub(name: string) {
 
   let then = 0;
   let time = 0;
+  let iframe = 0;
   function render(now: number) {
     if (_uuid !== uuid) {
       return;
@@ -193,6 +196,7 @@ async function activeSub(name: string) {
     now *= 0.001;
     const elapsedTime = Math.min(now - then, 0.1);
     then = now;
+    iframe++;
 
     if (api.run) {
       time += elapsedTime;
@@ -207,6 +211,8 @@ async function activeSub(name: string) {
       iResolution.uniform3f(canvas.width, canvas.height, 1);
       iTime.uniform1f(time);
       iMouse.uniform4fv([mouseX, mouseY, 0, 0]);
+      iFrameRate.uniform1f(30);
+      iFrame.uniform1i(iframe);
 
       channelList.forEach((fn) => fn());
 

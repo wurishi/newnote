@@ -56,3 +56,16 @@ npx webpack-dev-server
 # 8. Fractal Land
 
 ![8](assets/8.jpg)
+
+# 9. Curvature - Parametric 3D
+
+![9](assets/9.jpg)
+
+# 10. Elephant Ear Plants
+
+![10](assets/10.jpg)
+
+# 11. Isopleth
+
+![11](assets/11.jpg)
+

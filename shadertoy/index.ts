@@ -132,7 +132,7 @@ function mouseMove(e: MouseEvent) {
   // mouseY = e.clientY / canvas.clientHeight;
 }
 
-function activeSub(name: string) {
+async function activeSub(name: string) {
   uuid = Date.now();
   const sub = menuMap[name] as iSub;
   _sub = sub;
@@ -175,6 +175,8 @@ function activeSub(name: string) {
   const iTime = webglUtils.getUniformLocation(gl, program, 'iTime');
   const iMouse = webglUtils.getUniformLocation(gl, program, 'iMouse');
 
+  const channelList = await createChannelList(gl, program, sub);
+
   let fn = sub.initial ? sub.initial(gl, program) : null;
 
   addThreeBox(f);
@@ -206,6 +208,8 @@ function activeSub(name: string) {
       iTime.uniform1f(time);
       iMouse.uniform4fv([mouseX, mouseY, 0, 0]);
 
+      channelList.forEach((fn) => fn());
+
       fn && fn();
 
       gl.drawArrays(gl.TRIANGLES, 0, 6);
@@ -218,4 +222,45 @@ function activeSub(name: string) {
     stats.update();
     requestAnimationFrame(render);
   }
+}
+
+async function createChannelList(
+  gl: WebGLRenderingContext,
+  program: WebGLProgram,
+  sub: iSub
+): Promise<any[]> {
+  const res: any[] = [];
+  if (sub.channels) {
+    const channels = sub.channels();
+    if (channels && channels.length > 0) {
+      for (let i = 0; i < channels.length; i++) {
+        const c = channels[i];
+        if (c.type == 0) {
+          const image = await createChannelFromImage(c.path);
+          const tmp = webglUtils.getTexture(
+            gl,
+            program,
+            'iChannel' + i,
+            image,
+            i
+          );
+          res.push(() => {
+            tmp.bindTexture();
+          });
+        }
+      }
+    }
+  }
+  return res;
+}
+
+function createChannelFromImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve) => {
+    const image = new Image();
+    image.src = src;
+    image.onload = () => {
+      // gl.TEXTURE_2D
+      resolve(image);
+    };
+  });
 }

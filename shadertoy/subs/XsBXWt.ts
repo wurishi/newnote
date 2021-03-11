@@ -219,7 +219,7 @@ export default class implements iSub {
     return 'XsBXWt';
   }
   name(): string {
-    return '(no sound) Fractal Land';
+    return '(ns) Fractal Land';
   }
   sort() {
     return 8;

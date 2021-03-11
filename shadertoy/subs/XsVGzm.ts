@@ -250,8 +250,8 @@ Hit sdGround ( in vec3 p)
     Hit hit;
     hit.d = p.y - 0.3;
     hit.mID = 1.5;
-    // hit.diff = texture ( iChannel0 ,p.xz*0.05).xyz*0.2;
-    hit.diff = vec3(0);
+    hit.diff = texture2D ( iChannel0 ,p.xz*0.05).xyz*0.2;
+    // hit.diff = vec3(0);
     hit.thickness = 1.0;
     return hit;
 }
@@ -448,7 +448,7 @@ export default class implements iSub {
     return 'XsVGzm';
   }
   name(): string {
-    return '(缺少iChannel0) Elephant Ear Plants';
+    return 'Elephant Ear Plants';
   }
   sort() {
     return 10;
@@ -468,5 +468,13 @@ export default class implements iSub {
   destory(): void {}
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
     return () => {};
+  }
+  channels() {
+    return [
+      {
+        path: './textures/XsVGzm_1.jpg',
+        type: 0,
+      },
+    ];
   }
 }

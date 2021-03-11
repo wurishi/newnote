@@ -285,3 +285,35 @@ export function getUniformLocation(
     },
   };
 }
+
+export function getTexture(
+  gl: WebGLRenderingContext,
+  program: WebGLProgram,
+  name: string,
+  image: HTMLImageElement,
+  i: number
+) {
+  const loc = gl.getUniformLocation(program, name);
+  const texture = gl.createTexture();
+  return {
+    bindTexture() {
+      gl.uniform1i(loc, i);
+      gl.activeTexture(gl.TEXTURE0 + i);
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+      gl.texImage2D(
+        gl.TEXTURE_2D,
+        0,
+        gl.RGBA,
+        gl.RGBA,
+        gl.UNSIGNED_BYTE,
+        image
+      );
+    },
+  };
+}

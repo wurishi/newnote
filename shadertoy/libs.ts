@@ -13,6 +13,8 @@ uniform vec3 iResolution;
 uniform float iTime;
 uniform vec4 iMouse;
 
+uniform sampler2D iChannel0;
+
 {USER_FRAGMENT}
 
 void main() {
@@ -34,6 +36,7 @@ export interface iSub {
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function;
   ignore?(): boolean;
   sort?(): number;
+  channels?(): { path: string; type: number }[];
 }
 
 export function createCanvas(

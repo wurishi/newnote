@@ -8,7 +8,7 @@ const options = webpack({
   devServer: {
     open: true,
     port: 9000,
-    contentBase: path.join(__dirname, 'dist'),
+    contentBase: path.join(__dirname),
   },
   module: {
     rules: [
@@ -16,6 +16,17 @@ const options = webpack({
         test: /\.tsx?$/,
         use: 'ts-loader',
         exclude: /node_modules/,
+      },
+      {
+        test: /\.(jpg|png|jpeg)$/,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              outputPath: 'images/',
+            },
+          },
+        ],
       },
     ],
   },
@@ -30,7 +41,7 @@ const options = webpack({
     new HTMLWebpackPlugin({
       templateContent: `<html>
       <head>
-      <script src="./dll/main.dll.js"></script>
+      <script src="./dist/dll/main.dll.js"></script>
       </head>
       <body>
         

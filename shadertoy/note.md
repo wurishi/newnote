@@ -76,3 +76,7 @@ npx webpack-dev-server
 # 13. Voronoi - smooth
 
 ![13](assets/13.jpg)
+
+# 14. Seascape
+
+![14](assets/14.jpg)

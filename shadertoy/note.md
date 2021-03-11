@@ -83,3 +83,10 @@ npx webpack-dev-server
 
 # 15. Mystify Screensaver
 
+# 16. Ray Marching: Part 6
+
+![16](assets/16.jpg)
+
+# 17. HCL Color Range
+
+![17](assets/17.png)

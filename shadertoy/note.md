@@ -72,3 +72,7 @@ npx webpack-dev-server
 # 12. Alloy Plated Voronoi
 
 ![12](assets/12.jpg)
+
+# 13. Voronoi - smooth
+
+![13](assets/13.jpg)

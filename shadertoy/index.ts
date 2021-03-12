@@ -151,8 +151,10 @@ function mouseMove(e: MouseEvent) {
 }
 
 function mouseDown(e: MouseEvent) {
-  clickX = e.clientX;
-  clickY = e.clientY;
+  if (e.button == 0) {
+    clickX = e.clientX;
+    clickY = e.clientY;
+  }
 }
 
 function mouseUp() {

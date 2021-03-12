@@ -256,3 +256,9 @@ tt3XDn
 tlVGDt
 
 ![39](assets/39.jpg)
+
+# 40. Planetary Soup
+
+ttKBDd
+
+![40](assets/40.jpg)

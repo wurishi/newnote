@@ -115,7 +115,7 @@ export default class implements iSub {
     return 'Octagrams';
   }
   sort() {
-    return 0;
+    return 39;
   }
   tags?(): string[] {
     return [];

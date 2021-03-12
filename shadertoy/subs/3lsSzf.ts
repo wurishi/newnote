@@ -1,5 +1,5 @@
 import { GUI } from 'dat.gui';
-import { createCanvas, iSub, PRECISION_MEDIUMP } from '../libs';
+import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
@@ -21,6 +21,7 @@ const fragment = `
 //
 // Buy a metal print here: https://www.redbubble.com/i/metal-print/Happy-Jumping-by-InigoQuilez/43594745.0JXQP
 
+#define HW_PERFORMANCE 0
 
 #if HW_PERFORMANCE==0
 #define AA 1
@@ -515,7 +516,13 @@ export default class implements iSub {
     return '3lsSzf';
   }
   name(): string {
-    return '3lsSzf';
+    return 'Happy Jumping';
+  }
+  sort() {
+    return 44;
+  }
+  webgl() {
+    return WEBGL_2;
   }
   tags?(): string[] {
     return [];

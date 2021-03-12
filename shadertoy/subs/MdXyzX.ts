@@ -170,10 +170,10 @@ export default class implements iSub {
     return 'MdXyzX';
   }
   name(): string {
-    return 'Very fast procedural ocean 18(mouse)';
+    return 'Very fast procedural ocean';
   }
   sort() {
-    return 0;
+    return 18;
   }
   tags?(): string[] {
     return [];

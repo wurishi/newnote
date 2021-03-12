@@ -16,6 +16,7 @@ uniform float iFrameRate;
 uniform int iFrame;
 
 uniform sampler2D iChannel0;
+uniform sampler2D iChannel1;
 
 {USER_FRAGMENT}
 

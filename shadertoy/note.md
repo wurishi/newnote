@@ -90,3 +90,11 @@ npx webpack-dev-server
 # 17. HCL Color Range
 
 ![17](assets/17.png)
+
+# 18. Very fast procedural ocean
+
+![18](assets/18.jpg)
+
+# 19. Planet #2
+
+![19](assets/19.jpg)

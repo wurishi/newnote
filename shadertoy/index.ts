@@ -68,6 +68,8 @@ function destoryPrev() {
   uuid = -1;
   if (canvas) {
     canvas.removeEventListener('mousemove', mouseMove);
+    canvas.removeEventListener('mousedown', mouseDown);
+    canvas.removeEventListener('mouseup', mouseUp);
     document.body.removeChild(canvas);
     canvas = null;
   }
@@ -126,10 +128,24 @@ function addThreeBox(fragment: string): void {
 
 let mouseX = 0;
 let mouseY = 0;
+let clickX = 0;
+let clickY = 0;
 
 function mouseMove(e: MouseEvent) {
-  // mouseX = e.clientX / canvas.clientWidth;
-  // mouseY = e.clientY / canvas.clientHeight;
+  // mouseX = e.clientX > 400 ? 400 : e.clientX;
+  // mouseY = e.clientY > 300 ? 300 : e.clientY;
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+}
+
+function mouseDown(e: MouseEvent) {
+  clickX = e.clientX;
+  clickY = e.clientY;
+}
+
+function mouseUp() {
+  clickX = 0;
+  clickY = 0;
 }
 
 async function activeSub(name: string) {
@@ -149,6 +165,8 @@ async function activeSub(name: string) {
   canvas = sub.main();
   document.body.appendChild(canvas);
   canvas.addEventListener('mousemove', mouseMove);
+  canvas.addEventListener('mousedown', mouseDown);
+  canvas.addEventListener('mouseup', mouseUp);
 
   gl = canvas.getContext('webgl');
 
@@ -210,7 +228,7 @@ async function activeSub(name: string) {
 
       iResolution.uniform3f(canvas.width, canvas.height, 1);
       iTime.uniform1f(time);
-      iMouse.uniform4fv([mouseX, mouseY, 0, 0]);
+      iMouse.uniform4fv([mouseX, mouseY, clickX, clickY]);
       iFrameRate.uniform1f(30);
       iFrame.uniform1i(iframe);
 

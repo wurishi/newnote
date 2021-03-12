@@ -118,3 +118,19 @@ npx webpack-dev-server
 # 24. Fork Analys Cub NikolaErce 538
 
 ![24](assets/24.png)
+
+# 25. Cellular noise collection
+
+![25](assets/25.png)
+
+# 26. font zoom explorer
+
+![26](assets/26.png)
+
+# 27. Layer Slice display
+
+![27](assets/27.png)
+
+# 28. ANU - Strategic Management
+
+![28](assets/28.jpg)

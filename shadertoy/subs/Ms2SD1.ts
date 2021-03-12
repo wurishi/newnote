@@ -13,7 +13,8 @@ const int NUM_STEPS = 8;
 const float PI	 	= 3.141592;
 const float EPSILON	= 1e-3;
 #define EPSILON_NRM (0.1 / iResolution.x)
-#define AA
+
+uniform bool u_aa;
 
 // sea
 const int ITER_GEOMETRY = 3;
@@ -187,25 +188,29 @@ vec3 getPixel(in vec2 coord, float time) {
 // main
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     float time = iTime * 0.3 + iMouse.x*0.01;
-	
-#ifdef AA
-    vec3 color = vec3(0.0);
-    for(int i = -1; i <= 1; i++) {
-        for(int j = -1; j <= 1; j++) {
-        	vec2 uv = fragCoord+vec2(i,j)/3.0;
-    		color += getPixel(uv, time);
+	vec3 color = vec3(0);
+    if(u_aa) {
+        for(int i = -1; i <= 1; i++) {
+            for(int j = -1; j <= 1; j++) {
+                vec2 uv = fragCoord+vec2(i,j)/3.0;
+                color += getPixel(uv, time);
+            }
         }
+        color /= 9.0;
     }
-    color /= 9.0;
-#else
-    vec3 color = getPixel(fragCoord, time);
-#endif
+    else {
+        color = getPixel(fragCoord, time);
+    }
     
     // post
 	fragColor = vec4(pow(color,vec3(0.65)), 1.0);
 }
 `;
 
+let gui: GUI;
+const api = {
+  aa: true,
+};
 export default class implements iSub {
   key(): string {
     return 'Ms2SD1';
@@ -220,6 +225,8 @@ export default class implements iSub {
     return [];
   }
   main(): HTMLCanvasElement {
+    gui = new GUI();
+    gui.add(api, 'aa');
     return createCanvas();
   }
   userFragment(): string {
@@ -228,8 +235,16 @@ export default class implements iSub {
   fragmentPrecision?(): string {
     return PRECISION_MEDIUMP;
   }
-  destory(): void {}
+  destory(): void {
+    if (gui) {
+      gui.destroy();
+      gui = null;
+    }
+  }
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
-    return () => {};
+    const u_aa = webglUtils.getUniformLocation(gl, program, 'u_aa');
+    return () => {
+      u_aa.uniform1i(api.aa ? 1 : 0);
+    };
   }
 }

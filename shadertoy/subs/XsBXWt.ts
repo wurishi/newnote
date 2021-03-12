@@ -3,10 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-#define NYAN 
-#define WAVES
-#define BORDER
-
 #define RAY_STEPS 150
 
 #define BRIGHTNESS 1.2
@@ -36,11 +32,16 @@ vec4 formula(vec4 p) {
 	return p;
 }
 
+uniform bool u_waves;
+uniform bool u_showOnlyEdges;
+uniform bool u_nyan;
+uniform bool u_border;
+
 // Distance function
 float de(vec3 pos) {
-#ifdef WAVES
-	pos.y+=sin(pos.z-t*6.)*.15; //waves!
-#endif
+	if(u_waves) {
+		pos.y+=sin(pos.z-t*6.)*.15; //waves!
+	}
 	float hid=0.;
 	vec3 tpos=pos;
 	tpos.z=abs(3.-mod(tpos.z,6.));
@@ -111,8 +112,8 @@ vec4 nyan(vec2 p)
 	float ns=3.0;
 	float nt = iTime*ns; nt-=mod(nt,240.0/256.0/6.0); nt = mod(nt,240.0/256.0);
 	float ny = mod(iTime*ns,1.0); ny-=mod(ny,0.75); ny*=-0.05;
-	// vec4 color = texture(iChannel1,vec2(uv.x/3.0+210.0/256.0-nt+0.05,.5-uv.y-ny));
-  vec4 color = vec4(0);
+	vec4 color = texture2D(iChannel0,vec2(uv.x/3.0+210.0/256.0-nt+0.05,.5-uv.y-ny));
+  // vec4 color = vec4(0);
 	if (uv.x<-0.3) color.a = 0.0;
 	if (uv.x>0.2) color.a=0.0;
 	return color;
@@ -139,11 +140,12 @@ vec3 raymarch(in vec3 from, in vec3 dir)
 	vec3 col=vec3(0.);
 	p-=(det-d)*dir;
 	norm=normal(p);
-#ifdef SHOWONLYEDGES
-	col=1.-vec3(edge); // show wireframe version
-#else
-	col=(1.-abs(norm))*max(0.,1.-edge*.8); // set normal as color with dark edges
-#endif		
+	if(u_showOnlyEdges) {
+		col=1.-vec3(edge); // show wireframe version
+	}
+	else {
+		col=(1.-abs(norm))*max(0.,1.-edge*.8); // set normal as color with dark edges
+	}
 	totdist=clamp(totdist,0.,26.);
 	dir.y-=.02;
 	// float sunsize=7.-max(0.,texture(iChannel0,vec2(.6,.2)).x)*5.; // responsive sun size
@@ -163,19 +165,20 @@ vec3 raymarch(in vec3 from, in vec3 dir)
 	if (totdist>25.) col=backg; // hit background
 	col=pow(col,vec3(GAMMA))*BRIGHTNESS;
 	col=mix(vec3(length(col)),col,SATURATION);
-#ifdef SHOWONLYEDGES
-	col=1.-vec3(length(col));
-#else
-	col*=vec3(1.,.9,.85);
-#ifdef NYAN
-	dir.yx*=rot(dir.x);
-	vec2 ncatpos=(dir.xy+vec2(-3.+mod(-t,6.),-.27));
-	vec4 ncat=nyan(ncatpos*5.);
-	vec4 rain=rainbow(ncatpos*10.+vec2(.8,.5));
-	if (totdist>8.) col=mix(col,max(vec3(.2),rain.xyz),rain.a*.9);
-	if (totdist>8.) col=mix(col,max(vec3(.2),ncat.xyz),ncat.a*.9);
-#endif
-#endif
+	if(u_showOnlyEdges) {
+		col=1.-vec3(length(col));
+	}
+	else {
+		col*=vec3(1.,.9,.85);
+		if(u_nyan) {
+			dir.yx*=rot(dir.x);
+			vec2 ncatpos=(dir.xy+vec2(-3.+mod(-t,6.),-.27));
+			vec4 ncat=nyan(ncatpos*5.);
+			vec4 rain=rainbow(ncatpos*10.+vec2(.8,.5));
+			if (totdist>8.) col=mix(col,max(vec3(.2),rain.xyz),rain.a*.9);
+			if (totdist>8.) col=mix(col,max(vec3(.2),ncat.xyz),ncat.a*.9);
+		}
+	}
 	return col;
 }
 
@@ -207,12 +210,20 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 	dir.xz*=rot(mouse.x);
 	vec3 from=origin+move(dir);
 	vec3 color=raymarch(from,dir); 
-	#ifdef BORDER
-	color=mix(vec3(0.),color,pow(max(0.,.95-length(oriuv*oriuv*oriuv*vec2(1.05,1.1))),.3));
-	#endif
+	if(u_border) {
+		color=mix(vec3(0.),color,pow(max(0.,.95-length(oriuv*oriuv*oriuv*vec2(1.05,1.1))),.3));
+	}
 	fragColor = vec4(color,1.);
 }
 `;
+
+let gui: GUI;
+const api = {
+  wave: true,
+  showOnlyEdges: false,
+  nyan: true,
+  border: true,
+};
 
 export default class implements iSub {
   key(): string {
@@ -228,6 +239,11 @@ export default class implements iSub {
     return ['fractal', 'cartoon'];
   }
   main(): HTMLCanvasElement {
+    gui = new GUI();
+    gui.add(api, 'wave');
+    gui.add(api, 'showOnlyEdges');
+    gui.add(api, 'nyan');
+    gui.add(api, 'border');
     return createCanvas();
   }
   userFragment(): string {
@@ -236,8 +252,30 @@ export default class implements iSub {
   fragmentPrecision?(): string {
     return PRECISION_MEDIUMP;
   }
-  destory(): void {}
+  destory(): void {
+    if (gui) {
+      gui.destroy();
+      gui = null;
+    }
+  }
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
-    return () => {};
+    const u_waves = webglUtils.getUniformLocation(gl, program, 'u_waves');
+    const u_showOnlyEdges = webglUtils.getUniformLocation(
+      gl,
+      program,
+      'u_showOnlyEdges'
+    );
+    const u_nyan = webglUtils.getUniformLocation(gl, program, 'u_nyan');
+    const u_border = webglUtils.getUniformLocation(gl, program, 'u_border');
+
+    return () => {
+      u_waves.uniform1i(api.wave ? 1 : 0);
+      u_showOnlyEdges.uniform1i(api.showOnlyEdges ? 1 : 0);
+      u_nyan.uniform1i(api.nyan ? 1 : 0);
+      u_border.uniform1i(api.border ? 1 : 0);
+    };
+  }
+  channels() {
+    return [{ type: 0, path: './textures/XsBXWt.png' }];
   }
 }

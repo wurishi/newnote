@@ -178,7 +178,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     fragColor.r = clamp(fragColor.r, 0., 2.);
     fragColor.g = clamp(fragColor.g, 0., 2.);
     fragColor.b = clamp(fragColor.b, 0., 2.);
-    fragColor.a = 0.;
+    fragColor.a = 1.;
 }
 `;
 
@@ -197,7 +197,7 @@ export default class implements iSub {
   }
   main(): HTMLCanvasElement {
     const canvas = createCanvas();
-    canvas.style.backgroundColor = 'black';
+    // canvas.style.backgroundColor = 'black';
     return canvas;
   }
   userFragment(): string {

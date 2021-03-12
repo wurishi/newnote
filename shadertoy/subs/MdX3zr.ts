@@ -64,8 +64,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 	vec4 col = mix(vec4(1.,.5,.1,1.), vec4(0.1,.5,1.,1.), p.y*.02+.4);
 	
 	fragColor = mix(vec4(0,0,0,1), col, pow(glow*2.,4.));
-	//fragColor = mix(vec4(1.), mix(vec4(1.,.5,.1,1.),vec4(0.1,.5,1.,1.),p.y*.02+.4), pow(glow*2.,4.));
-
+	// fragColor = mix(vec4(1.), mix(vec4(1.,.5,.1,1.),vec4(0.1,.5,1.,1.),p.y*.02+.4), pow(glow*2.,4.));
+	// fragColor.w = 1.;
 }
 `;
 

@@ -27,138 +27,214 @@ npx webpack-dev-server
 
 # 1. Fovea detector
 
+4dsXzM
+
 ![1](assets/1.png)
 
 # 2. yonatan fractal
+
+tlyfzt
 
 ![2](assets/2.jpg)
 
 # 3. Trig-less Hash
 
+WlyBRd
+
 ![3](assets/3.jpg)
 
 # 4. Creation by Silexars
+
+XsXXDn
 
 ![4](assets/4.jpg)
 
 # 5. tiny
 
+tiny
+
 ![5](assets/5.jpg)
 
 # 6. Flame
+
+MdX3zr
 
 ![6](assets/6.jpg)
 
 # 7. Star Nest
 
+XlfGRj
+
 ![7](assets/7.jpg)
 
 # 8. Fractal Land
+
+XsBXWt
 
 ![8](assets/8.jpg)
 
 # 9. Curvature - Parametric 3D
 
+XlfXR4
+
 ![9](assets/9.jpg)
 
 # 10. Elephant Ear Plants
+
+XsVGzm
 
 ![10](assets/10.jpg)
 
 # 11. Isopleth
 
+Mllfzl
+
 ![11](assets/11.jpg)
 
 # 12. Alloy Plated Voronoi
+
+XdfyWM
 
 ![12](assets/12.jpg)
 
 # 13. Voronoi - smooth
 
+ldB3zc
+
 ![13](assets/13.jpg)
 
 # 14. Seascape
+
+Ms2SD1
 
 ![14](assets/14.jpg)
 
 # 15. Mystify Screensaver
 
+MsKcRh
+
 # 16. Ray Marching: Part 6
+
+4tcGDr
 
 ![16](assets/16.jpg)
 
 # 17. HCL Color Range
 
+MtjBWR
+
 ![17](assets/17.png)
 
 # 18. Very fast procedural ocean
+
+MdXyzX
 
 ![18](assets/18.jpg)
 
 # 19. Planet #2
 
+fdX3zr
+
 ![19](assets/19.jpg)
 
 # 20. Liberation of the True Self
+
+tlGfzd
 
 ![20](assets/20.jpg)
 
 # 21. neuron 1512 "lol"
 
+fdlGRH
+
 ![21](assets/21.jpg)
 
 # 22. Synthesis ideas
+
+WlycRW
 
 ![22](assets/22.png)
 
 # 23. Fork MANO fract NikolaErce 337
 
+sdX3zH
+
 ![23](assets/23.jpg)
 
 # 24. Fork Analys Cub NikolaErce 538
+
+sdfGzH
 
 ![24](assets/24.png)
 
 # 25. Cellular noise collection
 
+tlcBDs
+
 ![25](assets/25.png)
 
 # 26. font zoom explorer
+
+NsXGz8
 
 ![26](assets/26.png)
 
 # 27. Layer Slice display
 
+NdX3RH
+
 ![27](assets/27.png)
 
 # 28. ANU - Strategic Management
+
+sdX3Rr
 
 ![28](assets/28.jpg)
 
 # 29. Fractal 38_gaz
 
+fdfGR8
+
 ![29](assets/29.jpg)
 
 # 30. Tidal
+
+NdXGRr
 
 ![30](assets/30.png)
 
 # 31. fractal pyramid
 
+tsXBzS
+
 ![31](assets/31.jpg)
 
 # 32. Neural Stanford Bunny (5 kb)
+
+wtVyWK
 
 ![32](assets/32.jpg)
 
 # 33. CineShader Lava
 
+3sySRK
+
 ![33](assets/33.jpg)
 
 # 34. Cyber Fuji 2020
+
+Wt33Wf
 
 ![34](assets/34.jpg)
 
 # 35. Phantom Star for CineShader
 
+ttKGDt
+
 ![35](assets/35.jpg)
+
+# 36. DVD Bounce
+
+wtcSzN
+
+![36](assets/36.jpg)

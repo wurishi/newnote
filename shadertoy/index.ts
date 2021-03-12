@@ -25,6 +25,9 @@ const mainFolder = gui.addFolder('主菜单');
 const api: any = {
   menu: '',
   run: true,
+  localIndex: window.localStorage.getItem('localIndex')
+    ? parseInt(window.localStorage.getItem('localIndex'))
+    : 0,
 };
 
 const menuList: { name: string; sort: number }[] = [];
@@ -51,6 +54,10 @@ keys.forEach((key: string) => {
   }
 });
 menuList.sort((a, b) => a.sort - b.sort);
+api.menu = menuList[api.localIndex].name;
+destoryPrev();
+activeSub(api.menu);
+
 mainFolder
   .add(
     api,
@@ -63,6 +70,9 @@ mainFolder
   });
 
 mainFolder.add(api, 'run');
+mainFolder.add(api, 'localIndex', 0, menuList.length, 1).onChange((v) => {
+  window.localStorage.setItem('localIndex', v);
+});
 
 mainFolder.open();
 

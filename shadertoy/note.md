@@ -238,3 +238,21 @@ ttKGDt
 wtcSzN
 
 ![36](assets/36.jpg)
+
+# 37. CineShader Test
+
+wlVGWd
+
+![37](assets/37.jpg)
+
+# 38. FWA logo
+
+tt3XDn
+
+![38](assets/38.jpg)
+
+# 39. Octagrams
+
+tlVGDt
+
+![39](assets/39.jpg)

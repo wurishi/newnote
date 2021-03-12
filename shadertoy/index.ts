@@ -182,7 +182,8 @@ async function activeSub(name: string) {
   canvas.addEventListener('mousedown', mouseDown);
   canvas.addEventListener('mouseup', mouseUp);
 
-  gl = canvas.getContext('webgl');
+  gl = canvas.getContext('webgl'); // webgl2
+  console.log(gl.getParameter(gl.SHADING_LANGUAGE_VERSION));
 
   let _uuid = uuid;
 

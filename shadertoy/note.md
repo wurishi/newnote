@@ -262,3 +262,9 @@ tlVGDt
 ttKBDd
 
 ![40](assets/40.jpg)
+
+# 41. Base warp fBM
+
+tdG3Rd
+
+![41](assets/41.jpg)

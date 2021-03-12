@@ -98,3 +98,7 @@ npx webpack-dev-server
 # 19. Planet #2
 
 ![19](assets/19.jpg)
+
+# 20. Liberation of the True Self
+
+![20](assets/20.jpg)

@@ -42,7 +42,9 @@ keys.forEach((key: string) => {
     if (sub.ignore && sub.ignore()) {
     } else {
       const sort = sub.sort ? sub.sort() : Number.MAX_SAFE_INTEGER;
-      const name = `(${sort}) ${sub.name()}`;
+      const name = `(${
+        sort == Number.MAX_SAFE_INTEGER ? '失败' : sort
+      }) ${sub.name()}`;
       menuList.push({ name, sort });
       menuMap[name] = sub;
     }

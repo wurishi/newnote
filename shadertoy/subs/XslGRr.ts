@@ -1,5 +1,5 @@
 import { GUI } from 'dat.gui';
-import { createCanvas, iSub, PRECISION_MEDIUMP } from '../libs';
+import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
@@ -26,7 +26,8 @@ const fragment = `
 // 0: one 3d texture lookup
 // 1: two 2d texture lookups with hardware interpolation
 // 2: two 2d texture lookups with software interpolation
-#define NOISE_METHOD 1
+
+uniform int u_noise;
 
 // 0: no LOD
 // 1: yes LOD
@@ -40,24 +41,24 @@ float noise( in vec3 x )
     vec3 f = fract(x);
 	f = f*f*(3.0-2.0*f);
 
-#if NOISE_METHOD==0
-    x = p + f;
-    return textureLod(iChannel2,(x+0.5)/32.0,0.0).x*2.0-1.0;
-#endif
-#if NOISE_METHOD==1
-	vec2 uv = (p.xy+vec2(37.0,239.0)*p.z) + f.xy;
+  if(u_noise == 0) {
+    // x = p + f;
+    // return textureLod(iChannel2,(x+0.5)/32.0,0.0).x*2.0-1.0;
+  }
+  else if(u_noise == 1) {
+    vec2 uv = (p.xy+vec2(37.0,239.0)*p.z) + f.xy;
     vec2 rg = textureLod(iChannel0,(uv+0.5)/256.0,0.0).yx;
-	return mix( rg.x, rg.y, f.z )*2.0-1.0;
-#endif    
-#if NOISE_METHOD==2
+	  return mix( rg.x, rg.y, f.z )*2.0-1.0;
+  }
+  else if(u_noise == 2) {
     ivec3 q = ivec3(p);
-	ivec2 uv = q.xy + ivec2(37,239)*q.z;
-	vec2 rg = mix(mix(texelFetch(iChannel0,(uv           )&255,0),
-				      texelFetch(iChannel0,(uv+ivec2(1,0))&255,0),f.x),
-				  mix(texelFetch(iChannel0,(uv+ivec2(0,1))&255,0),
-				      texelFetch(iChannel0,(uv+ivec2(1,1))&255,0),f.x),f.y).yx;
-	return mix( rg.x, rg.y, f.z )*2.0-1.0;
-#endif    
+    ivec2 uv = q.xy + ivec2(37,239)*q.z;
+    vec2 rg = mix(mix(texelFetch(iChannel0,(uv           )&255,0),
+                texelFetch(iChannel0,(uv+ivec2(1,0))&255,0),f.x),
+            mix(texelFetch(iChannel0,(uv+ivec2(0,1))&255,0),
+                texelFetch(iChannel0,(uv+ivec2(1,1))&255,0),f.x),f.y).yx;
+    return mix( rg.x, rg.y, f.z )*2.0-1.0;
+  }
 }
 
 float map( in vec3 p, int oct )
@@ -212,6 +213,10 @@ void mainVR( out vec4 fragColor, in vec2 fragCoord, in vec3 fragRayOri, in vec3 
 }
 `;
 
+let gui: GUI;
+const api = {
+  noise: 1,
+};
 export default class implements iSub {
   key(): string {
     return 'XslGRr';
@@ -222,7 +227,15 @@ export default class implements iSub {
   tags?(): string[] {
     return [];
   }
+  sort() {
+    return 48;
+  }
+  webgl() {
+    return WEBGL_2;
+  }
   main(): HTMLCanvasElement {
+    gui = new GUI();
+    gui.add(api, 'noise', [1, 2]);
     return createCanvas();
   }
   userFragment(): string {
@@ -231,9 +244,17 @@ export default class implements iSub {
   fragmentPrecision?(): string {
     return PRECISION_MEDIUMP;
   }
-  destory(): void {}
+  destory(): void {
+    if (gui) {
+      gui.destroy();
+      gui = null;
+    }
+  }
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
-    return () => {};
+    const u_noise = webglUtils.getUniformLocation(gl, program, 'u_noise');
+    return () => {
+      u_noise.uniform1i(api.noise);
+    };
   }
   channels() {
     return [
@@ -244,6 +265,10 @@ export default class implements iSub {
       {
         type: 0,
         path: './textures/XslGRr_2.png',
+      },
+      {
+        type: 0,
+        path: './textures/XslGRr_3.bin',
       },
     ];
   }

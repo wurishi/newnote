@@ -1,5 +1,5 @@
 import { GUI } from 'dat.gui';
-import { createCanvas, iSub, PRECISION_MEDIUMP } from '../libs';
+import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
@@ -16,6 +16,8 @@ const fragment = `
 // More info here:
 //
 // https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
+
+#define HW_PERFORMANCE 0
 
 #if HW_PERFORMANCE==0
 #define AA 1
@@ -642,6 +644,12 @@ export default class implements iSub {
   }
   name(): string {
     return 'Raymarching - Primitives';
+  }
+  sort() {
+    return 46;
+  }
+  webgl() {
+    return WEBGL_2;
   }
   tags?(): string[] {
     return [];

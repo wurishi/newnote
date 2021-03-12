@@ -1,5 +1,5 @@
 import { GUI } from 'dat.gui';
-import { createCanvas, iSub, PRECISION_MEDIUMP } from '../libs';
+import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
@@ -96,7 +96,13 @@ export default class implements iSub {
     return 'WtScDt';
   }
   name(): string {
-    return '空WtScDt';
+    return 'Bandlimited Synthesis 1';
+  }
+  sort() {
+    return 45;
+  }
+  webgl() {
+    return WEBGL_2;
   }
   tags?(): string[] {
     return [];

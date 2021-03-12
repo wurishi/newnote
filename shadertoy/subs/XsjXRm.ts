@@ -1,5 +1,5 @@
 import { GUI } from 'dat.gui';
-import { createCanvas, iSub, PRECISION_MEDIUMP } from '../libs';
+import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
@@ -205,7 +205,13 @@ export default class implements iSub {
     return 'XsjXRm';
   }
   name(): string {
-    return '(iChannel0)Plasma Globe';
+    return 'Plasma Globe';
+  }
+  sort() {
+    return 47;
+  }
+  webgl() {
+    return WEBGL_2;
   }
   tags?(): string[] {
     return [];
@@ -222,5 +228,8 @@ export default class implements iSub {
   destory(): void {}
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
     return () => {};
+  }
+  channels() {
+    return [{ type: 0, path: './textures/XsjXRm.png' }];
   }
 }

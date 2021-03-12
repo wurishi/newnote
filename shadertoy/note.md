@@ -286,3 +286,27 @@ tlyBW3
 3lsSzf
 
 ![44](assets/44.jpg)
+
+# 45. Bandlimited Synthesis 1
+
+WtScDt
+
+![45](assets/45.jpg)
+
+# 46. Raymarching - Primitives
+
+Xds3zN
+
+![46](assets/46.jpg)
+
+# 47. Plasma Globe
+
+XsjXRm
+
+![47](assets/47.jpg)
+
+# 48. Clouds
+
+XslGRr
+
+![48](assets/48.jpg)

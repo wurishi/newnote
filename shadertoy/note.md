@@ -134,3 +134,31 @@ npx webpack-dev-server
 # 28. ANU - Strategic Management
 
 ![28](assets/28.jpg)
+
+# 29. Fractal 38_gaz
+
+![29](assets/29.jpg)
+
+# 30. Tidal
+
+![30](assets/30.png)
+
+# 31. fractal pyramid
+
+![31](assets/31.jpg)
+
+# 32. Neural Stanford Bunny (5 kb)
+
+![32](assets/32.jpg)
+
+# 33. CineShader Lava
+
+![33](assets/33.jpg)
+
+# 34. Cyber Fuji 2020
+
+![34](assets/34.jpg)
+
+# 35. Phantom Star for CineShader
+
+![35](assets/35.jpg)

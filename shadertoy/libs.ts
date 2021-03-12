@@ -42,12 +42,15 @@ export interface iSub {
   channels?(): { path: string; type: number }[];
 }
 
-export function createCanvas(
-  width = '400px',
-  height = '300px'
-): HTMLCanvasElement {
+export function createCanvas(style?: { bg?: string }): HTMLCanvasElement {
+  style = style || {};
   const canvas = document.createElement('canvas');
-  canvas.style.width = width;
-  canvas.style.height = height;
+  canvas.style.width = '400px';
+  canvas.style.height = '300px';
+  if (style) {
+    if (style.bg) {
+      canvas.style.backgroundColor = style.bg;
+    }
+  }
   return canvas;
 }

@@ -44,7 +44,7 @@ export default class implements iSub {
     return ['fractal'];
   }
   main(): HTMLCanvasElement {
-    return createCanvas('400px', '300px');
+    return createCanvas();
   }
   userFragment(): string {
     return `

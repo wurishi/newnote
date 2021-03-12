@@ -6,6 +6,14 @@ void main() {
 }
 `;
 
+export const vertex2 = `#version 300 es
+in vec4 a_position;
+
+void main() {
+  gl_Position = a_position;
+}
+`;
+
 export const fragment = `
 precision {PRECISION} float;
 
@@ -25,8 +33,32 @@ void main() {
 }
 `;
 
+export const fragment2 = `#version 300 es
+precision {PRECISION} float;
+
+uniform vec3 iResolution;
+uniform float iTime;
+uniform vec4 iMouse;
+uniform float iFrameRate;
+uniform int iFrame;
+
+uniform sampler2D iChannel0;
+uniform sampler2D iChannel1;
+
+out vec4 outputColor;
+
+{USER_FRAGMENT}
+
+void main() {
+  mainImage(outputColor, gl_FragCoord.xy);
+}
+`;
+
 export const PRECISION_MEDIUMP = 'mediump';
 export const PRECISION_HIGHP = 'highp';
+
+export const WEBGL_1 = 'webgl';
+export const WEBGL_2 = 'webgl2';
 
 export interface iSub {
   key(): string;
@@ -40,6 +72,7 @@ export interface iSub {
   ignore?(): boolean;
   sort?(): number;
   channels?(): { path: string; type: number }[];
+  webgl?(): string;
 }
 
 export function createCanvas(style?: { bg?: string }): HTMLCanvasElement {

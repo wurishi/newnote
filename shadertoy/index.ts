@@ -1,6 +1,15 @@
 import { GUI } from 'dat.gui';
 import * as Stats from 'stats.js';
-import { iSub, fragment, vertex, PRECISION_MEDIUMP } from './libs';
+import {
+  iSub,
+  fragment,
+  vertex,
+  PRECISION_MEDIUMP,
+  WEBGL_1,
+  WEBGL_2,
+  vertex2,
+  fragment2,
+} from './libs';
 import * as webglUtils from './webgl-utils';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
@@ -129,6 +138,9 @@ function addThreeBox(fragment: string): void {
     uniforms: {
       iResolution: { value: [400, 300, 1] },
       iTime: { value: 0 },
+      iMouse: { value: [mouseX, mouseY, clickX, clickY] },
+      iFrameRate: { value: 30 },
+      iFrame: { value: 0 },
     },
   });
 
@@ -170,7 +182,7 @@ async function activeSub(name: string) {
   const key = sub.key();
   if (key) {
     link.href = 'https://www.shadertoy.com/view/' + key;
-    link.textContent = key;
+    link.textContent = `${key} (${sub.webgl ? sub.webgl() : WEBGL_1})`;
   } else {
     link.href = '';
     link.textContent = '无';
@@ -182,7 +194,9 @@ async function activeSub(name: string) {
   canvas.addEventListener('mousedown', mouseDown);
   canvas.addEventListener('mouseup', mouseUp);
 
-  gl = canvas.getContext('webgl'); // webgl2
+  const webglV = sub.webgl ? sub.webgl() : WEBGL_1;
+
+  gl = canvas.getContext(webglV) as WebGLRenderingContext;
   console.log(gl.getParameter(gl.SHADING_LANGUAGE_VERSION));
 
   let _uuid = uuid;
@@ -191,13 +205,16 @@ async function activeSub(name: string) {
 
   initTHREE();
 
-  let f = fragment.replace(
+  const v = webglV === WEBGL_2 ? vertex2 : vertex;
+
+  let f = webglV === WEBGL_2 ? fragment2 : fragment;
+  f = f.replace(
     '{PRECISION}',
     sub.fragmentPrecision ? sub.fragmentPrecision() : PRECISION_MEDIUMP
   );
   f = f.replace('{USER_FRAGMENT}', sub.userFragment());
 
-  const program = webglUtils.createProgram2(gl, vertex, f);
+  const program = webglUtils.createProgram2(gl, v, f);
 
   const a_position = webglUtils.getAttribLocation(gl, program, 'a_position');
   a_position.setFloat32(
@@ -253,7 +270,12 @@ async function activeSub(name: string) {
 
       gl.drawArrays(gl.TRIANGLES, 0, 6);
 
-      threeSM && (threeSM.uniforms.iTime.value = time);
+      if (threeSM) {
+        threeSM.uniforms.iTime.value = time;
+        threeSM.uniforms.iMouse.value = [mouseX, mouseY, clickX, clickY];
+        threeSM.uniforms.iFrameRate.value = 30;
+        threeSM.uniforms.iFrame.value = iframe;
+      }
 
       threeRenderer.render(threeScene, threeCamera);
     }

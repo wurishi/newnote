@@ -268,3 +268,15 @@ ttKBDd
 tdG3Rd
 
 ![41](assets/41.jpg)
+
+# 42. Prism sdf,test
+
+tlyBW3
+
+![42](assets/42.jpg)
+
+# 43. GLSL ray tracing test
+
+3sc3z4
+
+![43](assets/43.jpg)

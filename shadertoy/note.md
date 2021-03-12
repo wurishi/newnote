@@ -102,3 +102,15 @@ npx webpack-dev-server
 # 20. Liberation of the True Self
 
 ![20](assets/20.jpg)
+
+# 21. neuron 1512 "lol"
+
+![21](assets/21.jpg)
+
+# 22. Synthesis ideas
+
+![22](assets/22.png)
+
+# 23. Fork MANO fract NikolaErce 337
+
+![23](assets/23.jpg)

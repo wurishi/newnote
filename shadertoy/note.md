@@ -114,3 +114,7 @@ npx webpack-dev-server
 # 23. Fork MANO fract NikolaErce 337
 
 ![23](assets/23.jpg)
+
+# 24. Fork Analys Cub NikolaErce 538
+
+![24](assets/24.png)

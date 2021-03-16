@@ -1,5 +1,5 @@
 import { GUI } from 'dat.gui';
-import { createCanvas, iSub, PRECISION_MEDIUMP } from '../libs';
+import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
@@ -7,12 +7,12 @@ const fragment = `
 #define H(h)(cos((h)*6.3+vec3(0,23,21))*.5+.5)
 void mainImage(out vec4 O, vec2 C)
 {
-    O=vec4(0);
+    O=vec4(0,0,0,1);
     vec3 p,r=iResolution,
     d=normalize(vec3((C-.5*r.xy)/r.y,1));  
-    for(float i=0.,g=0.,e,s;
+    for(float i=1.,g=0.,e,s;
         ++i<99.;
-        O.rgb+=mix(vec3(1),H(log(s)/5.),.5)*pow(cos(i*i/64.),8.)/e/2e4
+        O.rgb+=mix(vec3(1),H(log(s)/5.),.5)*pow(cos(i*i/64.),2.)/e/2e4
     )
     {
         p=g*d-vec3(0,-.25,1.3);
@@ -40,6 +40,12 @@ export default class implements iSub {
   name(): string {
     return '失败Fractal 35_gaz';
   }
+  // sort() {
+  //   return 0;
+  // }
+  // webgl() {
+  //   return WEBGL_2;
+  // }
   tags?(): string[] {
     return ['fractal'];
   }

@@ -1,4 +1,4 @@
-import { createCanvas, iSub } from '../libs';
+import { createCanvas, iSub, WEBGL_2 } from '../libs';
 
 const fragment = `
 #define time iTime
@@ -151,7 +151,13 @@ export default class implements iSub {
     return 'XtGGRt';
   }
   name(): string {
-    return '失败Auroras';
+    return 'Auroras';
+  }
+  sort() {
+    return 49;
+  }
+  webgl() {
+    return WEBGL_2;
   }
   tags?(): string[] {
     return [];

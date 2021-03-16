@@ -1,5 +1,5 @@
 import { GUI } from 'dat.gui';
-import { createCanvas, iSub, PRECISION_MEDIUMP } from '../libs';
+import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
@@ -812,7 +812,13 @@ export default class implements iSub {
     return 'fdl3z8';
   }
   name(): string {
-    return 'fdl3z8';
+    return 'IQ_TUT: Greek Holiday 2021';
+  }
+  sort() {
+    return 50;
+  }
+  webgl() {
+    return WEBGL_2;
   }
   tags?(): string[] {
     return [];

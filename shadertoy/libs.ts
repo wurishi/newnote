@@ -25,6 +25,7 @@ uniform int iFrame;
 
 uniform sampler2D iChannel0;
 uniform sampler2D iChannel1;
+uniform sampler2D iChannel2;
 
 {USER_FRAGMENT}
 
@@ -44,6 +45,7 @@ uniform int iFrame;
 
 uniform sampler2D iChannel0;
 uniform sampler2D iChannel1;
+uniform sampler2D iChannel2;
 
 out vec4 outputColor;
 

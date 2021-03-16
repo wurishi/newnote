@@ -310,3 +310,33 @@ XsjXRm
 XslGRr
 
 ![48](assets/48.jpg)
+
+# 49. Auroras
+
+XtGGRt
+
+![49](assets/49.jpg)
+
+# 50. IQ_TUT: Greek Holiday 2021
+
+fdl3z8
+
+![50](assets/50.jpg)
+
+# 51. stretching white vs blue noise
+
+fdsGz8
+
+![51](assets/51.png)
+
+# 52. Fractal 39_gaz
+
+sss3R8
+
+![52](assets/52.jpg)
+
+# 53. Pencilvester's orthodoodle
+
+wlyfWK
+
+![53](assets/53.jpg)

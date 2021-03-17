@@ -346,3 +346,15 @@ wlyfWK
 ttVBzd
 
 ![54](assets/54.jpg)
+
+# 55. Faux Layered Extrusion
+
+Wsc3Ds
+
+![55](assets/55.jpg)
+
+# 56. 4.8^2 Truchet
+
+MlyBRG
+
+![56](assets/56.jpg)

@@ -1,5 +1,5 @@
 import { GUI } from 'dat.gui';
-import { createCanvas, iSub, PRECISION_MEDIUMP } from '../libs';
+import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
@@ -84,26 +84,13 @@ vec2 grad( in vec2 x )
                  f(x+h.yx) - f(x-h.yx) )/(2.0*h.x);
 }
 
-// float max(float x, float y) {
-//   if(x >= y) {
-//     return x;
-//   }
-//   return y;
-// }
-int maxi(int x, int y) {
-  if(x >= y) {
-    return x;
-  }
-  return y;
-}
-
 //http://www.iquilezles.org/www/articles/distance/distance.htm
 float color( in vec2 point, in int lineWidth, in vec3 iResolution)
 {
     float v = f( point );
     vec2  g = grad( point );
     float de = abs(v)/length(g);
-    float normalizedLineRadius = (float(maxi(5,lineWidth)) / iResolution.y) / 2.;
+    float normalizedLineRadius = (float(max(5,lineWidth)) / iResolution.y) / 2.;
     float edgeWidth = 1. / iResolution.y;
     if(normalizedLineRadius<1./iResolution.x)
         return 0.;
@@ -123,7 +110,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     float frameRatio = floor(iFrameRate/ 30.);
     if(mod(float(iFrame), frameRatio) != 0.) {
         float decay = sinNorm(iTime*0.789)*0.5+0.1;
-        fragColor += texture2D(iChannel0, uv) * (1.-(1./(decay*iFrameRate)));
+        fragColor += texture(iChannel0, uv) * (1.-(1./(decay*iFrameRate)));
 
         //Clamp to prevent overexposure
         fragColor.r = clamp(fragColor.r, 0., 1.);
@@ -172,13 +159,13 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     
     //Fade
     float decay = sinNorm(iTime*0.789)*0.5+0.25;
-    fragColor += texture2D(iChannel0, uv) * (1.-(1./(decay*iFrameRate)));
+    fragColor += texture(iChannel0, uv) * (1.-(1./(decay*iFrameRate)));
     
     //Clamp to prevent overexposure
     fragColor.r = clamp(fragColor.r, 0., 2.);
     fragColor.g = clamp(fragColor.g, 0., 2.);
     fragColor.b = clamp(fragColor.b, 0., 2.);
-    fragColor.a = 1.;
+    // fragColor.a = 0.;
 }
 `;
 
@@ -191,6 +178,9 @@ export default class implements iSub {
   }
   sort() {
     return 15;
+  }
+  webgl() {
+    return WEBGL_2;
   }
   tags?(): string[] {
     return [];

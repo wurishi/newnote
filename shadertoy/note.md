@@ -340,3 +340,9 @@ sss3R8
 wlyfWK
 
 ![53](assets/53.jpg)
+
+# 54. Extruded Truchet Pattern
+
+ttVBzd
+
+![54](assets/54.jpg)

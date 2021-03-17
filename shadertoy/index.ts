@@ -182,7 +182,9 @@ async function activeSub(name: string) {
   const key = sub.key();
   if (key) {
     link.href = 'https://www.shadertoy.com/view/' + key;
-    link.textContent = `${key} (${sub.webgl ? sub.webgl() : WEBGL_1})`;
+    link.textContent = `${key} (${sub.webgl ? sub.webgl() : WEBGL_1}) shader 字符: ${
+      sub.userFragment().length
+    }`;
   } else {
     link.href = '';
     link.textContent = '无';

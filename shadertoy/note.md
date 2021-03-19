@@ -388,3 +388,9 @@ XsX3zB
 llyBRG
 
 ![61](assets/61.jpg)
+
+# 62. 4.6.12 Truchet Weave
+
+WsyXWR
+
+![62](assets/62.jpg)

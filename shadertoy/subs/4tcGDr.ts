@@ -3,13 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-/**
- * Part 6 Challenges:
- * - Make a scene of your own! Try to use the rotation transforms, the CSG primitives,
- *   and the geometric primitives. Remember you can use vector subtraction for translation,
- *   and component-wise vector multiplication for scaling.
- */
-
 const int MAX_MARCHING_STEPS = 255;
 const float MIN_DIST = 0.0;
 const float MAX_DIST = 100.0;

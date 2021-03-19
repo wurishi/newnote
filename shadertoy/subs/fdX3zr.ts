@@ -59,10 +59,6 @@ float octnse9(vec2 p, int oct, float t){
 }
 
 
-
-
-
-// 3D simplex noise stuff from: https://www.shadertoy.com/view/XsX3zB
 // For the stars
 const float F3 =  .3333333;
 const float G3 =  .1666667;

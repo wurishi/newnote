@@ -3,8 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-//afl_ext 2017-2019
-
 #define DRAG_MULT 0.048
 #define ITERATIONS_RAYMARCH 13
 #define ITERATIONS_NORMAL 48

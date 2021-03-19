@@ -3,12 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Created by Hsiang Yun 2016 
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-
-// This shader is inspired by the leaf in https://www.shadertoy.com/view/ld3Gz2  (iq's Snail)
-
-
 /***************************
 		Utility
 ****************************/

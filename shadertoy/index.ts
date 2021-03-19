@@ -29,6 +29,9 @@ document.body.appendChild(link);
 link.href = 'https://www.shadertoy.com';
 link.textContent = 'SHADERTOY';
 document.body.appendChild(document.createElement('br'));
+const filelink = document.createElement('span');
+document.body.appendChild(filelink);
+document.body.appendChild(document.createElement('hr'));
 
 const mainFolder = gui.addFolder('主菜单');
 const api: any = {
@@ -182,12 +185,14 @@ async function activeSub(name: string) {
   const key = sub.key();
   if (key) {
     link.href = 'https://www.shadertoy.com/view/' + key;
-    link.textContent = `${key} (${sub.webgl ? sub.webgl() : WEBGL_1}) shader 字符: ${
-      sub.userFragment().length
-    }`;
+    link.textContent = `${key} (${
+      sub.webgl ? sub.webgl() : WEBGL_1
+    }) shader 字符: ${sub.userFragment().length}`;
+    filelink.textContent = key + '|';
   } else {
     link.href = '';
     link.textContent = '无';
+    filelink.textContent = '';
   }
 
   canvas = sub.main();

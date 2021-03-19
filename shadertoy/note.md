@@ -358,3 +358,27 @@ Wsc3Ds
 MlyBRG
 
 ![56](assets/56.jpg)
+
+# 57. Snail
+
+ld3Gz2
+
+![57](assets/57.jpg)
+
+# 58. 3d simplex noise
+
+XsX3zB
+
+![58](assets/58.jpg)
+
+# 59. Noise Lab (3D)
+
+4sc3z2
+
+![59](assets/59.jpg)
+
+# 60. Hash without Sine
+
+4djSRW
+
+![60](assets/60.jpg)

@@ -3,11 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-/*
- * "Seascape" by Alexander Alekseev aka TDM - 2014
- * License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
- * Contact: tdmaav@gmail.com
- */
 
 const int NUM_STEPS = 8;
 const float PI	 	= 3.141592;

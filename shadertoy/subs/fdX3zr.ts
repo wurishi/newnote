@@ -105,8 +105,6 @@ float simplex3d(vec3 p) {
 
 // Cole Peterson
 
-// Different version of my planet thing here: https://www.shadertoy.com/view/ttKBDd
-
 
 vec4 sphere(vec3 ro, vec3 rd, vec3 cn, float r){
     float b = 2.*dot(rd, ro - cn);

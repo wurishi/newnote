@@ -23,7 +23,6 @@ float hashOld31(vec3 p)
     return -1.0 + 2.0 * fract(sin(h)*43758.5453123);
 }
 
-// Grab from https://www.shadertoy.com/view/4djSRW
 #define MOD3 vec3(.1031,.11369,.13787)
 //#define MOD3 vec3(443.8975,397.2973, 491.1871)
 float hash31(vec3 p3)
@@ -96,7 +95,6 @@ float simplex_noise(vec3 p)
     vec3 i = floor(p + (p.x + p.y + p.z) * K1);
     vec3 d0 = p - (i - (i.x + i.y + i.z) * K2);
     
-    // thx nikita: https://www.shadertoy.com/view/XsX3zB
     vec3 e = step(vec3(0.0), d0 - d0.yzx);
 	vec3 i1 = e * (1.0 - e.zxy);
 	vec3 i2 = 1.0 - e.zxy * (1.0 - e);

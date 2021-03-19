@@ -382,3 +382,9 @@ XsX3zB
 4djSRW
 
 ![60](assets/60.jpg)
+
+# 61. 4.6.12 Truchet
+
+llyBRG
+
+![61](assets/61.jpg)

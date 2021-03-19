@@ -11,7 +11,6 @@ const fragment = `
 //
 // The side connection tables were pre-generated using my own rather brute-force program.
 //
-// 4.6.12 version is here: https://www.shadertoy.com/view/llyBRG
 //
 // Weaved version is here: https://www.shadertoy.com/view/3dVSRm
 //

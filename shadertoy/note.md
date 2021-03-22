@@ -520,3 +520,45 @@ MdsSRs
 XdXBRH
 
 ![83](assets/83.jpg)
+
+# 84. Noise - Value - 3D - Deriv
+
+XsXfRH
+
+![84](assets/84.jpg)
+
+# 85. Noise - Gradient - 3D - Deriv
+
+4dffRH
+
+![85](assets/85.jpg)
+
+# 86. Noise - value - 2D
+
+lsf3WH
+
+![86](assets/86.jpg)
+
+# 87. Noise - gradient - 2D
+
+XdXGW8
+
+![87](assets/87.jpg)
+
+# 88. Noise - value - 3D
+
+4sfGzS
+
+![88](assets/88.jpg)
+
+# 89. Noise - gradient - 3D
+
+Xsl3Dl
+
+![89](assets/89.jpg)
+
+# 90. Noise - simplex - 2D
+
+Msf3WH
+
+![90](assets/90.jpg)

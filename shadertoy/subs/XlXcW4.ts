@@ -3,10 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// 2017 Inigo Quilez
-
-// Based on https://www.shadertoy.com/view/4tfyW4, but simpler and faster
-
   const uint k = 1103515245U;  // GLIB C
 //const uint k = 134775813U;   // Delphi and Turbo Pascal
 //const uint k = 20170906U;    // Today's date (use three days ago's dateif you want a prime)

@@ -87,7 +87,6 @@ float rangec(float a, float b, float t) {
     return clamp(range(a, b, t), 0., 1.);
 }
 
-// https://www.shadertoy.com/view/ll2GD3
 vec3 pal( in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d ) {
     return a + b*cos( 6.28318*(c*t+d) );
 }

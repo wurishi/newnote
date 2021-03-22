@@ -3,41 +3,25 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// The MIT License
-// Copyright © 2020 Inigo Quilez
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-// A simple way to prevent aliasing of cosine functions (the color
-// palette in this case is made of 8 layers) by attenuating them
-// when their oscillations become smaller than a pixel. Left is
-// direct use of cos(x), right is band-limited cos(x).
-//
 // Box-filtering of cos(x):
 //
 // (1/w)∫cos(t)dt with t ∈ (x-½w, x+½w)
 // = [sin(x+½w) - sin(x-½w)]/w
 // = cos(x)·sin(½w)/(½w)
 //
-// Can approximate smoothstep(2π,0,w) ≈ sin(w/2)/(w/2),
-// which you can also see as attenuating cos(x) when it 
-// oscilates more than once per pixel. More info:
-//
-// https://iquilezles.org/www/articles/bandlimiting/bandlimiting.htm
-//
-// Related Shader:
-//   https://www.shadertoy.com/view/WtScDt
-//   https://www.shadertoy.com/view/wtXfRH
-//   https://www.shadertoy.com/view/3tScWd
+
+uniform bool u_fcos;
 
 // box-filted cos(x)
 vec3 fcos( in vec3 x )
 {
     vec3 w = fwidth(x);
-	#if 1
-    return cos(x) * sin(0.5*w)/(0.5*w);       // exact
-	#else
-    return cos(x) * smoothstep(6.2832,0.0,w); // approx
-	#endif    
+    if(u_fcos) {
+      return cos(x) * sin(0.5*w)/(0.5*w);       // exact
+    }
+    else {
+      return cos(x) * smoothstep(6.2832,0.0,w); // approx
+    }
 }
 
 // pick raw cosine, or band-limited cosine
@@ -91,6 +75,11 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord )
 }
 `;
 
+let gui: GUI;
+const api = {
+  u_fcos: false,
+};
+
 export default class implements iSub {
   key(): string {
     return 'WtScDt';
@@ -99,7 +88,7 @@ export default class implements iSub {
     return 'Bandlimited Synthesis 1';
   }
   sort() {
-    return 45;
+    return 45; 
   }
   webgl() {
     return WEBGL_2;
@@ -108,6 +97,8 @@ export default class implements iSub {
     return [];
   }
   main(): HTMLCanvasElement {
+    gui = new GUI();
+    gui.add(api, 'u_fcos');
     return createCanvas();
   }
   userFragment(): string {
@@ -116,8 +107,16 @@ export default class implements iSub {
   fragmentPrecision?(): string {
     return PRECISION_MEDIUMP;
   }
-  destory(): void {}
+  destory(): void {
+    if (gui) {
+      gui.destroy();
+      gui = null;
+    }
+  }
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
-    return () => {};
+    const u_fcos = webglUtils.getUniformLocation(gl, program, 'u_fcos');
+    return () => {
+      u_fcos.uniform1i(api.u_fcos ? 1 : 0);
+    };
   }
 }

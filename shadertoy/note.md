@@ -478,3 +478,21 @@ MtScWW
 ll2GD3
 
 ![76](assets/76.jpg)
+
+# 77. Bandlimited Synthesis 2
+
+wtXfRH
+
+![77](assets/77.jpg)
+
+# 78. Bandlimited fbm (box, 2D)
+
+3tScWd
+
+![78](assets/78.jpg)
+
+# 79. webgl2 grid noise
+
+4tfyW4
+
+![79](assets/79.jpg)

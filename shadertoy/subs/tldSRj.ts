@@ -3,47 +3,40 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-vec2 hash( vec2 p ) // replace this by something better
+vec2 g( vec2 n ) { return sin(n.x*n.y*vec2(12,17)+vec2(1,2)); }
+//vec2 g( vec2 n ) { return sin(n.x*n.y+vec2(0,1.571)); } // if you want the gradients to lay on a circle
+
+float noise(vec2 p)
 {
-	p = vec2( dot(p,vec2(127.1,311.7)), dot(p,vec2(269.5,183.3)) );
-	return -1.0 + 2.0*fract(sin(p)*43758.5453123);
+    const float kF = 3.1415927;  // make 6 to see worms
+    
+    vec2 i = floor(p);
+	vec2 f = fract(p);
+    f = f*f*(3.0-2.0*f);
+    return mix(mix(sin(kF*dot(p,g(i+vec2(0,0)))),
+               	   sin(kF*dot(p,g(i+vec2(1,0)))),f.x),
+               mix(sin(kF*dot(p,g(i+vec2(0,1)))),
+               	   sin(kF*dot(p,g(i+vec2(1,1)))),f.x),f.y);
 }
 
-float noise( in vec2 p )
-{
-    const float K1 = 0.366025404; // (sqrt(3)-1)/2;
-    const float K2 = 0.211324865; // (3-sqrt(3))/6;
-
-	vec2  i = floor( p + (p.x+p.y)*K1 );
-    vec2  a = p - i + (i.x+i.y)*K2;
-    float m = step(a.y,a.x); 
-    vec2  o = vec2(m,1.0-m);
-    vec2  b = a - o + K2;
-	vec2  c = a - 1.0 + 2.0*K2;
-    vec3  h = max( 0.5-vec3(dot(a,a), dot(b,b), dot(c,c) ), 0.0 );
-	vec3  n = h*h*h*h*vec3( dot(a,hash(i+0.0)), dot(b,hash(i+o)), dot(c,hash(i+1.0)));
-    return dot( n, vec3(70.0) );
-}
-
-// -----------------------------------------------
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
     vec2 p = fragCoord.xy / iResolution.xy;
 
 	vec2 uv = p*vec2(iResolution.x/iResolution.y,1.0);
+
+    float f = 0.0;
 	
-	float f = 0.0;
-	
-    // left: value noise	
+    // left: noise	
 	if( p.x<0.6 )
 	{
-		f = noise( 16.0*uv );
+		f = noise( 24.0*uv );
 	}
     // right: fractal noise (4 octaves)
     else	
 	{
-		uv *= 5.0;
+		uv *= 8.0;
         mat2 m = mat2( 1.6,  1.2, -1.2,  1.6 );
 		f  = 0.5000*noise( uv ); uv = m*uv;
 		f += 0.2500*noise( uv ); uv = m*uv;
@@ -61,13 +54,13 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
 export default class implements iSub {
   key(): string {
-    return 'Msf3WH';
+    return 'tldSRj';
   }
   name(): string {
-    return 'Noise - simplex - 2D';
+    return 'Noise - wave - 2D';
   }
   sort() {
-    return 90;
+    return 91;
   }
   tags?(): string[] {
     return [];

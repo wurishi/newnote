@@ -5,15 +5,6 @@ import * as webglUtils from '../webgl-utils';
 const fragment = `
 // this shader: https://www.shadertoy.com/view/XttSz2)
 
-
-// Value    Noise 2D             : https://www.shadertoy.com/view/lsf3WH
-// Value    Noise 3D             : https://www.shadertoy.com/view/4sfGzS
-// Gradient Noise 2D             : https://www.shadertoy.com/view/XdXGW8
-// Gradient Noise 3D             : https://www.shadertoy.com/view/Xsl3Dl
-// Simplex  Noise 2D             : https://www.shadertoy.com/view/Msf3WH
-// Wave     Noise 2D             : https://www.shadertoy.com/view/tldSRj
-
-
 float hash(vec3 p)  // replace this by something better
 {
     p  = 50.0*fract( p*0.3183099 + vec3(0.71,0.113,0.419));

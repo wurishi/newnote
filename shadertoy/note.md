@@ -562,3 +562,15 @@ Xsl3Dl
 Msf3WH
 
 ![90](assets/90.jpg)
+
+# 91. Noise - wave - 2D
+
+tldSRj
+
+![91](assets/91.jpg)
+
+# 92. interesting noise algorithm
+
+wttSRj
+
+![92](assets/92.jpg)

@@ -3,13 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Value    Noise 3D             : https://www.shadertoy.com/view/4sfGzS
-// Gradient Noise 2D             : https://www.shadertoy.com/view/XdXGW8
-// Gradient Noise 3D             : https://www.shadertoy.com/view/Xsl3Dl
-// Simplex  Noise 2D             : https://www.shadertoy.com/view/Msf3WH
-// Wave     Noise 2D             : https://www.shadertoy.com/view/tldSRj
-
-
 vec2 hash( vec2 x )  // replace this by something better
 {
     const vec2 k = vec2( 0.3183099, 0.3678794 );

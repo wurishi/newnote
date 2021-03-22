@@ -3,11 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 // * ~ Noise shaders by iq:
-// * ~     Value    Noise 2D             : https://www.shadertoy.com/view/lsf3WH
-// * ~     Value    Noise 3D             : https://www.shadertoy.com/view/4sfGzS
-// * ~     Gradient Noise 2D             : https://www.shadertoy.com/view/XdXGW8
-// * ~     Gradient Noise 3D             : https://www.shadertoy.com/view/Xsl3Dl
-// * ~     Simplex  Noise 2D             : https://www.shadertoy.com/view/Msf3WH
 // * ~     Voronoise: https://www.shadertoy.com/view/Xd23Dh
 // * ~
 

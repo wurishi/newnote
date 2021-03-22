@@ -3,10 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Simplex  Noise 2D             : https://www.shadertoy.com/view/Msf3WH
-// Wave     Noise 2D             : https://www.shadertoy.com/view/tldSRj
-
-
 //#define USE_PROCEDURAL
 
 //===============================================================================================

@@ -3,30 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// It produces lowe quality noise than Gradient Noise (https://www.shadertoy.com/view/XdXGW8)
-// but it is slightly faster to compute. When used in a fractal construction, the blockyness
-// of Value Noise gets qcuikly hidden, making it a very popular alternative to Gradient Noise.
-//
-// The principle is to create a virtual grid/latice all over the plane, and assign one
-// random value to every vertex in the grid. When querying/requesting a noise value at
-// an arbitrary point in the plane, the grid cell in which the query is performed is
-// determined (line 30), the four vertices of the grid are determined and their random
-// value fetched (lines 35 to 38) and then bilinearly interpolated (lines 35 to 38 again)
-// with a smooth interpolant (line 31 and 33).
-
-
-// Value    Noise 2D, Derivatives: https://www.shadertoy.com/view/4dXBRH
-// Gradient Noise 2D, Derivatives: https://www.shadertoy.com/view/XdXBRH
-// Value    Noise 3D, Derivatives: https://www.shadertoy.com/view/XsXfRH
-// Gradient Noise 3D, Derivatives: https://www.shadertoy.com/view/4dffRH
-// Value    Noise 2D             : https://www.shadertoy.com/view/lsf3WH
-// Value    Noise 3D             : https://www.shadertoy.com/view/4sfGzS
-// Gradient Noise 2D             : https://www.shadertoy.com/view/XdXGW8
-// Gradient Noise 3D             : https://www.shadertoy.com/view/Xsl3Dl
-// Simplex  Noise 2D             : https://www.shadertoy.com/view/Msf3WH
-// Wave     Noise 2D             : https://www.shadertoy.com/view/tldSRj
-
-
 float hash(vec2 p)  // replace this by something better
 {
     p  = 50.0*fract( p*0.3183099 + vec2(0.71,0.113));

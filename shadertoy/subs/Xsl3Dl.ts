@@ -3,14 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Wave     Noise 2D             : https://www.shadertoy.com/view/tldSRj
-
-
-
-//===============================================================================================
-//===============================================================================================
-//===============================================================================================
-
 vec3 hash( vec3 p ) // replace this by something better
 {
 	p = vec3( dot(p,vec3(127.1,311.7, 74.7)),

@@ -2,15 +2,7 @@ import { GUI } from 'dat.gui';
 import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
-// * ~
-// * ~ if you're looking for procedural noise implementation examples you might
-// * ~ also want to look at the following shaders:
-// * ~
-// * ~ Noise Lab shader by candycat: https://www.shadertoy.com/view/4sc3z2
-// * ~
 // * ~ Noise shaders by iq:
-// * ~     Value    Noise 2D, Derivatives: https://www.shadertoy.com/view/4dXBRH
-// * ~     Gradient Noise 2D, Derivatives: https://www.shadertoy.com/view/XdXBRH
 // * ~     Value    Noise 3D, Derivatives: https://www.shadertoy.com/view/XsXfRH
 // * ~     Gradient Noise 3D, Derivatives: https://www.shadertoy.com/view/4dffRH
 // * ~     Value    Noise 2D             : https://www.shadertoy.com/view/lsf3WH
@@ -20,8 +12,6 @@ import * as webglUtils from '../webgl-utils';
 // * ~     Simplex  Noise 2D             : https://www.shadertoy.com/view/Msf3WH
 // * ~     Voronoise: https://www.shadertoy.com/view/Xd23Dh
 // * ~
-// *
-// */
 
 const fragment = `
 /* discontinuous pseudorandom uniformly distributed in [-0.5, +0.5]^3 */

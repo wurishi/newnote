@@ -502,3 +502,21 @@ wtXfRH
 XdfXRj
 
 ![80](assets/80.jpg)
+
+# 81. Noise - Value - 2D - Deriv
+
+4dXBRH
+
+![81](assets/81.jpg)
+
+# 82. Analytic Normals 2D
+
+MdsSRs
+
+![82](assets/82.jpg)
+
+# 83. Noise - Gradient - 2D - Deriv
+
+XdXBRH
+
+![83](assets/83.jpg)

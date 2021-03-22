@@ -430,3 +430,21 @@ XlXcW4
 4tXyWN
 
 ![68](assets/68.jpg)
+
+# 69. Filtered grid (box, 2D)
+
+XtBfzz
+
+![69](assets/69.jpg)
+
+# 70. filtered checker (box, 2D)
+
+XlcSz2
+
+![70](assets/70.jpg)
+
+# 71. Filtered checker (box, 3D)
+
+XlXBWs
+
+![71](assets/71.jpg)

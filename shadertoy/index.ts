@@ -220,7 +220,6 @@ async function activeSub(name: string) {
     sub.fragmentPrecision ? sub.fragmentPrecision() : PRECISION_MEDIUMP
   );
   f = f.replace('{USER_FRAGMENT}', sub.userFragment());
-  console.log(f);
 
   const program = webglUtils.createProgram2(gl, v, f);
 

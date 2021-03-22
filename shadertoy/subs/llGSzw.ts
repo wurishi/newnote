@@ -3,14 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// See these too: 
-//
-// - https://www.shadertoy.com/view/4tXyWN
-//
-// Do NOT use this hash as a random number generator. Use it only to inialize
-// the seed of a random number generator. Do NOT call this hash recursivelly,
-// it is NOT a random number generator.
-
 uniform bool u_RGB;
 
 float hash1( uint n ) 

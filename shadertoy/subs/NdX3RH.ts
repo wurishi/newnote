@@ -5,7 +5,6 @@ import * as webglUtils from '../webgl-utils';
 const fragment = `
 uniform bool u_layer;
 
-// background grid from https://www.shadertoy.com/view/XtBfzz
 const float N = 2.0; // grid ratio
 float gridTexture( in vec2 p )
 {

@@ -3,18 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Truchet tiling using the semi-regular tiling made of octagons and squares.
-// This is based on the idea that any regular polygon with an even number of sides can be used
-// as a Truchet tile.
-//
-// Inspired by this JavaScript canvas version here: http://somethingorotherwhatever.com/truchet-polygons/
-//
-// The side connection tables were pre-generated using my own rather brute-force program.
-//
-//
-// Weaved version is here: https://www.shadertoy.com/view/3dVSRm
-//
-
 float pi = 3.141592653589;
 
 float hash(vec2 p)

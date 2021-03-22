@@ -4,22 +4,7 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Similar to https://www.shadertoy.com/view/XlXBWs, but with a triangular filter kernel,
-// which produces less flickering animations that a box filter. Luckily, it's still easily
-// integrable analytically! Full description in this article:
-//
-// http://iquilezles.org/www/articles/checkerfiltering/checkerfiltering.htm
-//
 // Inspired by http://http.developer.nvidia.com/GPUGems/gpugems_ch25.html and improved
-
-  
-// checker, 2D, box filter: https://www.shadertoy.com/view/XlcSz2
-// checker, 3D, box filter: https://www.shadertoy.com/view/XlXBWs
-// checker, 3D, tri filter: https://www.shadertoy.com/view/llffWs
-// grid,    2D, box filter: https://www.shadertoy.com/view/XtBfzz
-// xor,     2D, box filter: https://www.shadertoy.com/view/tdBXRW
-
-// --- analytically box-filtered checkerboard ---
 
 float checkersTextureGradBox( in vec2 p, in vec2 ddx, in vec2 ddy )
 {

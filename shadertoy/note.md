@@ -448,3 +448,21 @@ XlcSz2
 XlXBWs
 
 ![71](assets/71.jpg)
+
+# 72. Filtered checker (triangle, 3D)
+
+llffWs
+
+![72](assets/72.jpg)
+
+# 73. Filtered xor (box, 2D)
+
+tdBXRW
+
+![73](assets/73.jpg)
+
+# 74. Integrating a square wave
+
+MtffWs
+
+![74](assets/74.png)

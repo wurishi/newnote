@@ -3,24 +3,40 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Based on code from http://http.developer.nvidia.com/GPUGems/gpugems_ch25.html
+vec3 pri( in vec3 x )
+{
+    vec3 h = fract(x/2.0)-0.5;
+    return x*0.5 + h*(1.0-2.0*abs(h));
+}
+
+float checkersTextureGradTri( in vec3 p, in vec3 ddx, in vec3 ddy )
+{
+    vec3 w = max(abs(ddx), abs(ddy)) + 0.01;       // filter kernel
+    vec3 i = (pri(p+w)-2.0*pri(p)+pri(p-w))/(w*w); // analytical integral (box filter)
+    return 0.5 - 0.5*i.x*i.y*i.z;                  // xor pattern
+}
+
+// --- analytically box-filtered checkerboard ---
 
 vec3 tri( in vec3 x )
 {
-    return 1.0-abs(2.0*fract(x/2.0)-1.0);
+    vec3 h = fract(x/2.0)-0.5;
+    return 1.0-2.0*abs(h);
 }
 
-float checkersTextureGrad( in vec3 p, in vec3 ddx, in vec3 ddy )
+float checkersTextureGradBox( in vec3 p, in vec3 ddx, in vec3 ddy )
 {
-  vec3 w = max(abs(ddx), abs(ddy)) + 0.0001; // filter kernel
-  vec3 i = (tri(p+0.5*w)-tri(p-0.5*w))/w;    // analytical integral (box filter)
-  return 0.5 - 0.5*i.x*i.y*i.z;              // xor pattern
+    vec3 w = max(abs(ddx), abs(ddy)) + 0.01;   // filter kernel
+    vec3 i = (tri(p+0.5*w)-tri(p-0.5*w))/w;    // analytical integral (box filter)
+    return 0.5 - 0.5*i.x*i.y*i.z;              // xor pattern
 }
+
+// --- unfiltered checkerboard ---
 
 float checkersTexture( in vec3 p )
 {
     vec3 q = floor(p);
-    return mod( q.x+q.y+q.z, 2.0 );
+    return mod( q.x+q.y+q.z, 2.0 );            // xor pattern
 }
 
 //===============================================================================================
@@ -73,10 +89,10 @@ float iSphere( in vec3 ro, in vec3 rd, in vec4 sph )
 
 
 // spheres
-const vec4 sc0 = vec4(  0.0, 1.0,  0.0, 1.0 );
-const vec4 sc1 = vec4(-11.0, 1.0,-12.0, 5.0 );
-const vec4 sc2 = vec4(-11.0, 1.0, 12.0, 5.0 );
-const vec4 sc3 = vec4( 13.0, 1.0,-10.0, 4.0 );
+const vec4 sc0 = vec4(  2.0, 0.5, 0.8, 0.5 );
+const vec4 sc1 = vec4( -6.0, 1.0,-4.0, 3.0 );
+const vec4 sc2 = vec4(-16.0, 1.0, 7.0, 4.0 );
+const vec4 sc3 = vec4(-25.0, 8.0, 0.0, 9.0 );
 
 float intersect( vec3 ro, vec3 rd, out vec3 pos, out vec3 nor, out float occ, out float matid )
 {
@@ -146,13 +162,13 @@ float intersect( vec3 ro, vec3 rd, out vec3 pos, out vec3 nor, out float occ, ou
 
 vec3 texCoords( in vec3 p )
 {
-	return 3.0*p;
+	return 5.0*p;
 }
 
 
 void calcCamera( out vec3 ro, out vec3 ta )
 {
-	float an = 0.01*iTime;
+	float an = 0.3*sin(0.04*iTime);
 	ro = vec3( 5.5*cos(an), 1.0, 5.5*sin(an) );
     ta = vec3( 0.0, 1.0, 0.0 );
 
@@ -178,9 +194,9 @@ vec3 doLighting( in vec3 pos, in vec3 nor, in float occ, in vec3 rd )
 //===============================================================================================
 //===============================================================================================
 
-void calcRayForPixel( vec2 pix, out vec3 resRo, out vec3 resRd )
+void calcRayForPixel( in vec2 pix, in vec2 res, out vec3 resRo, out vec3 resRd )
 {
-	vec2 p = (-iResolution.xy + 2.0*pix) / iResolution.y;
+	vec2 p = (-res.xy + 2.0*pix) / res.y;
 	
      // camera movement	
 	vec3 ro, ta;
@@ -199,15 +215,15 @@ void calcRayForPixel( vec2 pix, out vec3 resRo, out vec3 resRd )
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
-	vec2  p  = (-iResolution.xy + 2.0*fragCoord.xy) / iResolution.y;
-    float th = (-iResolution.x + 2.0*iMouse.x) / iResolution.y;
-	
-    if( iMouse.z<0.01) th = 0.5/ iResolution.y;
+    vec2 res = vec2(iResolution.x/3.0,iResolution.y);
+    
+    int   id = int( floor(fragCoord.x/res.x) );
+    vec2  px = vec2( fragCoord.x - float(id)*res.x,fragCoord.y);
 	
 	vec3 ro, rd, ddx_ro, ddx_rd, ddy_ro, ddy_rd;
-	calcRayForPixel( fragCoord.xy + vec2(0.0,0.0), ro, rd );
-	calcRayForPixel( fragCoord.xy + vec2(1.0,0.0), ddx_ro, ddx_rd );
-	calcRayForPixel( fragCoord.xy + vec2(0.0,1.0), ddy_ro, ddy_rd );
+	calcRayForPixel( px + vec2(0.0,0.0), res, ro, rd );
+	calcRayForPixel( px + vec2(1.0,0.0), res, ddx_ro, ddx_rd );
+	calcRayForPixel( px + vec2(0.0,1.0), res, ddy_ro, ddy_rd );
 		
     // trace
 	vec3 pos, nor;
@@ -248,10 +264,12 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         
 		// shading		
 		vec3 mate = vec3(0.0);
-		if( p.x<th ) 
+		if( id==0 ) 
             mate = vec3(1.0)*checkersTexture( uvw );
-        else
-            mate = vec3(1.0)*checkersTextureGrad( uvw, ddx_uvw, ddy_uvw );
+        else if( id==1 )
+            mate = vec3(1.0)*checkersTextureGradBox( uvw, ddx_uvw, ddy_uvw );
+        else if( id==2 )
+            mate = vec3(1.0)*checkersTextureGradTri( uvw, ddx_uvw, ddy_uvw );
 
         // lighting	
 		vec3 lin = doLighting( pos, nor, occ, rd );
@@ -266,7 +284,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     // gamma correction	
 	col = pow( col, vec3(0.4545) );
 
-	col *= smoothstep( 0.006, 0.008, abs(p.x-th) );
+	col *= smoothstep( 2.0, 3.0, abs(px.x) );
 	
 	fragColor = vec4( col, 1.0 );
 }
@@ -274,13 +292,13 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
 export default class implements iSub {
   key(): string {
-    return 'XlXBWs';
+    return 'llffWs';
   }
   name(): string {
-    return 'Filtered checker (box, 3D)';
+    return 'Filtered checker (triangle, 3D)';
   }
   sort() {
-    return 71;
+    return 72;
   }
   tags?(): string[] {
     return [];

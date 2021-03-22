@@ -3,24 +3,42 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Based on code from http://http.developer.nvidia.com/GPUGems/gpugems_ch25.html
+// --- analytically box-filtered xor pattern ---
 
-vec3 tri( in vec3 x )
+float xorTextureGradBox( in vec2 pos, in vec2 ddx, in vec2 ddy )
 {
-    return 1.0-abs(2.0*fract(x/2.0)-1.0);
+    float xor = 0.0;
+    for( int i=0; i<8; i++ )
+    {
+        // filter kernel
+        vec2 w = max(abs(ddx), abs(ddy)) + 0.01;  
+        // analytical integral (box filter)
+        vec2 f = 2.0*(abs(fract((pos-0.5*w)/2.0)-0.5)-abs(fract((pos+0.5*w)/2.0)-0.5))/w;
+        // xor pattern
+        xor += 0.5 - 0.5*f.x*f.y;
+        
+        // next octave        
+        ddx *= 0.5;
+        ddy *= 0.5;
+        pos *= 0.5;
+        xor *= 0.5;
+    }
+    return xor;
 }
 
-float checkersTextureGrad( in vec3 p, in vec3 ddx, in vec3 ddy )
-{
-  vec3 w = max(abs(ddx), abs(ddy)) + 0.0001; // filter kernel
-  vec3 i = (tri(p+0.5*w)-tri(p-0.5*w))/w;    // analytical integral (box filter)
-  return 0.5 - 0.5*i.x*i.y*i.z;              // xor pattern
-}
+// --- unfiltered xor pattern ---
 
-float checkersTexture( in vec3 p )
+float xorTexture( in vec2 pos )
 {
-    vec3 q = floor(p);
-    return mod( q.x+q.y+q.z, 2.0 );
+    float xor = 0.0;
+    for( int i=0; i<8; i++ )
+    {
+        xor += mod( floor(pos.x)+floor(pos.y), 2.0 );
+
+        pos *= 0.5;
+        xor *= 0.5;
+    }
+    return xor;
 }
 
 //===============================================================================================
@@ -61,7 +79,6 @@ float iSphere( in vec3 ro, in vec3 rd, in vec4 sph )
 	{
 		t = -b - sqrt(h);
 	}
-	
 	return t;
 }
 
@@ -73,18 +90,19 @@ float iSphere( in vec3 ro, in vec3 rd, in vec4 sph )
 
 
 // spheres
-const vec4 sc0 = vec4(  0.0, 1.0,  0.0, 1.0 );
-const vec4 sc1 = vec4(-11.0, 1.0,-12.0, 5.0 );
-const vec4 sc2 = vec4(-11.0, 1.0, 12.0, 5.0 );
-const vec4 sc3 = vec4( 13.0, 1.0,-10.0, 4.0 );
+const vec4 sc0 = vec4(  3.0, 0.5, 0.0, 0.5 );
+const vec4 sc1 = vec4( -4.0, 2.0,-5.0, 2.0 );
+const vec4 sc2 = vec4( -4.0, 2.0, 5.0, 2.0 );
+const vec4 sc3 = vec4(-30.0, 8.0, 0.0, 8.0 );
 
-float intersect( vec3 ro, vec3 rd, out vec3 pos, out vec3 nor, out float occ, out float matid )
+float intersect( vec3 ro, vec3 rd, out vec3 pos, out vec3 nor, out float occ, out int matid )
 {
     // raytrace
 	float tmin = 10000.0;
 	nor = vec3(0.0);
 	occ = 1.0;
 	pos = vec3(0.0);
+    matid = -1;
 	
 	// raytrace-plane
 	float h = (0.01-ro.y)/rd.y;
@@ -93,12 +111,13 @@ float intersect( vec3 ro, vec3 rd, out vec3 pos, out vec3 nor, out float occ, ou
 		tmin = h; 
 		nor = vec3(0.0,1.0,0.0); 
 		pos = ro + h*rd;
-		matid = 0.0;
+		matid = 0;
 		occ = occSphere( sc0, pos, nor ) * 
 			  occSphere( sc1, pos, nor ) *
 			  occSphere( sc2, pos, nor ) *
 			  occSphere( sc3, pos, nor );
 	}
+
 
 	// raytrace-sphere
 	h = iSphere( ro, rd, sc0 );
@@ -107,7 +126,7 @@ float intersect( vec3 ro, vec3 rd, out vec3 pos, out vec3 nor, out float occ, ou
 		tmin = h; 
         pos = ro + h*rd;
 		nor = normalize(pos-sc0.xyz); 
-		matid = 1.0;
+		matid = 1;
 		occ = 0.5 + 0.5*nor.y;
 	}
 
@@ -116,8 +135,8 @@ float intersect( vec3 ro, vec3 rd, out vec3 pos, out vec3 nor, out float occ, ou
 	{ 
 		tmin = h; 
         pos = ro + tmin*rd;
-		nor = normalize(ro+h*rd-sc1.xyz); 
-		matid = 1.0;
+		nor = normalize(pos-sc1.xyz); 
+		matid = 2;
 		occ = 0.5 + 0.5*nor.y;
 	}
 
@@ -126,8 +145,8 @@ float intersect( vec3 ro, vec3 rd, out vec3 pos, out vec3 nor, out float occ, ou
 	{ 
 		tmin = h; 
         pos = ro + tmin*rd;
-		nor = normalize(ro+h*rd-sc2.xyz); 
-		matid = 1.0;
+		nor = normalize(pos-sc2.xyz); 
+		matid = 3;
 		occ = 0.5 + 0.5*nor.y;
 	}
 
@@ -136,26 +155,52 @@ float intersect( vec3 ro, vec3 rd, out vec3 pos, out vec3 nor, out float occ, ou
 	{ 
 		tmin = h; 
         pos = ro + tmin*rd;
-		nor = normalize(ro+h*rd-sc3.xyz); 
-		matid = 1.0;
+		nor = normalize(pos-sc3.xyz); 
+		matid = 4;
 		occ = 0.5 + 0.5*nor.y;
 	}
 
 	return tmin;	
 }
 
-vec3 texCoords( in vec3 p )
+vec2 texCoords( in vec3 pos, int mid )
 {
-	return 3.0*p;
+    vec2 matuv;
+    
+    if( mid==0 )
+    {
+        matuv = pos.xz;
+    }
+    else if( mid==1 )
+    {
+        vec3 q = normalize( pos - sc0.xyz );
+        matuv = vec2( atan(q.x,q.z), acos(q.y ) )*sc0.w;
+    }
+    else if( mid==2 )
+    {
+        vec3 q = normalize( pos - sc1.xyz );
+        matuv = vec2( atan(q.x,q.z), acos(q.y ) )*sc1.w;
+    }
+    else if( mid==3 )
+    {
+        vec3 q = normalize( pos - sc2.xyz );
+        matuv = vec2( atan(q.x,q.z), acos(q.y ) )*sc2.w;
+    }
+    else if( mid==4 )
+    {
+        vec3 q = normalize( pos - sc3.xyz );
+        matuv = vec2( atan(q.x,q.z), acos(q.y ) )*sc3.w;
+    }
+
+	return 200.0*matuv;
 }
 
 
 void calcCamera( out vec3 ro, out vec3 ta )
 {
-	float an = 0.01*iTime;
-	ro = vec3( 5.5*cos(an), 1.0, 5.5*sin(an) );
+	float an = 0.1*sin(0.1*iTime);
+	ro = vec3( 5.0*cos(an), 0.5, 5.0*sin(an) );
     ta = vec3( 0.0, 1.0, 0.0 );
-
 }
 
 vec3 doLighting( in vec3 pos, in vec3 nor, in float occ, in vec3 rd )
@@ -165,22 +210,23 @@ vec3 doLighting( in vec3 pos, in vec3 nor, in float occ, in vec3 rd )
 				              softShadowSphere( pos, vec3(0.57703), sc2 )),
                               softShadowSphere( pos, vec3(0.57703), sc3 ));
 	float dif = clamp(dot(nor,vec3(0.57703)),0.0,1.0);
-	float bac = clamp(dot(nor,vec3(-0.707,0.0,-0.707)),0.0,1.0);
+	float bac = clamp(0.5+0.5*dot(nor,vec3(-0.707,0.0,-0.707)),0.0,1.0);
     vec3 lin  = dif*vec3(1.50,1.40,1.30)*sh;
 	     lin += occ*vec3(0.15,0.20,0.30);
-	     lin += bac*vec3(0.10,0.10,0.10);
+	     lin += bac*vec3(0.10,0.10,0.10)*(0.2+0.8*occ);
 
     return lin;
 }
+
 //===============================================================================================
 //===============================================================================================
 // render
 //===============================================================================================
 //===============================================================================================
 
-void calcRayForPixel( vec2 pix, out vec3 resRo, out vec3 resRd )
+void calcRayForPixel( in vec2 pix, out vec3 resRo, out vec3 resRd )
 {
-	vec2 p = (-iResolution.xy + 2.0*pix) / iResolution.y;
+	vec2 p = (2.0*pix-iResolution.xy)/iResolution.y;
 	
      // camera movement	
 	vec3 ro, ta;
@@ -190,32 +236,31 @@ void calcRayForPixel( vec2 pix, out vec3 resRo, out vec3 resRd )
     vec3 uu = normalize( cross(ww,vec3(0.0,1.0,0.0) ) );
     vec3 vv = normalize( cross(uu,ww));
 	// create view ray
-	vec3 rd = normalize( p.x*uu + p.y*vv + 1.5*ww );
+	vec3 rd = normalize( p.x*uu + p.y*vv + 2.0*ww );
 	
 	resRo = ro;
 	resRd = rd;
 }
 
-
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
-	vec2  p  = (-iResolution.xy + 2.0*fragCoord.xy) / iResolution.y;
-    float th = (-iResolution.x + 2.0*iMouse.x) / iResolution.y;
-	
-    if( iMouse.z<0.01) th = 0.5/ iResolution.y;
-	
-	vec3 ro, rd, ddx_ro, ddx_rd, ddy_ro, ddy_rd;
-	calcRayForPixel( fragCoord.xy + vec2(0.0,0.0), ro, rd );
-	calcRayForPixel( fragCoord.xy + vec2(1.0,0.0), ddx_ro, ddx_rd );
-	calcRayForPixel( fragCoord.xy + vec2(0.0,1.0), ddy_ro, ddy_rd );
+	vec2 p = (-iResolution.xy + 2.0*fragCoord) / iResolution.y;
+
+    float th = (iMouse.z>0.001) ? (2.0*iMouse.x-iResolution.x)/iResolution.y : 0.0;
+
+    vec3 ro, rd, ddx_ro, ddx_rd, ddy_ro, ddy_rd;
+	calcRayForPixel( fragCoord + vec2(0.0,0.0), ro, rd );
+	calcRayForPixel( fragCoord + vec2(1.0,0.0), ddx_ro, ddx_rd );
+	calcRayForPixel( fragCoord + vec2(0.0,1.0), ddy_ro, ddy_rd );
 		
     // trace
 	vec3 pos, nor;
-	float occ, mid;
+	float occ;
+    int mid;
     float t = intersect( ro, rd, pos, nor, occ, mid );
 
 	vec3 col = vec3(0.9);
-	if( t<100.0 )
+	if( mid!=-1 )
 	{
 #if 1
 		// -----------------------------------------------------------------------
@@ -228,9 +273,9 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 		vec3 ddy_pos = ddy_ro - ddy_rd*dot(ddy_ro-pos,nor)/dot(ddy_rd,nor);
 
 		// calc texture sampling footprint		
-		vec3     uvw = texCoords(     pos );
-		vec3 ddx_uvw = texCoords( ddx_pos ) - uvw;
-		vec3 ddy_uvw = texCoords( ddy_pos ) - uvw;
+		vec2     uv = texCoords(     pos, mid );
+		vec2 ddx_uv = texCoords( ddx_pos, mid ) - uv;
+		vec2 ddy_uv = texCoords( ddy_pos, mid ) - uv;
 #else
 		// -----------------------------------------------------------------------
         // Because we are in the GPU, we do have access to differentials directly
@@ -238,21 +283,20 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 		// It wouldn't work as well in shaders doing interleaved calculations in
 		// pixels (such as some of the 3D/stereo shaders here in Shadertoy)
 		// -----------------------------------------------------------------------
-		vec3 uvw = texCoords( pos );
+		vec2 uv = texCoords( pos, mid );
 
 		// calc texture sampling footprint		
-		vec3 ddx_uvw = dFdx( uvw ); 
-        vec3 ddy_uvw = dFdy( uvw ); 
+		vec2 ddx_uv = dFdx( uv ); 
+        vec2 ddy_uv = dFdy( uv );
 #endif
-
-        
+       
 		// shading		
 		vec3 mate = vec3(0.0);
-		if( p.x<th ) 
-            mate = vec3(1.0)*checkersTexture( uvw );
-        else
-            mate = vec3(1.0)*checkersTextureGrad( uvw, ddx_uvw, ddy_uvw );
-
+	    bool lr = p.x < th;
+        if( lr ) mate = vec3(1.0)*xorTexture( uv );
+        else     mate = vec3(1.0)*xorTextureGradBox( uv, ddx_uv, ddy_uv );
+        mate = pow( mate, vec3(1.5) );
+        
         // lighting	
 		vec3 lin = doLighting( pos, nor, occ, rd );
 
@@ -260,27 +304,29 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 		col = mate * lin;
 		
         // fog		
-        col = mix( col, vec3(0.9), 1.0-exp( -0.0001*t*t ) );
+        col = mix( col, vec3(0.9), 1.0-exp( -0.00001*t*t ) );
 	}
 	
     // gamma correction	
 	col = pow( col, vec3(0.4545) );
 
-	col *= smoothstep( 0.006, 0.008, abs(p.x-th) );
+    // line
+	col *= smoothstep( 1.0, 2.0, abs(p.x-th)/(2.0/iResolution.y) );
 	
+    // output
 	fragColor = vec4( col, 1.0 );
 }
 `;
 
 export default class implements iSub {
   key(): string {
-    return 'XlXBWs';
+    return 'tdBXRW';
   }
   name(): string {
-    return 'Filtered checker (box, 3D)';
+    return 'Filtered xor (box, 2D)';
   }
   sort() {
-    return 71;
+    return 73;
   }
   tags?(): string[] {
     return [];

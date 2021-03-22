@@ -3,17 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Similar to https://www.shadertoy.com/view/XlcSz2, but for grid patterns. More info here:
-//
-// http://iquilezles.org/www/articles/filterableprocedurals/filterableprocedurals.htm
-//  
-// checker, 2D, box filter: https://www.shadertoy.com/view/XlcSz2
-// checker, 3D, box filter: https://www.shadertoy.com/view/XlXBWs
-// checker, 3D, tri filter: https://www.shadertoy.com/view/llffWs
-// grid,    2D, box filter: https://www.shadertoy.com/view/XtBfzz
-// xor,     2D, box filter: https://www.shadertoy.com/view/tdBXRW
-
-
 // --- analytically box-filtered grid ---
 
 const float N = 10.0; // grid ratio

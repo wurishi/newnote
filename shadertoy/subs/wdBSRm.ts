@@ -64,7 +64,6 @@ void solveCircle(vec2 a, vec2 b, out vec2 o, out float r){
 
 // adx's considerably more concise version of the method above.
 // On a side note, if you haven't seen it before, his "Quake / Introduction" 
-// shader is well worth the look: https://www.shadertoy.com/view/lsKfWd
 void solveCircle(vec2 a, vec2 b, out vec2 o, out float r){
     
     vec2 m = a + b;

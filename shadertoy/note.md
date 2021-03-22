@@ -406,3 +406,27 @@ wdBSRm
 3tX3R4
 
 ![64](assets/64.jpg)
+
+# 65. 4.8^2 Truchet Weave
+
+3dVSRm
+
+![65](assets/65.jpg)
+
+# 66. Integer Hash - I
+
+llGSzw
+
+![66](assets/66.jpg)
+
+# 67. Integer Hash - II
+
+XlXcW4
+
+![67](assets/67.jpg)
+
+# 68. Integer Hash - III
+
+4tXyWN
+
+![68](assets/68.jpg)

@@ -3,11 +3,14 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
+
+// uniform bool u_useChannel;
+
 const float pi = 3.141592653589;
-const float r = .017;
+const float r = .02;
 const float r2 = .005;
-const float slope = .05;
-const vec2 dir = vec2(.06, slope);
+const float slope = .1;
+const vec2 dir = vec2(.1, slope);
 const float r3 = (r + r2 * 0.15) / (dir.x / length(dir));
 
 // Pixel width for anti-aliasing.
@@ -16,7 +19,10 @@ float w;
 
 float hash(vec2 p)
 {
+  // if(u_useChannel) {
     return texelFetch(iChannel0, ivec2(p) & 255, 0).r;
+  // }
+  // return texelFetch(iChannel1, ivec2(p) & 255, 0).r;
 }
 
 void solveCircle(vec2 a, vec2 b, out vec2 o, out float r){
@@ -65,7 +71,7 @@ void sdRope(vec2 p, out float mask_d, out float outline_d)
     float d = distance(p, q) - r;
     
     mask_d = d - r2;
-    outline_d = min(max(-d, abs(p.x) - r * 2.5), abs(d) - r2);
+    outline_d = min(max(-d, abs(p.x) - r * 3.), abs(d) - r2);
 }
 
 vec4 arcDistanceRope(vec2 p, vec2 a, vec2 b)
@@ -90,7 +96,7 @@ vec4 arcDistanceRope(vec2 p, vec2 a, vec2 b)
 
         sdRope(q + vec2(0., r3), mask_d, outline_d);
 
-        mask2 = ld-.033;
+        mask2 = ld-.05;
     }
     else
     {    
@@ -112,164 +118,77 @@ vec4 arcDistanceRope(vec2 p, vec2 a, vec2 b)
 
         sdRope(q + vec2(0., r3), mask_d, outline_d);
 
-        mask2 = abs(distance(p, o) - r)-.033;
+        mask2 = abs(distance(p, o) - r)-.05;
     }
 
     vec3 col = vec3(mix(vec3(.02), vec3(.8), smoothstep(0.0, w, outline_d)));
     
-    return vec4(col, 1. - smoothstep(0.0, w, mask2 - 0.03));
+    return vec4(col, 1. - smoothstep(0.0, w, mask2 - 0.05));
 }
 
-
-void mainImage( out vec4 fragColor, in vec2 fragCoord )
+void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
     vec2 uv = fragCoord / iResolution.y;
-
+    
     fragColor = vec4(1);
 
-    vec2 p = uv.xy * 4.5 + iMouse.xy / iResolution.xy * 10.;
+    vec2 p = uv.xy * 6. + iMouse.xy / iResolution.xy * 10.;
 
     w = max(length(dFdx(p)), length(dFdy(p)));
 
     p.x += iTime / 3.;
 
-    // The plane is first divided in to equilaterial triangles.
-    
-    float s = 1. / sqrt(3.);
+    float el = tan(2. * pi / 16.);
+    float hyp = sqrt(1. - el * el);
+    float d = cos(2. * pi / 16.) * hyp;
 
-    vec2 op = p;
-
-    p.x /= s;
-    p.x += mod(floor(p.y), 2.);
-
-    vec2 ip = floor(p);
-    vec2 fp = fract(p);
-
-    if(fp.x > mix(fp.y, 1. - fp.y, mod(ip.x, 2.)))
-        ip.x += 1.;
-
-    fp = p - ip;
-
-    fp.x *= s;
-    fp.y -= 1. / 3. + mod(ip.x + 1., 2.) / 3.;
-
-    if(mod(ip.x, 2.) > .5)
-        fp.y =- fp.y;
+    vec2 ip = floor(p - .5) * 2.;
+    vec2 fpa = abs(fract(p) - .5);
+    vec2 fp = fract(p - .5) - .5;
 
     vec4 a = vec4(vec3(.8), 0.);
+    float b = hash(ip);
+    float c = 0.;
 
-    fp.x = abs(fp.x);
-
-    float th = pi * 2. / 3.;
-
-    // Use the symmetry of the figure within the triangular tile.
-    
-    if(dot(fp, vec2(cos(th), sin(th))) < 0.)
-        fp = fp - vec2(cos(th), sin(th)) * dot(fp, vec2(cos(th), sin(th))) * 2.;
-
-    fp.x = abs(fp.x);
-
-    float dd = fp.y;
-    dd = max(dd, dot(fp, vec2(sin(th), -cos(th))));
-
-	// Get the precise distances of the tile edges.
-    
-    float c = tan(pi * 2. / 6.) / (3. * tan(pi * 2. / 6.) + 3.);
-    float e = 1. / 3. - c;
-    float f = 1. / (3. * cos(pi * 2. / 6.)) - c;
-	float g = 0.;
-    
     uint num_inds = 0U;
-    float outth = 0., thoffset = 0.;
+    float th = 0., thoffset = 0.;
     float r = 1.;
-    
-    if(dd - c < 0.)
-    {
-        // Hexagon.
-        op = op * vec2(1. / s, 1) + vec2(.5, 0);
-        ip = floor(op);
 
-        num_inds = 6U;
-        
-        fp = op - ip - .5;
-
-        fp.x *= s;
-        fp.y -= 1. / 6. * (1. - 2. * mod(ip.x + ip.y, 2.));
-
-        float th = pi * 2. / 6.;
-
-        outth = th;
-        r = c;
-
-        float tha = th*(floor(6. * hash(ip * 3. + 2.)) + .5);
-        fp *= mat2(cos(tha), sin(tha), -sin(tha), cos(tha));
-
-        int i = int(floor(hash(ip * 13. + 99.) * 1.999));
-
-        g = max(g, smoothstep(-w * 2., 0., dd - c));
-
-    }
-    else if((abs(fp.x)-e)<0.)
+    if(fpa.x + fpa.y < (1. - sqrt(2.) / 2.))
     {
         // Square.
-        op = op * vec2(1. / s, 2) + vec2(.5 + .5 * mod(floor(op.y * 2. + .5), 2.), .5);
-        ip = floor(op);
+        ip = floor(p) * 2. +1.;
+        b = hash(ip);
+        fp = fract(p) - .5;
+        if(b > .5)
+            fp = fp.yx * vec2(1, -1);
 
         num_inds = 4U;
+        th = pi * 2. / 4.;
+        r = .5 * d;
+        thoffset = th / 2.;
 
-        fp = op - ip - .5;
-
-        fp.x *= s;
-        fp.y /= 2.;
-
-        float th = pi * 2. / 4.;
-
-        outth = th;
-        r = e;
-
-        float tha = th * floor(3.999 * hash(ip * 3. + 2.));
-
-        if(mod(ip.y, 2.) > .5)
-            tha += pi * 2. / 3. * .5 * (2. - mod(ip.x + floor(ip.y / 2.), 2.));
-
-        fp *= mat2(cos(tha), sin(tha), -sin(tha), cos(tha));
-
-        g = max(g, smoothstep(e - w * 2., e, max(abs(fp.x), abs(fp.y))));
+        c = max(c, smoothstep((1. - sqrt(2.) / 2.) - w * sqrt(2.) * 2., (1. - sqrt(2.) / 2.), max(abs(fp.x + fp.y), abs(fp.y - fp.x))));
     }
     else
     {
-        // Dodecagon.
-        op = op * vec2(1. / s / 2., 1.) + vec2(.5 + .5 * mod(floor(op.y + .5), 2.), .5);
-        ip = floor(op);
+        // Octagon.
+        th = floor(mod(b,.25)/.25*8.) * pi * 2. / 8.;
+        fp *= mat2(cos(th), sin(th), -sin(th), cos(th));
 
-        num_inds = 12U;
+        th = pi * 2. / 8.;
 
-        fp = op - ip - .5;
+        num_inds = 8U;
 
-        fp.x *= s * 2.;
-
-        float th = pi * 2. / 12.;
-
-        outth = th;
-        r = f;
-
-        float tha = th * floor(12. * hash(ip * 3.));
-        fp *= mat2(cos(tha), sin(tha), -sin(tha), cos(tha));
-
-        int i = int(floor(hash(ip * 13. + 99.) * 28.999));
-
-        float d = -1.;
-
-        for(int j = 0; j < 6; j+=1)
-            d = max(d, abs(dot(fp, vec2(cos(th * float(j)), sin(th * float(j))))) - f);
-
-        g = max(g, smoothstep(-w * 2., 0., d));
+        float d = max(abs(fp.x + fp.y) / sqrt(2.), abs(fp.y - fp.x) / sqrt(2.));
+        c = max(c, smoothstep(.5 - w * 2., .5, max(d, max(abs(fp.x), abs(fp.y)))));
     }
 
+    
     // Shuffle the indices by using the Fisher-Yates algorithm
     // https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
 
-    uint inds[12];
+    uint inds[8];
     
 	inds[0] = 0U;
     
@@ -289,15 +208,15 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     {
         uint ia = inds[j];
         uint ib = inds[j + 1U];
-        vec2 pa = vec2(cos(outth * float(ia) - thoffset), sin(outth * float(ia) - thoffset)) * r;
-        vec2 pb = vec2(cos(outth * float(ib) - thoffset), sin(outth * float(ib) - thoffset)) * r;
+        vec2 pa = vec2(cos(th * float(ia) - thoffset), sin(th * float(ia) - thoffset)) * r / 2.;
+        vec2 pb = vec2(cos(th * float(ib) - thoffset), sin(th * float(ib) - thoffset)) * r / 2.;
         vec4 d = arcDistanceRope(fp, pa, pb);
         a = mix(a, d, d.a);
     }
     
     
     // Shade.
-    vec3 col = mix(vec3(1), vec3(.3), g);
+    vec3 col = mix(vec3(1), vec3(.3), c);
 
     float l = 1. - (min(fract(iTime / 6.) * 2., 2. - 2. * fract(iTime / 6.)) - .5) * 16.;
 
@@ -306,26 +225,32 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     // Gamma etc.
     fragColor.rgb = pow(fragColor.rgb, vec3(1. / 2.2));
 }
-
 `;
+
+let gui: GUI;
+const api = {
+  u_useChannel: true,
+};
 
 export default class implements iSub {
   key(): string {
-    return 'WsyXWR';
+    return '3dVSRm';
   }
   name(): string {
-    return '4.6.12 Truchet Weave';
+    return '4.8^2 Truchet Weave';
   }
   webgl() {
     return WEBGL_2;
   }
   sort() {
-    return 62;
+    return 65;
   }
   tags?(): string[] {
     return [];
   }
   main(): HTMLCanvasElement {
+    // gui = new GUI();
+    // gui.add(api, 'u_useChannel');
     return createCanvas();
   }
   userFragment(): string {
@@ -334,11 +259,28 @@ export default class implements iSub {
   fragmentPrecision?(): string {
     return PRECISION_MEDIUMP;
   }
-  destory(): void {}
+  destory(): void {
+    if (gui) {
+      gui.destroy();
+      gui = null;
+    }
+  }
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
-    return () => {};
+    // const u_useChannel = webglUtils.getUniformLocation(
+    //   gl,
+    //   program,
+    //   'u_useChannel'
+    // );
+    return () => {
+      // u_useChannel.uniform1i(api.u_useChannel ? 1 : 0);
+    };
   }
   channels() {
-    return [{ type: 0, path: './textures/noise.png' }];
+    return [
+      {
+        type: 0,
+        path: './textures/noise.png',
+      },
+    ];
   }
 }

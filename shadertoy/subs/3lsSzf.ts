@@ -3,24 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Created by inigo quilez - iq/2019
-// I share this piece (art and code) here in Shadertoy and through its Public API, only for educational purposes. 
-// You cannot use, sell, share or host this piece or modifications of it as part of your own commercial or non-commercial product, website or project.
-// You can share a link to it or an unmodified screenshot of it provided you attribute "by Inigo Quilez, @iquilezles and iquilezles.org". 
-// If you are a teacher, lecturer, educator or similar and these conditions are too restrictive for your needs, please contact me and we'll work it out.
-
-
-// An animation test - a happy and blobby creature
-// jumping and looking around. It gets off-model very
-// often, but it looks good enough I think.
-//
-// Making-of with math/shader/art explanations (6 hours
-// long): https://www.youtube.com/watch?v=Cfe5UQ-1L9Q
-//
-// Video capture: https://www.youtube.com/watch?v=s_UOFo2IULQ
-//
-// Buy a metal print here: https://www.redbubble.com/i/metal-print/Happy-Jumping-by-InigoQuilez/43594745.0JXQP
-
 #define HW_PERFORMANCE 0
 
 #if HW_PERFORMANCE==0

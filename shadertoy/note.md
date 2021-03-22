@@ -394,3 +394,15 @@ llyBRG
 WsyXWR
 
 ![62](assets/62.jpg)
+
+# 63. Diamond Octagon Truchet Pattern
+
+wdBSRm
+
+![63](assets/63.jpg)
+
+# 64. Hologram Boxes
+
+3tX3R4
+
+![64](assets/64.jpg)

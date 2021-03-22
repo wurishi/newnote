@@ -1,19 +1,11 @@
 import { GUI } from 'dat.gui';
-import { createCanvas, iSub, PRECISION_MEDIUMP } from '../libs';
+import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-
-float fwidth(float v) {
-  return v;
-}
-
 #define PI 3.14159265359
 
-
-//#define DEBUG
-
-  
+uniform bool u_debug;
     
 float vmin(vec2 v) {
 	return min(v.x, v.y);
@@ -108,9 +100,10 @@ void drawHit(inout vec4 col, vec2 p, vec2 hitPos, float hitDist) {
 
     float d = length(p - hitPos);
     
-    #ifdef DEBUG
-    col = mix(col, vec4(0,1,1,0), step(d, .1)); return;
-    #endif
+    if(u_debug) {
+      col = mix(col, vec4(0,1,1,0), step(d, .1));
+      return;
+    }
     
     float wavefront = d - hitDist * 1.5;
     float freq = 2.;
@@ -175,11 +168,11 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
     vec2 p = (-iResolution.xy + 2.0*fragCoord)/iResolution.y;
 
-    #ifdef DEBUG
-    	//p.xy += vec2(1.2, .6);
+    if(u_debug) {
+      //p.xy += vec2(1.2, .6);
     	//p *= 3.5;
     	p *= 2.;
-   	#endif
+    }
     
     vec2 screenSize = vec2(iResolution.x/iResolution.y, 1.) * 2.;
 
@@ -201,15 +194,11 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     vec4 colFy = vec4(1,1,1,0);
     vec2 e = vec2(.8,0)/iResolution.y;
 
-    #ifdef DEBUG
-		col.rgb = vec3(0.);
-    #endif
-    
-   	#ifdef DEBUG
-		const int limit = 1;
-   	#else
-    	const int limit = 5;
-    #endif
+    int limit = 5;
+    if(u_debug) {
+      col.rgb = vec3(0.);
+      limit = 1;
+    }
 	
     for (int i = 0; i < limit; i++) {
         vec2 hitPos = lastHitPos;
@@ -257,11 +246,14 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     col.rgb = clamp(1. - col.rgb, vec3(0), vec3(1));
     col.rgb /= 3.;
     
-
-    #ifndef DEBUG
-	
-    	// lighting
-    	// iq https://www.shadertoy.com/view/Xds3zN
+    if(u_debug) {
+      float b = vmin(abs(fract(p / screenSize) - .5) * 2.);
+      b /= fwidth(b) * 2.;
+      b = clamp(b, 0., 1.);
+      b = 1. - b;
+      col.rgb = mix(col.rgb, vec3(0), b);
+    }
+    else {
         vec3 lig = normalize(vec3(1,2,2.));
         vec3 rd = normalize(vec3(p, -10.));
         vec3  hal = normalize( lig - rd );
@@ -276,16 +268,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         lin += .2;
         col.rgb = col.rgb * lin;
         col.rgb += 5. * spe;
-	#endif
-    
-    #ifdef DEBUG
-        float b = vmin(abs(fract(p / screenSize) - .5) * 2.);
-        b /= fwidth(b) * 2.;
-        b = clamp(b, 0., 1.);
-        b = 1. - b;
-        col.rgb = mix(col.rgb, vec3(0), b);
-    #endif
-    
+    }
+
     // dvd logo
 	float d = dvd((p - move) / logoScale);
     d /= fwidth(d);
@@ -295,20 +279,18 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     // gamma
     col.rgb = pow(col.rgb, vec3(1./1.5));
 
-  //   col.a = col.a * .5 + .5;
-	// col.a *= .3;
-  col.a = 1.;
+    col.a = col.a * .5 + .5;
+	  col.a *= .3;
     fragColor = col;
+    fragColor.a = 1.;
 }
 
-/** SHADERDATA
-{
-	"title": "DVD",
-	"description": "",
-	"model": "person"
-}
-*/
 `;
+
+let gui: GUI;
+const api = {
+  u_debug: false,
+};
 
 export default class implements iSub {
   key(): string {
@@ -320,10 +302,15 @@ export default class implements iSub {
   sort() {
     return 36;
   }
+  webgl() {
+    return WEBGL_2;
+  }
   tags?(): string[] {
     return [];
   }
   main(): HTMLCanvasElement {
+    gui = new GUI();
+    gui.add(api, 'u_debug');
     return createCanvas();
   }
   userFragment(): string {
@@ -332,8 +319,16 @@ export default class implements iSub {
   fragmentPrecision?(): string {
     return PRECISION_MEDIUMP;
   }
-  destory(): void {}
+  destory(): void {
+    if (gui) {
+      gui.destroy();
+      gui = null;
+    }
+  }
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
-    return () => {};
+    const u_debug = webglUtils.getUniformLocation(gl, program, 'u_debug');
+    return () => {
+      u_debug.uniform1i(api.u_debug ? 1 : 0);
+    };
   }
 }

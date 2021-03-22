@@ -234,6 +234,14 @@ async function activeSub(name: string) {
   const iFrameRate = webglUtils.getUniformLocation(gl, program, 'iFrameRate');
   const iFrame = webglUtils.getUniformLocation(gl, program, 'iFrame');
 
+  const iChannelResolution = [0, 1, 2, 3].map((i) => {
+    return webglUtils.getUniformLocation(
+      gl,
+      program,
+      `iChannelResolution[${i}]`
+    );
+  });
+
   const channelList = await createChannelList(gl, program, sub);
 
   let fn = sub.initial ? sub.initial(gl, program) : null;
@@ -271,7 +279,10 @@ async function activeSub(name: string) {
       iFrameRate.uniform1f(30);
       iFrame.uniform1i(iframe);
 
-      channelList.forEach((fn) => fn());
+      channelList.forEach((fn, i) => {
+        const { width, height } = fn();
+        iChannelResolution[i].uniform3f(width, height, 1);
+      });
 
       fn && fn();
 
@@ -314,6 +325,10 @@ async function createChannelList(
           );
           res.push(() => {
             tmp.bindTexture();
+            return {
+              width: image.width,
+              height: image.height,
+            };
           });
         }
       }

@@ -28,6 +28,8 @@ uniform sampler2D iChannel1;
 uniform sampler2D iChannel2;
 uniform sampler2D iChannel3;
 
+uniform vec3 iChannelResolution[4];
+
 {USER_FRAGMENT}
 
 void main() {
@@ -48,6 +50,8 @@ uniform sampler2D iChannel0;
 uniform sampler2D iChannel1;
 uniform sampler2D iChannel2;
 uniform sampler2D iChannel3;
+
+uniform vec3 iChannelResolution[4];
 
 out vec4 outputColor;
 

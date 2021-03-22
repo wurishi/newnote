@@ -56,7 +56,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
 
     vec3 ray = normalize(cSide * p.x + cUp * p.y + cDir);
 
-    // Phantom Mode https://www.shadertoy.com/view/MtScWW by aiekick
     float acc = 0.0;
     float acc2 = 0.0;
     float t = 0.0;

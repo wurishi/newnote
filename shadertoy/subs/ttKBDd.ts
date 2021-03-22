@@ -57,11 +57,6 @@ float octnse8(vec2 p, float t){
   return n;
 }
 
-
-
-
-
-// 3D simplex noise stuff from: https://www.shadertoy.com/view/XsX3zB
 const float F3 =  .3333333;
 const float G3 =  .1666667;
 vec3 random3(vec3 c) {

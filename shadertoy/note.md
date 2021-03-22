@@ -466,3 +466,15 @@ tdBXRW
 MtffWs
 
 ![74](assets/74.png)
+
+# 75. Phantom Mode
+
+MtScWW
+
+![75](assets/75.jpg)or![75-1](assets/75-1.jpg)
+
+# 76. Palettes
+
+ll2GD3
+
+![76](assets/76.jpg)

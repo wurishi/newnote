@@ -323,3 +323,5 @@ export function getTexture(
     },
   };
 }
+
+export const DEFAULT_NOISE = { type: 0, path: './textures/noise.png' };

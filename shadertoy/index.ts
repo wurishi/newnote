@@ -250,6 +250,40 @@ async function activeSub(name: string) {
 
   requestAnimationFrame(render);
 
+  const setFramebuffer = (
+    program: WebGLProgram,
+    fbo: WebGLFramebuffer,
+    other: any
+  ) => {
+    const {
+      a_position,
+      iResolution,
+      iTime,
+      iMouse,
+      iFrameRate,
+      iFrame,
+      fn,
+    } = other;
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.useProgram(program);
+
+    a_position ? a_position.bindBuffer() : console.log('a_position');
+
+    iResolution
+      ? iResolution.uniform3f(canvas.width, canvas.height, 1)
+      : console.log('iResolution');
+    iTime.uniform1f(time);
+    iMouse.uniform4fv([mouseX, mouseY, clickX, clickY]);
+    iFrameRate.uniform1f(30);
+    iFrame.uniform1i(iframe);
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+
+    fn && fn();
+
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+  };
+
   let then = 0;
   let time = 0;
   let iframe = 0;
@@ -268,25 +302,25 @@ async function activeSub(name: string) {
 
       webglUtils.resizeCanvasToDisplaySize(canvas);
 
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      gl.useProgram(program);
-
-      a_position.bindBuffer();
-
-      iResolution.uniform3f(canvas.width, canvas.height, 1);
-      iTime.uniform1f(time);
-      iMouse.uniform4fv([mouseX, mouseY, clickX, clickY]);
-      iFrameRate.uniform1f(30);
-      iFrame.uniform1i(iframe);
-
+      const fns: any[] = [];
       channelList.forEach((fn, i) => {
-        const { width, height } = fn();
+        const { width, height, bindTexture } = fn({ setFramebuffer });
         iChannelResolution[i].uniform3f(width, height, 1);
+        bindTexture && fns.push(bindTexture);
       });
 
-      fn && fn();
-
-      gl.drawArrays(gl.TRIANGLES, 0, 6);
+      setFramebuffer(program, null, {
+        a_position,
+        iResolution,
+        iTime,
+        iMouse,
+        iFrameRate,
+        iFrame,
+        fn: () => {
+          fn && fn();
+          fns.forEach((f) => f());
+        },
+      });
 
       if (threeSM) {
         threeSM.uniforms.iTime.value = time;
@@ -328,6 +362,76 @@ async function createChannelList(
             return {
               width: image.width,
               height: image.height,
+            };
+          });
+        } else if (c.type == 1) {
+          const texture = webglUtils.createAndSetupTexture(gl);
+          gl.texImage2D(
+            gl.TEXTURE_2D,
+            0,
+            gl.RGBA,
+            400,
+            300,
+            0,
+            gl.RGBA,
+            gl.UNSIGNED_BYTE,
+            null
+          );
+          const fbo = gl.createFramebuffer();
+          gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+          gl.framebufferTexture2D(
+            gl.FRAMEBUFFER,
+            gl.COLOR_ATTACHMENT0,
+            gl.TEXTURE_2D,
+            texture,
+            0
+          );
+          const webglV = sub.webgl ? sub.webgl() : WEBGL_1;
+          const v = webglV ? vertex2 : vertex;
+
+          let f = webglV === WEBGL_2 ? fragment2 : fragment;
+          f = f.replace(
+            '{PRECISION}',
+            sub.fragmentPrecision ? sub.fragmentPrecision() : PRECISION_MEDIUMP
+          );
+          f = f.replace('{USER_FRAGMENT}', c.f);
+
+          const subp = webglUtils.createProgram2(gl, v, f);
+          const loc = gl.getUniformLocation(program, 'iChannel' + c.fi);
+          const other: any = {};
+          other.a_position = webglUtils.getAttribLocation(
+            gl,
+            subp,
+            'a_position'
+          );
+          other.a_position.setFloat32(
+            new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1])
+          );
+          other.iResolution = webglUtils.getUniformLocation(
+            gl,
+            subp,
+            'iResolution'
+          );
+          other.iTime = webglUtils.getUniformLocation(gl, subp, 'iTime');
+          other.iMouse = webglUtils.getUniformLocation(gl, subp, 'iMouse');
+          other.iFrameRate = webglUtils.getUniformLocation(
+            gl,
+            subp,
+            'iFrameRate'
+          );
+          other.iFrame = webglUtils.getUniformLocation(gl, subp, 'iFrame');
+
+          res.push((p: any) => {
+            p.setFramebuffer(subp, fbo, other);
+
+            return {
+              width: 400,
+              height: 300,
+              bindTexture: () => {
+                gl.uniform1i(loc, c.fi);
+                gl.activeTexture(gl.TEXTURE0 + c.fi);
+                gl.bindTexture(gl.TEXTURE_2D, texture);
+              },
             };
           });
         }

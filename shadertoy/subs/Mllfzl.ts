@@ -1,8 +1,8 @@
 import { GUI } from 'dat.gui';
-import { createCanvas, iSub, PRECISION_MEDIUMP } from '../libs';
+import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
-const Image = `
+const fragment = `
 #define PI				3.1415926535
 #define SQRT2			0.707
 
@@ -10,39 +10,9 @@ const Image = `
 #define CAM_SPEED		.3
 #define CAM_POS 		vec3(4.*cos(-iTime*CAM_SPEED), 4.0, 4.*sin(-iTime*CAM_SPEED))
 
-const int KEY_LEFT  = 37;
-const int KEY_UP    = 38;
-const int KEY_RIGHT = 39;
-const int KEY_DOWN  = 40;
-const int KEY_A     = 65;
-const int KEY_B     = 66;
-const int KEY_C     = 67;
-const int KEY_D     = 68;
-const int KEY_E     = 69;
-const int KEY_F     = 70;
-const int KEY_G     = 71;
-const int KEY_H     = 72;
-const int KEY_I     = 73;
-const int KEY_J     = 74;
-const int KEY_K     = 75;
-const int KEY_L     = 76;
-const int KEY_M     = 77;
-const int KEY_N     = 78;
-const int KEY_O     = 79;
-const int KEY_P     = 80;
-const int KEY_Q     = 81;
-const int KEY_R     = 82;
-const int KEY_S     = 83;
-const int KEY_T     = 84;
-const int KEY_U     = 85;
-const int KEY_V     = 86;
-const int KEY_W     = 87;
-const int KEY_X     = 88;
-const int KEY_Y     = 89;
-const int KEY_Z     = 90;
-const int KEY_SPACE = 32;
-
-#define KEY_PRESSED(KEY) !(texelFetch( iChannel1, ivec2(KEY,2), 0 ).x>0.5)
+uniform bool u_shadow;
+uniform bool u_cube;
+uniform bool u_line;
 
 
 // strait from http://www.iquilezles.org/www/articles/boxfunctions/boxfunctions.htm
@@ -216,12 +186,13 @@ vec3 render(in vec3 ro, in vec3 rd)
         float depth = max(0., t_max-t_min);
 
         // shadow
-        if(depth > 0. && KEY_PRESSED(KEY_S))
+        if(depth > 0. && u_shadow)
         {
             int kk;
             float tt = 0.;
-    		if(KEY_PRESSED(KEY_C))
-            	tt = marchMultiIso(roo, rdd, t_min, t_max, iso_, kk);
+    		if(u_cube) {
+                tt = marchMultiIso(roo, rdd, t_min, t_max, iso_, kk);
+            }
             if(tt < t_max)
             {
             	col *= 0.5;
@@ -230,7 +201,7 @@ vec3 render(in vec3 ro, in vec3 rd)
         
         // ambiant occlusion (extremely cheap)
         
-        if(KEY_PRESSED(KEY_C))
+        if(u_cube)
         {
             float val = getVal(roo);
             vec3 grad = getNorm(roo);
@@ -254,7 +225,7 @@ vec3 render(in vec3 ro, in vec3 rd)
     
     if(depth > 0.)
     {
-    	if(KEY_PRESSED(KEY_C))
+    	if(u_cube)
         {
             int kk;
             float tt = marchMultiIso(ro, rd, t_min, t_max, iso_, kk);
@@ -293,7 +264,7 @@ vec3 render(in vec3 ro, in vec3 rd)
     
     // isolines
     float line_width = .2;
-    if(KEY_PRESSED(KEY_I) && depth > 0.001)
+    if(u_line && depth > 0.001)
     {
     	// front facing
         vec3 p = ro+rd*(tnf.x+0.01);
@@ -364,12 +335,11 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
     fragColor = vec4(col, 1.0);
     
-    //fragColor = texture(iChannel0, fragCoord.xy/iResolution.xy);
+    // fragColor = texture(iChannel0, fragCoord.xy/iResolution.xy);
 }
-
 `;
 
-const fragment = `
+const fragment1 = `
 // Cloud parameters
 
 const mat3 m = mat3( 0.00,  0.80,  0.60,
@@ -429,20 +399,34 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 }
 `;
 
+let gui: GUI;
+const api = {
+  u_shadow: true,
+  u_cube: true,
+  u_line: true,
+};
+
 export default class implements iSub {
   key(): string {
     return 'Mllfzl';
   }
   name(): string {
-    return '(缺Image) Isopleth ';
+    return 'Isopleth ';
   }
   sort() {
     return 11;
+  }
+  webgl() {
+    return WEBGL_2;
   }
   tags?(): string[] {
     return [];
   }
   main(): HTMLCanvasElement {
+    gui = new GUI();
+    gui.add(api, 'u_shadow');
+    gui.add(api, 'u_cube').name('空心');
+    gui.add(api, 'u_line');
     return createCanvas();
   }
   userFragment(): string {
@@ -451,8 +435,29 @@ export default class implements iSub {
   fragmentPrecision?(): string {
     return PRECISION_MEDIUMP;
   }
-  destory(): void {}
+  destory(): void {
+    if (gui) {
+      gui.destroy();
+      gui = null;
+    }
+  }
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
-    return () => {};
+    // uniform bool u_shadow;
+    // uniform bool u_cube;
+    // uniform bool u_line;
+    const u_shadow = webglUtils.getUniformLocation(gl, program, 'u_shadow');
+    const u_cube = webglUtils.getUniformLocation(gl, program, 'u_cube');
+    const u_line = webglUtils.getUniformLocation(gl, program, 'u_line');
+    return () => {
+      u_shadow.uniform1i(api.u_shadow ? 1 : 0);
+      u_cube.uniform1i(api.u_cube ? 1 : 0);
+      u_line.uniform1i(api.u_line ? 1 : 0);
+    };
+  }
+  channels() {
+    return [
+      webglUtils.DEFAULT_NOISE, //
+      { type: 1, f: fragment1, fi: 0 },
+    ];
   }
 }

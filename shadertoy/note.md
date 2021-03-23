@@ -574,3 +574,21 @@ tldSRj
 wttSRj
 
 ![92](assets/92.jpg)
+
+# 93. Analytic Normals 3D
+
+XttSz2
+
+![93](assets/93.jpg)
+
+# 94. Voronoise
+
+Xd23Dh
+
+![94](assets/94.jpg)
+
+# 95. Voronoi - distances
+
+ldl3W8
+
+![95](assets/95.jpg)

@@ -3,8 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// this shader: https://www.shadertoy.com/view/XttSz2)
-
 float hash(vec3 p)  // replace this by something better
 {
     p  = 50.0*fract( p*0.3183099 + vec3(0.71,0.113,0.419));

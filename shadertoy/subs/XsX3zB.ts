@@ -2,10 +2,6 @@ import { GUI } from 'dat.gui';
 import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
-// * ~ Noise shaders by iq:
-// * ~     Voronoise: https://www.shadertoy.com/view/Xd23Dh
-// * ~
-
 const fragment = `
 /* discontinuous pseudorandom uniformly distributed in [-0.5, +0.5]^3 */
 vec3 random3(vec3 c) {

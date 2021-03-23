@@ -3,9 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Hierarchical: https://www.shadertoy.com/view/Xll3zX
-// Smooth:       https://www.shadertoy.com/view/ldB3zc
-
 uniform bool u_animate;
 
 vec2 hash2( vec2 p )

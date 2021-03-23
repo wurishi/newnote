@@ -339,7 +339,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 }
 `;
 
-const fragment1 = `
+const subf = `
 // Cloud parameters
 
 const mat3 m = mat3( 0.00,  0.80,  0.60,
@@ -442,9 +442,6 @@ export default class implements iSub {
     }
   }
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
-    // uniform bool u_shadow;
-    // uniform bool u_cube;
-    // uniform bool u_line;
     const u_shadow = webglUtils.getUniformLocation(gl, program, 'u_shadow');
     const u_cube = webglUtils.getUniformLocation(gl, program, 'u_cube');
     const u_line = webglUtils.getUniformLocation(gl, program, 'u_line');
@@ -455,9 +452,6 @@ export default class implements iSub {
     };
   }
   channels() {
-    return [
-      webglUtils.DEFAULT_NOISE, //
-      { type: 1, f: fragment1, fi: 0 },
-    ];
+    return [{ type: 1, f: subf, fi: 0 }];
   }
 }

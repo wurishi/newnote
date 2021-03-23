@@ -592,3 +592,9 @@ Xd23Dh
 ldl3W8
 
 ![95](assets/95.jpg)
+
+# 96. Voronoi - hierarchical
+
+Xll3zX
+
+![96](assets/96.jpg)

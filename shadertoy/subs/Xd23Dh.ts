@@ -15,10 +15,6 @@ const fragment = `
 // grid like voronoi):
 //
 // voronoise(x) = pattern(1,1,x)
-//
-// Hierarchical: https://www.shadertoy.com/view/Xll3zX
-// Smooth:       https://www.shadertoy.com/view/ldB3zc
-
 
 vec3 hash3( vec2 p )
 {

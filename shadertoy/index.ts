@@ -31,6 +31,8 @@ link.textContent = 'SHADERTOY';
 document.body.appendChild(document.createElement('br'));
 const filelink = document.createElement('span');
 document.body.appendChild(filelink);
+const imgs = document.createElement('div');
+document.body.appendChild(imgs);
 document.body.appendChild(document.createElement('hr'));
 
 const mainFolder = gui.addFolder('主菜单');
@@ -182,6 +184,10 @@ async function activeSub(name: string) {
   const sub = menuMap[name] as iSub;
   _sub = sub;
 
+  for (let i = imgs.childNodes.length - 1; i >= 0; i--) {
+    imgs.removeChild(imgs.childNodes[i]);
+  }
+
   const key = sub.key();
   if (key) {
     link.href = 'https://www.shadertoy.com/view/' + key;
@@ -191,9 +197,22 @@ async function activeSub(name: string) {
     filelink.textContent = key + '|';
   } else {
     link.href = '';
-    link.textContent = '无';
-    filelink.textContent = '';
+    link.textContent = 'shader 字符: ' + sub.userFragment().length;
+    filelink.textContent = name;
   }
+
+  sub.channels &&
+    sub.channels().forEach((v) => {
+      if (v.type == 0) {
+        const img = document.createElement('img');
+        img.src = v.path;
+        img.width = 50;
+        img.height = 50;
+        img.alt = v.path;
+        img.title = v.path;
+        imgs.appendChild(img);
+      }
+    });
 
   canvas = sub.main();
   document.body.appendChild(canvas);

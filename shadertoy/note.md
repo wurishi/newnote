@@ -598,3 +598,15 @@ ldl3W8
 Xll3zX
 
 ![96](assets/96.jpg)
+
+# 97. Fractal 43_gaz
+
+sssGWS
+
+![97](assets/97.jpg)
+
+# 98. 7dsGWS
+
+7dsGWS
+
+![98](assets/98.jpg)

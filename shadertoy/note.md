@@ -616,3 +616,15 @@ sssGWS
 wtdSR8
 
 ![99](assets/99.jpg)
+
+# 100. Will it blend
+
+lsdGzN
+
+![100](assets/100.jpg)
+
+# 101. 3d color space visualization
+
+XddGRN
+
+![101](assets/101.jpg)

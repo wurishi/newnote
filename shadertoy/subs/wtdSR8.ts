@@ -99,7 +99,7 @@ export default class implements iSub {
     return 'Parallax view on Cineshader';
   }
   sort() {
-    return 0;
+    return 99;
   }
   webgl() {
     return WEBGL_2;

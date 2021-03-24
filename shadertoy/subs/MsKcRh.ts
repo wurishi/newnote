@@ -3,6 +3,16 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+    // Normalized pixel coordinates (from 0 to 1)
+    vec2 uv = fragCoord/iResolution.xy;
+
+    fragColor = texture(iChannel0, uv);
+}
+`;
+
+const subf = `
 // ----------------start common
 #define PI 3.14159265359
 
@@ -191,7 +201,7 @@ export default class implements iSub {
     return canvas;
   }
   userFragment(): string {
-    return fragment;
+    return subf;
   }
   fragmentPrecision?(): string {
     return PRECISION_MEDIUMP;
@@ -200,4 +210,7 @@ export default class implements iSub {
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
     return () => {};
   }
+  // channels() {
+  //   return [{ type: 1, fi: 0, f: subf }];
+  // }
 }

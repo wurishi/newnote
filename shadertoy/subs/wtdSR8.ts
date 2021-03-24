@@ -3,6 +3,8 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
+uniform bool u_iscline;
+
 float sdBox( vec3 p, vec3 b )
 {
   vec3 q = abs(p) - b;
@@ -34,23 +36,26 @@ vec3 calcNormal( in vec3 p )
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
     vec2 uv = fragCoord/iResolution.xy;
+    vec3 iCamPos = vec3(0);
+    vec3 rayOri, rayDir;
+    float maxDepth;
     
     // use different camera setting for CineShader
-    #ifdef IS_CINESHADER
+    if(u_iscline) {
+      // use the relative position of the camera to the center of the screen as ray origin
+	    rayOri = iCamPos;
     
-    // use the relative position of the camera to the center of the screen as ray origin
-	vec3 rayOri = iCamPos;
+      // screen size is 6m x 6m, or you can use iScreenSize.xy(CineShader only) to get the screen size
+      rayDir = normalize(vec3((uv - 0.5) * vec2(iResolution.x/iResolution.y, 1.0) * 6.0, 0.0) - iCamPos);
     
-    // screen size is 6m x 6m, or you can use iScreenSize.xy(CineShader only) to get the screen size
-	vec3 rayDir = normalize(vec3((uv - 0.5) * vec2(iResolution.x/iResolution.y, 1.0) * 6.0, 0.0) - iCamPos);
-    
-    // make the maxDepth further
-    float maxDepth = 30.0;
-    #else
-	vec3 rayOri = vec3((uv - 0.5) * vec2(iResolution.x/iResolution.y, 1.0) * 6.0, 3.0);
-	vec3 rayDir = vec3(0.0, 0.0, -1.0);
-    float maxDepth = 6.0;
-    #endif
+      // make the maxDepth further
+      maxDepth = 30.0;
+    }
+    else {
+      rayOri = vec3((uv - 0.5) * vec2(iResolution.x/iResolution.y, 1.0) * 6.0, 3.0);
+	    rayDir = vec3(0.0, 0.0, -1.0);
+      maxDepth = 6.0;
+    }
 	
 	float depth = 0.0;
 	vec3 p;
@@ -77,34 +82,34 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     // maximum thickness is 2m in alpha channel
     fragColor = vec4(col, 1.0 - (depth - 0.5) / 2.0);
     #endif
+    fragColor.a = 1.;
 }
-
-/** SHADERDATA
-{
-	"title": "Parallax view on Cineshader",
-	"description": "It uses the iCamPos for parallax view but it cause issues on the reflection. Still fun to mess with it though.",
-	"model": "person"
-}
-*/
 `;
+
+let gui: GUI;
+const api = {
+  u_iscline: true,
+};
 
 export default class implements iSub {
   key(): string {
     return 'wtdSR8';
   }
   name(): string {
-    return '空wtdSR8';
+    return 'Parallax view on Cineshader';
   }
-  // sort() {
-  //   return 0;
-  // }
-  // webgl() {
-  //   return WEBGL_2;
-  // }
+  sort() {
+    return 0;
+  }
+  webgl() {
+    return WEBGL_2;
+  }
   tags?(): string[] {
     return [];
   }
   main(): HTMLCanvasElement {
+    gui = new GUI();
+    gui.add(api, 'u_iscline');
     return createCanvas();
   }
   userFragment(): string {
@@ -113,8 +118,16 @@ export default class implements iSub {
   fragmentPrecision?(): string {
     return PRECISION_MEDIUMP;
   }
-  destory(): void {}
+  destory(): void {
+    if (gui) {
+      gui.destroy();
+      gui = null;
+    }
+  }
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
-    return () => {};
+    const u_iscline = webglUtils.getUniformLocation(gl, program, 'u_iscline');
+    return () => {
+      u_iscline.uniform1i(api.u_iscline ? 1 : 0);
+    };
   }
 }

@@ -212,7 +212,6 @@ vec3 shade(in vec3 pos, in vec3 rd)
     return col;
 }
 
-//From eiffie: https://www.shadertoy.com/view/XsSXDt
 vec3 marchAA(in vec3 ro, in vec3 rd, in vec3 bgc, in float px, in mat3 cam)
 {
     float precis = px*.1;

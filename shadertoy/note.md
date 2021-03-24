@@ -634,3 +634,21 @@ XddGRN
 MsS3Wc
 
 ![102](assets/102.jpg)
+
+# 103. Cube lines
+
+NslGRN
+
+![103](assets/103.jpg)
+
+# 104. Bilinear Patch - intersection
+
+ltKBzG
+
+![104](assets/104.jpg)
+
+# 105. Strange Crystal
+
+tsVXzh
+
+![105](assets/105.jpg)

@@ -3,15 +3,10 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-
-// using https://www.shadertoy.com/view/WlffDn
-// using https://www.shadertoy.com/view/WslGz4
-
 // uncomment for Animation 1
 uniform bool u_anim;
 uniform bool u_curvature;
 uniform bool u_backside;
-// this shader discover Nvidia bug with arrays https://www.shadertoy.com/view/NslGR4
 // use DEBUG with BUG, BUG trigger that bug and one layer will be white on Nvidia in OpenGL
 uniform bool u_debug;
 uniform bool u_bug;

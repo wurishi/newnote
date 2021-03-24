@@ -652,3 +652,22 @@ ltKBzG
 tsVXzh
 
 ![105](assets/105.jpg)
+
+# 106. Tubularity
+
+WlffDn
+
+![106](assets/106.jpg)
+
+# 107. Box - fake soft shadow
+
+WslGz4
+
+![107](assets/107.jpg)
+
+# 108. BUG Nvidia const to array
+
+NslGR4
+
+bug tested and works Nvidia 960 and 750, OpenGL and Vulkan
+

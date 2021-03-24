@@ -30,11 +30,6 @@ vec2 mo;
 //I'm keeping the functions self-contained, so that will inlcude subsets of each other
 //Example: the forward Lch function includes RGB->XYZ, XYZ->Lab and Lab-Lch
 
-//Equations from: https://en.wikipedia.org/wiki/Lab_color_space
-//and: https://en.wikipedia.org/wiki/SRGB
-//sRGB matrices from: http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
-
-
 //----------------------sRGB----------------------
 float sRGB(float t){ return mix(1.055*pow(t, 1./2.4) - 0.055, 12.92*t, step(t, 0.0031308)); }
 vec3 sRGB(in vec3 c) { return vec3 (sRGB(c.x), sRGB(c.y), sRGB(c.z)); }

@@ -3,8 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// https://www.shadertoy.com/view/XddGRN
-
 //Allows to scale the saturation and Value/Lightness of the 2nd color
 const float SAT2MUL = 1.0;
 const float L2MUL = 1.0;
@@ -82,7 +80,6 @@ vec3 lerpLch(in vec3 a, in vec3 b, in float x)
 
 //-----------------HSV-----------------
 
-//HSV functions from iq (https://www.shadertoy.com/view/MsS3Wc)
 #ifdef SMOOTH_HSV
 vec3 hsv2rgb( in vec3 c )
 {

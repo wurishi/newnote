@@ -3,12 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// List of ray-surface intersectors at https://www.shadertoy.com/playlist/l3dXRf
-// and http://iquilezles.org/www/articles/intersectors/intersectors.htm
-
-
-// Other Box functions (http://iquilezles.org/www/articles/boxfunctions/boxfunctions.htm)
-//
 // Occlusion:        https://www.shadertoy.com/view/4sSXDV
 // Occlusion:        https://www.shadertoy.com/view/4djXDy
 // Density:          https://www.shadertoy.com/view/Ml3GR8

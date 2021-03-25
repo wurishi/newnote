@@ -676,3 +676,21 @@ bug tested and works Nvidia 960 and 750, OpenGL and Vulkan
 ld23DV
 
 ![109](assets/109.jpg)
+
+# 110. Goursat - intersection
+
+3lj3DW
+
+![110](assets/110.jpg)
+
+# 111. Sphere4 - intersection
+
+3tj3DW
+
+![111](assets/111.jpg)
+
+# 112. Parallelogram - intersection
+
+4tlBDs
+
+![112](assets/112.jpg)

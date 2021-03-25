@@ -694,3 +694,33 @@ ld23DV
 4tlBDs
 
 ![112](assets/112.jpg)
+
+# 113. Quad - intersection
+
+XtlBDs
+
+![113](assets/113.jpg)
+
+# 114. Triangle - intersection
+
+MlGcDz
+
+![114](assets/114.jpg)
+
+# 115. Torus - intersection
+
+4sBGDy
+
+![115](assets/115.jpg)
+
+# 116. Rounded Cone - intersection
+
+MlKfzm
+
+![116](assets/116.jpg)
+
+# 117. Rounded Box - intersection
+
+WlSXRW
+
+![117](assets/117.jpg)

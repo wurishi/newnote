@@ -671,3 +671,8 @@ NslGR4
 
 bug tested and works Nvidia 960 and 750, OpenGL and Vulkan
 
+# 109. Box - intersection
+
+ld23DV
+
+![109](assets/109.jpg)

@@ -3,7 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Box:             https://www.shadertoy.com/view/ld23DV
 // Triangle:        https://www.shadertoy.com/view/MlGcDz
 // Capsule:         https://www.shadertoy.com/view/Xt3SzX
 // Ellipsoid:       https://www.shadertoy.com/view/MlsSzn

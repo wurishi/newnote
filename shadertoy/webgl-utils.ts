@@ -366,6 +366,10 @@ export function getTexture(
           : gl.NEAREST
       );
 
+      if (needGenerateMipmap(texParams)) {
+        gl.generateMipmap(gl.TEXTURE_2D);
+      }
+
       gl.texImage2D(
         gl.TEXTURE_2D,
         0,
@@ -378,8 +382,60 @@ export function getTexture(
   };
 }
 
+export function needGenerateMipmap(params: any): boolean {
+  const mipmapArr = [
+    WebGLRenderingContext.LINEAR_MIPMAP_LINEAR,
+    WebGLRenderingContext.LINEAR_MIPMAP_NEAREST,
+    WebGLRenderingContext.NEAREST_MIPMAP_LINEAR,
+    WebGLRenderingContext.NEAREST_MIPMAP_NEAREST,
+  ];
+  if (params) {
+    if (
+      mipmapArr.indexOf(params[WebGLRenderingContext.TEXTURE_MIN_FILTER]) >= 0
+    ) {
+      return true;
+    }
+    if (
+      mipmapArr.indexOf(params[WebGLRenderingContext.TEXTURE_MAG_FILTER]) >= 0
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export const DEFAULT_NOISE = { type: 0, path: './textures/noise.png' };
 
 export const ROCK_TEXTURE = { type: 0, path: './textures/rock.jpg' };
 
 export const WOOD_TEXTURE = { type: 0, path: './textures/wood.jpg' };
+
+export const TEXTURE_NEAREST = {
+  [WebGLRenderingContext.TEXTURE_MIN_FILTER]: WebGLRenderingContext.NEAREST,
+  [WebGLRenderingContext.TEXTURE_MAG_FILTER]: WebGLRenderingContext.NEAREST,
+};
+
+export const TEXTURE_LINEAR = {
+  [WebGLRenderingContext.TEXTURE_MIN_FILTER]: WebGLRenderingContext.LINEAR,
+  [WebGLRenderingContext.TEXTURE_MAG_FILTER]: WebGLRenderingContext.LINEAR,
+};
+
+export const TEXTURE_LINEAR_MIPMAPS = {
+  [WebGLRenderingContext.TEXTURE_MIN_FILTER]:
+    WebGLRenderingContext.LINEAR_MIPMAP_NEAREST,
+  [WebGLRenderingContext.TEXTURE_MAG_FILTER]:
+    WebGLRenderingContext.LINEAR_MIPMAP_NEAREST,
+};
+
+export const TEXTURE_NEAREST_MIPMAPS = {
+  [WebGLRenderingContext.TEXTURE_MIN_FILTER]:
+    WebGLRenderingContext.NEAREST_MIPMAP_LINEAR,
+  [WebGLRenderingContext.TEXTURE_MAG_FILTER]:
+    WebGLRenderingContext.NEAREST_MIPMAP_LINEAR,
+};
+
+export const TEXTURE_MIPMAPS = {
+  [WebGLRenderingContext.TEXTURE_MIN_FILTER]:
+    WebGLRenderingContext.LINEAR_MIPMAP_NEAREST,
+  [WebGLRenderingContext.TEXTURE_MAG_FILTER]: WebGLRenderingContext.LINEAR,
+};

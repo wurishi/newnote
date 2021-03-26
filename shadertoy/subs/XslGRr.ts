@@ -261,14 +261,17 @@ export default class implements iSub {
       {
         type: 0,
         path: './textures/XslGRr_1.png',
+        ...webglUtils.TEXTURE_MIPMAPS,
       },
       {
         type: 0,
         path: './textures/XslGRr_2.png',
+        ...webglUtils.TEXTURE_MIPMAPS,
       },
       {
         type: 0,
         path: './textures/XslGRr_3.bin',
+        ...webglUtils.TEXTURE_MIPMAPS,
       },
     ];
   }

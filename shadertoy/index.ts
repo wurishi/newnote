@@ -451,6 +451,9 @@ async function createChannelList(
                 gl.uniform1i(loc, c.fi);
                 gl.activeTexture(gl.TEXTURE0 + c.fi);
                 gl.bindTexture(gl.TEXTURE_2D, texture);
+                if (webglUtils.needGenerateMipmap(c)) {
+                  gl.generateMipmap(gl.TEXTURE_2D);
+                }
               },
             };
           });

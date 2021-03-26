@@ -374,7 +374,8 @@ async function createChannelList(
             program,
             'iChannel' + i,
             image,
-            i
+            i,
+            c
           );
           res.push(() => {
             tmp.bindTexture();
@@ -384,7 +385,7 @@ async function createChannelList(
             };
           });
         } else if (c.type == 1) {
-          const texture = webglUtils.createAndSetupTexture(gl);
+          const texture = webglUtils.createAndSetupTexture(gl, c);
           gl.texImage2D(
             gl.TEXTURE_2D,
             0,

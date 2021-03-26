@@ -218,14 +218,42 @@ export function setTexcoord(gl: WebGLRenderingContext, target: number) {
   );
 }
 
-export function createAndSetupTexture(gl: WebGLRenderingContext) {
+export function createAndSetupTexture(
+  gl: WebGLRenderingContext,
+  texParams?: any
+) {
+  texParams = texParams || {};
   const texture = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, texture);
 
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  gl.texParameteri(
+    gl.TEXTURE_2D,
+    gl.TEXTURE_WRAP_S,
+    texParams.hasOwnProperty(gl.TEXTURE_WRAP_S)
+      ? texParams[gl.TEXTURE_WRAP_S]
+      : gl.REPEAT
+  );
+  gl.texParameteri(
+    gl.TEXTURE_2D,
+    gl.TEXTURE_WRAP_T,
+    texParams.hasOwnProperty(gl.TEXTURE_WRAP_T)
+      ? texParams[gl.TEXTURE_WRAP_T]
+      : gl.REPEAT
+  );
+  gl.texParameteri(
+    gl.TEXTURE_2D,
+    gl.TEXTURE_MIN_FILTER,
+    texParams.hasOwnProperty(gl.TEXTURE_MIN_FILTER)
+      ? texParams[gl.TEXTURE_MIN_FILTER]
+      : gl.NEAREST
+  );
+  gl.texParameteri(
+    gl.TEXTURE_2D,
+    gl.TEXTURE_MAG_FILTER,
+    texParams.hasOwnProperty(gl.TEXTURE_MAG_FILTER)
+      ? texParams[gl.TEXTURE_MAG_FILTER]
+      : gl.NEAREST
+  );
 
   return texture;
 }
@@ -297,8 +325,10 @@ export function getTexture(
   program: WebGLProgram,
   name: string,
   image: HTMLImageElement,
-  i: number
+  i: number,
+  texParams?: any
 ) {
+  texParams = texParams || {};
   const loc = gl.getUniformLocation(program, name);
   const texture = gl.createTexture();
   return {
@@ -307,10 +337,34 @@ export function getTexture(
       gl.activeTexture(gl.TEXTURE0 + i);
       gl.bindTexture(gl.TEXTURE_2D, texture);
 
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+      gl.texParameteri(
+        gl.TEXTURE_2D,
+        gl.TEXTURE_WRAP_S,
+        texParams.hasOwnProperty(gl.TEXTURE_WRAP_S)
+          ? texParams[gl.TEXTURE_WRAP_S]
+          : gl.REPEAT
+      );
+      gl.texParameteri(
+        gl.TEXTURE_2D,
+        gl.TEXTURE_WRAP_T,
+        texParams.hasOwnProperty(gl.TEXTURE_WRAP_T)
+          ? texParams[gl.TEXTURE_WRAP_T]
+          : gl.REPEAT
+      );
+      gl.texParameteri(
+        gl.TEXTURE_2D,
+        gl.TEXTURE_MIN_FILTER,
+        texParams.hasOwnProperty(gl.TEXTURE_MIN_FILTER)
+          ? texParams[gl.TEXTURE_MIN_FILTER]
+          : gl.NEAREST
+      );
+      gl.texParameteri(
+        gl.TEXTURE_2D,
+        gl.TEXTURE_MAG_FILTER,
+        texParams.hasOwnProperty(gl.TEXTURE_MAG_FILTER)
+          ? texParams[gl.TEXTURE_MAG_FILTER]
+          : gl.NEAREST
+      );
 
       gl.texImage2D(
         gl.TEXTURE_2D,

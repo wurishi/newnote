@@ -5,9 +5,6 @@ import * as webglUtils from '../webgl-utils';
 const fragment = `
 // Capsule bounding box: https://www.shadertoy.com/view/3s2SRV
 // Capsule distance:     https://www.shadertoy.com/view/Xds3zN
-// Capsule occlusion:    https://www.shadertoy.com/view/llGyzG
-
-// intersect capsule : http://www.iquilezles.org/www/articles/intersectors/intersectors.htm
 float capIntersect( in vec3 ro, in vec3 rd, in vec3 pa, in vec3 pb, in float r )
 {
     vec3  ba = pb - pa;

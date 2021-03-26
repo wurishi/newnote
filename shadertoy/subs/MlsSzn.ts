@@ -3,13 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Box:                        https://www.shadertoy.com/view/4djXDy
-// Box with horizon clipping:  https://www.shadertoy.com/view/4sSXDV
-// Triangle:                   https://www.shadertoy.com/view/XdjSDy
-// Sphere:                     https://www.shadertoy.com/view/4djSDy
-// Ellipsoid (approximation):  https://www.shadertoy.com/view/MlsSzn
-// Capsule (approximation):    https://www.shadertoy.com/view/llGyzG
-
 struct Ellipsoid
 {
     vec3 cen;

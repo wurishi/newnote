@@ -3,9 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Capsule (approximation):    https://www.shadertoy.com/view/llGyzG
-
-
 // Sphere intersection
 float sphIntersect( in vec3 ro, in vec3 rd, in vec4 sph )
 {

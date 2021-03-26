@@ -3,11 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Capsule (approximation):    https://www.shadertoy.com/view/llGyzG
-
-
-// Other triangle functions:
-//
 // Distance:     https://www.shadertoy.com/view/4sXXRN
 // Intersection: https://www.shadertoy.com/view/MlGcDz
 // Closest:      https://www.shadertoy.com/view/ttfGWl

@@ -772,3 +772,9 @@ XdjSDy
 MlsSzn
 
 ![125](assets/125.jpg)
+
+# 126. Capsule - occlusion
+
+llGyzG
+
+![126](assets/126.jpg)

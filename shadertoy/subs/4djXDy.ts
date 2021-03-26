@@ -3,11 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Capsule (approximation):    https://www.shadertoy.com/view/llGyzG
-
-
-// Other Box functions (http://iquilezles.org/www/articles/boxfunctions/boxfunctions.htm)
-//
 // Intersection:     https://www.shadertoy.com/view/ld23DV
 // Density:          https://www.shadertoy.com/view/Ml3GR8
 // Fake soft shadow: https://www.shadertoy.com/view/WslGz4

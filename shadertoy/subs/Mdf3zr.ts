@@ -58,7 +58,7 @@ export default class implements iSub {
     return 'edge glow';
   }
   sort() {
-    return 0;
+    return 138;
   }
   tags?(): string[] {
     return [];

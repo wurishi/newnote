@@ -724,3 +724,21 @@ MlKfzm
 WlSXRW
 
 ![117](assets/117.jpg)
+
+# 118. Disk - intersection
+
+lsfGDB
+
+![118](assets/118.jpg)
+
+# 119. Cone - intersection
+
+llcfRf
+
+![119](assets/119.jpg)
+
+# 120. Capsule - intersection
+
+Xt3SzX
+
+![120](assets/120.jpg)

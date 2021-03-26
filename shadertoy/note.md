@@ -742,3 +742,33 @@ llcfRf
 Xt3SzX
 
 ![120](assets/120.jpg)
+
+# 121. Box - occlusion clipping
+
+4sSXDV
+
+![121](assets/121.jpg)
+
+# 122. Box - occlusion
+
+4djXDy
+
+![122](assets/122.jpg)
+
+# 123. Triangle - occlusion
+
+XdjSDy
+
+![123](assets/123.jpg)
+
+# 124. Sphere - occlusion
+
+4djSDy
+
+![124](assets/124.jpg)
+
+# 125. Ellipsoid - occlusion
+
+MlsSzn
+
+![125](assets/125.jpg)

@@ -3,7 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Capsule intersection: https://www.shadertoy.com/view/Xt3SzX
 // Capsule bounding box: https://www.shadertoy.com/view/3s2SRV
 // Capsule distance:     https://www.shadertoy.com/view/Xds3zN
 // Capsule occlusion:    https://www.shadertoy.com/view/llGyzG

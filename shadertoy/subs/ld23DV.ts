@@ -3,8 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Occlusion:        https://www.shadertoy.com/view/4sSXDV
-// Occlusion:        https://www.shadertoy.com/view/4djXDy
 // Density:          https://www.shadertoy.com/view/Ml3GR8
 // Fake soft shadow: https://www.shadertoy.com/view/WslGz4
 // Gradient:         https://www.shadertoy.com/view/wlcXD2

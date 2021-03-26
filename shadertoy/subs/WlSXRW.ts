@@ -18,10 +18,7 @@ const fragment = `
 
 // Other intersectors: http://iquilezles.org/www/articles/intersectors/intersectors.htm
 //
-// Box:             https://www.shadertoy.com/view/ld23DV
 // Triangle:        https://www.shadertoy.com/view/MlGcDz
-// Capsule:         https://www.shadertoy.com/view/Xt3SzX
-// Ellipsoid:       https://www.shadertoy.com/view/MlsSzn
 // Sphere:          https://www.shadertoy.com/view/4d2XWV
 // Capped Cylinder: https://www.shadertoy.com/view/4lcSRn
 // Disk:            https://www.shadertoy.com/view/lsfGDB

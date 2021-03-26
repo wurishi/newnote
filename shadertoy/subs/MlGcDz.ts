@@ -5,7 +5,6 @@ import * as webglUtils from '../webgl-utils';
 const fragment = `
 uniform int u_mode;
 
-// Occlusion:    https://www.shadertoy.com/view/XdjSDy
 // Distance:     https://www.shadertoy.com/view/4sXXRN
 // Intersection: https://www.shadertoy.com/view/MlGcDz
 // Closest:      https://www.shadertoy.com/view/ttfGWl

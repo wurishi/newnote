@@ -3,11 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Intersection:     https://www.shadertoy.com/view/ld23DV
-// Density:          https://www.shadertoy.com/view/Ml3GR8
-// Fake soft shadow: https://www.shadertoy.com/view/WslGz4
-// Gradient:         https://www.shadertoy.com/view/wlcXD2
-
 // 0  my original method, by iterating all 6 faces/12 edges/8 verts
 // 1  optimized method by clem494949 (https://www.shadertoy.com/view/ttlBWf)
 //    which iterates the solid angle hexagon (1 face/6 edges/6 verts)

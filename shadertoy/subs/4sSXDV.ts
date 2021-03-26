@@ -3,16 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Other Box functions (http://iquilezles.org/www/articles/boxfunctions/boxfunctions.htm)
-//
-// Intersection:     https://www.shadertoy.com/view/ld23DV
-// Density:          https://www.shadertoy.com/view/Ml3GR8
-// Fake soft shadow: https://www.shadertoy.com/view/WslGz4
-// Gradient:         https://www.shadertoy.com/view/wlcXD2
-
-
-//=====================================================
-
 float sacos( float x ) { return acos( min(max(x,-1.0),1.0) ); }
 
 vec3 clip( in vec3 a, in vec3 b, in vec4 p )

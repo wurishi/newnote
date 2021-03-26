@@ -778,3 +778,33 @@ MlsSzn
 llGyzG
 
 ![126](assets/126.jpg)
+
+# 127. Capsule - bounding box
+
+3s2SRV
+
+![127](assets/127.jpg)
+
+# 128. Box - fog density
+
+Ml3GR8
+
+![128](assets/128.jpg)
+
+# 129. Sphere - fog density
+
+XljGDy
+
+![129](assets/129.jpg)
+
+# 130. Box - gradient 2D
+
+wlcXD2
+
+![130](assets/130.jpg)
+
+# 131. Stained Lights
+
+WlsSzM
+
+![131](assets/131.jpg)

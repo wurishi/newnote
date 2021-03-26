@@ -83,15 +83,17 @@ export interface iSub {
   webgl?(): string;
 }
 
-export function createCanvas(style?: { bg?: string }): HTMLCanvasElement {
+export function createCanvas(style?: {
+  bg?: string;
+  width?: string;
+  height?: string;
+}): HTMLCanvasElement {
   style = style || {};
   const canvas = document.createElement('canvas');
-  canvas.style.width = '400px';
-  canvas.style.height = '300px';
-  if (style) {
-    if (style.bg) {
-      canvas.style.backgroundColor = style.bg;
-    }
+  canvas.style.width = style.width || '400px';
+  canvas.style.height = style.height || '300px';
+  if (style.bg) {
+    canvas.style.backgroundColor = style.bg;
   }
   return canvas;
 }

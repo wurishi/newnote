@@ -3,8 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Capsule bounding box: https://www.shadertoy.com/view/3s2SRV
-// Capsule distance:     https://www.shadertoy.com/view/Xds3zN
 float capIntersect( in vec3 ro, in vec3 rd, in vec3 pa, in vec3 pb, in float r )
 {
     vec3  ba = pb - pa;

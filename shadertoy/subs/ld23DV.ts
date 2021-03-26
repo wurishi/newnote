@@ -3,13 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Density:          https://www.shadertoy.com/view/Ml3GR8
-// Fake soft shadow: https://www.shadertoy.com/view/WslGz4
-// Gradient:         https://www.shadertoy.com/view/wlcXD2
-
-
-
-// http://iquilezles.org/www/articles/boxfunctions/boxfunctions.htm
 vec4 iBox( in vec3 ro, in vec3 rd, in mat4 txx, in mat4 txi, in vec3 rad ) 
 {
     // convert from ray to box space

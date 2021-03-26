@@ -3,22 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Capsule intersection: https://www.shadertoy.com/view/Xt3SzX
-// Capsule bounding box: https://www.shadertoy.com/view/3s2SRV
-// Capsule distance:     https://www.shadertoy.com/view/Xds3zN
-// Capsule occlusion:    https://www.shadertoy.com/view/llGyzG
-
-
-// Other shaders with analytical occlusion or approximations:
-// 
-// Box:                        https://www.shadertoy.com/view/4djXDy
-// Box with horizon clipping:  https://www.shadertoy.com/view/4sSXDV
-// Triangle:                   https://www.shadertoy.com/view/XdjSDy
-// Sphere:                     https://www.shadertoy.com/view/4djSDy
-// Ellipsoid (approximation):  https://www.shadertoy.com/view/MlsSzn
-// Capsule (approximation):    https://www.shadertoy.com/view/llGyzG
-
-
 uniform bool u_show;
 
 // intersect capsule

@@ -79,7 +79,13 @@ export interface iSub {
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function;
   ignore?(): boolean;
   sort?(): number;
-  channels?(): { path?: string; type: number; fi?: number; f?: string }[];
+  channels?(): {
+    path?: string;
+    type: number;
+    fi?: number;
+    f?: string;
+    video?: any;
+  }[];
   webgl?(): string;
 }
 

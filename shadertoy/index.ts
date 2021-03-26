@@ -457,6 +457,25 @@ async function createChannelList(
               },
             };
           });
+        } else if (c.type == 2) {
+          const tmp = webglUtils.getTexture(
+            gl,
+            program,
+            'iChannel' + i,
+            c.video,
+            i,
+            c
+          );
+
+          res.push((p: any) => {
+            return {
+              width: c.video.width,
+              height: c.video.height,
+              bindTexture: () => {
+                tmp.bindTexture();
+              },
+            };
+          });
         }
       }
     }

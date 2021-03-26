@@ -370,6 +370,8 @@ export function getTexture(
         gl.generateMipmap(gl.TEXTURE_2D);
       }
 
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
+
       gl.texImage2D(
         gl.TEXTURE_2D,
         0,

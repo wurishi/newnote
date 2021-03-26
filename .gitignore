@@ -12,3 +12,4 @@ webpack/*/dist/*
 threejs/**/dist/*
 webpack/**/dist/*
 reduxsaga/coverage/**/*
+shadertoy/media/*

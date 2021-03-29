@@ -876,3 +876,7 @@ Xt2GWc
 4tj3DG
 
 ![142](assets/142.jpg)
+
+# 143. 2pic
+
+![143](assets/143.jpg)

@@ -22,7 +22,6 @@ const fragment = `
 // http://iquilezles.org/www/articles/boxfunctions/boxfunctions.htm
 //
 // Intersection:     https://www.shadertoy.com/view/ld23DV
-// Occlusion:        https://www.shadertoy.com/view/4sSXDV
 // Occlusion:        https://www.shadertoy.com/view/4djXDy
 // Density:          https://www.shadertoy.com/view/Ml3GR8
 // Fake soft shadow: https://www.shadertoy.com/view/WslGz4

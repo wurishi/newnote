@@ -922,3 +922,27 @@ ltlSW4
 ltBGzt
 
 ![150](assets/150.jpg)
+
+# 151. Quantization & Dithering 2
+
+Xdt3Wr
+
+![151](assets/151.jpg)
+
+# 152. Palettization + OrderedDithering
+
+Xdt3Dr
+
+![152](assets/152.jpg)
+
+# 153. website background #2
+
+4st3DS
+
+![153](assets/153.jpg)
+
+# 154. Neon Hypno Bands
+
+MdcGW4
+
+![154](assets/154.jpg)

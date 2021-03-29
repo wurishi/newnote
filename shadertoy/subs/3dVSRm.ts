@@ -1,8 +1,13 @@
 import { GUI } from 'dat.gui';
 import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
-
+//FINISH
 const fragment = `
+uniform bool u_showSquare;
+uniform bool u_showOctagon;
+uniform bool u_showArcs;
+uniform bool u_aniline;
+uniform float u_gamma;
 
 const float pi = 3.141592653589;
 const float r = .02;
@@ -151,6 +156,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
     if(fpa.x + fpa.y < (1. - sqrt(2.) / 2.))
     {
+      if(u_showSquare) {
         // Square.
         ip = floor(p) * 2. +1.;
         b = hash(ip);
@@ -164,9 +170,11 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
         thoffset = th / 2.;
 
         c = max(c, smoothstep((1. - sqrt(2.) / 2.) - w * sqrt(2.) * 2., (1. - sqrt(2.) / 2.), max(abs(fp.x + fp.y), abs(fp.y - fp.x))));
+      }
     }
     else
     {
+      if(u_showOctagon) {
         // Octagon.
         th = floor(mod(b,.25)/.25*8.) * pi * 2. / 8.;
         fp *= mat2(cos(th), sin(th), -sin(th), cos(th));
@@ -177,16 +185,19 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
         float d = max(abs(fp.x + fp.y) / sqrt(2.), abs(fp.y - fp.x) / sqrt(2.));
         c = max(c, smoothstep(.5 - w * 2., .5, max(d, max(abs(fp.x), abs(fp.y)))));
+      }
     }
     
     uint inds[8];
     
-	inds[0] = 0U;
+	  inds[0] = 0U;
     
+    // 随机方向绳索线
     uint seed = uint(ip.x + ip.y * 8192.)*319U;
     for(uint j = 1U; j < num_inds; ++j)
     {
         seed = hash1(seed);
+        // seed = uint(hash(vec2(float(j), seed)));
         uint k = seed % j;
         uint temp = inds[k];
         inds[k] = j;
@@ -194,33 +205,40 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     }
 
     // Draw the arcs.
-    
-    for(uint j = 0U; j < num_inds; j += 2U)
-    {
-        uint ia = inds[j];
-        uint ib = inds[j + 1U];
-        vec2 pa = vec2(cos(th * float(ia) - thoffset), sin(th * float(ia) - thoffset)) * r / 2.;
-        vec2 pb = vec2(cos(th * float(ib) - thoffset), sin(th * float(ib) - thoffset)) * r / 2.;
-        vec4 d = arcDistanceRope(fp, pa, pb);
-        a = mix(a, d, d.a);
+    if(u_showArcs) {
+      for(uint j = 0U; j < num_inds; j += 2U)
+      {
+          uint ia = inds[j];
+          uint ib = inds[j + 1U];
+          vec2 pa = vec2(cos(th * float(ia) - thoffset), sin(th * float(ia) - thoffset)) * r / 2.;
+          vec2 pb = vec2(cos(th * float(ib) - thoffset), sin(th * float(ib) - thoffset)) * r / 2.;
+          vec4 d = arcDistanceRope(fp, pa, pb);
+          a = mix(a, d, d.a);
+      }
     }
-    
     
     // Shade.
     vec3 col = mix(vec3(1), vec3(.3), c);
 
     float l = 1. - (min(fract(iTime / 6.) * 2., 2. - 2. * fract(iTime / 6.)) - .5) * 16.;
+    if(!u_aniline) {
+      l = 1.;
+    }
 
     fragColor.rgb = mix(a.rgb, a.rgb * col, (1. - a.a) * smoothstep(0., 1., l));
 
     // Gamma etc.
-    fragColor.rgb = pow(fragColor.rgb, vec3(1. / 2.2));
+    fragColor.rgb = pow(fragColor.rgb, vec3(1. / u_gamma));
 }
 `;
 
 let gui: GUI;
 const api = {
-  u_useChannel: true,
+  u_showSquare: true,
+  u_showOctagon: true,
+  u_showArcs: true,
+  u_aniline: true,
+  u_gamma: 2.2,
 };
 
 export default class implements iSub {
@@ -240,8 +258,12 @@ export default class implements iSub {
     return [];
   }
   main(): HTMLCanvasElement {
-    // gui = new GUI();
-    // gui.add(api, 'u_useChannel');
+    gui = new GUI();
+    gui.add(api, 'u_showSquare').name('显示方块');
+    gui.add(api, 'u_showOctagon').name('显示八角形');
+    gui.add(api, 'u_showArcs');
+    gui.add(api, 'u_aniline').name('line动画');
+    gui.add(api, 'u_gamma', 1, 10, 0.1);
     return createCanvas();
   }
   userFragment(): string {
@@ -257,13 +279,25 @@ export default class implements iSub {
     }
   }
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
-    // const u_useChannel = webglUtils.getUniformLocation(
-    //   gl,
-    //   program,
-    //   'u_useChannel'
-    // );
+    const u_showSquare = webglUtils.getUniformLocation(
+      gl,
+      program,
+      'u_showSquare'
+    );
+    const u_showOctagon = webglUtils.getUniformLocation(
+      gl,
+      program,
+      'u_showOctagon'
+    );
+    const u_showArcs = webglUtils.getUniformLocation(gl, program, 'u_showArcs');
+    const u_aniline = webglUtils.getUniformLocation(gl, program, 'u_aniline');
+    const u_gamma = webglUtils.getUniformLocation(gl, program, 'u_gamma');
     return () => {
-      // u_useChannel.uniform1i(api.u_useChannel ? 1 : 0);
+      u_showSquare.uniform1i(api.u_showSquare ? 1 : 0);
+      u_showOctagon.uniform1i(api.u_showOctagon ? 1 : 0);
+      u_showArcs.uniform1i(api.u_showArcs ? 1 : 0);
+      u_aniline.uniform1i(api.u_aniline ? 1 : 0);
+      u_gamma.uniform1f(api.u_gamma);
     };
   }
   channels() {

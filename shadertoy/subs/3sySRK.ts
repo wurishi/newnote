@@ -69,14 +69,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     // fragColor = vec4(col, 1.0 - (depth - 0.5) / 2.0);
     fragColor = vec4(col, 1.);
 }
-
-/** SHADERDATA
-{
-	"title": "My Shader 0",
-	"description": "Lorem ipsum dolor",
-	"model": "person"
-}
-*/
 `;
 
 export default class implements iSub {

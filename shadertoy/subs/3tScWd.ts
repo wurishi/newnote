@@ -3,6 +3,8 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
+uniform bool u_mode;
+
 float noise( in vec2 p );
 
 // regular fbm
@@ -300,32 +302,33 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 	vec3 col = vec3(0.9);
 	if( mid!=-1 )
 	{
-#if 1
-		// -----------------------------------------------------------------------
-        // compute ray differentials by intersecting the tangent plane to the  
-        // surface.		
-		// -----------------------------------------------------------------------
+        vec2 uv, ddx_uv, ddy_uv;
+        if(u_mode) {
+            // -----------------------------------------------------------------------
+            // compute ray differentials by intersecting the tangent plane to the  
+            // surface.		
+            // -----------------------------------------------------------------------
 
-		// computer ray differentials
-		vec3 ddx_pos = ddx_ro - ddx_rd*dot(ddx_ro-pos,nor)/dot(ddx_rd,nor);
-		vec3 ddy_pos = ddy_ro - ddy_rd*dot(ddy_ro-pos,nor)/dot(ddy_rd,nor);
+            // computer ray differentials
+            vec3 ddx_pos = ddx_ro - ddx_rd*dot(ddx_ro-pos,nor)/dot(ddx_rd,nor);
+            vec3 ddy_pos = ddy_ro - ddy_rd*dot(ddy_ro-pos,nor)/dot(ddy_rd,nor);
 
-		// calc texture sampling footprint		
-		vec2     uv = texCoords(     pos, mid );
-		vec2 ddx_uv = texCoords( ddx_pos, mid ) - uv;
-		vec2 ddy_uv = texCoords( ddy_pos, mid ) - uv;
-#else
-		// -----------------------------------------------------------------------
-        // Because we are in the GPU, we do have access to differentials directly
-        // This wouldn't be the case in a regular raytracer.
-		// -----------------------------------------------------------------------
-		vec2 uvw = texCoords( pos, mid );
+            // calc texture sampling footprint		
+            uv = texCoords(     pos, mid );
+            ddx_uv = texCoords( ddx_pos, mid ) - uv;
+            ddy_uv = texCoords( ddy_pos, mid ) - uv;
+        }
+        else {
+            // -----------------------------------------------------------------------
+            // Because we are in the GPU, we do have access to differentials directly
+            // This wouldn't be the case in a regular raytracer.
+            // -----------------------------------------------------------------------
+            uv = texCoords( pos, mid );
 
-		// calc texture sampling footprint		
-		vec2 ddx_uvw = dFdx( uvw ); 
-        vec2 ddy_uvw = dFdy( uvw ); 
-#endif
-        
+            // calc texture sampling footprint		
+            ddx_uv = dFdx( uv ); 
+            ddy_uv = dFdy( uv ); 
+        }
 		// shading		
 		vec3 mate = vec3(0.0);
 
@@ -351,6 +354,11 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 }
 `;
 
+let gui: GUI;
+const api = {
+  u_mode: true,
+};
+
 export default class implements iSub {
   key(): string {
     return '3tScWd';
@@ -368,6 +376,8 @@ export default class implements iSub {
     return [];
   }
   main(): HTMLCanvasElement {
+    gui = new GUI();
+    gui.add(api, 'u_mode');
     return createCanvas();
   }
   userFragment(): string {
@@ -376,8 +386,16 @@ export default class implements iSub {
   fragmentPrecision?(): string {
     return PRECISION_MEDIUMP;
   }
-  destory(): void {}
+  destory(): void {
+    if (gui) {
+      gui.destroy();
+      gui = null;
+    }
+  }
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
-    return () => {};
+    const u_mode = webglUtils.getUniformLocation(gl, program, 'u_mode');
+    return () => {
+      u_mode.uniform1i(api.u_mode ? 1 : 0);
+    };
   }
 }

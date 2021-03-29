@@ -3,11 +3,8 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-//drag the window LR to control roughness
-
-//--graphics setting (lower = better fps)---------------------------------------------------------------------
-#define AVERAGECOUNT 16
-#define MAX_BOUNCE 32
+uniform int u_averagecount;
+uniform int u_max_bounce;
 
 //--scene data---------------------------------------------------------------------
 #define SPHERECOUNT 6
@@ -109,7 +106,7 @@ vec4 calculateFinalColor(vec3 cameraPos, vec3 cameraRayDir, float AAIndex)
     
     //can't write recursive function in GLSL, so write it in a for loop
     //will loop until hitting any light source / bounces too many times
-    for(int i = 0; i < MAX_BOUNCE; i++)
+    for(int i = 0; i < u_max_bounce; i++)
     {
         HitData h = AllObjectsRayTest(rayStartPos + rayDir * 0.0001,rayDir);//+0.0001 to prevent ray already hit at start pos
         
@@ -157,11 +154,11 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     //----------------------------------------------------
 
     vec4 finalColor = vec4(0);
-    for(int i = 1; i <= AVERAGECOUNT; i++)
+    for(int i = 1; i <= u_averagecount; i++)
     {
         finalColor+= calculateFinalColor(cameraPos,rayDir, float(i));
     }
-    finalColor = finalColor/float(AVERAGECOUNT);//brute force AA & denoise
+    finalColor = finalColor/float(u_averagecount);//brute force AA & denoise
     finalColor.rgb = pow(finalColor.rgb,vec3(1.0/2.2));//gamma correction
     
     //only for CineShader, to show depth
@@ -175,6 +172,11 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 }
 `;
 
+let gui: GUI;
+const api = {
+  u_averagecount: 16,
+  u_max_bounce: 32,
+};
 export default class implements iSub {
   key(): string {
     return '3sc3z4';
@@ -189,6 +191,9 @@ export default class implements iSub {
     return [];
   }
   main(): HTMLCanvasElement {
+    gui = new GUI();
+    gui.add(api, 'u_averagecount', 2, 32, 1);
+    gui.add(api, 'u_max_bounce', 1, 64, 1);
     return createCanvas();
   }
   userFragment(): string {
@@ -197,9 +202,27 @@ export default class implements iSub {
   fragmentPrecision?(): string {
     return PRECISION_MEDIUMP;
   }
-  destory(): void {}
+  destory(): void {
+    if (gui) {
+      gui.destroy();
+      gui = null;
+    }
+  }
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
-    return () => {};
+    const u_averagecount = webglUtils.getUniformLocation(
+      gl,
+      program,
+      'u_averagecount'
+    );
+    const u_max_bounce = webglUtils.getUniformLocation(
+      gl,
+      program,
+      'u_max_bounce'
+    );
+    return () => {
+      u_averagecount.uniform1i(api.u_averagecount);
+      u_max_bounce.uniform1i(api.u_max_bounce);
+    };
   }
   webgl() {
     return WEBGL_2;

@@ -25,6 +25,22 @@ npx webpack --config webpack.dll.config.js
 npx webpack-dev-server
 ```
 
+# GLSL - API
+
+| Syntax                         粗体为方法名(占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符) | Description                                                  |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| genType **pow**(genType x, genType y)                        | x的y次方. **如果x小于0, 结果为 undefined. 如果x=0且y<=0, 结果也是 undefined.** |
+| genType **dFdx**(genType p)                                  | 偏导数. GPU 会同时跑片元着色器的多个实例, 但并不是一个像素一个像素去执行的. 而是会组织在2x2的一组pixels块中并行执行. 偏导数就是通过像素块中变量的差值(变化率)而计算出来的. dFdx 表示的是像素块中右边像素的值减去左边像素的值 |
+| genType **dFdy**(genType p)                                  | 下面像素的值减去上面像素的值.                                |
+| genType **fract**(genType x)                                 | 返回 x 的小数部分.                                           |
+|                                                              |                                                              |
+|                                                              |                                                              |
+|                                                              |                                                              |
+|                                                              |                                                              |
+|                                                              |                                                              |
+
+
+
 # 1. Fovea detector
 
 4dsXzM

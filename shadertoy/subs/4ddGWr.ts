@@ -1,7 +1,7 @@
 import { GUI } from 'dat.gui';
 import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
-
+//FINISH
 const fragment = `
 // for a dramatic display of the value of dithering,
 // use these settings.
@@ -12,10 +12,10 @@ const fragment = `
 const float PaletteRGBSize = 4.;// number of values possible for each R, G, B.
 const float ResolutionDivisor = 2.;
 
-//#define USE_BAYER4x4
-#define USE_BAYER8x8
-//#define USE_NOISE
-//#define USE_ANIM_NOISE
+uniform bool u_usebayer4;
+uniform bool u_usebayer8;
+uniform bool u_noise;
+uniform bool u_anim_noise;
 
 //----------------------------------------------------------------------------
 
@@ -90,18 +90,18 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     // dithered panel---------------------
     vec3 dc = getSceneColor(uvPixellated / iResolution.xy);
     // apply bayer matrix, perturbing the original color values.
-#ifdef USE_BAYER4x4
-    dc += (bayer4x4(fragCoord)-.5)*(quantizationPeriod);
-#endif
-#ifdef USE_BAYER8x8
-	dc += (bayer8x8(fragCoord)-.5)*(quantizationPeriod);
-#endif
-#ifdef USE_NOISE
-	dc += (rand(uvPixellated)-.5)*(quantizationPeriod);
-#endif
-#ifdef USE_ANIM_NOISE
-	dc += (rand(vec2(rand(uvPixellated),iDate.w))-.5)*(quantizationPeriod);
-#endif
+    if(u_usebayer4) {
+      dc += (bayer4x4(fragCoord)-.5)*(quantizationPeriod);
+    }
+    if(u_usebayer8) {
+      dc += (bayer8x8(fragCoord)-.5)*(quantizationPeriod);
+    }
+    if(u_noise) {
+      dc += (rand(uvPixellated)-.5)*(quantizationPeriod);
+    }
+    if(u_anim_noise) {
+      dc += (rand(vec2(rand(uvPixellated),iDate.w))-.5)*(quantizationPeriod);
+    }
     // quantize color to palette
     dc = vec3(
         quantize(dc.r, quantizationPeriod.r),
@@ -147,6 +147,13 @@ const {
   videoDestory,
 } = webglUtils.createVideo();
 
+let gui: GUI;
+const api = {
+  u_usebayer4: false,
+  u_usebayer8: true,
+  u_noise: false,
+  u_anim_noise: false,
+};
 export default class implements iSub {
   key(): string {
     return '4ddGWr';
@@ -165,6 +172,11 @@ export default class implements iSub {
   }
   main(): HTMLCanvasElement {
     videoInit();
+    gui = new GUI();
+    gui.add(api, 'u_usebayer4');
+    gui.add(api, 'u_usebayer8');
+    gui.add(api, 'u_noise');
+    gui.add(api, 'u_anim_noise');
     return createCanvas();
   }
   userFragment(): string {
@@ -175,10 +187,34 @@ export default class implements iSub {
   }
   destory(): void {
     videoDestory();
+    if (gui) {
+      gui.destroy();
+      gui = null;
+    }
   }
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
+    const u_usebayer4 = webglUtils.getUniformLocation(
+      gl,
+      program,
+      'u_usebayer4'
+    );
+    const u_usebayer8 = webglUtils.getUniformLocation(
+      gl,
+      program,
+      'u_usebayer8'
+    );
+    const u_noise = webglUtils.getUniformLocation(gl, program, 'u_noise');
+    const u_anim_noise = webglUtils.getUniformLocation(
+      gl,
+      program,
+      'u_anim_noise'
+    );
     return () => {
       videoAdd();
+      u_usebayer4.uniform1i(api.u_usebayer4 ? 1 : 0);
+      u_usebayer8.uniform1i(api.u_usebayer8 ? 1 : 0);
+      u_noise.uniform1i(api.u_noise ? 1 : 0);
+      u_anim_noise.uniform1i(api.u_anim_noise ? 1 : 0);
     };
   }
   channels() {

@@ -1,8 +1,10 @@
 import { GUI } from 'dat.gui';
 import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
-
+//FINISH
 const fragment = `
+uniform bool u_showbox;
+
 #define AA 3
 
 struct bound3
@@ -72,6 +74,9 @@ vec3 capNormal( in vec3 pos, in vec3 a, in vec3 b, in float r )
 // ray-box intersection
 vec2 iBox( in vec3 ro, in vec3 rd, in vec3 cen, in vec3 rad ) 
 {
+  if(!u_showbox) {
+    return vec2(0);
+  }
     vec3 m = 1.0/rd;
     vec3 n = m*(ro-cen);
     vec3 k = abs(m)*rad;
@@ -150,6 +155,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         vec3 bcen = 0.5*(bbox.mMin+bbox.mMax);
         vec3 brad = 0.5*(bbox.mMax-bbox.mMin);
         vec2 tbox = iBox( ro, rd, bcen, brad );
+        // 显示边框
         if( tbox.x>0.0 )
         {
             // back face
@@ -186,6 +192,11 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 }
 `;
 
+let gui: GUI;
+const api = {
+  u_showbox: true,
+};
+
 export default class implements iSub {
   key(): string {
     return '3s2SRV';
@@ -200,6 +211,8 @@ export default class implements iSub {
     return [];
   }
   main(): HTMLCanvasElement {
+    gui = new GUI();
+    gui.add(api, 'u_showbox');
     return createCanvas();
   }
   userFragment(): string {
@@ -208,8 +221,16 @@ export default class implements iSub {
   fragmentPrecision?(): string {
     return PRECISION_MEDIUMP;
   }
-  destory(): void {}
+  destory(): void {
+    if (gui) {
+      gui.destroy();
+      gui = null;
+    }
+  }
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
-    return () => {};
+    const u_showbox = webglUtils.getUniformLocation(gl, program, 'u_showbox');
+    return () => {
+      u_showbox.uniform1i(api.u_showbox ? 1 : 0);
+    };
   }
 }

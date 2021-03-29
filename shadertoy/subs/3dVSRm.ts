@@ -156,6 +156,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
     if(fpa.x + fpa.y < (1. - sqrt(2.) / 2.))
     {
+      // 方块部分
       if(u_showSquare) {
         // Square.
         ip = floor(p) * 2. +1.;
@@ -174,6 +175,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     }
     else
     {
+      // 八角形部分
       if(u_showOctagon) {
         // Octagon.
         th = floor(mod(b,.25)/.25*8.) * pi * 2. / 8.;
@@ -221,13 +223,14 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     vec3 col = mix(vec3(1), vec3(.3), c);
 
     float l = 1. - (min(fract(iTime / 6.) * 2., 2. - 2. * fract(iTime / 6.)) - .5) * 16.;
+    // line的动画
     if(!u_aniline) {
       l = 1.;
     }
 
     fragColor.rgb = mix(a.rgb, a.rgb * col, (1. - a.a) * smoothstep(0., 1., l));
 
-    // Gamma etc.
+    // Gamma 增强
     fragColor.rgb = pow(fragColor.rgb, vec3(1. / u_gamma));
 }
 `;

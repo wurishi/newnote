@@ -466,3 +466,27 @@ export function createVideo(src = './media/video.ogv') {
     },
   };
 }
+
+export function numberToRGBA(num: number, normalize = false): number[] {
+  let rgba: number[] = [];
+  rgba[0] = (num >> 16) & 0xff;
+  rgba[1] = (num >> 8) & 0xff;
+  rgba[2] = num & 0xff;
+  rgba[3] = (num >> 24) & 0xff;
+  if (normalize) {
+    rgba = rgba.map((v) => v / 255);
+  }
+  return rgba;
+}
+
+export function rgbToNumber(rgb: number[], isNormalize = false): number {
+  let num = 0;
+  if (isNormalize) {
+    rgb = rgb.map((v) => v * 255);
+  }
+  num = (rgb[0] << 16) & 0xff0000;
+  num += (rgb[1] << 8) & 0x00ff00;
+  num += rgb[2] & 0x0000ff;
+
+  return num;
+}

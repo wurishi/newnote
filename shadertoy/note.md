@@ -33,7 +33,7 @@ npx webpack-dev-server
 | genType **dFdx**(genType p)                                  | 偏导数. GPU 会同时跑片元着色器的多个实例, 但并不是一个像素一个像素去执行的. 而是会组织在2x2的一组pixels块中并行执行. 偏导数就是通过像素块中变量的差值(变化率)而计算出来的. dFdx 表示的是像素块中右边像素的值减去左边像素的值 |
 | genType **dFdy**(genType p)                                  | 下面像素的值减去上面像素的值.                                |
 | genType **fract**(genType x)                                 | 返回 x 的小数部分.                                           |
-|                                                              |                                                              |
+| genType **clamp**(genType x, genType minVal, genType maxVal) | 夹具函数, 取三个参数中中间值. **如果 minVal > maxVal, 返回 undefined.** |
 |                                                              |                                                              |
 |                                                              |                                                              |
 |                                                              |                                                              |
@@ -1028,3 +1028,9 @@ ldj3Wh
 lsyfWc
 
 ![165](assets/165.jpg)
+
+# 166. Box occlusion optimized
+
+ttlBWf
+
+![166](assets/166.jpg)

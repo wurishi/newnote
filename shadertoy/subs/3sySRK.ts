@@ -1,7 +1,7 @@
 import { GUI } from 'dat.gui';
 import { createCanvas, iSub, PRECISION_MEDIUMP } from '../libs';
 import * as webglUtils from '../webgl-utils';
-
+//FINISH
 const fragment = `
 float opSmoothUnion( float d1, float d2, float k )
 {
@@ -66,8 +66,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     col *= exp( -depth * 0.15 );
 	
     // maximum thickness is 2m in alpha channel
-    // fragColor = vec4(col, 1.0 - (depth - 0.5) / 2.0);
-    fragColor = vec4(col, 1.);
+    fragColor = vec4(col, 1.0 - (depth - 0.5) / 2.0);
+    // fragColor = vec4(col, 1.);
 }
 `;
 
@@ -85,7 +85,7 @@ export default class implements iSub {
     return [];
   }
   main(): HTMLCanvasElement {
-    return createCanvas();
+    return createCanvas({ bg: 'black' });
   }
   userFragment(): string {
     return fragment;

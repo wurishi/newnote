@@ -1,7 +1,7 @@
 import { GUI } from 'dat.gui';
 import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
-
+//FINISH
 const fragment = `
 #define HW_PERFORMANCE 0
 
@@ -12,6 +12,10 @@ const fragment = `
 #endif
 
 uniform bool u_mode;
+uniform bool u_vignetting;
+uniform bool u_surve;
+uniform vec3 u_sky;
+uniform vec3 u_sky_h;
 
 //------------------------------------------------------------------
 
@@ -316,15 +320,15 @@ float calcOcclusion( in vec3 pos, in vec3 nor, float time )
 
 vec3 render( in vec3 ro, in vec3 rd, float time )
 { 
-    // sky dome
-    vec3 col = vec3(0.5, 0.8, 0.9) - max(rd.y,0.0)*0.5;
+    // sky dome vec3(0.5, 0.8, 0.9)
+    vec3 col = u_sky - max(rd.y,0.0)*0.5;
     // sky clouds
     vec2 uv = 1.5*rd.xz/rd.y;
     float cl  = 1.0*(sin(uv.x)+sin(uv.y)); uv *= mat2(0.8,0.6,-0.6,0.8)*2.1;
           cl += 0.5*(sin(uv.x)+sin(uv.y));
     col += 0.1*(-1.0+2.0*smoothstep(-0.1,0.1,cl-0.4));
-    // sky horizon
-	col = mix( col, vec3(0.5, 0.7, .9), exp(-10.0*max(rd.y,0.0)) );    
+    // sky horizon 地平线颜色 vec3(0.5, 0.7, .9)
+	col = mix( col, u_sky_h, exp(-10.0*max(rd.y,0.0)) );    
     
 
     // scene geometry
@@ -479,13 +483,19 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     tot /= float(AA*AA);
 #endif
 
-    // s-surve    
-    tot = clamp(tot,0.0,1.0);
-    tot = tot*tot*(3.0-2.0*tot);
+    // 颜色增强
+    if(u_surve) {
+        // s-surve    
+        tot = clamp(tot,0.0,1.0);
+        tot = tot*tot*(3.0-2.0*tot);
+    }
 
-    // vignetting        
-    vec2 q = fragCoord/iResolution.xy;
-    tot *= 0.5 + 0.5*pow(16.0*q.x*q.y*(1.0-q.x)*(1.0-q.y),0.25);
+    // 四周灰度
+    if(u_vignetting) {
+        // vignetting        
+        vec2 q = fragCoord/iResolution.xy;
+        tot *= 0.5 + 0.5*pow(16.0*q.x*q.y*(1.0-q.x)*(1.0-q.y),0.25);
+    }
 
     // output    
     fragColor = vec4( tot, 1.0 );
@@ -495,8 +505,13 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 let gui: GUI;
 const api = {
   u_mode: true,
+  u_vignetting: true,
+  u_surve: true,
+  u_sky: 8362469,
+  u_sky_h: webglUtils.rgbToNumber([0.5, 0.7, 0.9], true),
 };
 
+// console.log(webglUtils.rgbToNumber([0.14, 0.048, 0.0], true));
 export default class implements iSub {
   key(): string {
     return '3lsSzf';
@@ -516,6 +531,10 @@ export default class implements iSub {
   main(): HTMLCanvasElement {
     gui = new GUI();
     gui.add(api, 'u_mode');
+    gui.add(api, 'u_vignetting').name('四角灰度');
+    gui.add(api, 'u_surve').name('图像颜色加强');
+    gui.addColor(api, 'u_sky').name('天空颜色');
+    gui.addColor(api, 'u_sky_h').name('地平线颜色');
     return createCanvas();
   }
   userFragment(): string {
@@ -532,8 +551,24 @@ export default class implements iSub {
   }
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
     const u_mode = webglUtils.getUniformLocation(gl, program, 'u_mode');
+    const u_vignetting = webglUtils.getUniformLocation(
+      gl,
+      program,
+      'u_vignetting'
+    );
+    const u_surve = webglUtils.getUniformLocation(gl, program, 'u_surve');
+    const u_sky = webglUtils.getUniformLocation(gl, program, 'u_sky');
+    const u_sky_h = webglUtils.getUniformLocation(gl, program, 'u_sky_h');
     return () => {
       u_mode.uniform1i(api.u_mode ? 1 : 0);
+      u_vignetting.uniform1i(api.u_vignetting ? 1 : 0);
+      u_surve.uniform1i(api.u_surve ? 1 : 0);
+      let rgba = webglUtils.numberToRGBA(api.u_sky, true);
+      u_sky.uniform3f.call(null, ...rgba);
+      u_sky_h.uniform3f.call(
+        null,
+        ...webglUtils.numberToRGBA(api.u_sky_h, true)
+      );
     };
   }
 }

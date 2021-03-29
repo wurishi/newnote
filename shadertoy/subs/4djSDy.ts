@@ -1,7 +1,7 @@
 import { GUI } from 'dat.gui';
 import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
-
+//FINISH
 const fragment = `
 // Sphere intersection
 float sphIntersect( in vec3 ro, in vec3 rd, in vec4 sph )
@@ -113,9 +113,9 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         float t = t2;
         vec3 pos = ro + t*rd;
         vec3 nor = normalize( pos - sph.xyz );
-		col = vec3(1.2);
+		    col = vec3(1.2);
         col *= 0.6+0.4*nor.y;
-	}
+	  }
 
 	col *= exp( -0.05*tmin );
 

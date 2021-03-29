@@ -1,9 +1,8 @@
 import { GUI } from 'dat.gui';
 import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
-
+//FINISH
 const fragment = `
-
 uniform int u_mode;
 
 // (x4 + y4 + z4) - (r2^2)·(x2 + y2 + z2) + r1^4 = 0;
@@ -183,7 +182,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
 	// dither to remove banding in the background
     tot += fract(sin(fragCoord.x*vec3(13,1,11)+fragCoord.y*vec3(1,7,5))*158.391832)/255.0;
-
     
     fragColor = vec4( tot, 1.0 );
 }

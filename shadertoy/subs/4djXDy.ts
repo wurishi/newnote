@@ -1,15 +1,9 @@
 import { GUI } from 'dat.gui';
 import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
-
+//FINISH
 const fragment = `
-// 0  my original method, by iterating all 6 faces/12 edges/8 verts
-// 1  optimized method by clem494949 (https://www.shadertoy.com/view/ttlBWf)
-//    which iterates the solid angle hexagon (1 face/6 edges/6 verts)
-#define METHOD 1
-
-
-
+uniform int u_method;
 
 //=====================================================
 
@@ -42,9 +36,9 @@ vec4 boxIntersect( in vec3 ro, in vec3 rd, in mat4 txx, in mat4 txi, in vec3 rad
 	return vec4( tN, nor );
 }
 
-#if METHOD==0
+// my original method, by iterating all 6 faces/12 edges/8 verts
 // Box occlusion (if fully visible)
-float boxOcclusion( in vec3 pos, in vec3 nor, in mat4 txx, in mat4 txi, in vec3 rad ) 
+float boxOcclusion0( in vec3 pos, in vec3 nor, in mat4 txx, in mat4 txi, in vec3 rad ) 
 {
 	vec3 p = (txx*vec4(pos,1.0)).xyz;
 	vec3 n = (txx*vec4(nor,0.0)).xyz;
@@ -84,10 +78,11 @@ float boxOcclusion( in vec3 pos, in vec3 nor, in mat4 txx, in mat4 txi, in vec3 
         
     return occ / 6.283185;
 }
-#endif
-#if METHOD==1
+
+// 1  optimized method by clem494949 (ttlBWf)
+//    which iterates the solid angle hexagon (1 face/6 edges/6 verts)
 // Box occlusion (if fully visible)
-float boxOcclusion( in vec3 pos, in vec3 nor, in mat4 txx, in mat4 txi, in vec3 rad ) 
+float boxOcclusion1( in vec3 pos, in vec3 nor, in mat4 txx, in mat4 txi, in vec3 rad ) 
 {
 	vec3 p = (txx*vec4(pos,1.0)).xyz;
 	vec3 n = (txx*vec4(nor,0.0)).xyz;
@@ -115,7 +110,7 @@ float boxOcclusion( in vec3 pos, in vec3 nor, in mat4 txx, in mat4 txi, in vec3 
     	    	dot( n, normalize( cross(v5,v0)) ) * acos( dot(v5,v0) ))
             	/ 6.283185;
 }
-#endif
+
 //-----------------------------------------------------------------------------------------
 
 mat4 rotationAxisAngle( vec3 v, float angle )
@@ -180,7 +175,12 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         
         if( p.x > s )
         {
-            occ = boxOcclusion( pos, nor, txx, txi, box );
+          if(u_method == 1) {
+            occ = boxOcclusion1( pos, nor, txx, txi, box );
+          }
+          else {
+            occ = boxOcclusion0( pos, nor, txx, txi, box );
+          }
         }
         else
         {
@@ -235,6 +235,11 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 }
 `;
 
+let gui: GUI;
+const api = {
+  u_method: 1,
+};
+
 export default class implements iSub {
   key(): string {
     return '4djXDy';
@@ -252,6 +257,8 @@ export default class implements iSub {
     return WEBGL_2;
   }
   main(): HTMLCanvasElement {
+    gui = new GUI();
+    gui.add(api, 'u_method', [0, 1]);
     return createCanvas();
   }
   userFragment(): string {
@@ -260,9 +267,17 @@ export default class implements iSub {
   fragmentPrecision?(): string {
     return PRECISION_MEDIUMP;
   }
-  destory(): void {}
+  destory(): void {
+    if (gui) {
+      gui.destroy();
+      gui = null;
+    }
+  }
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
-    return () => {};
+    const u_method = webglUtils.getUniformLocation(gl, program, 'u_method');
+    return () => {
+      u_method.uniform1i(api.u_method);
+    };
   }
   channels() {
     return [webglUtils.ROCK_TEXTURE];

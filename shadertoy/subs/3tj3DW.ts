@@ -1,7 +1,7 @@
 import { GUI } from 'dat.gui';
 import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
-
+//FINISH
 const fragment = `
 uniform int u_mode;
 // f(x,y,z) = x^4 + y^4 + z^4 - ra^4
@@ -152,7 +152,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
 let gui: GUI;
 const api = {
-  u_mode: 0,
+  u_mode: 1,
 };
 
 export default class implements iSub {

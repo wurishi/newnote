@@ -441,3 +441,28 @@ export const TEXTURE_MIPMAPS = {
     WebGLRenderingContext.LINEAR_MIPMAP_NEAREST,
   [WebGLRenderingContext.TEXTURE_MAG_FILTER]: WebGLRenderingContext.LINEAR,
 };
+
+export function createVideo(src = './media/video.ogv') {
+  const video = document.createElement('video');
+  let videoAdded = false;
+  return {
+    video,
+    videoInit: () => {
+      video.src = src;
+      video.autoplay = true;
+      video.muted = true;
+      video.width = 400;
+      video.height = 300;
+    },
+    videoAdd: () => {
+      if (!videoAdded) {
+        videoAdded = true;
+        document.body.appendChild(video);
+      }
+    },
+    videoDestory: () => {
+      document.body.removeChild(video);
+      videoAdded = false;
+    },
+  };
+}

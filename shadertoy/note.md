@@ -904,3 +904,21 @@ Xst3W7
 XtjGzt
 
 ![147](assets/147.jpg)
+
+# 148. Hex Master 140ch
+
+ltlSW4
+
+![148](assets/148.jpg)
+
+# 149. Palette Quantization & Dithering
+
+4ddGWr
+
+![149](assets/149.jpg)
+
+# 150. Distance field drawing methods
+
+ltBGzt
+
+![150](assets/150.jpg)

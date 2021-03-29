@@ -47,8 +47,12 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 }
 `;
 
-const video = document.createElement('video');
-let videoAdded = false;
+const {
+  video, //
+  videoAdd,
+  videoInit,
+  videoDestory,
+} = webglUtils.createVideo();
 
 export default class implements iSub {
   key(): string {
@@ -67,11 +71,7 @@ export default class implements iSub {
     return WEBGL_2;
   }
   main(): HTMLCanvasElement {
-    video.src = './media/video.ogv';
-    video.autoplay = true;
-    video.muted = true;
-    video.width = 400;
-    video.height = 300;
+    videoInit();
     return createCanvas();
   }
   userFragment(): string {
@@ -81,15 +81,11 @@ export default class implements iSub {
     return PRECISION_MEDIUMP;
   }
   destory(): void {
-    document.body.removeChild(video);
-    videoAdded = false;
+    videoDestory();
   }
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
     return () => {
-      if (!videoAdded) {
-        videoAdded = true;
-        document.body.appendChild(video);
-      }
+      videoAdd();
     };
   }
   channels() {

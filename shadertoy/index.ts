@@ -252,6 +252,7 @@ async function activeSub(name: string) {
   const iMouse = webglUtils.getUniformLocation(gl, program, 'iMouse');
   const iFrameRate = webglUtils.getUniformLocation(gl, program, 'iFrameRate');
   const iFrame = webglUtils.getUniformLocation(gl, program, 'iFrame');
+  const iDate = webglUtils.getUniformLocation(gl, program, 'iDate');
 
   const iChannelResolution = [0, 1, 2, 3].map((i) => {
     return webglUtils.getUniformLocation(
@@ -277,6 +278,7 @@ async function activeSub(name: string) {
     const {
       a_position,
       iResolution,
+      iDate,
       iTime,
       iMouse,
       iFrameRate,
@@ -295,6 +297,13 @@ async function activeSub(name: string) {
     iMouse.uniform4fv([mouseX, mouseY, clickX, clickY]);
     iFrameRate.uniform1f(30);
     iFrame.uniform1i(iframe);
+    const now = new Date();
+    iDate.uniform4fv([
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDay(),
+      now.getSeconds() + now.getMilliseconds() / 1000,
+    ]);
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
 
@@ -335,6 +344,7 @@ async function activeSub(name: string) {
         iMouse,
         iFrameRate,
         iFrame,
+        iDate,
         fn: () => {
           fn && fn();
           fns.forEach((f) => f());
@@ -434,6 +444,7 @@ async function createChannelList(
           );
           other.iTime = webglUtils.getUniformLocation(gl, subp, 'iTime');
           other.iMouse = webglUtils.getUniformLocation(gl, subp, 'iMouse');
+          other.iDate = webglUtils.getUniformLocation(gl, subp, 'iDate');
           other.iFrameRate = webglUtils.getUniformLocation(
             gl,
             subp,

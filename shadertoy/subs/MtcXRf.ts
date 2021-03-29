@@ -3,6 +3,14 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
+// For a disk of raius r centerd in the origin oriented in the direction n, has extent e:
+//
+// e = r·sqrt(1-n²)
+
+// Cylinder intersection: https://www.shadertoy.com/view/4lcSRn
+// Cylinder distance:     https://www.shadertoy.com/view/wdXGDr
+
+
 #define AA 3
 
 struct bound3
@@ -12,60 +20,55 @@ struct bound3
 };
     
 //---------------------------------------------------------------------------------------
-// bounding box for a capsule
+// bounding box for a cylinder (http://iquilezles.org/www/articles/diskbbox/diskbbox.htm)
 //---------------------------------------------------------------------------------------
-bound3 CapsuleAABB( in vec3 pa, in vec3 pb, in float ra )
+bound3 CylinderAABB( in vec3 pa, in vec3 pb, in float ra )
 {
     vec3 a = pb - pa;
+    vec3 e = ra*sqrt( 1.0 - a*a/dot(a,a) );
     
-    return bound3( min( pa - ra, pb - ra ),
-                   max( pa + ra, pb + ra ) );
+    return bound3( min( pa - e, pb - e ),
+                   max( pa + e, pb + e ) );
 }
 
-float iCapsule( in vec3 ro, in vec3 rd, in vec3 pa, in vec3 pb, in float r )
+// ray-cylinder intersetion (returns t and normal)
+vec4 iCylinder( in vec3 ro, in vec3 rd, 
+                in vec3 pa, in vec3 pb, in float ra ) // point a, point b, radius
 {
-    vec3  ba = pb - pa;
-    vec3  oa = ro - pa;
+    // center the cylinder, normalize axis
+    vec3 cc = 0.5*(pa+pb);
+    float ch = length(pb-pa);
+    vec3 ca = (pb-pa)/ch;
+    ch *= 0.5;
 
-    float baba = dot(ba,ba);
-    float bard = dot(ba,rd);
-    float baoa = dot(ba,oa);
-    float rdoa = dot(rd,oa);
-    float oaoa = dot(oa,oa);
+    vec3  oc = ro - cc;
 
-    float a = baba      - bard*bard;
-    float b = baba*rdoa - baoa*bard;
-    float c = baba*oaoa - baoa*baoa - r*r*baba;
+    float card = dot(ca,rd);
+    float caoc = dot(ca,oc);
+    
+    float a = 1.0 - card*card;
+    float b = dot( oc, rd) - caoc*card;
+    float c = dot( oc, oc) - caoc*caoc - ra*ra;
     float h = b*b - a*c;
-    if( h>=0.0 )
+    if( h<0.0 ) return vec4(-1.0);
+    h = sqrt(h);
+    float t1 = (-b-h)/a;
+    //float t2 = (-b+h)/a; // exit point
+
+    float y = caoc + t1*card;
+
+    // body
+    if( abs(y)<ch ) return vec4( t1, normalize( oc+t1*rd - ca*y ) );
+    
+    // caps
+    float sy = sign(y);
+    float tp = (sy*ch - caoc)/card;
+    if( abs(b+a*tp)<h )
     {
-        float t = (-b-sqrt(h))/a;
-
-        float y = baoa + t*bard;
-        
-        // body
-        if( y>0.0 && y<baba ) return t;
-
-        // caps
-        vec3 oc = (y<=0.0) ? oa : ro - pb;
-        b = dot(rd,oc);
-        c = dot(oc,oc) - r*r;
-        h = b*b - c;
-        if( h>0.0 )
-        {
-            return -b - sqrt(h);
-        }
+        return vec4( tp, ca*sy );
     }
-    return -1.0;
-}
 
-// compute normal
-vec3 capNormal( in vec3 pos, in vec3 a, in vec3 b, in float r )
-{
-    vec3  ba = b - a;
-    vec3  pa = pos - a;
-    float h = clamp(dot(pa,ba)/dot(ba,ba),0.0,1.0);
-    return (pa - h*ba)/r;
+    return vec4(-1.0);
 }
 
 
@@ -121,21 +124,22 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         // cylidner animation
         vec3  c_a =  0.2 + 0.3*sin(iTime*vec3(1.11,1.27,1.47)+vec3(2.0,5.0,6.0));
         vec3  c_b = -0.2 + 0.3*sin(iTime*vec3(1.23,1.41,1.07)+vec3(0.0,1.0,3.0));
-        float c_ra =  0.3 + 0.2*sin(iTime*1.3+0.5);
+        float c_r =  0.3 + 0.2*sin(iTime*1.3+0.5);
+
 
         // render
         vec3 col = vec3(0.4)*(1.0-0.3*length(p));
 
         // raytrace
-        float t = iCapsule( ro, rd, c_a, c_b, c_ra );
+        vec4 tnor = iCylinder( ro, rd, c_a, c_b, c_r );
+        float t = tnor.x;
         float tmin = 1e10;
         if( t>0.0 )
         {
             tmin = t;
             // shading/lighting	
             vec3 pos = ro + t*rd;
-            vec3 nor = capNormal( pos, c_a, c_b, c_ra );
-
+            vec3 nor = tnor.yzw;
             float dif = clamp( dot(nor,vec3(0.5,0.7,0.2)), 0.0, 1.0 );
             float amb = 0.5 + 0.5*dot(nor,vec3(0.0,1.0,0.0));
             col = sqrt( vec3(0.2,0.3,0.4)*amb + vec3(0.8,0.7,0.5)*dif );
@@ -144,7 +148,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
 
         // compute bounding box of cylinder
-        bound3 bbox = CapsuleAABB( c_a, c_b, c_ra );
+        bound3 bbox = CylinderAABB( c_a, c_b, c_r );
 
         // raytrace bounding box
         vec3 bcen = 0.5*(bbox.mMin+bbox.mMax);
@@ -188,13 +192,13 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
 export default class implements iSub {
   key(): string {
-    return '3s2SRV';
+    return 'MtcXRf';
   }
   name(): string {
-    return 'Capsule - bounding box';
+    return 'Cylinder - bounding box';
   }
   sort() {
-    return 127;
+    return 160;
   }
   tags?(): string[] {
     return [];

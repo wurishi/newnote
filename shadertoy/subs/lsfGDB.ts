@@ -7,7 +7,6 @@ const fragment = `
 // Sphere:          https://www.shadertoy.com/view/4d2XWV
 // Capped Cylinder: https://www.shadertoy.com/view/4lcSRn
 // Disk:            https://www.shadertoy.com/view/lsfGDB
-// Capped Cone:     https://www.shadertoy.com/view/llcfRf
 // Rounded Box:     https://www.shadertoy.com/view/WlSXRW
 // Rounded Cone:    https://www.shadertoy.com/view/MlKfzm
 // Torus:           https://www.shadertoy.com/view/4sBGDy

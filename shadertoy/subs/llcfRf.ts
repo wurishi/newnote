@@ -3,9 +3,7 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Cone bbox:         https://www.shadertoy.com/view/WdjSRK
 // Cone distance:     https://www.shadertoy.com/view/tsSXzK
-// Cone intersection: https://www.shadertoy.com/view/llcfRf
 
 float dot2( in vec3 v ) { return dot(v,v); }
 

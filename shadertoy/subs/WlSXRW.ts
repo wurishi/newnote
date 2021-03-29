@@ -3,26 +3,10 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// The MIT License
-// Copyright © 2019 Inigo Quilez
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-// Intersection of a ray with a rounded box, testing a single
-// corner (sphere) instead of 8, and only 3 edges (cylinders)
-// instead of 12. There might be a more compact and efficient
-// way to do it, but this is where I landed. However the code
-// to compute the surface normal is particularly elegant.
-//
-// It only works if the corner spheres don't overlap, ie, if
-// the raius is smaller than half the size of the base box.
-
-// Other intersectors: http://iquilezles.org/www/articles/intersectors/intersectors.htm
-//
 // Triangle:        https://www.shadertoy.com/view/MlGcDz
 // Sphere:          https://www.shadertoy.com/view/4d2XWV
 // Capped Cylinder: https://www.shadertoy.com/view/4lcSRn
 // Disk:            https://www.shadertoy.com/view/lsfGDB
-// Capped Cone:     https://www.shadertoy.com/view/llcfRf
 // Rounded Box:     https://www.shadertoy.com/view/WlSXRW
 // Rounded Cone:    https://www.shadertoy.com/view/MlKfzm
 // Torus:           https://www.shadertoy.com/view/4sBGDy

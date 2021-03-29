@@ -970,3 +970,45 @@ wlsXD2
 wtfSW8
 
 ![158](assets/158.jpg)
+
+# 159. Disk - bounding box
+
+ll3Xzf
+
+![159](assets/159.jpg)
+
+# 160. Cylinder - bounding box
+
+MtcXRf
+
+![160](assets/160.jpg)
+
+# 161. Ellipse - bounding box
+
+Xtjczw
+
+![161](assets/161.jpg)
+
+# 162. Cone - bounding box
+
+WdjSRK
+
+![162](assets/162.jpg)
+
+# 163. Cubic Bezier - 2D BBox
+
+XdVBWd
+
+![163](assets/163.jpg)
+
+# 164. Quadratic Bezier - 3D
+
+ldj3Wh
+
+![164](assets/164.jpg)
+
+# 165. Quadratic Bezier - 2D BBox
+
+lsyfWc
+
+![165](assets/165.jpg)

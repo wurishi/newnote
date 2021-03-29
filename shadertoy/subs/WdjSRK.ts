@@ -3,6 +3,15 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
+// Cone distance:     https://www.shadertoy.com/view/tsSXzK
+
+// Other bounding box functions:
+//
+// Disk             - 3D BBox : https://www.shadertoy.com/view/ll3Xzf
+// Cylinder         - 3D BBox : https://www.shadertoy.com/view/MtcXRf
+// Ellipse          - 3D BBox : https://www.shadertoy.com/view/Xtjczw
+// Capsule          - 3D Bbox : https://www.shadertoy.com/view/3s2SRV
+
 #define AA 3
 
 struct bound3
@@ -12,60 +21,57 @@ struct bound3
 };
     
 //---------------------------------------------------------------------------------------
-// bounding box for a capsule
+// bounding box for a cone (http://iquilezles.org/www/articles/diskbbox/diskbbox.htm)
 //---------------------------------------------------------------------------------------
-bound3 CapsuleAABB( in vec3 pa, in vec3 pb, in float ra )
+bound3 ConeAABB( in vec3 pa, in vec3 pb, in float ra, in float rb )
 {
     vec3 a = pb - pa;
+    vec3 e = sqrt( 1.0 - a*a/dot(a,a) );
     
-    return bound3( min( pa - ra, pb - ra ),
-                   max( pa + ra, pb + ra ) );
+    return bound3( min( pa - e*ra, pb - e*rb ),
+                   max( pa + e*ra, pb + e*rb ) );
 }
 
-float iCapsule( in vec3 ro, in vec3 rd, in vec3 pa, in vec3 pb, in float r )
+float dot2( in vec3 v ) { return dot(v,v); }
+vec4 iCappedCone( in vec3  ro, in vec3  rd, 
+                  in vec3  pa, in vec3  pb, 
+                  in float ra, in float rb )
 {
     vec3  ba = pb - pa;
     vec3  oa = ro - pa;
+    vec3  ob = ro - pb;
+    
+    float m0 = dot(ba,ba);
+    float m1 = dot(oa,ba);
+    float m2 = dot(ob,ba); 
+    float m3 = dot(rd,ba);
 
-    float baba = dot(ba,ba);
-    float bard = dot(ba,rd);
-    float baoa = dot(ba,oa);
-    float rdoa = dot(rd,oa);
-    float oaoa = dot(oa,oa);
+    //caps
+         if( m1<0.0 ) { if( dot2(oa*m3-rd*m1)<(ra*ra*m3*m3) ) return vec4(-m1/m3,-ba*inversesqrt(m0)); }
+    else if( m2>0.0 ) { if( dot2(ob*m3-rd*m2)<(rb*rb*m3*m3) ) return vec4(-m2/m3, ba*inversesqrt(m0)); }
+    
+    // body
+    float rr = ra - rb;
+    float hy = m0 + rr*rr;
+    float m4 = dot(rd,oa);
+    float m5 = dot(oa,oa);
+    
+    float k2 = m0*m0    - m3*m3*hy;
+    float k1 = m0*m0*m4 - m1*m3*hy + m0*ra*(rr*m3*1.0        );
+    float k0 = m0*m0*m5 - m1*m1*hy + m0*ra*(rr*m1*2.0 - m0*ra);
+    
+    float h = k1*k1 - k2*k0;
+    if( h<0.0 ) return vec4(-1.0);
 
-    float a = baba      - bard*bard;
-    float b = baba*rdoa - baoa*bard;
-    float c = baba*oaoa - baoa*baoa - r*r*baba;
-    float h = b*b - a*c;
-    if( h>=0.0 )
+    float t = (-k1-sqrt(h))/k2;
+
+    float y = m1 + t*m3;
+    if( y>0.0 && y<m0 ) 
     {
-        float t = (-b-sqrt(h))/a;
-
-        float y = baoa + t*bard;
-        
-        // body
-        if( y>0.0 && y<baba ) return t;
-
-        // caps
-        vec3 oc = (y<=0.0) ? oa : ro - pb;
-        b = dot(rd,oc);
-        c = dot(oc,oc) - r*r;
-        h = b*b - c;
-        if( h>0.0 )
-        {
-            return -b - sqrt(h);
-        }
+        return vec4(t, normalize(m0*(m0*(oa+t*rd)+rr*ba*ra)-ba*hy*y));
     }
-    return -1.0;
-}
-
-// compute normal
-vec3 capNormal( in vec3 pos, in vec3 a, in vec3 b, in float r )
-{
-    vec3  ba = b - a;
-    vec3  pa = pos - a;
-    float h = clamp(dot(pa,ba)/dot(ba,ba),0.0,1.0);
-    return (pa - h*ba)/r;
+    
+    return vec4(-1.0);
 }
 
 
@@ -122,20 +128,22 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         vec3  c_a =  0.2 + 0.3*sin(iTime*vec3(1.11,1.27,1.47)+vec3(2.0,5.0,6.0));
         vec3  c_b = -0.2 + 0.3*sin(iTime*vec3(1.23,1.41,1.07)+vec3(0.0,1.0,3.0));
         float c_ra =  0.3 + 0.2*sin(iTime*1.3+0.5);
+        float c_rb =  0.3 + 0.2*sin(iTime*1.4+2.5);
+
 
         // render
         vec3 col = vec3(0.4)*(1.0-0.3*length(p));
 
         // raytrace
-        float t = iCapsule( ro, rd, c_a, c_b, c_ra );
+        vec4 tnor = iCappedCone( ro, rd, c_a, c_b, c_ra, c_rb );
+        float t = tnor.x;
         float tmin = 1e10;
         if( t>0.0 )
         {
             tmin = t;
             // shading/lighting	
             vec3 pos = ro + t*rd;
-            vec3 nor = capNormal( pos, c_a, c_b, c_ra );
-
+            vec3 nor = tnor.yzw;
             float dif = clamp( dot(nor,vec3(0.5,0.7,0.2)), 0.0, 1.0 );
             float amb = 0.5 + 0.5*dot(nor,vec3(0.0,1.0,0.0));
             col = sqrt( vec3(0.2,0.3,0.4)*amb + vec3(0.8,0.7,0.5)*dif );
@@ -144,7 +152,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
 
         // compute bounding box of cylinder
-        bound3 bbox = CapsuleAABB( c_a, c_b, c_ra );
+        bound3 bbox = ConeAABB( c_a, c_b, c_ra, c_rb );
 
         // raytrace bounding box
         vec3 bcen = 0.5*(bbox.mMin+bbox.mMax);
@@ -188,13 +196,13 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
 export default class implements iSub {
   key(): string {
-    return '3s2SRV';
+    return 'WdjSRK';
   }
   name(): string {
-    return 'Capsule - bounding box';
+    return 'Cone - bounding box';
   }
   sort() {
-    return 127;
+    return 162;
   }
   tags?(): string[] {
     return [];

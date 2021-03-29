@@ -11,6 +11,7 @@ const fragment = `
 #define AA 2  // Set AA to 1 if your machine is too slow
 #endif
 
+uniform bool u_mode;
 
 //------------------------------------------------------------------
 
@@ -234,11 +235,10 @@ vec4 raycast( in vec3 ro, in vec3 rd, float time )
     float tmin = 0.5;
     float tmax = 20.0;
     
-	#if 1
-    // raytrace bounding plane
-    float tp = (3.5-ro.y)/rd.y;
-    if( tp>0.0 ) tmax = min( tmax, tp );
-	#endif    
+    if(u_mode) {
+        float tp = (3.5-ro.y)/rd.y;
+        if( tp>0.0 ) tmax = min( tmax, tp ); 
+    }
     
     // raymarch scene
     float t = tmin;
@@ -262,10 +262,10 @@ float calcSoftshadow( in vec3 ro, in vec3 rd, float time )
     float res = 1.0;
 
     float tmax = 12.0;
-    #if 1
-    float tp = (3.5-ro.y)/rd.y; // raytrace bounding plane
-    if( tp>0.0 ) tmax = min( tmax, tp );
-	#endif    
+    if(u_mode) {
+        float tp = (3.5-ro.y)/rd.y; // raytrace bounding plane
+        if( tp>0.0 ) tmax = min( tmax, tp );
+    }
     
     float t = 0.02;
     for( int i=0; i<50; i++ )
@@ -281,23 +281,22 @@ float calcSoftshadow( in vec3 ro, in vec3 rd, float time )
 // http://iquilezles.org/www/articles/normalsSDF/normalsSDF.htm
 vec3 calcNormal( in vec3 pos, float time )
 {
-    
-#if 0
-    vec2 e = vec2(1.0,-1.0)*0.5773*0.001;
-    return normalize( e.xyy*map( pos + e.xyy, time ).x + 
-					  e.yyx*map( pos + e.yyx, time ).x + 
-					  e.yxy*map( pos + e.yxy, time ).x + 
-					  e.xxx*map( pos + e.xxx, time ).x );
-#else
-    // inspired by tdhooper and klems - a way to prevent the compiler from inlining map() 4 times
-    vec3 n = vec3(0.0);
-    for( int i=ZERO; i<4; i++ )
-    {
-        vec3 e = 0.5773*(2.0*vec3((((i+3)>>1)&1),((i>>1)&1),(i&1))-1.0);
-        n += e*map(pos+0.001*e,time).x;
+    if(u_mode) {
+        vec3 n = vec3(0.0);
+        for( int i=ZERO; i<4; i++ )
+        {
+            vec3 e = 0.5773*(2.0*vec3((((i+3)>>1)&1),((i>>1)&1),(i&1))-1.0);
+            n += e*map(pos+0.001*e,time).x;
+        }
+        return normalize(n);
     }
-    return normalize(n);
-#endif    
+    else {
+        vec2 e = vec2(1.0,-1.0)*0.5773*0.001;
+        return normalize( e.xyy*map( pos + e.xyy, time ).x + 
+                          e.yyx*map( pos + e.yyx, time ).x + 
+                          e.yxy*map( pos + e.yxy, time ).x + 
+                          e.xxx*map( pos + e.xxx, time ).x ); 
+    }
 }
 
 float calcOcclusion( in vec3 pos, in vec3 nor, float time )
@@ -493,6 +492,11 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 }
 `;
 
+let gui: GUI;
+const api = {
+  u_mode: true,
+};
+
 export default class implements iSub {
   key(): string {
     return '3lsSzf';
@@ -510,6 +514,8 @@ export default class implements iSub {
     return [];
   }
   main(): HTMLCanvasElement {
+    gui = new GUI();
+    gui.add(api, 'u_mode');
     return createCanvas();
   }
   userFragment(): string {
@@ -518,8 +524,16 @@ export default class implements iSub {
   fragmentPrecision?(): string {
     return PRECISION_MEDIUMP;
   }
-  destory(): void {}
+  destory(): void {
+    if (gui) {
+      gui.destroy();
+      gui = null;
+    }
+  }
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
-    return () => {};
+    const u_mode = webglUtils.getUniformLocation(gl, program, 'u_mode');
+    return () => {
+      u_mode.uniform1i(api.u_mode ? 1 : 0);
+    };
   }
 }

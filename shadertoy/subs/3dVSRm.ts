@@ -4,8 +4,6 @@ import * as webglUtils from '../webgl-utils';
 
 const fragment = `
 
-// uniform bool u_useChannel;
-
 const float pi = 3.141592653589;
 const float r = .02;
 const float r2 = .005;
@@ -19,10 +17,7 @@ float w;
 
 float hash(vec2 p)
 {
-  // if(u_useChannel) {
-    return texelFetch(iChannel0, ivec2(p) & 255, 0).r;
-  // }
-  // return texelFetch(iChannel1, ivec2(p) & 255, 0).r;
+  return texelFetch(iChannel0, ivec2(p) & 255, 0).r;
 }
 
 void solveCircle(vec2 a, vec2 b, out vec2 o, out float r){
@@ -183,11 +178,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
         float d = max(abs(fp.x + fp.y) / sqrt(2.), abs(fp.y - fp.x) / sqrt(2.));
         c = max(c, smoothstep(.5 - w * 2., .5, max(d, max(abs(fp.x), abs(fp.y)))));
     }
-
     
-    // Shuffle the indices by using the Fisher-Yates algorithm
-    // https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
-
     uint inds[8];
     
 	inds[0] = 0U;

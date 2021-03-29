@@ -952,3 +952,21 @@ MdcGW4
 Mdyyzt
 
 ![155](assets/155.jpg)
+
+# 156. Time-o-matic
+
+MlfXz8
+
+![156](assets/156.jpg)
+
+# 157. Keep up little square
+
+wlsXD2
+
+![157](assets/157.jpg)
+
+# 158. Donuts can be beautiful too
+
+wtfSW8
+
+![158](assets/158.jpg)

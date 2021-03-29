@@ -858,3 +858,21 @@ Mdf3zr
 XsfGDS
 
 ![139](assets/139.jpg)
+
+# 140. Brush Experiment 2
+
+lt23D3
+
+![140](assets/140.jpg)
+
+# 141. Brush Smear
+
+Xt2GWc
+
+![141](assets/141.jpg)
+
+# 142. Grid Paper (+mouse)
+
+4tj3DG
+
+![142](assets/142.jpg)

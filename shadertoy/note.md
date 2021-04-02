@@ -1034,3 +1034,27 @@ lsyfWc
 ttlBWf
 
 ![166](assets/166.jpg)
+
+# 167. HexTile Truchet Marching
+
+WlByW3
+
+![167](assets/167.jpg)
+
+# 168. Unstable Universe
+
+wtlfz8
+
+![168](assets/168.jpg)
+
+# 169. Clooud City
+
+tt3Bz2
+
+![169](assets/169.jpg)
+
+# 170. RME4 - Crater
+
+MlSBDt
+
+![170](assets/170.jpg)

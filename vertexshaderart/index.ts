@@ -19,6 +19,11 @@ const link = document.createElement('a');
 link.href = '';
 link.textContent = 'link';
 div.appendChild(link);
+const soundT = document.createElement('canvas');
+soundT.width = 1024;
+soundT.height = 1024;
+div.appendChild(soundT);
+const soundC = soundT.getContext('2d');
 
 window.AudioContext = (function () {
   return (
@@ -102,10 +107,12 @@ artFolder.add(api, 'playSound').onChange((play) => {
     analyserNode.connect(javascriptNode);
     javascriptNode.connect(audioContext.destination);
 
-    javascriptNode.onaudioprocess = () => {
+    javascriptNode.onaudioprocess = (evt) => {
       analyserNode.getByteTimeDomainData(amplitudeArray);
+
       if (api.playSound) {
-        drawSoundTexture(amplitudeArray);
+        // drawSoundTexture(amplitudeArray);
+        // drawSoundTexture(evt.inputBuffer.getChannelData(0));
       }
     };
 
@@ -150,8 +157,21 @@ function destoryPrev() {
   gl = null;
 }
 
-function drawSoundTexture(arr:Uint8Array) {
-
+let di = 0;
+function drawSoundTexture(arr: Float32Array) {
+  // const len = arr.length;
+  // soundC.clearRect(0, di, 1024, 1);
+  // for (let i = 0; i < len; i++) {
+  //   const c = arr[i] * 2;
+  //   const color = webglUtils.rgbToNumber([c, c, c]);
+  //   soundC.fillStyle = '#' + color;
+  //   soundC.globalAlpha = c / 256;
+  //   soundC.fillRect(i, di, 1, 1);
+  // }
+  // di++;
+  // if (di >= 1024) {
+  //   di = 0;
+  // }
 }
 
 async function activeSub(name: string) {
@@ -179,8 +199,7 @@ async function activeSub(name: string) {
   const resolution = webglUtils.getUniformLocation(gl, program, 'resolution');
   const mouse = webglUtils.getUniformLocation(gl, program, 'mouse');
   const vertexCount = webglUtils.getUniformLocation(gl, program, 'vertexCount');
-  const sound = webglUtils.getUniformLocation(gl, program,'sound');
-  // const tex = webglUtils.getTexture(gl, program, )
+  const sound = webglUtils.getTexture(gl, program, 'sound', soundT, 0);
 
   requestAnimationFrame(render);
 
@@ -205,6 +224,9 @@ async function activeSub(name: string) {
         a_pos.updateBuffer(new Float32Array(arr));
       }
       a_pos.bindBuffer();
+
+      // sound.updateSource(soundC.getImageData(0, 0, 1024, 1024));
+      sound.bindTexture();
 
       time.uniform1f(now * 0.001);
       resolution.uniform2f(canvas.width, canvas.height);

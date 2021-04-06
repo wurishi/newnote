@@ -281,6 +281,12 @@ export function getAttribLocation(
         gl.bufferData(gl.ARRAY_BUFFER, arr, gl.STATIC_DRAW);
       }
     },
+    updateBuffer(arr: Float32Array) {
+      if (buffer) {
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, arr, gl.STATIC_DRAW);
+      }
+    },
     bindBuffer() {
       if (buffer) {
         gl.enableVertexAttribArray(loc);

@@ -72,7 +72,7 @@ void main() {
 
 export default class implements iSub {
   name() {
-    return 'new222';
+    return 'Bilinear Patch';
   }
   key() {
     return 'mFr92RbhPmuJXKXWK';

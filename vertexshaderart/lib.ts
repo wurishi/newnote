@@ -1,9 +1,13 @@
 export const vertex = `
+attribute vec4 a_pos;
+
 varying vec4 v_color;
 uniform float time;
-uniform float vertexId;
 uniform vec2 resolution;
 uniform vec2 mouse;
+uniform float vertexCount;
+
+#define vertexId a_pos[0]
 
 {USER_VERTEX}
 `;

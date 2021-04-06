@@ -18,9 +18,14 @@ const api = {
   menu: '',
   count: 10000,
   bg: 0,
+  type: WebGLRenderingContext.POINTS,
 };
 const menuList: { name: string; sort: number }[] = [];
 const menuMap: any = {};
+let arr: number[] = [];
+for (let i = 0; i < api.count; i++) {
+  arr.push(i);
+}
 
 keys.forEach((key: string) => {
   const Cls = context(key).default;
@@ -54,6 +59,15 @@ artFolder.add(api, 'count', countList);
 artFolder.addColor(api, 'bg').onChange((color) => {
   updateCanvasBG(color);
 });
+artFolder.add(api, 'type', {
+  POINTS: WebGLRenderingContext.POINTS,
+  LINE_STRIP: WebGLRenderingContext.LINE_STRIP,
+  LINE_LOOP: WebGLRenderingContext.LINE_LOOP,
+  LINES: WebGLRenderingContext.LINES,
+  TRI_STRIP: WebGLRenderingContext.TRIANGLE_STRIP,
+  TRI_FAN: WebGLRenderingContext.TRIANGLE_FAN,
+  TRIANGLE: WebGLRenderingContext.TRIANGLE_FAN,
+});
 
 artFolder.open();
 
@@ -69,6 +83,7 @@ function destoryPrev() {
   if (_sub) {
     _sub = null;
   }
+  gl = null;
 }
 
 async function activeSub(name: string) {
@@ -86,27 +101,45 @@ async function activeSub(name: string) {
   const f = fragment;
   const program = webglUtils.createProgram2(gl, v, f);
 
+  const a_pos = webglUtils.getAttribLocation(gl, program, 'a_pos');
+  console.log(arr.length);
+  a_pos.setFloat32(new Float32Array(arr));
+
   const time = webglUtils.getUniformLocation(gl, program, 'time');
-  const vertexId = webglUtils.getUniformLocation(gl, program, 'vertexId');
   const resolution = webglUtils.getUniformLocation(gl, program, 'resolution');
   const mouse = webglUtils.getUniformLocation(gl, program, 'mouse');
+  const vertexCount = webglUtils.getUniformLocation(gl, program, 'vertexCount');
 
   requestAnimationFrame(render);
 
   function render(now: number) {
-    if (canvas) {
+    if (canvas && gl) {
       webglUtils.resizeCanvasToDisplaySize(canvas);
 
       gl.viewport(0, 0, canvas.width, canvas.height);
       gl.useProgram(program);
 
+      let update = false;
+      if (arr.length > api.count) {
+        arr.length = api.count;
+        update = true;
+      } else if (arr.length < api.count) {
+        for (let i = api.count - arr.length; i < api.count; i++) {
+          arr.push(i);
+        }
+        update = true;
+      }
+      if (update) {
+        a_pos.updateBuffer(new Float32Array(arr));
+      }
+      a_pos.bindBuffer();
+
       time.uniform1f(now * 0.001);
       resolution.uniform2f(canvas.width, canvas.height);
       mouse.uniform2f(0.5, 0.5);
-      for (let i = 0; i < api.count; i++) {
-        vertexId.uniform1f(i);
-        gl.drawArrays(gl.POINTS, 0, 1);
-      }
+      vertexCount.uniform1f(api.count);
+
+      gl.drawArrays(api.type, 0, api.count);
     }
     stats.update();
     requestAnimationFrame(render);

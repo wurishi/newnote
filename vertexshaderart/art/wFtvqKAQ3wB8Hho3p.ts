@@ -241,12 +241,9 @@ void main() {
   float ru1 = (ringId     ) / numCircles;
   float ru2 = (ringId + 1.) / numCircles;
 
-  // float s0 = texture2D(sound, vec2(mix(0.1, 0.5, ru0), ru0 * 0.25)).a;
-  // float s1 = texture2D(sound, vec2(mix(0.1, 0.5, ru1), ru1 * 0.25)).a;
-  // float s2 = texture2D(sound, vec2(mix(0.1, 0.5, ru2), ru2 * 0.25)).a;
-  float s0 = 0.25;
-  float s1 = 0.50;
-  float s2 = 0.75;
+  float s0 = texture2D(sound, vec2(mix(0.1, 0.5, ru0), ru0 * 0.25)).a;
+  float s1 = texture2D(sound, vec2(mix(0.1, 0.5, ru1), ru1 * 0.25)).a;
+  float s2 = texture2D(sound, vec2(mix(0.1, 0.5, ru2), ru2 * 0.25)).a;
   
   float cu = circleId / numCircles;
   vec3 pos;

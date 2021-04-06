@@ -1,7 +1,11 @@
 import { iSub } from '../lib';
 import { createCanvas } from '../webgl-utils';
 
-const vertex = ``;
+const vertex = `
+void main() {
+  
+}
+`;
 
 export default class implements iSub {
   name() {
@@ -11,7 +15,7 @@ export default class implements iSub {
     return '';
   }
   sort() {
-    return 0;
+    return 10;
   }
   main() {
     return createCanvas({ bg: 'black' });

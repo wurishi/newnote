@@ -13,12 +13,28 @@ stats.dom.style.left = '';
 stats.dom.style.right = '0';
 document.body.appendChild(stats.dom);
 
+const div = document.createElement('div');
+document.body.appendChild(div);
+const link = document.createElement('a');
+link.href = '';
+link.textContent = 'link';
+div.appendChild(link);
+
+window.AudioContext = (function () {
+  return (
+    (window as any).webkitAudioContext ||
+    window.AudioContext ||
+    (window as any).mozAudioContext
+  );
+})();
+
 const artFolder = gui.addFolder('ART');
 const api = {
   menu: '',
   count: 10000,
   bg: 0,
   type: WebGLRenderingContext.POINTS,
+  playSound: false,
 };
 const menuList: { name: string; sort: number }[] = [];
 const menuMap: any = {};
@@ -68,6 +84,54 @@ artFolder.add(api, 'type', {
   TRI_FAN: WebGLRenderingContext.TRIANGLE_FAN,
   TRIANGLE: WebGLRenderingContext.TRIANGLE_FAN,
 });
+let audioContext: AudioContext;
+let sourceNode: AudioBufferSourceNode;
+let analyserNode: AnalyserNode;
+let javascriptNode: ScriptProcessorNode;
+let amplitudeArray: Uint8Array;
+
+artFolder.add(api, 'playSound').onChange((play) => {
+  if (!audioContext) {
+    audioContext = new AudioContext();
+    sourceNode = audioContext.createBufferSource();
+    analyserNode = audioContext.createAnalyser();
+    javascriptNode = audioContext.createScriptProcessor(1024, 1, 1);
+    amplitudeArray = new Uint8Array(analyserNode.frequencyBinCount);
+    sourceNode.connect(audioContext.destination);
+    sourceNode.connect(analyserNode);
+    analyserNode.connect(javascriptNode);
+    javascriptNode.connect(audioContext.destination);
+
+    javascriptNode.onaudioprocess = () => {
+      analyserNode.getByteTimeDomainData(amplitudeArray);
+      if (api.playSound) {
+        drawSoundTexture(amplitudeArray);
+      }
+    };
+
+    const playSound = (buffer: AudioBuffer) => {
+      sourceNode.buffer = buffer;
+      sourceNode.start(0);
+      sourceNode.loop = true;
+    };
+
+    const request = new XMLHttpRequest();
+    request.open('GET', './media/sound.mp3', true);
+    request.responseType = 'arraybuffer';
+    request.onload = () => {
+      audioContext.decodeAudioData(request.response, (buffer) => {
+        playSound(buffer);
+      });
+    };
+    request.send();
+  }
+
+  if (api.playSound) {
+    audioContext.resume();
+  } else {
+    audioContext.suspend();
+  }
+});
 
 artFolder.open();
 
@@ -86,9 +150,16 @@ function destoryPrev() {
   gl = null;
 }
 
+function drawSoundTexture(arr:Uint8Array) {
+
+}
+
 async function activeSub(name: string) {
   const sub = menuMap[name] as iSub;
   _sub = sub;
+
+  link.href = 'https://www.vertexshaderart.com/art/' + sub.key();
+  link.textContent = sub.key();
 
   canvas = sub.main();
   document.body.appendChild(canvas);
@@ -102,13 +173,14 @@ async function activeSub(name: string) {
   const program = webglUtils.createProgram2(gl, v, f);
 
   const a_pos = webglUtils.getAttribLocation(gl, program, 'a_pos');
-  console.log(arr.length);
   a_pos.setFloat32(new Float32Array(arr));
 
   const time = webglUtils.getUniformLocation(gl, program, 'time');
   const resolution = webglUtils.getUniformLocation(gl, program, 'resolution');
   const mouse = webglUtils.getUniformLocation(gl, program, 'mouse');
   const vertexCount = webglUtils.getUniformLocation(gl, program, 'vertexCount');
+  const sound = webglUtils.getUniformLocation(gl, program,'sound');
+  // const tex = webglUtils.getTexture(gl, program, )
 
   requestAnimationFrame(render);
 

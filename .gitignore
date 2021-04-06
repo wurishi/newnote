@@ -13,3 +13,4 @@ threejs/**/dist/*
 webpack/**/dist/*
 reduxsaga/coverage/**/*
 shadertoy/media/*
+vertexshaderart/media/*

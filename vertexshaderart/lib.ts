@@ -6,6 +6,7 @@ uniform float time;
 uniform vec2 resolution;
 uniform vec2 mouse;
 uniform float vertexCount;
+uniform sampler2D sound;
 
 #define vertexId a_pos[0]
 

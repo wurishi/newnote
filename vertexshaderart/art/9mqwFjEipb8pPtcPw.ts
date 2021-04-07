@@ -1,4 +1,3 @@
-
 import { iSub } from '../lib';
 import { createCanvas } from '../webgl-utils';
 
@@ -550,5 +549,8 @@ export default class implements iSub {
   }
   userVertex() {
     return vertex;
+  }
+  defaultType() {
+    return WebGLRenderingContext.TRIANGLES;
   }
 }

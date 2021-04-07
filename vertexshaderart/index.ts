@@ -80,7 +80,7 @@ artFolder.add(api, 'count', countList);
 artFolder.addColor(api, 'bg').onChange((color) => {
   updateCanvasBG(color);
 });
-artFolder.add(api, 'type', {
+const guiType = artFolder.add(api, 'type', {
   POINTS: WebGLRenderingContext.POINTS,
   LINE_STRIP: WebGLRenderingContext.LINE_STRIP,
   LINE_LOOP: WebGLRenderingContext.LINE_LOOP,
@@ -230,6 +230,9 @@ async function activeSub(name: string) {
   const vertexCount = webglUtils.getUniformLocation(gl, program, 'vertexCount');
   const sound = webglUtils.getTexture(gl, program, 'sound', soundT, 0);
   const background = webglUtils.getUniformLocation(gl, program, 'background');
+
+  const dType = sub.defaultType ? sub.defaultType() : gl.POINTS;
+  guiType && guiType.setValue(dType);
 
   requestAnimationFrame(render);
 

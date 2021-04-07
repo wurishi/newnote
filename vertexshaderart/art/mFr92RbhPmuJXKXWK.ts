@@ -88,4 +88,7 @@ export default class implements iSub {
   userVertex() {
     return vertex;
   }
+  defaultType() {
+    return WebGLRenderingContext.LINES;
+  }
 }

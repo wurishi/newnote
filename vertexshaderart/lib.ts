@@ -29,4 +29,5 @@ export interface iSub {
   main(): HTMLCanvasElement;
   userVertex(): string;
   sort?(): number;
+  defaultType?(): number;
 }

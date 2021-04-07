@@ -3,8 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Quad:     https://www.shadertoy.com/view/WlycWh
-
 uniform int u_triangle;
 
 vec2 triangleSkeleton( in vec2 v0, in vec2 v1, in vec2 v2 )

@@ -30,8 +30,6 @@ vec3 quadIntersect( in vec3 ro, in vec3 rd, in vec3 v0, in vec3 v1, in vec3 v2, 
     // intersection point
     vec3 pos = p + t*rd;
 
-    // see here: https://www.shadertoy.com/view/lsBSDm
-    
     // select projection plane
     vec3 mor = abs(nor);
     int id = (mor.x>nor.y && mor.x>mor.z ) ? 0 : 

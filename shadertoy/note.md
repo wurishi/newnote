@@ -1208,3 +1208,21 @@ XsXSz4
 tlKcDz
 
 ![195](assets/195.jpg)
+
+# 196. Quad - Gradient Boundaries
+
+WlycWh
+
+![196](assets/196.jpg)
+
+# 197. Inverse Bilinear
+
+lsBSDm
+
+![197](assets/197.jpg)
+
+# 198. Day 61
+
+WlKXRR
+
+![198](assets/198.jpg)

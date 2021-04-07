@@ -418,7 +418,7 @@ void main() {
 
 export default class implements iSub {
   name() {
-    return 'run';
+    return 'run🌳🌲🎄🎋🌴';
   }
   key() {
     return 'Yudd65BQfx92kHBcH';

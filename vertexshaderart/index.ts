@@ -44,7 +44,7 @@ const api = {
 const menuList: { name: string; sort: number }[] = [];
 const menuMap: any = {};
 let arr: number[] = [];
-for (let i = 0; i < api.count; i++) {
+for (let i = 1; i <= api.count; i++) {
   arr.push(i);
 }
 
@@ -157,31 +157,50 @@ function destoryPrev() {
   gl = null;
 }
 
+// let ci = 0;
+// let tmp: number[] = [];
+// function drawSoundTexture(arr: Uint8Array) {
+//   const len = arr.length;
+//   if (ci >= len) {
+//     ci = 0;
+//     for (let i = 0; i < len; i++) {
+//       tmp[i] = arr[i] * 2;
+//     }
+//   }
+//   soundC.clearRect(0, 0, 32, 32);
+//   const c = tmp[ci];
+//   soundC.fillStyle = '#' + webglUtils.rgbToNumber([c, c, c]);
+//   soundC.globalAlpha = c / 256;
+//   soundC.fillRect(0, 0, 32, 32);
+
+//   ci++;
+// }
+
 let di = 0;
+let alpha = 1;
+let alphaStep = 10;
+let tmp: number[] = [];
 function drawSoundTexture(arr: Uint8Array) {
   const len = arr.length;
   soundC.clearRect(0, 0, 32, 32);
+  if (alpha <= 0) {
+    alphaStep = 10;
+    for (let i = 0; i < len; i++) {
+      tmp[i] = arr[i] * 2;
+    }
+  } else if (alpha >= 256) {
+    alphaStep = -10;
+  }
   for (let i = 0; i < len; i++) {
     const x = i % 32;
     const y = Math.ceil(i / 32);
-    const c = arr[i] * 2;
+    const c = tmp[i];
     const color = webglUtils.rgbToNumber([c, c, c]);
     soundC.fillStyle = '#' + color;
-    soundC.globalAlpha = c / 256;
+    soundC.globalAlpha = alpha / 256;
     soundC.fillRect(x, y, 1, 1);
   }
-  // soundC.clearRect(0, di, 1024, 1);
-  // for (let i = 0; i < len; i++) {
-  //   const c = arr[i] * 2;
-  //   const color = webglUtils.rgbToNumber([c, c, c]);
-  //   soundC.fillStyle = '#' + color;
-  //   soundC.globalAlpha = c / 256;
-  //   soundC.fillRect(i, di, 1, 1);
-  // }
-  // di++;
-  // if (di >= 1024) {
-  //   di = 0;
-  // }
+  alpha += alphaStep;
 }
 
 async function activeSub(name: string) {
@@ -225,7 +244,7 @@ async function activeSub(name: string) {
         arr.length = api.count;
         update = true;
       } else if (arr.length < api.count) {
-        for (let i = api.count - arr.length; i < api.count; i++) {
+        for (let i = api.count - arr.length; i <= api.count; i++) {
           arr.push(i);
         }
         update = true;

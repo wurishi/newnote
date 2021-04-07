@@ -2,7 +2,11 @@ import { iSub } from '../lib';
 import { createCanvas } from '../webgl-utils';
 
 const vertex = `
-/* 👾 */
+/* ⭕️⭕️⭕️⭕️⭕️⭕️⭕️
+*/
+
+
+
 
 #define PI radians(180.)
 
@@ -204,102 +208,76 @@ float inv(float v) {
   return 1. - v;
 }
 
-#define NUM_EDGE_POINTS_PER_CIRCLE 48.
-#define NUM_POINTS_PER_CIRCLE (NUM_EDGE_POINTS_PER_CIRCLE * 6.)
-
-void getCirclePoint(float id, out vec3 pos) {
-  /*
-
-  0-1  3
-  |/  /|
-  2  4-5
-
-  */
-  float ux = floor(id / 6.) + mod(id, 2.);
-  float vy = mod(floor(id / 2.) + floor(id / 3.), 2.); // change that 3. for cool fx
-  float angle = ux / NUM_EDGE_POINTS_PER_CIRCLE * PI * 2.;
-  pos.x = cos(angle);
-  pos.y = vy;
-  pos.z = sin(angle);
-}
-
-float pinch(float v, float p) {
-  if (v < 0.5) {
-    return pow(v * 2., p) * .5;
-  } 
-  return 1. - pow(1. - (v - 0.5) * 2., p);
-}
+const float edgePointsPerCircle = 128.;
+const float pointsPerCircle = edgePointsPerCircle * 2.;
 
 void main() {
-  float circleId = floor(vertexId / NUM_POINTS_PER_CIRCLE);
-  float ringOff = mod(floor(vertexId / 2.) + floor(vertexId / 3.), 2.);
-  float ringId = circleId + ringOff;
-  float pointId = mod(vertexId, NUM_POINTS_PER_CIRCLE);
-  float numCircles = floor(vertexCount / NUM_POINTS_PER_CIRCLE);
+  float pointId = mod(vertexId, pointsPerCircle);  
+  float pId = floor(pointId / 2.) + mod(pointId, 2.);
+  float numCircles = floor(vertexCount / pointsPerCircle);
+  float circleId = floor(vertexId / pointsPerCircle);
+  float numPairs = floor(numCircles / 2.);
+  float pairId = floor(circleId / 2.);
+  float pairV = pairId / numPairs;
+  float pairA = t2m1(pairV);
+  float odd = mod(pairId, 2.);
+  
+  float pV = pId / edgePointsPerCircle;
+  float cV = circleId / numCircles;
+  float cA = t2m1(cV);
+  
+  float a = pV * PI * 2.;
+  float x = cos(a);
+  float z = sin(a);
+  
+  vec3 pos = vec3(x, 0, z);
+  vec3 normal;
+  
+  float tm = time * 0.1;
+  float tm2 = time * 0.13;
 
-  float ru0 = (ringId - 1.) / numCircles;
-  float ru1 = (ringId     ) / numCircles;
-  float ru2 = (ringId + 1.) / numCircles;
+  mat4 wmat = rotZ(odd * PI * .5 + sin(tm));
+  wmat *= trans(vec3(0, cos(pairA * PI), 0));
+  wmat *= uniformScale(sin(pairA * PI));
+  vec4 wp = wmat * vec4(pos, 1.);
+  
+  float su = abs(atan(wp.x, wp.z)) / PI;
+  float sv = abs(wp.y) * 1.;
+  float s = texture2D(sound, vec2(mix(0.1, 0.5, su), sv)).a;
+//  float s = texture2D(sound, vec2(pairV, cV)).a;//
+  wp.xyz *= mix(0.8, 1.2, pow(s, 1.));
+  
+  float r  = 2.5;
+  mat4 mat = persp(radians(60.0), resolution.x / resolution.y, 0.1, 10.0);
+  vec3 eye = vec3(cos(tm) * r, sin(tm * 0.93) * r, sin(tm) * r);
+  vec3 target = vec3(0);
+  vec3 up = vec3(0., sin(tm2), cos(tm2));
+  
+  
+  mat *= cameraLookAt(eye, target, up);
+  
+  gl_Position = mat * wp;
 
-  float s0 = texture2D(sound, vec2(mix(0.1, 0.5, ru0), ru0 * 0.25)).a;
-  float s1 = texture2D(sound, vec2(mix(0.1, 0.5, ru1), ru1 * 0.25)).a;
-  float s2 = texture2D(sound, vec2(mix(0.1, 0.5, ru2), ru2 * 0.25)).a;
-  
-  float cu = circleId / numCircles;
-  vec3 pos;
-  getCirclePoint(pointId, pos); 
-  
-  mat4 mat = ident(); 
-  mat *= persp(radians(65.), resolution.x / resolution.y, 0.1, 100.);
-  
-  float camRadius = 3.0;
-  float camTime = time * 0.1;
-  vec3 eye = vec3(cos(camTime) * camRadius, sin(camTime * 0.93) * camRadius, sin(camTime * 0.9) * camRadius);
-  vec3 up = vec3(sin(camTime), cos(camTime), 0);
-  vec3 target = vec3(0, 0,0);
+  vec3 color = mix(
+     vec3(0.5, 0, 0),
+     vec3(0, 0, 0.5),
+     gl_Position.x);
+  v_color = vec4(color, mix(.0, 1., pow(1. -sv, 2.)));
+  v_color.rgb *= v_color.a;
+}
 
- 
-  mat *= cameraLookAt(eye, target, up);    
-  float sc = mix(0.2, 2.0, pow(s1, 2.));
-  sc *= 1. - pow(1. - sin(ru1 * PI), 5.);
-  mat *= scale(vec3(sc, 4.0 / numCircles, sc));
-  //mat *= rotX(PI * 0.5);
-  mat *= trans(vec3(0, circleId - numCircles * 0.4, 0));
-  gl_Position = mat * vec4(pos, 1);
-  gl_PointSize = 4.;
-  
-
-  float pop = step(0.6, s1);
-  
-  float hue = time * .1 + ru1 * 0.1;
-  float sat = 0.6;
-  float val = 1.;
-  v_color = vec4(hsv2rgb(vec3(hue, sat, val)), 1);
-  
-  vec3 nrm = normalize(vec3(pos.x, s1 - s2 - s0, pos.z));
-  float l1 = clamp(dot(nrm, normalize(vec3(1,2,3))), 0.0, 1.0);
-  float l2 = clamp(dot(nrm, normalize(vec3(-2,4,-3))), 0.0, 1.0);
-  
-  v_color.rgb *= mix(0.3, 2., clamp(l1 + l2, 0.0, 1.0));
-  v_color = vec4(v_color.rgb * v_color.a, v_color.a);
-
-  vec4 p_color = vec4(hsv2rgb(vec3(hue + 0.5 + cu * 0.1, mix(0.7, 1., mod(time * 60.0, 2.0)), 1)), 1);
-  
-  v_color = mix(v_color, p_color, step(0.6, s1));
-  v_color = mix(v_color, vec4(1,1,1,1), step(0.8, s1));
-}  
 
 `;
 
 export default class implements iSub {
   name() {
-    return 'undul👾';
+    return 'morp⭕️⭕️⭕️⭕️⭕️⭕️⭕️';
   }
   key() {
-    return 'wFtvqKAQ3wB8Hho3p';
+    return 'RnwjSt42YXLcGjsgT';
   }
   sort() {
-    return 3;
+    return 7;
   }
   main() {
     return createCanvas({ bg: 'black' });

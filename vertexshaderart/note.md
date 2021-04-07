@@ -19,13 +19,13 @@ mFr92RbhPmuJXKXWK
 
 ![2](assets/2.png)
 
-# 3. undul
+# 3. undul 👾
 
 wFtvqKAQ3wB8Hho3p
 
 ![3](assets/3.png)
 
-# 4. run
+# 4. run 🌳🌲🎄🎋🌴
 
 Yudd65BQfx92kHBcH
 
@@ -42,3 +42,9 @@ PFHJfQrt3knT8K8sQ
 PponkZdtktgJHhipC
 
 ![6](assets/6.png)
+
+# 7. morp ⭕️⭕️⭕️⭕️⭕️⭕️⭕️
+
+RnwjSt42YXLcGjsgT
+
+![7](assets/7.jpg)

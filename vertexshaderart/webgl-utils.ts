@@ -173,8 +173,8 @@ export function createCanvas(p?: { bg?: string }): HTMLCanvasElement {
   p = p || { bg: 'black' };
   const canvas = document.createElement('canvas');
   canvas.id = 'c';
-  canvas.style.width = '100%';
-  canvas.style.height = '100%';
+  canvas.style.width = '800px';
+  canvas.style.height = '600px';
   p.bg && (canvas.style.backgroundColor = p.bg);
   document.body.appendChild(canvas);
   return canvas;

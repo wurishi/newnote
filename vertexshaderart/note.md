@@ -82,3 +82,15 @@ kRguYk2Yft2HDLmiP
 sS597q4aY9wEpneFz
 
 ![13](assets/13.jpg)
+
+# 14. It's So In Vogue To Be Dead
+
+Qh7WiD2iwnCrdfCXy
+
+![14](assets/14.png)
+
+# 15. h-t
+
+TZBvEoNYkzhB8PtQR
+
+![15](assets/15.jpg)

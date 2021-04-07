@@ -183,7 +183,6 @@ mat4 cameraLookAt(vec3 eye, vec3 target, vec3 up) {
 
 
 
-// hash function from https://www.shadertoy.com/view/4djSRW
 float hash(float p) {
 	vec2 p2 = fract(vec2(p * 5.3983, p * 5.4427));
     p2 += dot(p2.yx, p2.xy + vec2(21.5351, 14.3137));

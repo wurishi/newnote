@@ -12,7 +12,6 @@ vec3 hsv2rgb(vec3 c) {
   return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
 
-// hash function from https://www.shadertoy.com/view/4djSRW
 float hash(float p) {
 	vec2 p2 = fract(vec2(p * 5.3983, p * 5.4427));
     p2 += dot(p2.yx, p2.xy + vec2(21.5351, 14.3137));

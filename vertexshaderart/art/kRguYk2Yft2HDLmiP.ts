@@ -13,7 +13,6 @@ const vertex = `
 #define RESOLUTION vec3(45.0)
 #define SIZE vec3(1.5)
 
-// New hash based on hash13() from "Hash without Sine" by Dave_Hoskins (https://www.shadertoy.com/view/4djSRW)
 // 4 in, 1 out
 float Hash41(in vec4 p) {
 	p = fract(p * 0.1031);

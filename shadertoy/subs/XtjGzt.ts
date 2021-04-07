@@ -117,9 +117,6 @@ float sdHexagon(vec2 p, vec2 hexPos, float hexRadius, float hexRotation)
     return dotMax - hexRadius;
 }
 
-
-// signed distance to a 2D triangle
-// thank you iq: https://www.shadertoy.com/view/XsXSz4
 float sdTriangle(in vec2 p, in vec2 p0, in vec2 p1, in vec2 p2)
 {
 	vec2 e0 = p1 - p0;

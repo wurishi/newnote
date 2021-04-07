@@ -1190,3 +1190,21 @@ ttfGWl
 Ndl3zr
 
 bug Nvidia 750 OpenGL
+
+# 193. 1D, 2D & 3D Value Noise
+
+4dS3Wd
+
+![193](assets/193.jpg)
+
+# 194. Triangle - distance 2D
+
+XsXSz4
+
+![194](assets/194.jpg)
+
+# 195. Triangle - Gradient Boundaries
+
+tlKcDz
+
+![195](assets/195.jpg)

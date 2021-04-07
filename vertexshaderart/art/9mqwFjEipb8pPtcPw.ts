@@ -218,9 +218,6 @@ void GenerateCubeVertex( const float vertexIndex, const mat4 mat, const vec3 vCu
   outSceneVertex.vColor += GetSunSpec( outSceneVertex.vWorldPos, vNormal, vCameraPos );
 }
 
-
-
-// hash function from https://www.shadertoy.com/view/4djSRW
 float hash(float p)
 {
 	vec2 p2 = fract(vec2(p * 5.3983, p * 5.4427));

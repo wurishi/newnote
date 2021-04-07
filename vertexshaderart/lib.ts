@@ -7,6 +7,7 @@ uniform vec2 resolution;
 uniform vec2 mouse;
 uniform float vertexCount;
 uniform sampler2D sound;
+uniform vec4 background;
 
 #define vertexId a_pos[0]
 

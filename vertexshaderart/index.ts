@@ -87,7 +87,7 @@ artFolder.add(api, 'type', {
   LINES: WebGLRenderingContext.LINES,
   TRI_STRIP: WebGLRenderingContext.TRIANGLE_STRIP,
   TRI_FAN: WebGLRenderingContext.TRIANGLE_FAN,
-  TRIANGLE: WebGLRenderingContext.TRIANGLE_FAN,
+  TRIANGLE: WebGLRenderingContext.TRIANGLES,
 });
 let audioContext: AudioContext;
 let sourceNode: AudioBufferSourceNode;
@@ -229,6 +229,7 @@ async function activeSub(name: string) {
   const mouse = webglUtils.getUniformLocation(gl, program, 'mouse');
   const vertexCount = webglUtils.getUniformLocation(gl, program, 'vertexCount');
   const sound = webglUtils.getTexture(gl, program, 'sound', soundT, 0);
+  const background = webglUtils.getUniformLocation(gl, program, 'background');
 
   requestAnimationFrame(render);
 
@@ -261,8 +262,28 @@ async function activeSub(name: string) {
       resolution.uniform2f(canvas.width, canvas.height);
       mouse.uniform2f(0.5, 0.5);
       vertexCount.uniform1f(api.count);
+      const bg = webglUtils.numberToRGBA(api.bg);
+      background.uniform4fv(new Float32Array([...bg, 255]));
 
-      gl.drawArrays(api.type, 0, api.count);
+      let count = api.count;
+      if (
+        api.type == gl.LINES ||
+        api.type == gl.LINE_LOOP ||
+        api.type == gl.LINE_STRIP
+      ) {
+        if (count % 2 == 1) {
+          count--;
+        }
+      }
+      if (
+        api.type == gl.TRIANGLE_STRIP ||
+        api.type == gl.TRIANGLE_FAN ||
+        api.type == gl.TRIANGLES
+      ) {
+        let tmp = count % 3;
+        count -= tmp;
+      }
+      gl.drawArrays(api.type, 0, count);
     }
     stats.update();
     requestAnimationFrame(render);

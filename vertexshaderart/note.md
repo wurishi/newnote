@@ -48,3 +48,19 @@ PponkZdtktgJHhipC
 RnwjSt42YXLcGjsgT
 
 ![7](assets/7.jpg)
+
+# 8. incId
+
+SHEuL7KCpNnj28Rmn
+
+![8](assets/8.jpg)
+
+# 9. red ring
+
+p9pecgaEBJ3kz5r7g
+
+![9](assets/9.png)
+
+# 10. ung
+
+9mqwFjEipb8pPtcPw

@@ -36,3 +36,9 @@ Yudd65BQfx92kHBcH
 PFHJfQrt3knT8K8sQ
 
 ![5](assets/5.png)
+
+# 6. sbd
+
+PponkZdtktgJHhipC
+
+![6](assets/6.png)

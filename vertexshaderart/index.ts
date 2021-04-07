@@ -20,8 +20,8 @@ link.href = '';
 link.textContent = 'link';
 div.appendChild(link);
 const soundT = document.createElement('canvas');
-soundT.width = 1024;
-soundT.height = 1024;
+soundT.width = 32;
+soundT.height = 32;
 div.appendChild(soundT);
 const soundC = soundT.getContext('2d');
 
@@ -111,7 +111,7 @@ artFolder.add(api, 'playSound').onChange((play) => {
       analyserNode.getByteTimeDomainData(amplitudeArray);
 
       if (api.playSound) {
-        // drawSoundTexture(amplitudeArray);
+        drawSoundTexture(amplitudeArray);
         // drawSoundTexture(evt.inputBuffer.getChannelData(0));
       }
     };
@@ -158,8 +158,18 @@ function destoryPrev() {
 }
 
 let di = 0;
-function drawSoundTexture(arr: Float32Array) {
-  // const len = arr.length;
+function drawSoundTexture(arr: Uint8Array) {
+  const len = arr.length;
+  soundC.clearRect(0, 0, 32, 32);
+  for (let i = 0; i < len; i++) {
+    const x = i % 32;
+    const y = Math.ceil(i / 32);
+    const c = arr[i] * 2;
+    const color = webglUtils.rgbToNumber([c, c, c]);
+    soundC.fillStyle = '#' + color;
+    soundC.globalAlpha = c / 256;
+    soundC.fillRect(x, y, 1, 1);
+  }
   // soundC.clearRect(0, di, 1024, 1);
   // for (let i = 0; i < len; i++) {
   //   const c = arr[i] * 2;

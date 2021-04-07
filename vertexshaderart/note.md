@@ -11,37 +11,37 @@ npx webpack-dev-server
 
 nL6YpkW8YvGKNEKtj
 
-![1](assets/1.png)
+![1](assets/1.jpg)
 
 # 2. Bilinear Patch
 
 mFr92RbhPmuJXKXWK
 
-![2](assets/2.png)
+![2](assets/2.jpg)
 
 # 3. undul 👾
 
 wFtvqKAQ3wB8Hho3p
 
-![3](assets/3.png)
+![3](assets/3.jpg)
 
 # 4. run 🌳🌲🎄🎋🌴
 
 Yudd65BQfx92kHBcH
 
-![4](assets/4.png)
+![4](assets/4.jpg)
 
 # 5. flwr
 
 PFHJfQrt3knT8K8sQ
 
-![5](assets/5.png)
+![5](assets/5.jpg)
 
 # 6. sbd
 
 PponkZdtktgJHhipC
 
-![6](assets/6.png)
+![6](assets/6.jpg)
 
 # 7. morp ⭕️⭕️⭕️⭕️⭕️⭕️⭕️
 
@@ -59,7 +59,7 @@ SHEuL7KCpNnj28Rmn
 
 p9pecgaEBJ3kz5r7g
 
-![9](assets/9.png)
+![9](assets/9.jpg)
 
 # 10. ung
 
@@ -69,13 +69,13 @@ p9pecgaEBJ3kz5r7g
 
 ChgRzRLbrFD5wzfZk
 
-![11](assets/11.png)
+![11](assets/11.jpg)
 
 # 12. 3D Point Cloud Scene
 
 kRguYk2Yft2HDLmiP
 
-![12](assets/12.png)
+![12](assets/12.jpg)
 
 # 13. crazymusicbox
 
@@ -87,7 +87,7 @@ sS597q4aY9wEpneFz
 
 Qh7WiD2iwnCrdfCXy
 
-![14](assets/14.png)
+![14](assets/14.jpg)
 
 # 15. h-t
 

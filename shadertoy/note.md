@@ -1070,3 +1070,21 @@ XdSGWy
 4d2XWV
 
 ![172](assets/172.jpg)
+
+# 173. Triangulated Heightfield Trick
+
+XlcBRX
+
+![173](assets/173.jpg)
+
+# 174. Balls and shadows
+
+lsSSWV
+
+![174](assets/174.jpg)
+
+# 175. Repelling
+
+XdjXWK
+
+![175](assets/175.jpg)

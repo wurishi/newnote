@@ -9,7 +9,6 @@ uniform int u_max_radius;
 // Set to 1 to hash twice. Slower, but less patterns.
 uniform bool u_double_hash;
 
-// https://www.shadertoy.com/view/4djSRW
 #define HASHSCALE1 .1031
 #define HASHSCALE3 vec3(.1031, .1030, .0973)
 

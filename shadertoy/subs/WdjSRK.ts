@@ -3,13 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Cone distance:     https://www.shadertoy.com/view/tsSXzK
-
-// Other bounding box functions:
-//
-// Disk             - 3D BBox : https://www.shadertoy.com/view/ll3Xzf
-// Ellipse          - 3D BBox : https://www.shadertoy.com/view/Xtjczw
-
 #define AA 3
 
 struct bound3

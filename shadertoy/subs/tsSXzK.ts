@@ -1,27 +1,37 @@
+
 import { GUI } from 'dat.gui';
 import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-float sdCylinder(vec3 p, vec3 a, vec3 b, float r)
+float sdCone(vec3 p, vec3 a, vec3 b, float ra, float rb)
 {
-    vec3  ba = b - a;
-    vec3  pa = p - a;
-    float baba = dot(ba,ba);
-    float paba = dot(pa,ba);
-    float x = length(pa*baba-ba*paba) - r*baba;
-    float y = abs(paba-baba*0.5)-baba*0.5;
-    float x2 = x*x;
-    float y2 = y*y*baba;
+    float rba  = rb-ra;
+    float baba = dot(b-a,b-a);
+    float papa = dot(p-a,p-a);
+    float paba = dot(p-a,b-a)/baba;
+
+    float x = sqrt( papa - paba*paba*baba );
+
+    float cax = max(0.0,x-((paba<0.5)?ra:rb));
+    float cay = abs(paba-0.5)-0.5;
+
+    float k = rba*rba + baba;
+    float f = clamp( (rba*(x-ra)+paba*baba)/k, 0.0, 1.0 );
+
+    float cbx = x-ra - f*rba;
+    float cby = paba - f;
     
-    float d = (max(x,y)<0.0)?-min(x2,y2):(((x>0.0)?x2:0.0)+((y>0.0)?y2:0.0));
+    float s = (cbx < 0.0 && cay < 0.0) ? -1.0 : 1.0;
     
-    return sign(d)*sqrt(abs(d))/baba;
+    return s*sqrt( min(cax*cax + cay*cay*baba,
+                       cbx*cbx + cby*cby*baba) );
 }
+
 
 float map( in vec3 pos )
 {
-    return sdCylinder(pos, vec3(-0.2,-0.3,-0.1), vec3(0.3,0.3,0.4), 0.2 );
+    return sdCone(pos, vec3(-0.15,-0.2,-0.1), vec3(0.2,0.2,0.1), 0.4, 0.1 );
 }
 
 // http://iquilezles.org/www/articles/normalsSDF/normalsSDF.htm
@@ -48,7 +58,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     vec3 uu = normalize( cross(ww,vec3(0.0,1.0,0.0) ) );
     vec3 vv = normalize( cross(uu,ww));
 
-        
+    
+    
     vec3 tot = vec3(0.0);
     
     #if AA>1
@@ -66,7 +77,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         vec3 rd = normalize( p.x*uu + p.y*vv + 1.5*ww );
 
         // raymarch
-        const float tmax = 3.0;
+        const float tmax = 5.0;
         float t = 0.0;
         for( int i=0; i<256; i++ )
         {
@@ -102,13 +113,13 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
 export default class implements iSub {
   key(): string {
-    return 'wdXGDr';
+    return 'tsSXzK';
   }
   name(): string {
-    return 'Cylinder - distance';
+    return 'Cone - distance';
   }
   sort() {
-    return 181;
+    return 182;
   }
   tags?(): string[] {
     return [];

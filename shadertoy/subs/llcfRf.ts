@@ -3,8 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Cone distance:     https://www.shadertoy.com/view/tsSXzK
-
 float dot2( in vec3 v ) { return dot(v,v); }
 
 vec4 iCappedCone( in vec3  ro, in vec3  rd, 

@@ -52,9 +52,6 @@ vec4 applyLighting(vec4 inpColor, vec2 uv, vec3 normal, vec3 LightPos, vec4 Ligh
     return vec4(FinalColor, inpColor.a);
 }
 
-
-
-// convert distance to alpha value (see https://www.shadertoy.com/view/ltBGzt)
 float dtoa(float d)
 {
     const float amount = 800.0;

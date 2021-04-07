@@ -3,9 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-//     Cubic     Bezier - 3D BBox : https://www.shadertoy.com/view/MdKBWt
-//     Quadratic Bezier - 3D BBox : https://www.shadertoy.com/view/tsBfRD
-
 // Exact BBox to a quadratic bezier
 vec4 bboxBezier(in vec2 p0, in vec2 p1, in vec2 p2 )
 {

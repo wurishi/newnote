@@ -3,29 +3,17 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// by tayholliday in https://www.shadertoy.com/view/XsX3zf. Since 3D quadratic Bezier 
-// segments are planar, the 2D version can be used to compute the distance to 3D curves.
-//
-// Related Shaders:
-//     Cubic     Bezier - 3D BBox : https://www.shadertoy.com/view/MdKBWt
-//     Quadratic Bezier - 3D BBox : https://www.shadertoy.com/view/tsBfRD
-//
-//-----------------------------------------------------------------------------------
-	
+uniform int u_method;
 
 #define AA 1
 
-
-#define METHOD 1
-
 // method 0 : approximate http://research.microsoft.com/en-us/um/people/hoppe/ravg.pdf
-// method 1 : exact       https://www.shadertoy.com/view/ltXSDB
+// method 1 : exact       
 
 //-----------------------------------------------------------------------------------
 
-#if METHOD==1
 float dot2( in vec3 v ) { return dot(v,v); }
-vec2 sdBezier(vec3 pos, vec3 A, vec3 B, vec3 C)
+vec2 sdBezier1(vec3 pos, vec3 A, vec3 B, vec3 C)
 {    
     vec3 a = B - A;
     vec3 b = A - 2.0*B + C;
@@ -74,15 +62,10 @@ vec2 sdBezier(vec3 pos, vec3 A, vec3 B, vec3 C)
     return res;
 }
 
-#endif
-
-#if METHOD==0
-
-    #if 1
     // http://research.microsoft.com/en-us/um/people/hoppe/ravg.pdf
     // { dist, t, y (above the plane of the curve, x (away from curve in the plane of the curve))
 	float det( vec2 a, vec2 b ) { return a.x*b.y - a.y*b.x; }
-    vec2 sdBezier( vec3 p, vec3 va, vec3 vb, vec3 vc )
+    vec2 sdBezier2( vec3 p, vec3 va, vec3 vb, vec3 vc )
     {
       vec3 w = normalize( cross( vc-vb, va-vb ) );
       vec3 u = normalize( vc-vb );
@@ -107,10 +90,10 @@ vec2 sdBezier(vec3 pos, vec3 A, vec3 B, vec3 C)
       vec2 cp = m*(1.0-t)*(1.0-t) + n*t*t - q.xy;
       return vec2(sqrt(dot(cp,cp)+q.z*q.z), t );
     }
-    #else
+
     // my adaptation to 3d of http://research.microsoft.com/en-us/um/people/hoppe/ravg.pdf
     // { dist, t, y (above the plane of the curve, x (away from curve in the plane of the curve))
-    vec2 sdBezier( vec3 p, vec3 b0, vec3 b1, vec3 b2 )
+    vec2 sdBezier3( vec3 p, vec3 b0, vec3 b1, vec3 b2 )
     {
         b0 -= p;
         b1 -= p;
@@ -136,9 +119,6 @@ vec2 sdBezier(vec3 pos, vec3 A, vec3 B, vec3 C)
         
         return vec2(length(mix(mix(b0,b1,t), mix(b1,b2,t),t)),t);
     }
-    #endif
- 
-#endif
 
 //-----------------------------------------------------------------------------------
 
@@ -179,8 +159,17 @@ vec2 map( vec3 p )
         
         float bv = sdBox( p-0.5*(bboxMa+bboxMi), 0.5*(bboxMa-bboxMi) );
         //if( bv<dm )
-        {            
-            vec2 h = sdBezier( p, a, b, c );
+        {
+            vec2 h;
+            if(u_method == 1) {
+                h = sdBezier1( p, a, b, c );
+            }
+            else if(u_method == 2) {
+                h = sdBezier2( p, a, b, c );
+            }
+            else {
+                h = sdBezier3( p, a, b, c );
+            }
             float kh = (th + h.y)/8.0;
             float ra = 0.3 - 0.28*kh + 0.3*exp(-15.0*kh);
             float d = h.x - ra;
@@ -379,6 +368,11 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
 `;
 
+let gui: GUI;
+const api = {
+  u_method: 1,
+};
+
 export default class implements iSub {
   key(): string {
     return 'ldj3Wh';
@@ -393,6 +387,8 @@ export default class implements iSub {
     return [];
   }
   main(): HTMLCanvasElement {
+    gui = new GUI();
+    gui.add(api, 'u_method', { exact: 1, approximate2: 2, approximate3: 3 });
     return createCanvas();
   }
   userFragment(): string {
@@ -401,8 +397,16 @@ export default class implements iSub {
   fragmentPrecision?(): string {
     return PRECISION_MEDIUMP;
   }
-  destory(): void {}
+  destory(): void {
+    if (gui) {
+      gui.destroy();
+      gui = null;
+    }
+  }
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
-    return () => {};
+    const u_method = webglUtils.getUniformLocation(gl, program, 'u_method');
+    return () => {
+      u_method.uniform1i(api.u_method);
+    };
   }
 }

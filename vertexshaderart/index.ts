@@ -146,8 +146,16 @@ let canvas: HTMLCanvasElement;
 let gl: WebGLRenderingContext;
 let _sub: iSub;
 
+let mouseX: number;
+let mouseY: number;
+function mouseHandler(evt: MouseEvent) {
+  mouseX = evt.clientX;
+  mouseY = evt.clientY;
+}
+
 function destoryPrev() {
   if (canvas) {
+    canvas.removeEventListener('mousemove', mouseHandler);
     document.body.removeChild(canvas);
     canvas = null;
   }
@@ -212,6 +220,7 @@ async function activeSub(name: string) {
 
   canvas = sub.main();
   document.body.appendChild(canvas);
+  canvas.addEventListener('mousemove', mouseHandler);
   updateCanvasBG(api.bg);
 
   gl = canvas.getContext('webgl') as WebGLRenderingContext;
@@ -263,7 +272,7 @@ async function activeSub(name: string) {
 
       time.uniform1f(now * 0.001);
       resolution.uniform2f(canvas.width, canvas.height);
-      mouse.uniform2f(0.5, 0.5);
+      mouse.uniform2f(mouseX / canvas.width, mouseY / canvas.height);
       vertexCount.uniform1f(api.count);
       const bg = webglUtils.numberToRGBA(api.bg);
       background.uniform4fv(new Float32Array([...bg, 255]));

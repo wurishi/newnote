@@ -24,7 +24,6 @@ const fragment = `
 // Intersection:     https://www.shadertoy.com/view/ld23DV
 // Occlusion:        https://www.shadertoy.com/view/4djXDy
 // Density:          https://www.shadertoy.com/view/Ml3GR8
-// Fake soft shadow: https://www.shadertoy.com/view/WslGz4
 // Gradient:         https://www.shadertoy.com/view/wlcXD2
 
 

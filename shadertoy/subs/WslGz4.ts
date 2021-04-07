@@ -3,10 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Ellipsoid: https://www.shadertoy.com/view/llsSzn
-// Capsule:   https://www.shadertoy.com/view/MlGczG
-
-
 uniform int u_shadow_type;
 
 // SHADOW_TYPE = 2 ---> great soft shadow

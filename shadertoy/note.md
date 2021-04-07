@@ -1088,3 +1088,15 @@ lsSSWV
 XdjXWK
 
 ![175](assets/175.jpg)
+
+# 176. Ellipsoid - soft shadow
+
+llsSzn
+
+![176](assets/176.jpg)
+
+# 177. Capsule - soft shadow
+
+MlGczG
+
+![177](assets/177.jpg)

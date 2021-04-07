@@ -10,7 +10,6 @@ const fragment = `
 // Disk             - 3D BBox : https://www.shadertoy.com/view/ll3Xzf
 // Cylinder         - 3D BBox : https://www.shadertoy.com/view/MtcXRf
 // Ellipse          - 3D BBox : https://www.shadertoy.com/view/Xtjczw
-// Capsule          - 3D Bbox : https://www.shadertoy.com/view/3s2SRV
 
 #define AA 3
 

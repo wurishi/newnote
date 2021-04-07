@@ -6,11 +6,6 @@ const fragment = `
 uniform int u_shadow;
 uniform bool u_sphere;
 
-// Ellipsoid: https://www.shadertoy.com/view/llsSzn
-// Box:       https://www.shadertoy.com/view/WslGz4
-// Capsule:   https://www.shadertoy.com/view/MlGczG
-
-
 //-------------------------------------------------------------------------------------------
 // sphere related functions
 //-------------------------------------------------------------------------------------------

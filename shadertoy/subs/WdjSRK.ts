@@ -8,7 +8,6 @@ const fragment = `
 // Other bounding box functions:
 //
 // Disk             - 3D BBox : https://www.shadertoy.com/view/ll3Xzf
-// Cylinder         - 3D BBox : https://www.shadertoy.com/view/MtcXRf
 // Ellipse          - 3D BBox : https://www.shadertoy.com/view/Xtjczw
 
 #define AA 3

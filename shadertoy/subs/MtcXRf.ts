@@ -7,10 +7,6 @@ const fragment = `
 //
 // e = r·sqrt(1-n²)
 
-// Cylinder intersection: https://www.shadertoy.com/view/4lcSRn
-// Cylinder distance:     https://www.shadertoy.com/view/wdXGDr
-
-
 #define AA 3
 
 struct bound3

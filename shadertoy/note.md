@@ -1100,3 +1100,27 @@ llsSzn
 MlGczG
 
 ![177](assets/177.jpg)
+
+# 178. Cylinder - intersection
+
+4lcSRn
+
+![178](assets/178.jpg)
+
+# 179. Hexprism - intersection
+
+tljBWy
+
+![179](assets/179.jpg)
+
+# 180. Hexagonal Grid Traversal - 3D
+
+WtSfWK
+
+![180](assets/180.jpg)
+
+# 181. Cylinder - distance
+
+wdXGDr
+
+![181](assets/181.jpg)

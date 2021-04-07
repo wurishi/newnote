@@ -3,12 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Capped Cylinder: https://www.shadertoy.com/view/4lcSRn
-// Disk:            https://www.shadertoy.com/view/lsfGDB
-// Torus:           https://www.shadertoy.com/view/4sBGDy
-// Rounded Cone:    https://www.shadertoy.com/view/MlKfzm
-// Torus:           https://www.shadertoy.com/view/4sBGDy
-
 float iBilinearPatch(in vec3 ro, in vec3 rd, in vec4 ps, in vec4 ph)
 {
     vec3 va = vec3(0.0, 0.0, ph.x + ph.w - ph.y - ph.z);

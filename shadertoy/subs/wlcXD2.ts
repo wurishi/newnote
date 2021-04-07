@@ -21,7 +21,6 @@ const fragment = `
 // Other Box functions
 // http://iquilezles.org/www/articles/boxfunctions/boxfunctions.htm
 //
-// Intersection:     https://www.shadertoy.com/view/ld23DV
 // Occlusion:        https://www.shadertoy.com/view/4djXDy
 // Density:          https://www.shadertoy.com/view/Ml3GR8
 // Gradient:         https://www.shadertoy.com/view/wlcXD2

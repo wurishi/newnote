@@ -3,16 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Capped Cylinder: https://www.shadertoy.com/view/4lcSRn
-// Disk:            https://www.shadertoy.com/view/lsfGDB
-// Rounded Box:     https://www.shadertoy.com/view/WlSXRW
-// Rounded Cone:    https://www.shadertoy.com/view/MlKfzm
-// Torus:           https://www.shadertoy.com/view/4sBGDy
-// Sphere4:         https://www.shadertoy.com/view/3tj3DW
-// Goursat:         https://www.shadertoy.com/view/3lj3DW
-// Hexagonal Prism: https://www.shadertoy.com/view/tljBWy
-
-
 #define AA 2  // reduce this to 1 if you have a slow machine
 
 // intersect a ray with a rounded box

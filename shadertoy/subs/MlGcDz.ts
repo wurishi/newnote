@@ -5,13 +5,6 @@ import * as webglUtils from '../webgl-utils';
 const fragment = `
 uniform int u_mode;
 
-// Distance:     https://www.shadertoy.com/view/4sXXRN
-// Closest:      https://www.shadertoy.com/view/ttfGWl
-
-
-//=====================================================
-
-
 // Triangle intersection. Returns { t, u, v }
 vec3 triIntersect( in vec3 ro, in vec3 rd, in vec3 v0, in vec3 v1, in vec3 v2 )
 {

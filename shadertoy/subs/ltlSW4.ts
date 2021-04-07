@@ -3,9 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// size-optimizing hex ID function from iq's "Hexagons - distance"
-// https://www.shadertoy.com/view/Xd2GR3
-
 uniform int u_mode;
 
 // 143 chars: cannot use inout anymore.

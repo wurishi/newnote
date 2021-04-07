@@ -10,15 +10,12 @@ const fragment = `
 #define is_TRUE (iTime > -1.)
 #define is_ZER0 min(iTime, 0.)
 
-// self https://www.shadertoy.com/view/NslGR4
-
-
 // RESULT:
 // BUG - white screen color
 // NO BUG - purple screen color
 
 // other version smaller code size, may not work for some videocards 
-// https://www.shadertoy.com/view/Ndl3zr
+// Ndl3zr
 
 // Bug does not work same on every videocard, some part of code can be removed depends of videocard
 

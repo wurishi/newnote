@@ -1160,3 +1160,33 @@ tsBfRD
 ltXSDB
 
 ![187](assets/187.jpg)
+
+# 188. Magic Fractal
+
+4ljGDd
+
+![188](assets/188.jpg)
+
+# 189. Hexagons - distance
+
+Xd2GR3
+
+![189](assets/189.jpg)
+
+# 190. Triangle - distance 3D
+
+4sXXRN
+
+![190](assets/190.jpg)
+
+# 191. Triangle - closest
+
+ttfGWl
+
+![191](assets/191.jpg)
+
+# 192. BUG Nvidia const to array min
+
+Ndl3zr
+
+bug Nvidia 750 OpenGL

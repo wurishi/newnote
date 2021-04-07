@@ -15,7 +15,6 @@ float opI( float d1, float d2) { return max(d1,d2); }
 
 
 // from "Magic Fractal" by dgreensp
-// https://www.shadertoy.com/view/4ljGDd
 float magicBox(vec3 p) {
     const int MAGIC_BOX_ITERS = 13;
     const float MAGIC_BOX_MAGIC = 0.55;
@@ -86,7 +85,6 @@ float smoothstep4(float e1, float e2, float e3, float e4, float val)
 {
     return min(smoothstep(e1,e2,val), 1.-smoothstep(e3,e4,val));
 }
-// hash & simplex noise from https://www.shadertoy.com/view/Msf3WH
 vec2 hash( vec2 p )
 {
 	p = vec2( dot(p,vec2(127.1,311.7)),

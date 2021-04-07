@@ -6,7 +6,6 @@ const fragment = `
 uniform int u_mode;
 
 // Distance:     https://www.shadertoy.com/view/4sXXRN
-// Intersection: https://www.shadertoy.com/view/MlGcDz
 // Closest:      https://www.shadertoy.com/view/ttfGWl
 
 

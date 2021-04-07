@@ -3,15 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// shader (https://www.shadertoy.com/view/XdSGWy), and simplified the geometrically 
-// impossible cases, and optimized coefficients. One can probably do better than 
-// this though...
-
-
-// Other intersectors: http://iquilezles.org/www/articles/intersectors/intersectors.htm
-//
-// Triangle:        https://www.shadertoy.com/view/MlGcDz
-// Sphere:          https://www.shadertoy.com/view/4d2XWV
 // Capped Cylinder: https://www.shadertoy.com/view/4lcSRn
 // Disk:            https://www.shadertoy.com/view/lsfGDB
 // Rounded Box:     https://www.shadertoy.com/view/WlSXRW

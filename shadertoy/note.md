@@ -1058,3 +1058,15 @@ tt3Bz2
 MlSBDt
 
 ![170](assets/170.jpg)
+
+# 171. Purple Haze
+
+XdSGWy
+
+![171](assets/171.jpg)
+
+# 172. Sphere - soft shadow
+
+4d2XWV
+
+![172](assets/172.jpg)

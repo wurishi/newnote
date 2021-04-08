@@ -309,6 +309,10 @@ async function activeSub(name: string) {
 
     fn && fn();
 
+    // gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    // gl.clear(0);
+    // gl.enable()
+
     gl.drawArrays(gl.TRIANGLES, 0, 6);
   };
 

@@ -1268,3 +1268,9 @@ fsSGWy
 wsXBRf
 
 ![205](assets/205.jpg)
+
+# 206. Red Crash - Procedural GFX
+
+ssBGRG
+
+![206](assets/206.jpg)

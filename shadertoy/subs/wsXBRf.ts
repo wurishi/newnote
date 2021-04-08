@@ -95,7 +95,7 @@ float cube(vec3 pos, vec3 off) {
     return length(max(d, 0.0)) + min(max(d.x, max(d.y, d.z)), 0.0);
 }
 
-// Classic map from raymarching. I ripped it off from iq's fruxis: https://www.shadertoy.com/view/ldl3zl 
+// Classic map from raymarching. I ripped it off from iq's fruxis: ldl3zl 
 vec2 map(vec3 pos) {
     float closest = 1000.0;
     float id = -1.0;

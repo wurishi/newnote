@@ -33,7 +33,6 @@ const f = `
 float time;
 
 //DAVE HOSKINS' HASH FUNCTIONS
-//https://www.shadertoy.com/view/4djSRW
 float rnd11(float p)
 {
     p = fract(p * .1031);

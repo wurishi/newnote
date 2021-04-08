@@ -224,14 +224,14 @@ export default class implements iSub {
     return 'tlKBRd';
   }
   name(): string {
-    return '失败WebGL crashing shader';
+    return 'raymarching';
   }
-//   sort() {
-//     return 0;
-//   }
-//   webgl() {
-//     return WEBGL_2;
-//   }
+  sort() {
+    return 201;
+  }
+  webgl() {
+    return WEBGL_2;
+  }
   tags?(): string[] {
     return ['raymarching'];
   }
@@ -239,7 +239,7 @@ export default class implements iSub {
     return createCanvas();
   }
   userFragment(): string {
-    return '';
+    return fragment;
   }
   fragmentPrecision?(): string {
     return PRECISION_MEDIUMP;

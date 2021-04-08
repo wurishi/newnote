@@ -38,14 +38,14 @@ export default class implements iSub {
     return 'wtKBRd';
   }
   name(): string {
-    return '失败Fractal 35_gaz';
+    return 'Fractal 35_gaz';
   }
-  // sort() {
-  //   return 0;
-  // }
-  // webgl() {
-  //   return WEBGL_2;
-  // }
+  sort() {
+    return 202;
+  }
+  webgl() {
+    return WEBGL_2;
+  }
   tags?(): string[] {
     return ['fractal'];
   }
@@ -53,10 +53,7 @@ export default class implements iSub {
     return createCanvas();
   }
   userFragment(): string {
-    return `
-    void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-      fragColor = vec4(0,0,0,1);
-    }`;
+    return fragment;
   }
   fragmentPrecision?(): string {
     return PRECISION_MEDIUMP;

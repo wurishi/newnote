@@ -42,13 +42,13 @@ void swap(inout float a, inout float b)
 //
 //   Triangulated Heightfield Trick 2 - https://www.shadertoy.com/view/tlXSzB (Rigid, equilateral)
 //   Triangulated Heightfield Trick 3 - https://www.shadertoy.com/view/ttsSzX (Deforming, equilateral)
-//   Tetrahedral Voxel Traversal      - https://www.shadertoy.com/view/wtfXWB (Rigid, tetrahedron)
 //
 
 // The isofunction. The surface to approximate is the set of points for which this function equals zero.
 float field(vec3 p)
 {
-    return max(textureLod(iChannel1, (p + p.zxy / 2.) / 70. - .4, 0.).r - .4, -(length(p.xy) - .5));
+    // return max(textureLod(iChannel1, (p + p.zxy / 2.) / 70. - .4, 0.).r - .4, -(length(p.xy) - .5));
+    return max(textureLod(iChannel1, p.xy / 70. - .4, 0.).r - .4, -(length(p.xy) - .5));
 }
 
 // Written by Shane, taken from https://www.shadertoy.com/view/MdSBRc
@@ -299,11 +299,11 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     {
         vec3 diff = tex3D(iChannel0, planep * .5, planen) / 2.;
         
-        float glow = pow(textureLod(iChannel1, (planep + time * 5.) / 100., 0.).r, 8.) / 2.;
+        float glow = pow(textureLod(iChannel1, (planep.xy + time * 5.) / 100., 0.).r, 8.) / 2.;
         float edge = (1. - smoothstep(.0, .01, tetd));
         
         
-        col += diff * 2. * pow(textureLod(iChannel1, (planep + time * 5.) / 40., 0.).r, 4.) * max(0., -planen.y);
+        col += diff * 2. * pow(textureLod(iChannel1, (planep.xy + time * 5.) / 40., 0.).r, 4.) * max(0., -planen.y);
         
     	col += diff * (dot(planen, normalize(vec3(1,-10,1))) * .4 + .5);
         
@@ -311,7 +311,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         
         float fr = pow(diff.b * 3., 4.) * 32. * pow(clamp(1. - dot(-rd, planen), 0., 1.), 3.);
         
-        col = mix(col, textureLod(iChannel2, r, 4.).rgb, fr);
+        col = mix(col, textureLod(iChannel2, r.xy, 4.).rgb, fr);
     	col *= 1. - edge * .5;
         col += max(1. / (tetd * 8. + .02) * vec3(1, .7, .1) / 5. * glow * 2., 0.);
     }
@@ -325,6 +325,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
     // Gamma
     fragColor.rgb = pow(clamp(fragColor.rgb, 0., 1.), vec3(1. / 2.2));
+    fragColor.a = 1.;
 }
 
 
@@ -337,9 +338,9 @@ export default class implements iSub {
   name(): string {
     return 'Tetrahedral Voxel Traversal';
   }
-  // sort() {
-  //   return 0;
-  // }
+  sort() {
+    return 203;
+  }
   webgl() {
     return WEBGL_2;
   }
@@ -361,8 +362,9 @@ export default class implements iSub {
   }
   channels() {
     return [
-      webglUtils.ROCK_TEXTURE,
-      webglUtils.DEFAULT_NOISE
-    ]
+      { ...webglUtils.ROCK_TEXTURE, ...webglUtils.TEXTURE_MIPMAPS },
+        webglUtils.DEFAULT_NOISE,
+      //   webglUtils.ROCK_TEXTURE,
+    ];
   }
 }

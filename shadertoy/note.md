@@ -1244,3 +1244,15 @@ wljSz1
 tlKBRd
 
 ![201](assets/201.jpg)
+
+# 202. Fractal 35_gaz
+
+wtKBRd
+
+![202](assets/202.jpg)
+
+# 203. Tetrahedral Voxel Traversal
+
+wtfXWB
+
+![203](assets/203.jpg)

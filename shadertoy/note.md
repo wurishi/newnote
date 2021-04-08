@@ -1256,3 +1256,15 @@ wtKBRd
 wtfXWB
 
 ![203](assets/203.jpg)
+
+# 204. Rotating donut
+
+fsSGWy
+
+![204](assets/204.jpg)
+
+# 205. Simple DoF
+
+wsXBRf
+
+![205](assets/205.jpg)

@@ -335,8 +335,7 @@ if(t<MAX_DIST) {
 }
 `;
 
-const f2 = `// Dof code from: 42yeah, https://shadertoy.com/view/wsXBRf
-
+const f2 = `
 // Random hash function
 vec2 rand2d(vec2 uv) {
     return fract(sin(vec2(

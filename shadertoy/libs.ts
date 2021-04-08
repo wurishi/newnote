@@ -66,6 +66,7 @@ void main() {
 
 export const PRECISION_MEDIUMP = 'mediump';
 export const PRECISION_HIGHP = 'highp';
+export const PRECISION_LOW = 'lowp';
 
 export const WEBGL_1 = 'webgl';
 export const WEBGL_2 = 'webgl2';

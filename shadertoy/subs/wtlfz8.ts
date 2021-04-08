@@ -249,7 +249,7 @@ float GetLight(vec3 p) {
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
 vec2 uv =( 2. * fragCoord.xy - iResolution.xy ) / iResolution.y;
- //motion blurr algorithm // by noby:   https://www.shadertoy.com/view/wljSz1
+ //motion blurr algorithm
  const float tm = 1.5;
  const int samples = 1;
  float T = iTime*tm / 4.5;

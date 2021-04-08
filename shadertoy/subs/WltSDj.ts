@@ -3,8 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// https://www.shadertoy.com/playlist/M3dSRf
-
 // .x = f(p)
 // .y = ∂f(p)/∂x
 // .z = ∂f(p)/∂y
@@ -48,7 +46,7 @@ export default class implements iSub {
     return 'Circle - gradient 2D';
   }
   sort() {
-    return 0;
+    return 199;
   }
   tags?(): string[] {
     return [];

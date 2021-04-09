@@ -1,3 +1,4 @@
+
 import { GUI } from 'dat.gui';
 import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
@@ -6,7 +7,25 @@ const fragment = `
 // .x = f(p)
 // .y = ∂f(p)/∂x
 // .z = ∂f(p)/∂y
+// .yz = ∇f(p)
+vec3 sdgSMin( in vec3 a, in vec3 b, in float k )
+{
+    float h = max(k-abs(a.x-b.x),0.0);
+    float m = 0.25*h*h/k;
+    float n = 0.50*  h/k;
+    return vec3( min(a.x,  b.x) - m, 
+                 mix(a.yz, b.yz, (a.x<b.x)?n:1.0-n) );
+}
+
+// .x = f(p)
+// .y = ∂f(p)/∂x
+// .z = ∂f(p)/∂y
 // .yz = ∇f(p) with ‖∇f(p)‖ = 1
+vec3 sdgMin( in vec3 a, in vec3 b )
+{
+    return (a.x<b.x) ? a : b;
+}
+
 vec3 sdgBox( in vec2 p, in vec2 b )
 {
     vec2 w = abs(p)-b;
@@ -20,18 +39,28 @@ vec3 sdgBox( in vec2 p, in vec2 b )
                 s*((g>0.0)?q/l : ((w.x>w.y)?vec2(1,0):vec2(0,1))));
 }
 
+vec3 sdgSegment( in vec2 p, in vec2 a, in vec2 b )
+{
+    vec2 ba = b-a;
+    vec2 pa = p-a;
+    float h = clamp( dot(pa,ba)/dot(ba,ba), 0.0, 1.0 );
+    vec2  q = pa-h*ba;
+    float d = length(q);
+    return vec3(d,q/d);
+}
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
 	vec2 p = (2.0*fragCoord-iResolution.xy)/iResolution.y;
 
-    // corner radious
-    float ra = 0.1*(0.5+0.5*sin(iTime*1.2));
-
     // sdf(p) and gradient(sdf(p))
-    vec3  dg = sdgBox(p,vec2(0.8,0.3));
-    float d = dg.x-ra;
-    vec2 g = dg.yz;
+    vec3 dg1 = sdgBox(p,vec2(0.8,0.3));
+    vec3 dg2 = sdgSegment( p, vec2(-1.0,-0.5), vec2(0.7,0.7) ) - vec3(0.15,0.0,0.0);
+
+  //vec3 dg = sdgMin(dg1,dg2);
+    vec3 dg = sdgSMin(dg1,dg2,0.2);
+    float d = dg.x;
+    vec2  g = dg.yz;
     
     // central differenes based gradient, for comparison
     // g = vec2(dFdx(d),dFdy(d))/(2.0/iResolution.y);
@@ -50,13 +79,13 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
 export default class implements iSub {
   key(): string {
-    return 'wlcXD2';
+    return 'tdGBDt';
   }
   name(): string {
-    return 'Box - gradient 2D';
+    return 'Smooth Minimum - gradient 2D';
   }
   sort() {
-    return 130;
+    return 222;
   }
   tags?(): string[] {
     return [];

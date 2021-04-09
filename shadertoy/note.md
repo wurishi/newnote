@@ -1328,3 +1328,51 @@ WtGXRc
 3dyfDd
 
 ![215](assets/215.jpg)
+
+# 216. Triangle - gradient 2D
+
+tlVyWh
+
+![216](assets/216.jpg)
+
+# 217. Quad - gradient 2D
+
+WtVcD1
+
+![217](assets/217.jpg)
+
+# 218. Cross - gradient 2D
+
+WtdXWj
+
+![218](assets/218.jpg)
+
+# 219. Segment - gradient 2D
+
+WtdSDj
+
+![219](assets/219.jpg)
+
+# 220. Hexagon - gradient 2D
+
+WtySRc
+
+![220](assets/220.jpg)
+
+# 221. Vesica - gradient 2D
+
+3lGXRc
+
+![221](assets/221.jpg)
+
+# 222. Smooth Minimum - gradient 2D
+
+tdGBDt
+
+![222](assets/222.jpg)
+
+# 223. Parallelogram - gradient 2D
+
+sssGzX
+
+![223](assets/223.jpg)

@@ -7,30 +7,31 @@ const fragment = `
 // .y = ∂f(p)/∂x
 // .z = ∂f(p)/∂y
 // .yz = ∇f(p) with ‖∇f(p)‖ = 1
-// sca is the sin/cos of the orientation
-// scb is the sin/cos of the aperture
-vec3 sdgArc( in vec2 p, in vec2 sca, in vec2 scb, in float ra, in float rb )
+vec3 sdgParallelogram( in vec2 p, float wi, float he, float sk )
 {
-    vec2 q = p;
+    vec2  e = vec2(sk,he);
+    float v = 1.0;
+    if( p.y<0.0 ) { p=-p;v=-v;}
 
-    mat2 ma = mat2(sca.x,-sca.y,sca.y,sca.x);
-    p = ma*p;
+    // horizontal edge
+    vec2 w = p - e; w.x -= clamp(w.x,-wi,wi);
+    vec4 dsg = vec4(dot(w,w),v*w,w.y);    
 
-    float s = sign(p.x); p.x = abs(p.x);
-    
-    if( scb.y*p.x > scb.x*p.y )
-    {
-        vec2  w = p - ra*scb;
-        float d = length(w);
-        return vec3( d-rb, vec2(s*w.x,w.y)*ma/d );
-    }
-    else
-    {
-        float l = length(q);
-        float w = l - ra;
-        return vec3( abs(w)-rb, sign(w)*q/l );
-    }
+    // vertical edge
+    float s = p.x*e.y - p.y*e.x;
+    if( s<0.0 ) { p=-p; v=-v; }
+    vec2  q = p - vec2(wi,0); q -= e*clamp(dot(q,e)/dot(e,e),-1.0,1.0);
+    float d = dot(q,q);
+    s = abs(s) - wi*he;
+    dsg = vec4( (d<dsg.x) ? vec3(d,v*q) : dsg.xyz,
+                (s>dsg.w) ?      s      : dsg.w );
+     
+    // signed distance
+    d = sqrt(dsg.x)*sign(dsg.w);
+    // and gradient
+    return vec3(d,dsg.yz/d); 
 }
+
 
 #define AA 2
 
@@ -44,21 +45,20 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     {
         // pixel coordinates
         vec2 o = vec2(float(m),float(n)) / float(AA) - 0.5;
-        vec2 p = (-iResolution.xy + 2.0*(fragCoord+o))/iResolution.y;
+        vec2 p = (2.0*(fragCoord+o)-iResolution.xy)/iResolution.y;
         #else    
-        vec2 p = (-iResolution.xy + 2.0*fragCoord)/iResolution.y;
+        vec2 p = (2.0*fragCoord-iResolution.xy)/iResolution.y;
         #endif
 
-        // animation
-        float ta = 3.14*(0.5+0.5*cos(iTime*0.52+2.0));
-        float tb = 3.14*(0.5+0.5*cos(iTime*0.31+2.0));
-        float rb = 0.15*(0.5+0.5*cos(iTime*0.41+1.0));
+        // animate
+        float time = iTime;
 
         // sdf(p) and gradient(sdf(p))
-        vec3  dg = sdgArc(p,vec2(sin(ta),cos(ta)),vec2(sin(tb),cos(tb)), 0.5, rb);
+        float s = sin(iTime);
+        vec3  dg = sdgParallelogram(p,0.4, 0.6,s);
         float d = dg.x;
-        vec2  g = dg.yz;
-
+        vec2 g = dg.yz;
+        
         // central differenes based gradient, for comparison
         // g = vec2(dFdx(d),dFdy(d))/(2.0/iResolution.y);
 
@@ -69,8 +69,9 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         col *= 1.0 - 0.5*exp(-16.0*abs(d));
         col *= 0.9 + 0.1*cos(150.0*d);
         col = mix( col, vec3(1.0), 1.0-smoothstep(0.0,0.01,abs(d)) );
-    
-	    tot += col;
+
+
+ 	    tot += col;
     #if AA>1
     }
     tot /= float(AA*AA);
@@ -82,13 +83,13 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
 export default class implements iSub {
   key(): string {
-    return 'WtGXRc';
+    return 'sssGzX';
   }
   name(): string {
-    return 'Arc - gradient 2D';
+    return 'Parallelogram - gradient 2D';
   }
   sort() {
-    return 214;
+    return 223;
   }
   tags?(): string[] {
     return [];

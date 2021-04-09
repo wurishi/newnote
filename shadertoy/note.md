@@ -1298,3 +1298,15 @@ NsjGRt
 fdSGRy
 
 ![210](assets/210.jpg)
+
+# 211. Fractal 51_gaz
+
+7sB3Dy
+
+![211](assets/211.jpg)
+
+# 212. Spout
+
+lsXGzH
+
+![212](assets/212.jpg)

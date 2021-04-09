@@ -408,6 +408,8 @@ export function needGenerateMipmap(params: any): boolean {
 
 export const DEFAULT_NOISE = { type: 0, path: './textures/noise.png' };
 
+export const DEFAULT_NOISE_BW = { type: 0, path: './textures/noise2.png' };
+
 export const ROCK_TEXTURE = { type: 0, path: './textures/rock.jpg' };
 
 export const WOOD_TEXTURE = { type: 0, path: './textures/wood.jpg' };

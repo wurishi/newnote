@@ -107,7 +107,6 @@ float smoothbump(float a, float b, float x) {
 // Noise
 //========================================================
 
-// https://www.shadertoy.com/view/4djSRW
 vec2 hash22(vec2 p)
 {
     p += 1.61803398875; // fix artifacts when reseeding
@@ -117,7 +116,6 @@ vec2 hash22(vec2 p)
 }
 
 
-// https://www.shadertoy.com/view/4djSRW
 float hash12(vec2 p)
 {
 	vec3 p3  = fract(vec3(p.xyx) * .1031);
@@ -551,7 +549,6 @@ Hit march(vec3 origin, vec3 rayDirection, float maxDist, float understep) {
 }
 
 // tracing/lighting setup from yx
-// https://www.shadertoy.com/view/ts2cWm
 vec3 ortho(vec3 a){
     vec3 b=cross(vec3(-1,-1,.5),a);
     // assume b is nonzero
@@ -582,10 +579,6 @@ vec3 getConeSample(vec3 dir, float extent, vec2 seed) {
 	return cos(r.x)*oneminus*o1+sin(r.x)*oneminus*o2+r.y*dir;
 }
 
-// main path tracing loop, based on yx's
-// https://www.shadertoy.com/view/ts2cWm
-// with a bit of demofox's
-// https://www.shadertoy.com/view/WsBBR3
 vec4 draw(vec2 fragCoord) {
 
     vec2 p = (-iResolution.xy + 2.* fragCoord) / iResolution.y;
@@ -669,7 +662,6 @@ vec4 draw(vec2 fragCoord) {
             rayDir = normalize(mix(specularRayDir, diffuseRayDir, material.roughness * material.roughness));
         }
 
-        // offset from sufrace https://www.shadertoy.com/view/lsXGzH
         origin = hit.pos + nor * (.0002 / abs(dot(rayDir, nor)));
         seed = hash22(seed);
         hit = march(origin, rayDir, 1., 1.);

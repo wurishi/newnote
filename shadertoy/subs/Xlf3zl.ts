@@ -4,9 +4,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// an intuition inspired by eiffie's shader https://www.shadertoy.com/view/4tfGRl.\
-
-
 vec2 map(float t)
 {
     return 0.85*cos( t + vec2(0.0,1.0) )*(0.6+0.4*cos(t*7.0+vec2(0.0,1.0)));

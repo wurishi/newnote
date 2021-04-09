@@ -334,8 +334,15 @@ export function getTexture(
   texParams = texParams || {};
   const loc = gl.getUniformLocation(program, name);
   const texture = gl.createTexture();
+  let tmp = image;
   return {
+    updateTexture(image: any) {
+      tmp = image;
+    },
     bindTexture() {
+      if (!tmp) {
+        return;
+      }
       gl.uniform1i(loc, i);
       gl.activeTexture(gl.TEXTURE0 + i);
       gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -375,14 +382,7 @@ export function getTexture(
 
       gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
 
-      gl.texImage2D(
-        gl.TEXTURE_2D,
-        0,
-        gl.RGBA,
-        gl.RGBA,
-        gl.UNSIGNED_BYTE,
-        image
-      );
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, tmp);
     },
   };
 }

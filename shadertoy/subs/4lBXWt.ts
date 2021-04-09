@@ -34,12 +34,10 @@ vec3 projOnPlane( vec3 q, vec3 p , vec3 n){
     return v;
 }
 
-// Taken from https://www.shadertoy.com/view/4ts3z2
 float tri(in float x){return abs(fract(x)-.5);}
 vec3 tri3(in vec3 p){return vec3( tri(p.z+tri(p.y*1.)), tri(p.z+tri(p.x*1.)), tri(p.y+tri(p.x*1.)));}
                                  
 
-// Taken from https://www.shadertoy.com/view/4ts3z2
 float triNoise3D(in vec3 p, in float spd)
 {
     float z=1.4;
@@ -114,8 +112,6 @@ void doCamera( out vec3 camPos, out vec3 camTar, in float time, in vec2 mouse )
     camTar = vec3(0.0,0.0,0.0);
 }
 
-// ROTATION FUNCTIONS TAKEN FROM
-//https://www.shadertoy.com/view/XsSSzG
 mat3 xrotate(float t) {
 	return mat3(1.0, 0.0, 0.0,
                 0.0, cos(t), -sin(t),

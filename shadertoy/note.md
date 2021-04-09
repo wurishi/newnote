@@ -1598,3 +1598,45 @@ XsB3Wc
 4lGSDw
 
 ![260](assets/260.jpg)
+
+# 261. Sierpinski - 3D
+
+4dl3Wl
+
+![261](assets/261.jpg)
+
+# 262. Sunset
+
+XssSRX
+
+![262](assets/262.jpg)
+
+# 263. Stairway to Heaven Curve
+
+4tfGRl
+
+![263](assets/263.jpg)
+
+# 264. Xyptonjtroz
+
+4ts3z2
+
+![264](assets/264.jpg)
+
+# 265. The Gallery
+
+XsSSzG
+
+![265](assets/265.jpg)
+
+# 266. Cheap curvature
+
+Xts3WM
+
+![266](assets/266.jpg)
+
+# 267. Input - Mouse
+
+Mss3zH
+
+![267](assets/267.jpg)

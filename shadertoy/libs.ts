@@ -86,10 +86,11 @@ export interface iSub {
   sort?(): number;
   channels?(): {
     path?: string;
-    type: number;
+    type: number; // 0: image, 1: sub fragment 2: video 3: canvas
     fi?: number;
     f?: string;
     video?: any;
+    canvas?: any;
   }[];
   webgl?(): string;
 }

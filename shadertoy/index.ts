@@ -13,6 +13,7 @@ import {
 import * as webglUtils from './webgl-utils';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { startSound, stopSound } from './sound-utils';
 
 const context = (require as any).context('./subs', false, /.ts$/);
 const keys = context.keys();
@@ -36,13 +37,23 @@ document.body.appendChild(imgs);
 document.body.appendChild(document.createElement('hr'));
 
 const mainFolder = gui.addFolder('主菜单');
+const soundFolder = gui.addFolder('声音');
+let soundCanvas: HTMLCanvasElement;
 const api: any = {
   menu: '',
   run: true,
   localIndex: window.localStorage.getItem('localIndex')
     ? parseInt(window.localStorage.getItem('localIndex'))
     : 0,
+  soundPlay: false,
 };
+soundFolder.add(api, 'soundPlay').onChange((v) => {
+  if (v) {
+    soundCanvas = startSound();
+  } else {
+    stopSound();
+  }
+});
 
 const menuList: { name: string; sort: number }[] = [];
 const menuMap: any = {};
@@ -164,13 +175,21 @@ function mouseMove(e: MouseEvent) {
   // mouseX = e.clientX > 400 ? 400 : e.clientX;
   // mouseY = e.clientY > 300 ? 300 : e.clientY;
   mouseX = e.clientX;
-  mouseY = e.clientY;
+  mouseY = 300 - e.clientY;
+  if (canvas) {
+    const rect = canvas.getBoundingClientRect();
+    mouseY += rect.top;
+  }
 }
 
 function mouseDown(e: MouseEvent) {
   if (e.button == 0) {
     clickX = e.clientX;
-    clickY = e.clientY;
+    clickY = 300 - e.clientY;
+    if (canvas) {
+      const rect = canvas.getBoundingClientRect();
+      clickY += rect.top;
+    }
   }
 }
 
@@ -519,6 +538,25 @@ async function createChannelList(
               width: c.video.width,
               height: c.video.height,
               bindTexture: () => {
+                tmp.bindTexture();
+              },
+            };
+          });
+        } else if (c.type == 3) {
+          const tmp = webglUtils.getTexture(
+            gl,
+            program,
+            'iChannel' + i,
+            soundCanvas as any,
+            i,
+            c
+          );
+          res.push((p: any) => {
+            return {
+              width: c.canvas.width,
+              height: c.canvas.height,
+              bindTexture: () => {
+                tmp.updateTexture(soundCanvas as any);
                 tmp.bindTexture();
               },
             };

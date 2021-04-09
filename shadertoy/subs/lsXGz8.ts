@@ -3,10 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Input - Keyboard    : https://www.shadertoy.com/view/lsXGzf
-// Input - Microphone  : https://www.shadertoy.com/view/llSGDh
-// Input - Mouse       : https://www.shadertoy.com/view/Mss3zH
-// Input - Sound       : https://www.shadertoy.com/view/Xds3Rr
 // Input - SoundCloud  : https://www.shadertoy.com/view/MsdGzn
 // Input - Time        : https://www.shadertoy.com/view/lsXGz8
 // Input - TimeDelta   : https://www.shadertoy.com/view/lsKGWV

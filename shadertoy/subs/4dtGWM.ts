@@ -76,7 +76,6 @@ vec3 getClosest( vec2 b0, vec2 b1, vec2 b2 )
     return vec3( mix(mix(b0,b1,t), mix(b1,b2,t),t), t );
 }
 
-// https://www.shadertoy.com/view/ldj3Wh
 vec2 sdBezier( vec3 a, vec3 b, vec3 c, vec3 p )
 {
 	vec3 w = normalize( cross( c-b, a-b ) );

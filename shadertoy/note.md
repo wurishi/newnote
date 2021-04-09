@@ -1538,3 +1538,63 @@ lt2GDd
 MdSGDm
 
 ![250](assets/250.jpg)
+
+# 251. Parametric graph by curvature
+
+Xlf3zl
+
+![251](assets/251.jpg)
+
+# 252. Heart - 3D
+
+4lK3Rc
+
+![252](assets/252.jpg)
+
+# 253. Flower
+
+4dlGD7
+
+![253](assets/253.jpg)
+
+# 254. Input - Time
+
+lsXGz8
+
+![254](assets/254.jpg)
+
+# 255. Radial Blur
+
+4sfGRn
+
+![255](assets/255.jpg)
+
+# 256. Image - Audrey
+
+4df3D8
+
+![256](assets/256.jpg)
+
+# 257. Warping - texture
+
+Xsl3zn
+
+![257](assets/257.jpg)
+
+# 258. Deform - holes
+
+4sXGzn
+
+![258](assets/258.jpg)
+
+# 259. Weird Thing
+
+XsB3Wc
+
+![259](assets/259.jpg)
+
+# 260. Fourier - interpolation
+
+4lGSDw
+
+![260](assets/260.jpg)

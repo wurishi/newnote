@@ -94,3 +94,9 @@ Qh7WiD2iwnCrdfCXy
 TZBvEoNYkzhB8PtQR
 
 ![15](assets/15.jpg)
+
+# 17. sdf-ish
+
+Sx3Sk35wbBx2sGAxM
+
+![17](assets/17.jpg)

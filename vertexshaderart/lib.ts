@@ -8,6 +8,7 @@ uniform vec2 mouse;
 uniform float vertexCount;
 uniform sampler2D sound;
 uniform vec4 background;
+uniform sampler2D touch;
 
 #define vertexId a_pos[0]
 

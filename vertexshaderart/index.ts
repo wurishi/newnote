@@ -3,6 +3,8 @@ import * as Stats from 'stats.js';
 import { fragment, iSub, vertex } from './lib';
 import * as webglUtils from './webgl-utils';
 
+import dst1 from './dst1';
+
 const context = (require as any).context('./art', false, /.ts$/);
 const keys = context.keys();
 
@@ -111,7 +113,8 @@ artFolder.add(api, 'playSound').onChange((play) => {
       analyserNode.getByteTimeDomainData(amplitudeArray);
 
       if (api.playSound) {
-        drawSoundTexture(amplitudeArray);
+        dst1(soundC, amplitudeArray);
+        // drawSoundTexture(amplitudeArray);
         // drawSoundTexture(evt.inputBuffer.getChannelData(0));
       }
     };
@@ -185,7 +188,7 @@ function destoryPrev() {
 // }
 
 let di = 0;
-let alpha = 1;
+let alpha = 0;
 let alphaStep = 10;
 let tmp: number[] = [];
 function drawSoundTexture(arr: Uint8Array) {
@@ -195,6 +198,8 @@ function drawSoundTexture(arr: Uint8Array) {
     alphaStep = 10;
     for (let i = 0; i < len; i++) {
       tmp[i] = arr[i] * 2;
+      tmp[i] = Math.min(255, tmp[i]);
+      tmp[i] = Math.max(0, tmp[i]);
     }
   } else if (alpha >= 256) {
     alphaStep = -10;
@@ -205,7 +210,7 @@ function drawSoundTexture(arr: Uint8Array) {
     const c = tmp[i];
     const color = webglUtils.rgbToNumber([c, c, c]);
     soundC.fillStyle = '#' + color;
-    soundC.globalAlpha = alpha / 256;
+    soundC.globalAlpha = alpha / 255;
     soundC.fillRect(x, y, 1, 1);
   }
   alpha += alphaStep;

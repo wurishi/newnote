@@ -23,6 +23,7 @@ uniform vec4 iDate;
 uniform vec4 iMouse;
 uniform float iFrameRate;
 uniform int iFrame;
+uniform float iChannelTime[4];
 
 uniform sampler2D iChannel0;
 uniform sampler2D iChannel1;
@@ -47,6 +48,7 @@ uniform vec4 iDate;
 uniform vec4 iMouse;
 uniform float iFrameRate;
 uniform int iFrame;
+uniform float iChannelTime[4];
 
 uniform sampler2D iChannel0;
 uniform sampler2D iChannel1;

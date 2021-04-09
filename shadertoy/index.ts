@@ -253,6 +253,26 @@ async function activeSub(name: string) {
   const iFrameRate = webglUtils.getUniformLocation(gl, program, 'iFrameRate');
   const iFrame = webglUtils.getUniformLocation(gl, program, 'iFrame');
   const iDate = webglUtils.getUniformLocation(gl, program, 'iDate');
+  const iChannelTime0 = webglUtils.getUniformLocation(
+    gl,
+    program,
+    'iChannelTime[0]'
+  );
+  const iChannelTime1 = webglUtils.getUniformLocation(
+    gl,
+    program,
+    'iChannelTime[1]'
+  );
+  const iChannelTime2 = webglUtils.getUniformLocation(
+    gl,
+    program,
+    'iChannelTime[2]'
+  );
+  const iChannelTime3 = webglUtils.getUniformLocation(
+    gl,
+    program,
+    'iChannelTime[3]'
+  );
 
   const iChannelResolution = [0, 1, 2, 3].map((i) => {
     return webglUtils.getUniformLocation(
@@ -284,6 +304,7 @@ async function activeSub(name: string) {
       iFrameRate,
       iFrame,
       fn,
+      iChannelTime,
     } = other;
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.useProgram(program);
@@ -304,6 +325,11 @@ async function activeSub(name: string) {
       now.getDay(),
       now.getSeconds() + now.getMilliseconds() / 1000,
     ]);
+    if (Array.isArray(iChannelTime)) {
+      iChannelTime.forEach((tmp) => {
+        tmp.uniform1f(time);
+      });
+    }
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
 
@@ -349,6 +375,12 @@ async function activeSub(name: string) {
         iFrameRate,
         iFrame,
         iDate,
+        iChannelTime: [
+          iChannelTime0,
+          iChannelTime1,
+          iChannelTime2,
+          iChannelTime3,
+        ],
         fn: () => {
           fn && fn();
           fns.forEach((f) => f());

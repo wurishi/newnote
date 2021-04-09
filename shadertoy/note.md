@@ -1310,3 +1310,21 @@ fdSGRy
 lsXGzH
 
 ![212](assets/212.jpg)
+
+# 213. Pie - gradient 2D
+
+3tGXRc
+
+![213](assets/213.jpg)
+
+# 214. Arc - gradient 2D
+
+WtGXRc
+
+![214](assets/214.jpg)
+
+# 215. Isosceles Triangle - gradient 2D
+
+3dyfDd
+
+![215](assets/215.jpg)

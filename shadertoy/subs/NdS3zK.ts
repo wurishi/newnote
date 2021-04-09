@@ -307,7 +307,6 @@ float saturate(float x){
 
 //common end
 // Water material with depth peeling, light scattering and texture distortion
-// Follow up to https://www.shadertoy.com/view/sdBGWh
 
 // BufferA: Camera and resolution change tracking
 // BufferB: R - Perlin noise FBM for wave height map

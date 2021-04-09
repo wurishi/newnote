@@ -1430,3 +1430,21 @@ XtS3DD
 llj3Rz
 
 ![232](assets/232.jpg)
+
+# 233. Menger Sponge
+
+4sX3Rn
+
+![233](assets/233.jpg)
+
+# 234. Monster
+
+4sX3R2
+
+![234](assets/234.jpg)
+
+# 235. Ladybug
+
+4tByz3
+
+![235](assets/235.jpg)

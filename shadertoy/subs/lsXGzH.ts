@@ -21,16 +21,11 @@ uniform float kPipeThickness;
 uniform float kPipeHeight;
 //float kPipeHeight = 2.0 + sin(iTime);
 
-const float kWaterNoiseScale = 0.025;
-
-const float kWaterVelocity = 1.0;
-
-const float kWaterAccel = -1.0;
-
-const float kWaterAnimSpeed = 80.0;
-const float kTrenchWaterAnimSpeed = 20.0;
-
-
+uniform float kWaterNoiseScale;
+uniform float kWaterVelocity;
+uniform float kWaterAccel;
+uniform float kWaterAnimSpeed;
+uniform float kTrenchWaterAnimSpeed;
 
 const float kPI = 3.141592654;
 const float kTwoPI = kPI * 2.0;
@@ -798,7 +793,12 @@ const api = {
   u_enable_point_light_flare: false,
   kPipeRadius: 0.4,
   kPipeThickness: 0.15,
-  kPipeHeight: 2,
+  kPipeHeight: 2.0,
+  kWaterNoiseScale: 0.025,
+  kWaterVelocity: 1.0,
+  kWaterAccel: -1.0,
+  kWaterAnimSpeed: 80,
+  kTrenchWaterAnimSpeed: 20,
 };
 
 export default class implements iSub {
@@ -834,6 +834,11 @@ export default class implements iSub {
     gui.add(api, 'kPipeRadius', 0.1, 1, 0.05);
     gui.add(api, 'kPipeThickness', 0.05, 1, 0.05);
     gui.add(api, 'kPipeHeight', 0, 10, 0.5);
+    gui.add(api, 'kWaterNoiseScale', 0.005, 0.1, 0.005);
+    gui.add(api, 'kWaterVelocity', 0.5, 2, 0.1);
+    gui.add(api, 'kWaterAccel', -5, -0.1, 0.1);
+    gui.add(api, 'kWaterAnimSpeed', 0, 200, 1);
+    gui.add(api, 'kTrenchWaterAnimSpeed', 0, 100, 1);
     return createCanvas();
   }
   userFragment(): string {
@@ -925,6 +930,31 @@ export default class implements iSub {
       program,
       'kPipeHeight'
     );
+    const kWaterNoiseScale = webglUtils.getUniformLocation(
+      gl,
+      program,
+      'kWaterNoiseScale'
+    );
+    const kWaterVelocity = webglUtils.getUniformLocation(
+      gl,
+      program,
+      'kWaterVelocity'
+    );
+    const kWaterAccel = webglUtils.getUniformLocation(
+      gl,
+      program,
+      'kWaterAccel'
+    );
+    const kWaterAnimSpeed = webglUtils.getUniformLocation(
+      gl,
+      program,
+      'kWaterAnimSpeed'
+    );
+    const kTrenchWaterAnimSpeed = webglUtils.getUniformLocation(
+      gl,
+      program,
+      'kTrenchWaterAnimSpeed'
+    );
     return () => {
       u_raymarchMax.uniform1i(api.u_raymarchMax);
       u_enable_ambient.uniform1i(api.u_enable_ambient ? 1 : 0);
@@ -950,6 +980,12 @@ export default class implements iSub {
       kPipeRadius.uniform1f(api.kPipeRadius);
       kPipeThickness.uniform1f(api.kPipeThickness);
       kPipeHeight.uniform1f(api.kPipeHeight);
+
+      kWaterNoiseScale.uniform1f(api.kWaterNoiseScale);
+      kWaterVelocity.uniform1f(api.kWaterVelocity);
+      kWaterAccel.uniform1f(api.kWaterAccel);
+      kWaterAnimSpeed.uniform1f(api.kWaterAnimSpeed);
+      kTrenchWaterAnimSpeed.uniform1f(api.kTrenchWaterAnimSpeed);
     };
   }
   channels() {

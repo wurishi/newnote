@@ -4,15 +4,6 @@ import * as webglUtils from '../webgl-utils';
 
 const fragment = `
 /*
-	Remnant X by Dave_Hoskins ( Audio Autoplay warnings )
-	https://www.shadertoy.com/view/4sjSW1
-
-	Cloud Ten by Nimitz
-	https://www.shadertoy.com/view/XtS3DD
-
-	Spectacles by MEEEEEE
-    https://www.shadertoy.com/view/4lBXWt
-
 	[2TC 15] Mystery Mountains by Dave_Hoskins
 	https://www.shadertoy.com/view/llsGW7
 

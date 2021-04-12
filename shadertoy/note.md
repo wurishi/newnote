@@ -1640,3 +1640,9 @@ Xts3WM
 Mss3zH
 
 ![267](assets/267.jpg)
+
+# 268. Input - TimeDelta & FPS
+
+lsKGWV
+
+![268](assets/268.png)

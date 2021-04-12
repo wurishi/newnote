@@ -3,12 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Input - SoundCloud  : https://www.shadertoy.com/view/MsdGzn
-// Input - Time        : https://www.shadertoy.com/view/lsXGz8
-// Input - TimeDelta   : https://www.shadertoy.com/view/lsKGWV
-// Inout - 3D Texture  : https://www.shadertoy.com/view/4llcR4
-
-
 float sdLine( in vec2 p, in vec2 a, in vec2 b )
 {
 	vec2 pa = p-a, ba = b-a;

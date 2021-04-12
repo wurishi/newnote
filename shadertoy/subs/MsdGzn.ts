@@ -9,19 +9,17 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 	vec2 uv = fragCoord.xy / iResolution.xy;
 
 	// first texture row is frequency data
-	float fft  = textureLod( iChannel0, vec2(uv.x,0.25), 0.0 ).x; 
-	    
+	float fft  = texture( iChannel0, vec2(uv.x,0.25) ).x; 
+	
     // second texture row is the sound wave
-	float wave = textureLod( iChannel0, vec2(uv.x,0.75), 0.0 ).x;
+	float wave = texture( iChannel0, vec2(uv.x,0.75) ).x;
 	
 	// convert frequency to colors
-	vec3 col = vec3(1.0)*fft;
+	vec3 col = vec3( fft, 4.0*fft*(1.0-fft), 1.0-fft ) * fft;
 
     // add wave form on top	
-	col += 1.0 -  smoothstep( 0.0, 0.01, abs(wave - uv.y) );
-
-    col = pow( col, vec3(1.0,0.5,2.0) );
-
+	col += 1.0 -  smoothstep( 0.0, 0.15, abs(wave - uv.y) );
+	
 	// output final color
 	fragColor = vec4(col,1.0);
 }
@@ -29,19 +27,19 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
 export default class implements iSub {
   key(): string {
-    return 'llSGDh';
+    return 'MsdGzn';
   }
   name(): string {
-    return 'Input - Microphone';
+    return 'Input - SoundCloud';
   }
   // sort() {
   //   return 0;
   // }
-  tags?(): string[] {
-    return [];
-  }
   webgl() {
     return WEBGL_2;
+  }
+  tags?(): string[] {
+    return [];
   }
   main(): HTMLCanvasElement {
     return createCanvas();

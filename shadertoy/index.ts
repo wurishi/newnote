@@ -54,6 +54,7 @@ soundFolder.add(api, 'soundPlay').onChange((v) => {
     stopSound();
   }
 });
+soundFolder.open();
 
 const menuList: { name: string; sort: number }[] = [];
 const menuMap: any = {};
@@ -292,6 +293,7 @@ async function activeSub(name: string) {
     program,
     'iChannelTime[3]'
   );
+  const iTimeDelta = webglUtils.getUniformLocation(gl, program, 'iTimeDelta');
 
   const iChannelResolution = [0, 1, 2, 3].map((i) => {
     return webglUtils.getUniformLocation(
@@ -324,6 +326,7 @@ async function activeSub(name: string) {
       iFrame,
       fn,
       iChannelTime,
+      iTimeDelta,
     } = other;
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.useProgram(program);
@@ -349,6 +352,7 @@ async function activeSub(name: string) {
         tmp.uniform1f(time);
       });
     }
+    iTimeDelta.uniform1f(30);
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
 
@@ -400,6 +404,7 @@ async function activeSub(name: string) {
           iChannelTime2,
           iChannelTime3,
         ],
+        iTimeDelta,
         fn: () => {
           fn && fn();
           fns.forEach((f) => f());
@@ -506,6 +511,11 @@ async function createChannelList(
             'iFrameRate'
           );
           other.iFrame = webglUtils.getUniformLocation(gl, subp, 'iFrame');
+          other.iTimeDelta = webglUtils.getUniformLocation(
+            gl,
+            subp,
+            'iTimeDelta'
+          );
 
           res.push((p: any) => {
             p.setFramebuffer(subp, fbo, other);
@@ -553,8 +563,8 @@ async function createChannelList(
           );
           res.push((p: any) => {
             return {
-              width: c.canvas.width,
-              height: c.canvas.height,
+              width: 32,
+              height: 32,
               bindTexture: () => {
                 tmp.updateTexture(soundCanvas as any);
                 tmp.bindTexture();

@@ -3,12 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Input - SoundCloud  : https://www.shadertoy.com/view/MsdGzn
-// Input - Time        : https://www.shadertoy.com/view/lsXGz8
-// Input - TimeDelta   : https://www.shadertoy.com/view/lsKGWV
-// Inout - 3D Texture  : https://www.shadertoy.com/view/4llcR4
-
-
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
     // create pixel coordinates
@@ -41,9 +35,9 @@ export default class implements iSub {
   name(): string {
     return 'Input - Sound';
   }
-  sort() {
-    return 0;
-  }
+  // sort() {
+  //   return 0;
+  // }
   tags?(): string[] {
     return [];
   }
@@ -63,4 +57,7 @@ export default class implements iSub {
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
     return () => {};
   }
+  // channels() {
+  //   return [{ type: 3 }];
+  // }
 }

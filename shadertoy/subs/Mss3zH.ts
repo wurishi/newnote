@@ -10,14 +10,6 @@ const fragment = `
 // sign(mouze.z)  = button is down
 // sign(mouze.w)  = button is clicked
 
-
-
-// Input - SoundCloud  : https://www.shadertoy.com/view/MsdGzn
-// Input - Time        : https://www.shadertoy.com/view/lsXGz8
-// Input - TimeDelta   : https://www.shadertoy.com/view/lsKGWV
-// Inout - 3D Texture  : https://www.shadertoy.com/view/4llcR4
-
-
 float distanceToSegment( vec2 a, vec2 b, vec2 p )
 {
 	vec2 pa = p - a, ba = b - a;

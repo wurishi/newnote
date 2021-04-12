@@ -1646,3 +1646,15 @@ Mss3zH
 lsKGWV
 
 ![268](assets/268.png)
+
+# 269. Numbers
+
+4sf3RN
+
+![269](assets/269.png)
+
+# 270. Smaller Numbers
+
+4sBSWW
+
+![270](assets/270.png)

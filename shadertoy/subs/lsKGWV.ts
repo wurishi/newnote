@@ -14,10 +14,6 @@ float sdBox( vec2 p, vec2 b )
   return min(max(d.x,d.y),0.0) + length(max(d,0.0));
 }
 
-
-//-----------------------------------------------------------------
-// Digit drawing function by P_Malin (https://www.shadertoy.com/view/4sf3RN)
-
 float SampleDigit(const in float n, const in vec2 vUV)
 {		
 	if(vUV.x  < 0.0) return 0.0;

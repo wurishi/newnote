@@ -17,25 +17,6 @@ float saturate(float x){
 	return clamp(x, 0.0, 1.0);
 }
 
-/*
-    Lava material using blackbody radiation spectrum, normal mapping and texture distortion.
-
-    Interesting FPS behaviour. On MacOS it starts off at 60 and then drops gradually. 
-    Windows is around 13 FPS mainly due to texture reads in getDistortion
-
-    Based on:
-    
-    https://catlikecoding.com/unity/tutorials/flow/texture-distortion/
-    https://scipython.com/blog/converting-a-spectrum-to-a-colour/
-    https://www.shadertoy.com/view/llSyRD
-    
-    BufferA: Camera and resolution change tracking
-    BufferB: Blackbody spectrum
-    BufferC: R - Perlin noise FBM for lava height map
-             G - Worley noise for staggered mixing of textures
-   
-*/
-
 // See also https://www.shadertoy.com/view/NdS3zK
 
 // Variable iterator initializer to stop loop unrolling
@@ -849,24 +830,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ){
 
 const fb = `
 /*
-    Blackbody radiation spectrum. 
-    Does not match other spectra seen online. Seems about 500K off.
-    Some images show 1300C as bright white whereas images of lava vary from red to bright
-    yellow. Exposure and adaption seems to affect the look a lot.
-    Comments and critique are very welcome.
-
-    Based on:
-    
-    https://github.com/tobspr/GLSL-Color-Spaces/blob/master/ColorSpaces.inc.glsl
-    https://scipython.com/blog/converting-a-spectrum-to-a-colour/
-    https://www.fourmilab.ch/documents/specrend/
-    https://en.wikipedia.org/wiki/Black-body_radiation
-    https://en.wikipedia.org/wiki/Planck%27s_law
-    https://en.wikipedia.org/wiki/Draper_point
-    https://en.wikipedia.org/wiki/Stefan%E2%80%93Boltzmann_law
-
     https://www.shadertoy.com/view/MdBSRW
-    https://www.shadertoy.com/view/llSyRD
     https://www.shadertoy.com/view/lsKczc
 */
 

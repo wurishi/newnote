@@ -3,12 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const f = `
-//By FabriceNeyret2: https://www.shadertoy.com/view/MdKGRw
-//With some modifications
-
-// only line 0, pixels 0 to 33 of bufA are used
-// if you need the full buffer but the .a components, you might adapt this util to use only .a 
-
 #define FAKE_MOUSE 1 // fake mouse motion if no user input
 #define Sradius .02  // influence radius for sliders
 #define Bradius .04  // influence radius for buttons
@@ -250,7 +244,6 @@ vec3 getColor(vec3 pos){//Not optimized.
 	return col;
 }
 //-------------------------------------------------
-//From https://www.shadertoy.com/view/XtXGRS#
 vec2 rotate(in vec2 p, in float t)
 {
 	return p * cos(-t) + vec2(p.y, -p.x) * sin(-t);

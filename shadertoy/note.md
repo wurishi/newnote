@@ -1658,3 +1658,51 @@ lsKGWV
 4sBSWW
 
 ![270](assets/270.png)
+
+# 271. Prints Numbers
+
+lt3GRj
+
+![271](assets/271.png)
+
+# 272. Fork Creation S gusandr 800
+
+ssXXzn
+
+![272](assets/272.jpg)
+
+# 273. Texture variation I
+
+4tsGzf
+
+![273](assets/273.jpg)
+
+# 274. digits/sliders/kbd widgets - 2
+
+MdKGRw
+
+![274](assets/274.jpg)
+
+# 275. digits/sliders/kbd widgets
+
+lsXXzN
+
+![275](assets/275.png)
+
+# 276. Digital clock
+
+MdfGzf
+
+![276](assets/276.png)
+
+# 277. 7 segment display (wip)
+
+3dtSRj
+
+![277](assets/277.jpg)
+
+# 278. Polyhedron DE
+
+XtXGRS
+
+![278](assets/278.jpg)

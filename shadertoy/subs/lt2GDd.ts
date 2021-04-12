@@ -3,10 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// texture lookups (still much better than https://www.shadertoy.com/view/4tsGzf)
-//
-// More info: http://www.iquilezles.org/www/articles/texturerepetition/texturerepetition.htm
-
 #define USEHASH
 
 vec4 hash4( vec2 p ) { return fract(sin(vec4( 1.0+dot(p,vec2(37.0,17.0)), 

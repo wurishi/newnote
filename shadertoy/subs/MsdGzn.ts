@@ -54,4 +54,7 @@ export default class implements iSub {
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
     return () => {};
   }
+  channels() {
+    return [webglUtils.DEFAULT_NOISE_BW];
+  }
 }

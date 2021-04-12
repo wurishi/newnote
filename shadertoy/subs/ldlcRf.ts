@@ -563,9 +563,6 @@ void rZ(inout vec3 p, float a) {
     p.y = -s * q.x + c * q.y;
 }
 
-//==========================================================================================
-// Value noise and its derivatives: https://www.shadertoy.com/view/MdX3Rr
-//==========================================================================================
 vec3 noised( in vec2 x )
 {
     vec2 f = fract(x);
@@ -591,9 +588,6 @@ vec3 noised( in vec2 x )
 				6.0*f*(1.0-f)*(vec2(b-a,c-a)+(a-b-c+d)*u.yx));
 }
 
-//==========================================================================================
-// Noise function: https://www.shadertoy.com/view/4sfGRH 
-//==========================================================================================
 float pn(vec3 p) {
     vec3 i = floor(p); 
 	vec4 a = dot(i, vec3(1., 57., 21.)) + vec4(0., 57., 21., 78.);
@@ -1235,9 +1229,6 @@ vec2 mapSimple( in vec3 pos )
     */
 }
 
-//==========================================================================================
-// Raycasting: https://www.shadertoy.com/view/Xds3zN
-//==========================================================================================
 vec3 castRay(vec3 ro, vec3 rd) 
 {
     float tmin = 0.1;
@@ -1386,9 +1377,6 @@ float stars  = 0.0;
     return stars + (sun * _SunStar.z + zenithColor + horizonColor + nadirColor);
 }
 
-//==========================================================================================
-// The rendering, based on: https://www.shadertoy.com/view/Xds3zN
-//==========================================================================================
 vec3 render( in vec3 ro, in vec3 rd )
 { 
 	// res.z contains the iteration count / max iterations. This gives kind of a nice glow

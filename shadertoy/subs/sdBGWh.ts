@@ -17,8 +17,6 @@ float saturate(float x){
 	return clamp(x, 0.0, 1.0);
 }
 
-// See also https://www.shadertoy.com/view/NdS3zK
-
 // Variable iterator initializer to stop loop unrolling
 #define ZERO (min(iFrame,0))
 
@@ -49,7 +47,6 @@ vec3 getSkyColour(vec3 rayDir){
     return skyColour + mix(vec3(0.015,0,0), vec3(0), rayDir.y);
 }
 
-// https://www.shadertoy.com/view/3s3GDn
 float getGlow(float dist, float radius, float intensity){
     return pow(radius/dist, intensity);
 }
@@ -829,11 +826,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ){
 `;
 
 const fb = `
-/*
-    https://www.shadertoy.com/view/MdBSRW
-    https://www.shadertoy.com/view/lsKczc
-*/
-
 // In C
 float MAX_TEMP = 2500.0;
 

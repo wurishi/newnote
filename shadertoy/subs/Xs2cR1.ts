@@ -2,1852 +2,21 @@ import { GUI } from 'dat.gui';
 import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
-const common = `
-#define PI 3.141592654
-#define TAU (PI * 2.0)
+const f = `
+// Super Shader GUI
+// https://www.shadertoy.com/view/Xs2cR1
+// Shadertoy UI framework - @P_Malin
 
-#define NO_UNROLL(X) (X + min(0,iFrame))
-#define NO_UNROLLF(X) (X + (min(0.,iTime)))
-#define NO_UNROLLU(X) (X + uint(min(0,iFrame)))
+// Todo: 
+// * window stacking order?
 
-// http://www.cie.co.at/technical-work/technical-resources
-vec3 standardObserver1931[] =
-    vec3[] (
-    vec3( 0.001368, 0.000039, 0.006450 ), // 380 nm
-    vec3( 0.002236, 0.000064, 0.010550 ), // 385 nm
-    vec3( 0.004243, 0.000120, 0.020050 ), // 390 nm
-    vec3( 0.007650, 0.000217, 0.036210 ), // 395 nm
-    vec3( 0.014310, 0.000396, 0.067850 ), // 400 nm
-    vec3( 0.023190, 0.000640, 0.110200 ), // 405 nm
-    vec3( 0.043510, 0.001210, 0.207400 ), // 410 nm
-    vec3( 0.077630, 0.002180, 0.371300 ), // 415 nm
-    vec3( 0.134380, 0.004000, 0.645600 ), // 420 nm
-    vec3( 0.214770, 0.007300, 1.039050 ), // 425 nm
-    vec3( 0.283900, 0.011600, 1.385600 ), // 430 nm
-    vec3( 0.328500, 0.016840, 1.622960 ), // 435 nm
-    vec3( 0.348280, 0.023000, 1.747060 ), // 440 nm
-    vec3( 0.348060, 0.029800, 1.782600 ), // 445 nm
-    vec3( 0.336200, 0.038000, 1.772110 ), // 450 nm
-    vec3( 0.318700, 0.048000, 1.744100 ), // 455 nm
-    vec3( 0.290800, 0.060000, 1.669200 ), // 460 nm
-    vec3( 0.251100, 0.073900, 1.528100 ), // 465 nm
-    vec3( 0.195360, 0.090980, 1.287640 ), // 470 nm
-    vec3( 0.142100, 0.112600, 1.041900 ), // 475 nm
-    vec3( 0.095640, 0.139020, 0.812950 ), // 480 nm
-    vec3( 0.057950, 0.169300, 0.616200 ), // 485 nm
-    vec3( 0.032010, 0.208020, 0.465180 ), // 490 nm
-    vec3( 0.014700, 0.258600, 0.353300 ), // 495 nm
-    vec3( 0.004900, 0.323000, 0.272000 ), // 500 nm
-    vec3( 0.002400, 0.407300, 0.212300 ), // 505 nm
-    vec3( 0.009300, 0.503000, 0.158200 ), // 510 nm
-    vec3( 0.029100, 0.608200, 0.111700 ), // 515 nm
-    vec3( 0.063270, 0.710000, 0.078250 ), // 520 nm
-    vec3( 0.109600, 0.793200, 0.057250 ), // 525 nm
-    vec3( 0.165500, 0.862000, 0.042160 ), // 530 nm
-    vec3( 0.225750, 0.914850, 0.029840 ), // 535 nm
-    vec3( 0.290400, 0.954000, 0.020300 ), // 540 nm
-    vec3( 0.359700, 0.980300, 0.013400 ), // 545 nm
-    vec3( 0.433450, 0.994950, 0.008750 ), // 550 nm
-    vec3( 0.512050, 1.000000, 0.005750 ), // 555 nm
-    vec3( 0.594500, 0.995000, 0.003900 ), // 560 nm
-    vec3( 0.678400, 0.978600, 0.002750 ), // 565 nm
-    vec3( 0.762100, 0.952000, 0.002100 ), // 570 nm
-    vec3( 0.842500, 0.915400, 0.001800 ), // 575 nm
-    vec3( 0.916300, 0.870000, 0.001650 ), // 580 nm
-    vec3( 0.978600, 0.816300, 0.001400 ), // 585 nm
-    vec3( 1.026300, 0.757000, 0.001100 ), // 590 nm
-    vec3( 1.056700, 0.694900, 0.001000 ), // 595 nm
-    vec3( 1.062200, 0.631000, 0.000800 ), // 600 nm
-    vec3( 1.045600, 0.566800, 0.000600 ), // 605 nm
-    vec3( 1.002600, 0.503000, 0.000340 ), // 610 nm
-    vec3( 0.938400, 0.441200, 0.000240 ), // 615 nm
-    vec3( 0.854450, 0.381000, 0.000190 ), // 620 nm
-    vec3( 0.751400, 0.321000, 0.000100 ), // 625 nm
-    vec3( 0.642400, 0.265000, 0.000050 ), // 630 nm
-    vec3( 0.541900, 0.217000, 0.000030 ), // 635 nm
-    vec3( 0.447900, 0.175000, 0.000020 ), // 640 nm
-    vec3( 0.360800, 0.138200, 0.000010 ), // 645 nm
-    vec3( 0.283500, 0.107000, 0.000000 ), // 650 nm
-    vec3( 0.218700, 0.081600, 0.000000 ), // 655 nm
-    vec3( 0.164900, 0.061000, 0.000000 ), // 660 nm
-    vec3( 0.121200, 0.044580, 0.000000 ), // 665 nm
-    vec3( 0.087400, 0.032000, 0.000000 ), // 670 nm
-    vec3( 0.063600, 0.023200, 0.000000 ), // 675 nm
-    vec3( 0.046770, 0.017000, 0.000000 ), // 680 nm
-    vec3( 0.032900, 0.011920, 0.000000 ), // 685 nm
-    vec3( 0.022700, 0.008210, 0.000000 ), // 690 nm
-    vec3( 0.015840, 0.005723, 0.000000 ), // 695 nm
-    vec3( 0.011359, 0.004102, 0.000000 ), // 700 nm
-    vec3( 0.008111, 0.002929, 0.000000 ), // 705 nm
-    vec3( 0.005790, 0.002091, 0.000000 ), // 710 nm
-    vec3( 0.004109, 0.001484, 0.000000 ), // 715 nm
-    vec3( 0.002899, 0.001047, 0.000000 ), // 720 nm
-    vec3( 0.002049, 0.000740, 0.000000 ), // 725 nm
-    vec3( 0.001440, 0.000520, 0.000000 ), // 730 nm
-    vec3( 0.001000, 0.000361, 0.000000 ), // 735 nm
-    vec3( 0.000690, 0.000249, 0.000000 ), // 740 nm
-    vec3( 0.000476, 0.000172, 0.000000 ), // 745 nm
-    vec3( 0.000332, 0.000120, 0.000000 ), // 750 nm
-    vec3( 0.000235, 0.000085, 0.000000 ), // 755 nm
-    vec3( 0.000166, 0.000060, 0.000000 ), // 760 nm
-    vec3( 0.000117, 0.000042, 0.000000 ), // 765 nm
-    vec3( 0.000083, 0.000030, 0.000000 ), // 770 nm
-    vec3( 0.000059, 0.000021, 0.000000 ), // 775 nm
-    vec3( 0.000042, 0.000015, 0.000000 )  // 780 nm
-);
-float standardObserver1931_w_min = 380.0f;
-float standardObserver1931_w_max = 780.0f;
-int standardObserver1931_length = 81;
-
-// http://www.cvrl.org/ Cone Fundamentals
-vec3 coneFundamentals[] =
-	vec3[] (
-	vec3( 0.000000000,  0.000000000,  0.000000000 ), // 380 nm
-	vec3( 0.000000000,  0.000000000,  0.000000000 ), // 385 nm
-	vec3( 4.15003E-04,  3.68349E-04,  9.54729E-03 ), // 390 nm
-	vec3( 1.05192E-03,  9.58658E-04,  2.38250E-02 ), // 395 nm
-	vec3( 2.40836E-03,  2.26991E-03,  5.66498E-02 ), // 400 nm
-	vec3( 4.83339E-03,  4.70010E-03,  1.22451E-01 ), // 405 nm
-	vec3( 8.72127E-03,  8.79369E-03,  2.33008E-01 ), // 410 nm
-	vec3( 1.33837E-02,  1.45277E-02,  3.81363E-01 ), // 415 nm
-	vec3( 1.84480E-02,  2.16649E-02,  5.43618E-01 ), // 420 nm
-	vec3( 2.29317E-02,  2.95714E-02,  6.74474E-01 ), // 425 nm
-	vec3( 2.81877E-02,  3.94566E-02,  8.02555E-01 ), // 430 nm
-	vec3( 3.41054E-02,  5.18199E-02,  9.03573E-01 ), // 435 nm
-	vec3( 4.02563E-02,  6.47782E-02,  9.91020E-01 ), // 440 nm
-	vec3( 4.49380E-02,  7.58812E-02,  9.91515E-01 ), // 445 nm
-	vec3( 4.98639E-02,  8.70524E-02,  9.55393E-01 ), // 450 nm
-	vec3( 5.53418E-02,  9.81934E-02,  8.60240E-01 ), // 455 nm
-	vec3( 6.47164E-02,  1.16272E-01,  7.86704E-01 ), // 460 nm
-	vec3( 8.06894E-02,  1.44541E-01,  7.38268E-01 ), // 465 nm
-	vec3( 9.94755E-02,  1.75893E-01,  6.46359E-01 ), // 470 nm
-	vec3( 1.18802E-01,  2.05398E-01,  5.16411E-01 ), // 475 nm
-	vec3( 1.40145E-01,  2.35754E-01,  3.90333E-01 ), // 480 nm
-	vec3( 1.63952E-01,  2.68063E-01,  2.90322E-01 ), // 485 nm
-	vec3( 1.91556E-01,  3.03630E-01,  2.11867E-01 ), // 490 nm
-	vec3( 2.32926E-01,  3.57061E-01,  1.60526E-01 ), // 495 nm
-	vec3( 2.88959E-01,  4.27764E-01,  1.22839E-01 ), // 500 nm
-	vec3( 3.59716E-01,  5.15587E-01,  8.88965E-02 ), // 505 nm
-	vec3( 4.43683E-01,  6.15520E-01,  6.08210E-02 ), // 510 nm
-	vec3( 5.36494E-01,  7.19154E-01,  4.28123E-02 ), // 515 nm
-	vec3( 6.28561E-01,  8.16610E-01,  2.92033E-02 ), // 520 nm
-	vec3( 7.04720E-01,  8.85550E-01,  1.93912E-02 ), // 525 nm
-	vec3( 7.70630E-01,  9.35687E-01,  1.26013E-02 ), // 530 nm
-	vec3( 8.25711E-01,  9.68858E-01,  8.09453E-03 ), // 535 nm
-	vec3( 8.81011E-01,  9.95217E-01,  5.08900E-03 ), // 540 nm
-	vec3( 9.19067E-01,  9.97193E-01,  3.16893E-03 ), // 545 nm
-	vec3( 9.40198E-01,  9.77193E-01,  1.95896E-03 ), // 550 nm
-	vec3( 9.65733E-01,  9.56583E-01,  1.20277E-03 ), // 555 nm
-	vec3( 9.81445E-01,  9.17750E-01,  7.40174E-04 ), // 560 nm
-	vec3( 9.94486E-01,  8.73205E-01,  4.55979E-04 ), // 565 nm
-	vec3( 9.99993E-01,  8.13509E-01,  2.81800E-04 ), // 570 nm
-	vec3( 9.92310E-01,  7.40291E-01,  1.75039E-04 ), // 575 nm
-	vec3( 9.69429E-01,  6.53274E-01,  1.09454E-04 ), // 580 nm
-	vec3( 9.55602E-01,  5.72597E-01,  6.89991E-05 ), // 585 nm
-	vec3( 9.27673E-01,  4.92599E-01,  4.39024E-05 ), // 590 nm
-	vec3( 8.85969E-01,  4.11246E-01,  2.82228E-05 ), // 595 nm
-	vec3( 8.33982E-01,  3.34429E-01,  1.83459E-05 ), // 600 nm
-	vec3( 7.75103E-01,  2.64872E-01,  1.20667E-05 ), // 605 nm
-	vec3( 7.05713E-01,  2.05273E-01,  8.03488E-06 ), // 610 nm
-	vec3( 6.30773E-01,  1.56243E-01,  5.41843E-06 ), // 615 nm
-	vec3( 5.54224E-01,  1.16641E-01,  0.000000000 ), // 620 nm
-	vec3( 4.79941E-01,  8.55872E-02,  0.000000000 ), // 625 nm
-	vec3( 4.00711E-01,  6.21120E-02,  0.000000000 ), // 630 nm
-	vec3( 3.27864E-01,  4.44879E-02,  0.000000000 ), // 635 nm
-	vec3( 2.65784E-01,  3.14282E-02,  0.000000000 ), // 640 nm
-	vec3( 2.13284E-01,  2.18037E-02,  0.000000000 ), // 645 nm
-	vec3( 1.65141E-01,  1.54480E-02,  0.000000000 ), // 650 nm
-	vec3( 1.24749E-01,  1.07120E-02,  0.000000000 ), // 655 nm
-	vec3( 9.30085E-02,  7.30255E-03,  0.000000000 ), // 660 nm
-	vec3( 6.85100E-02,  4.97179E-03,  0.000000000 ), // 665 nm
-	vec3( 4.98661E-02,  3.43667E-03,  0.000000000 ), // 670 nm
-	vec3( 3.58233E-02,  2.37617E-03,  0.000000000 ), // 675 nm
-	vec3( 2.53790E-02,  1.63734E-03,  0.000000000 ), // 680 nm
-	vec3( 1.77201E-02,  1.12128E-03,  0.000000000 ), // 685 nm
-	vec3( 1.21701E-02,  7.61051E-04,  0.000000000 ), // 690 nm
-	vec3( 8.47170E-03,  5.25457E-04,  0.000000000 ), // 695 nm
-	vec3( 5.89749E-03,  3.65317E-04,  0.000000000 ), // 700 nm
-	vec3( 4.09129E-03,  2.53417E-04,  0.000000000 ), // 705 nm
-	vec3( 2.80447E-03,  1.74402E-04,  0.000000000 ), // 710 nm
-	vec3( 1.92058E-03,  1.20608E-04,  0.000000000 ), // 715 nm
-	vec3( 1.32687E-03,  8.41716E-05,  0.000000000 ), // 720 nm
-	vec3( 9.17777E-04,  5.89349E-05,  0.000000000 ), // 725 nm
-	vec3( 6.39373E-04,  4.16049E-05,  0.000000000 ), // 730 nm
-	vec3( 4.46035E-04,  2.94354E-05,  0.000000000 ), // 735 nm
-	vec3( 3.10869E-04,  2.08860E-05,  0.000000000 ), // 740 nm
-	vec3( 2.19329E-04,  1.50458E-05,  0.000000000 ), // 745 nm
-	vec3( 1.54549E-04,  1.08200E-05,  0.000000000 ), // 750 nm
-	vec3( 1.09508E-04,  7.82271E-06,  0.000000000 ), // 755 nm
-	vec3( 7.79912E-05,  5.69093E-06,  0.000000000 ), // 760 nm
-	vec3( 5.56264E-05,  4.13998E-06,  0.000000000 ), // 765 nm
-	vec3( 3.99295E-05,  3.02683E-06,  0.000000000 ), // 770 nm
-	vec3( 2.86163E-05,  2.21100E-06,  0.000000000 ), // 775 nm
-	vec3( 2.07321E-05,  1.63433E-06,  0.000000000 )  // 780 nm
-);
-
-
-// http://www.cvrl.org/ luminous efficiency
-float luminousEfficiency[] =
-    float[] (
-    0.0,      // 380 nm
-    0.0,      // 385 nm
-    4.15E-04, // 390 nm
-    1.06E-03, // 395 nm
-    2.45E-03, // 400 nm
-    4.97E-03, // 405 nm
-    9.08E-03, // 410 nm
-    1.43E-02, // 415 nm
-    2.03E-02, // 420 nm
-    2.61E-02, // 425 nm
-    3.32E-02, // 430 nm
-    4.16E-02, // 435 nm
-    5.03E-02, // 440 nm
-    5.74E-02, // 445 nm
-    6.47E-02, // 450 nm
-    7.24E-02, // 455 nm
-    8.51E-02, // 460 nm
-    1.06E-01, // 465 nm
-    1.30E-01, // 470 nm
-    1.54E-01, // 475 nm
-    1.79E-01, // 480 nm
-    2.06E-01, // 485 nm
-    2.38E-01, // 490 nm
-    2.85E-01, // 495 nm
-    3.48E-01, // 500 nm
-    4.28E-01, // 505 nm
-    5.20E-01, // 510 nm
-    6.21E-01, // 515 nm
-    7.18E-01, // 520 nm
-    7.95E-01, // 525 nm
-    8.58E-01, // 530 nm
-    9.07E-01, // 535 nm
-    9.54E-01, // 540 nm
-    9.81E-01, // 545 nm
-    9.89E-01, // 550 nm
-    9.99E-01, // 555 nm
-    9.97E-01, // 560 nm
-    9.90E-01, // 565 nm
-    9.73E-01, // 570 nm
-    9.42E-01, // 575 nm
-    8.96E-01, // 580 nm
-    8.59E-01, // 585 nm
-    8.12E-01, // 590 nm
-    7.54E-01, // 595 nm
-    6.92E-01, // 600 nm
-    6.27E-01, // 605 nm
-    5.58E-01, // 610 nm
-    4.90E-01, // 615 nm
-    4.23E-01, // 620 nm
-    3.61E-01, // 625 nm
-    2.98E-01, // 630 nm
-    2.42E-01, // 635 nm
-    1.94E-01, // 640 nm
-    1.55E-01, // 645 nm
-    1.19E-01, // 650 nm
-    8.98E-02, // 655 nm
-    6.67E-02, // 660 nm
-    4.90E-02, // 665 nm
-    3.56E-02, // 670 nm
-    2.55E-02, // 675 nm
-    1.81E-02, // 680 nm
-    1.26E-02, // 685 nm
-    8.66E-03, // 690 nm
-    6.03E-03, // 695 nm
-    4.20E-03, // 700 nm
-    2.91E-03, // 705 nm
-    2.00E-03, // 710 nm
-    1.37E-03, // 715 nm
-    9.45E-04, // 720 nm
-    6.54E-04, // 725 nm
-    4.56E-04, // 730 nm
-    3.18E-04, // 735 nm
-    2.22E-04, // 740 nm
-    1.57E-04, // 745 nm
-    1.10E-04, // 750 nm
-    7.83E-05, // 755 nm
-    5.58E-05, // 760 nm
-    3.98E-05, // 765 nm
-    2.86E-05, // 770 nm
-    2.05E-05, // 775 nm
-    1.49E-05  // 780 nm        
-);
-
-vec3 WavelengthToXYZLinear( float fWavelength )
-{
-    float fPos = ( fWavelength - standardObserver1931_w_min ) / (standardObserver1931_w_max - standardObserver1931_w_min);
-    float fIndex = fPos * float(standardObserver1931_length);
-    float fFloorIndex = floor(fIndex);
-    float fBlend = clamp( fIndex - fFloorIndex, 0.0, 1.0 );
-    int iIndex0 = int(fFloorIndex);
-    int iIndex1 = iIndex0 + 1;
-    iIndex0 = min( iIndex0, standardObserver1931_length - 1);
-    iIndex1 = min( iIndex1, standardObserver1931_length - 1);    
-    return mix( standardObserver1931[iIndex0], standardObserver1931[iIndex1], fBlend );
-}
-
-vec3 WavelengthToConeLinear( float fWavelength )
-{
-    float fPos = ( fWavelength - standardObserver1931_w_min ) / (standardObserver1931_w_max - standardObserver1931_w_min);
-    float fIndex = fPos * float(standardObserver1931_length);
-    float fFloorIndex = floor(fIndex);
-    float fBlend = clamp( fIndex - fFloorIndex, 0.0, 1.0 );
-    int iIndex0 = int(fFloorIndex);
-    int iIndex1 = iIndex0 + 1;
-    iIndex0 = min( iIndex0, standardObserver1931_length - 1);
-    iIndex1 = min( iIndex1, standardObserver1931_length - 1);    
-    return mix( coneFundamentals[iIndex0], coneFundamentals[iIndex1], fBlend );
-}
-
-float WavelengthToLuminosityLinear( float fWavelength )
-{
-    float fPos = ( fWavelength - standardObserver1931_w_min ) / (standardObserver1931_w_max - standardObserver1931_w_min);
-    float fIndex = fPos * float(standardObserver1931_length);
-    float fFloorIndex = floor(fIndex);
-    float fBlend = clamp( fIndex - fFloorIndex, 0.0, 1.0 );
-    int iIndex0 = int(fFloorIndex);
-    int iIndex1 = iIndex0 + 1;
-    iIndex0 = min( iIndex0, standardObserver1931_length - 1);
-    iIndex1 = min( iIndex1, standardObserver1931_length - 1);    
-    return mix( luminousEfficiency[iIndex0], luminousEfficiency[iIndex1], fBlend );
-}
-
-
-
-vec3 WavelengthToRGBLinear( float fWavelength )
-{
-     mat3 m = mat3( 2.3706743, -0.9000405, -0.4706338,
-	-0.5138850,  1.4253036,  0.0885814,
- 	0.0052982, -0.0146949,  1.0093968 );
-    return WavelengthToXYZLinear( fWavelength ) * m;
-}
-
-vec3 XYZtosRGB( vec3 XYZ )
-{
-    // XYZ to sRGB
-    // http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
-   mat3 m = mat3 (
-        3.2404542, -1.5371385, -0.4985314,
-		-0.9692660,  1.8760108,  0.0415560,
- 		0.0556434, -0.2040259,  1.0572252 );
-    
-    return XYZ * m;
-}
-
-vec3 sRGBtoXYZ( vec3 RGB )
-{
-   // sRGB to XYZ
-   // http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
-
-   mat3 m = mat3(  	0.4124564,  0.3575761, 0.1804375,
- 					0.2126729,  0.7151522, 0.0721750,
- 					0.0193339,  0.1191920, 0.9503041 );
-    
-    
-    return RGB * m;
-}
-
-vec3 WavelengthToXYZ( float f )
-{    
-    //return xyzFit_1931( f ) * mXYZtoSRGB;
-    
-    return WavelengthToXYZLinear( f );
-}
-
-
-struct Chromaticities
-{
-    vec2 R, G, B, W;
-};
-    
-vec3 CIE_xy_to_xyz( vec2 xy )
-{
-    return vec3( xy, 1.0f - xy.x - xy.y );
-}
-
-vec3 CIE_xyY_to_XYZ( vec3 CIE_xyY )
-{
-    float x = CIE_xyY[0];
-    float y = CIE_xyY[1];
-    float Y = CIE_xyY[2];
-    
-    float X = (Y / y) * x;
-    float Z = (Y / y) * (1.0 - x - y);
-        
-	return vec3( X, Y, Z );        
-}
-
-vec3 CIE_XYZ_to_xyY( vec3 CIE_XYZ )
-{
-    float X = CIE_XYZ[0];
-    float Y = CIE_XYZ[1];
-    float Z = CIE_XYZ[2];
-    
-    float N = X + Y + Z;
-    
-    float x = X / N;
-    float y = Y / N;
-    float z = Z / N;
-    
-    return vec3(x,y,Y);
-}
-
-Chromaticities Primaries_Rec709 =
-Chromaticities(
-        vec2( 0.6400, 0.3300 ),	// R
-        vec2( 0.3000, 0.6000 ),	// G
-        vec2( 0.1500, 0.0600 ), 	// B
-        vec2( 0.3127, 0.3290 ) );	// W
-
-Chromaticities Primaries_Rec2020 =
-Chromaticities(
-        vec2( 0.708,  0.292 ),	// R
-        vec2( 0.170,  0.797 ),	// G
-        vec2( 0.131,  0.046 ),  	// B
-        vec2( 0.3127, 0.3290 ) );	// W
-
-Chromaticities Primaries_DCI_P3_D65 =
-Chromaticities(
-        vec2( 0.680,  0.320 ),	// R
-        vec2( 0.265,  0.690 ),	// G
-        vec2( 0.150,  0.060 ),  	// B
-        vec2( 0.3127, 0.3290 ) );	// W
-
-mat3 RGBtoXYZ( Chromaticities chroma )
-{
-    // xyz is a projection of XYZ co-ordinates onto to the plane x+y+z = 1
-    // so we can reconstruct 'z' from x and y
-    
-    vec3 R = CIE_xy_to_xyz( chroma.R );
-    vec3 G = CIE_xy_to_xyz( chroma.G );
-    vec3 B = CIE_xy_to_xyz( chroma.B );
-    vec3 W = CIE_xy_to_xyz( chroma.W );
-    
-    // We want vectors in the directions R, G and B to form the basis of
-    // our matrix...
-    
-	mat3 mPrimaries = mat3 ( R, G, B );
-    
-    // but we want to scale R,G and B so they result in the
-    // direction W when the matrix is multiplied by (1,1,1)
-    
-    vec3 W_XYZ = W / W.y;
-	vec3 vScale = inverse( mPrimaries ) * W_XYZ;
-    
-    return transpose( mat3( R * vScale.x, G * vScale.y, B * vScale.z ) );
-}
-
-mat3 XYZtoRGB( Chromaticities chroma )
-{
-    return inverse( RGBtoXYZ(chroma) );
-}
-
-// chromatic adaptation
-
-// http://www.brucelindbloom.com/index.html?Eqn_ChromAdapt.html    
-
-vec3 XYZ_A = vec3( 1.09850,	1.00000,	0.35585); // Illuminant A
-vec3 XYZ_E = vec3(1.0,	1.00000,	1.0); // E
-vec3 XYZ_D65 = vec3(0.95047,	1.00000,	1.08883); // D65
-
-mat3 CA_A_to_D65_VonKries = mat3(
-    0.9394987, -0.2339150,  0.4281177,
-	-0.0256939,  1.0263828,  0.0051761,
- 	0.0000000,  0.0000000,  3.0598005
-    );
-
-
-mat3 CA_A_to_D65_Bradford = mat3(
-    0.8446965, -0.1179225,  0.3948108,
-	-0.1366303,  1.1041226,  0.1291718,
- 	0.0798489, -0.1348999,  3.1924009
-    );
-
-
-const mat3 mCAT_VonKries = mat3 ( 
-    0.4002400,  0.7076000, -0.0808100,
-	-0.2263000,  1.1653200,  0.0457000,
- 	0.0000000,  0.0000000,  0.9182200 );
-
-const mat3 mCAT_02 = mat3( 	0.7328, 0.4296, -0.1624,
-							-0.7036, 1.6975, 0.0061,
- 							0.0030, 0.0136, 0.9834 );
-
-const mat3 mCAT_Bradford = mat3 (  0.8951000, 0.2664000, -0.1614000,
-								-0.7502000,  1.7135000,  0.0367000,
- 								0.0389000, -0.0685000,  1.0296000 );
-
-
-mat3 GetChromaticAdaptionTransform( mat3 M, vec3 XYZ_w, vec3 XYZ_wr )
-{
-    //return inverse(CA_A_to_D65_VonKries);    
-    //return inverse(CA_A_to_D65_Bradford);
-        
-    //return mat3(1,0,0, 0,1,0, 0,0,1); // do nothing
-    
-	//mat3 M = mCAT_02;
-    //mat3 M = mCAT_Bradford;
-    //mat3 M = mCAT_VonKries;
-    //mat3 M = mat3(1,0,0,0,1,0,0,0,1);
-    
-    vec3 w = XYZ_w * M;
-    vec3 wr = XYZ_wr * M;
-    vec3 s = w / wr;
-    
-    mat3 d = mat3( 
-        s.x,	0,		0,  
-        0,		s.y,	0,
-        0,		0,		s.z );
-        
-    mat3 cat = M * d * inverse(M);
-    return cat;
-}
-
-
-
-// DrawContext simple 2d drawing
-
-struct DrawContext
-{
-    vec2 vUV;
-    vec3 vResult;
-    float fEdgeFade;
-};
-
-DrawContext DrawContext_Init( vec2 vUV, vec3 vClearColor )
-{
-    vec2 vWidth = fwidth( vUV );
-    
-    float fEdgeFade = 1.0 / max(abs(vWidth.x), abs(vWidth.y));
-    return DrawContext( vUV, vClearColor, fEdgeFade );
-}
-
-bool DrawContext_OnCanvas( DrawContext drawContext )
-{
-    vec2 vUV = drawContext.vUV;
-    if ( (vUV.x >= 0.0f) && (vUV.y >= 0.0f) && (vUV.x < 1.0f) && (vUV.y < 1.0f) ) 
-    {    
-    	return true;
-    }
-    return false;
-}
-    
-float LineSmooth( DrawContext drawContext, float fDist, float fThickness )
-{
-    return clamp( (fThickness - fDist) * drawContext.fEdgeFade, 0.0, 1.0 );
-}
-
-float LineInfo( vec2 vUV, vec2 vA, vec2 vB, out vec2 vClosest )
-{
-    vec2 vDir = vB - vA;
-
-    float fLen = length(vDir);
-
-    float fDist = 10000.0;
-    float fSide = -1.0;
-    
-    float fEpsilon = 0.002f;
-    
-    if ( fLen < fEpsilon )
-    {
-        vClosest = vA;
-    }
-    else
-    {
-        vDir /= fLen;            
-        vec2 vOffset = vUV - vA.xy;            
-
-        float cp = vDir.x * vOffset.y - vDir.y * vOffset.x;
-        if ( cp > 0.0f )
-        {
-            fSide = 1.0;
-        }
-
-        float d = dot( vDir, vOffset );
-        d = clamp( d, 0.0, fLen );
-        vClosest = vA + vDir * d;
-    }  
-    fDist = length( vClosest - vUV );
-    
-    return fDist * fSide;
-}
-
-
-float LineInfo( vec2 vUV, vec2 vA, vec2 vB )
-{
-    vec2 vClosestUnused;
-    return LineInfo( vUV, vA, vB, vClosestUnused );
-}
-
-void DrawBlend( inout DrawContext drawContext, vec3 vColor, float fBlend )
-{
-    drawContext.vResult = mix( drawContext.vResult, vColor, clamp( fBlend, 0.0, 1.0 ) );
-}
-
-void DrawOutlinePoint( inout DrawContext drawContext, vec3 vOutlineColor, vec3 vColor, vec2 vPos, float fStrokeThickness, float fOutlineThickness )
-{
-    float fDist = length( drawContext.vUV - vPos );
-    
-    DrawBlend( drawContext, vOutlineColor, LineSmooth( drawContext, fDist, fStrokeThickness + fOutlineThickness) );
-    DrawBlend( drawContext, vColor, LineSmooth( drawContext, fDist, fStrokeThickness ) );  
-}
-
-bool InUnitSquare( vec2 vPos )
-{
-    return (vPos.x >= 0.0) && (vPos.y >= 0.0) && (vPos.x < 1.0) && (vPos.y < 1.0);
-}
-
-
-bool InRect( vec2 vPos, vec2 vA, vec2 vB )
-{
-    return (vPos.x >= vA.x) && (vPos.y >= vA.y) && (vPos.x < vB.x) && (vPos.y < vB.y);
-}
-
-void DrawRect( inout DrawContext drawContext, vec3 vColor, vec2 vA, vec2 vB )
-{
-    vec2 vUV = drawContext.vUV;
-    
-    if ( InRect( vUV, vA, vB ) )
-    {    
-    	drawContext.vResult = vColor;
-    }
-}
-
-void DrawLine( inout DrawContext drawContext, vec3 vColor, vec2 vA, vec2 vB, float fThickness )
-{
-    DrawBlend( drawContext, vColor, LineSmooth( drawContext, abs(LineInfo( drawContext.vUV, vA, vB )), fThickness ) );
-}
-
-struct PolyInfo
-{
-	float fDist;
-	float fEdgeDist;
-};
-
-PolyInfo Poly_Init()
-{
-    return PolyInfo( -10000.0f, 10000.0f );
-}
-
-void Poly_Edge( inout PolyInfo polyInfo, float fEdgeInfo )
-{
-    polyInfo.fDist = max( polyInfo.fDist, fEdgeInfo );
-    polyInfo.fEdgeDist = min( polyInfo.fEdgeDist, abs( fEdgeInfo ) );
-}
-
-
-
-
-// Random
-
-
-// For smaller input rangers like audio tick or 0-1 UVs use these...
-#define HASHSCALE1 443.8975
-#define HASHSCALE3 vec3(443.897, 441.423, 437.195)
-#define HASHSCALE4 vec3(443.897, 441.423, 437.195, 444.129)
-
-
-//----------------------------------------------------------------------------------------
-//  1 out, 1 in...
-float hash11(float p)
-{
-	vec3 p3  = fract(vec3(p) * HASHSCALE1);
-    p3 += dot(p3, p3.yzx + 19.19);
-    return fract((p3.x + p3.y) * p3.z);
-}
-
-float hash12(vec2 p)
-{
-	vec3 p3  = fract(vec3(p.xyx) * HASHSCALE1);
-    p3 += dot(p3, p3.yzx + 19.19);
-    return fract((p3.x + p3.y) * p3.z);
-}
-
-//  2 out, 1 in...
-vec2 hash21(float p)
-{
-	vec3 p3 = fract(vec3(p) * HASHSCALE3);
-	p3 += dot(p3, p3.yzx + 19.19);
-    return fract((p3.xx+p3.yz)*p3.zy);
-
-}
-
-///  2 out, 3 in...
-vec2 hash23(vec3 p3)
-{
-	p3 = fract(p3 * HASHSCALE3);
-    p3 += dot(p3, p3.yzx+19.19);
-    return fract((p3.xx+p3.yz)*p3.zy);
-}
-
-//  1 out, 3 in...
-float hash13(vec3 p3)
-{
-	p3  = fract(p3 * HASHSCALE1);
-    p3 += dot(p3, p3.yzx + 19.19);
-    return fract((p3.x + p3.y) * p3.z);
-}
-
-///  3 out, 3 in...
-vec3 hash33(vec3 p3)
-{
-	p3 = fract(p3 * HASHSCALE3);
-    p3 += dot(p3, p3.yxz+19.19);
-    return fract((p3.xxy + p3.yxx)*p3.zyx);
-
-}
-
-float SmoothNoise(float o) 
-{
-	float p = floor(o);
-	float f = fract(o);
-		
-	//float n = p.x + p.y*57.0;
-
-	float a = hash11(p);
-	float b = hash11(p+1.0);
-	
-	float f2 = f * f;
-	float f3 = f2 * f;
-	
-	float t = 3.0 * f2 - 2.0 * f3;
-	
-	float res = a + (b-a)*t;
-    
-    return res;
-}
-
-float FBM( float p, float ps ) {
-	float f = 0.0;
-    float tot = 0.0;
-    float a = 1.0;
-    for( int i=0; i<5; i++)
-    {
-        f += SmoothNoise( p ) * a;
-        p *= 2.0;
-        tot += a;
-        a *= ps;
-    }
-    return f / tot;
-}
-
-float DigitBin( const int x )
-{
-    return x==0?480599.0:x==1?139810.0:x==2?476951.0:x==3?476999.0:x==4?350020.0:x==5?464711.0:x==6?464727.0:x==7?476228.0:x==8?481111.0:x==9?481095.0:0.0;
-}
-
-float PrintValue( const vec2 vStringCoords, const float fValue, const float fMaxDigits, const float fDecimalPlaces )
-{
-    if ((vStringCoords.y < 0.0) || (vStringCoords.y >= 1.0)) return 0.0;
-	float fLog10Value = log2(abs(fValue)) / log2(10.0);
-	float fBiggestIndex = max(floor(fLog10Value), 0.0);
-	float fDigitIndex = fMaxDigits - floor(vStringCoords.x);
-	float fCharBin = 0.0;
-	if(fDigitIndex > (-fDecimalPlaces - 1.01)) {
-		if(fDigitIndex > fBiggestIndex) {
-			if((fValue < 0.0) && (fDigitIndex < (fBiggestIndex+1.5))) fCharBin = 1792.0;
-		} else {		
-			if(fDigitIndex == -1.0) {
-				if(fDecimalPlaces > 0.0) fCharBin = 2.0;
-			} else {
-                float fReducedRangeValue = fValue;
-                if(fDigitIndex < 0.0) { fReducedRangeValue = fract( fValue ); fDigitIndex += 1.0; }
-				float fDigitValue = (abs(fReducedRangeValue / (pow(10.0, fDigitIndex))));
-                fCharBin = DigitBin(int(floor(mod(fDigitValue, 10.0))));
-			}
-        }
-	}
-    return floor(mod((fCharBin / pow(2.0, floor(fract(vStringCoords.x) * 4.0) + (floor(vStringCoords.y * 5.0) * 4.0))), 2.0));
-}
-
-// ---- 8< -------- 8< -------- 8< -------- 8< ----
-
-
-
-
-// Hacky SPD compare
-
-float SPD_Test( float w )
-{
-    float n = FBM( w * 0.02, 0.5 );
-    return n * n;
-}
-
-float Match( float fOffsetA, float fOffsetB )
-{    
-    vec3 vTotXYZA = vec3(0);
-    vec3 vTotXYZB = vec3(0);
-    
-    for( float w = standardObserver1931_w_min; w < standardObserver1931_w_max; w += 5.0 )
-    {
-        vec3 vCurrXYZ = WavelengthToXYZLinear( w );
-
-        float fPowerA = SPD_Test( w + fOffsetA );
-        float fPowerB = SPD_Test( w + fOffsetB );
-        
-        vTotXYZA += vCurrXYZ * fPowerA;
-		vTotXYZB += vCurrXYZ * fPowerB;
-
-    }  
-           
-    return length( vTotXYZA - vTotXYZB );
-}
-
-const int KEY_SPACE = 32;
-const int KEY_LEFT  = 37;
-const int KEY_UP    = 38;
-const int KEY_RIGHT = 39;
-const int KEY_DOWN  = 40;
-const int KEY_A     = 65;
-const int KEY_B     = 66;
-const int KEY_C     = 67;
-const int KEY_D     = 68;
-const int KEY_E     = 69;
-const int KEY_F     = 70;
-const int KEY_G     = 71;
-const int KEY_H     = 72;
-const int KEY_I     = 73;
-const int KEY_J     = 74;
-const int KEY_K     = 75;
-const int KEY_L     = 76;
-const int KEY_M     = 77;
-const int KEY_N     = 78;
-const int KEY_O     = 79;
-const int KEY_P     = 80;
-const int KEY_Q     = 81;
-const int KEY_R     = 82;
-const int KEY_S     = 83;
-const int KEY_T     = 84;
-const int KEY_U     = 85;
-const int KEY_V     = 86;
-const int KEY_W     = 87;
-const int KEY_X     = 88;
-const int KEY_Y     = 89;
-const int KEY_Z     = 90;
-const int KEY_COMMA = 188;
-const int KEY_PER   = 190;
-
-const int KEY_1 = 	49;
-const int KEY_2 = 	50;
-const int KEY_3 = 	51;
-const int KEY_ENTER = 13;
-const int KEY_SHIFT = 16;
-const int KEY_CTRL  = 17;
-const int KEY_ALT   = 18;
-const int KEY_TAB	= 9;
-
-bool Key_IsPressed( sampler2D samp, int key)
-{
-    return texelFetch( samp, ivec2(key, 0), 0 ).x > 0.0;    
-}
-
-bool Key_IsToggled(sampler2D samp, int key)
-{
-    return texelFetch( samp, ivec2(key, 2), 0 ).x > 0.0;    
-}
-
-
-
-/////////// UI DATA:
-
-const int
-    DATA_UICONTEXT						= 0,	
-	DATA_WINDOW_CONTROLS   				= 1,    
-	DATA_CHECKBOX_A 			= 3,
-	DATA_FLOAT_A			= 4,
-	DATA_FLOAT_B        		= 5,
-    DATA_FLOAT_C = 6,
-    DATA_WINDOW_SCROLLBAR = 7,
-    DATA_FLOAT_SPD = 8
-;
-    
-const int
-	IDC_WINDOW_CONTROLS      			= 0,
-    IDC_CHECKBOX_A 			= 1,
-	IDC_SLIDER_FLOAT_A		= 2,
-	IDC_SLIDER_FLOAT_B     	= 3,
-    IDC_SLIDER_FLOAT_C 		= 4,
-    IDC_WINDOW_SCROLLBAR	= 5,
-    IDC_SLIDER_SPD 			= 6;
-`;
-
-let fragment = `
-#define SHOW_SPECTRUM  1
-#define SHOW_SPD_GRAPH 1
-
-// Set SPD below to positive value if compilation is crashing with these options.
-
-#define SHOW_RESPONSE_GRAPH 0
-#define RESPONSE_GRAPH_LMS 0
-#define RESPONSE_GRAPH_RGB 1
-
-#define SEPARATE_SPD_GRAPH 0
-#define SEPARATE_SPECTRUM 0
-#define SEPARATE_RESPONSE_GRAPH 0
-#define SHOW_WEIGHTED_RESPONSE 0
-
-// Set to 0, 1 or 2
-#define SHOW_LUMINOSITY_GRAPH 0
-#define SHOW_LUMINOSITY_BAR 0
-
-#define DRAW_PRISM     1
-#define SHOW_SPREAD    1
-#define SHOW_BEAM      1
-
-const int 	SPD_UNITY = 0,
-    		SPD_GAUSSIAN_A = 1,
-    		SPD_GAUSSIAN_B = 2,	
-    		SPD_GAUSSIAN_ANIMATED = 3,
-    		SPD_NOISE_A = 4,
-    		SPD_NOISE_B = 5,
-    		SPD_NOISE_C = 6,
-    		SPD_BLACKBODY = 7,
-    		SPD_RGB = 8;
-
-const int SPD = -1;
-
-    
-//#define BLACKBODY_TEMP 1000.0
-//#define BLACKBODY_TEMP 2000.0
-//#define BLACKBODY_TEMP 6500.0
-#define BLACKBODY_TEMP 10000.0
-
-#define iChannelUI 			iChannel1
-
-float UI_GetFloat( int iData )
-{
-    return texelFetch( iChannelUI, ivec2(iData,0), 0 ).x;
-}
-
-bool UI_GetBool( int iData )
-{
-    return UI_GetFloat( iData ) > 0.5;
-}
-
-vec3 UI_GetColor( int iData )
-{
-    return texelFetch( iChannelUI, ivec2(iData,0), 0 ).rgb;
-}
-
-int GetSPD()
-{
-    if ( SPD < 0 )
-    {
-		return int( UI_GetFloat( DATA_FLOAT_SPD ) );
-    }
-    else
-    {
-        return SPD;
-    }
-}
-
-vec3 GetRGBFactor()
-{
-    //return vec3(1.0);
-    //return vec3(0.0583, 0.2416, 0.2000 );
-        float r = UI_GetFloat( DATA_FLOAT_A );
-        float g = UI_GetFloat( DATA_FLOAT_B );
-        float b = UI_GetFloat( DATA_FLOAT_C );
-        vec3 vRGBFactor = vec3(r,g,b);
-    return vRGBFactor;
-}
-
-const float fGlobalXOffset = 0.3;
-const float fSpHScale = 0.75;
-const float fSpMinX = fGlobalXOffset + 0.5 - fSpHScale * 0.5;
-const float fSpMaxX = fGlobalXOffset + 0.5 + fSpHScale * 0.5;
-const float fSpMinY = 0.7;
-const float fSpMaxY = 0.75;
-
-const float fSpdMinY = 0.76;
-const float fSpdMaxY = 0.99;
-
-const float fGraphSpacing = 0.3;
-
-vec2 GetSpectrumUV( vec2 vUV, int index )
-{
-    vec2 vSpectrumUV = vUV;
-    float fMinY = fSpMinY - float(index) * fGraphSpacing;
-    float fMaxY = fSpMaxY - float(index) * fGraphSpacing;
-    
-    vSpectrumUV.x = (vSpectrumUV.x - fSpMinX) / (fSpMaxX - fSpMinX);
-    vSpectrumUV.y = (vSpectrumUV.y - fMinY) / (fMaxY - fMinY);
-    
-    return vSpectrumUV;
-}
-
-vec2 GetGraphUV( vec2 vUV, int index )
-{
-    vec2 vGraphUV = vUV;
-    float fMinY = fSpdMinY - float(index) * fGraphSpacing;
-    float fMaxY = fSpdMaxY - float(index) * fGraphSpacing;   
-    
-    vGraphUV.x = (vGraphUV.x - fSpMinX) / (fSpMaxX - fSpMinX);
-    vGraphUV.y = (vGraphUV.y - fMinY) / (fMaxY - fMinY);
-    
-    return vGraphUV;
-}
-
-
-float BlackBody( float w_nm, float t )
-{
-    float h = 6.6e-34; // Planck constant
-    float k = 1.4e-23; // Boltzmann constant
-    float c = 3e8;// Speed of light
-
-    float w = w_nm / 1e9;
-
-    // Planck's law https://en.wikipedia.org/wiki/Planck%27s_law
-    
-    float w5 = w*w*w*w*w;
-    float o = 2.*h*(c*c) / (w5 * (exp(h*c/(w*k*t)) - 1.0));
-
-    return o;
-}
-
-float SPD_BlackBody( float w, float t )
-{
-    return BlackBody( w, t ) / BlackBody( 600.0, t );
-}
-
-
-float SPD_Sin( float w )
-{
-    return sin( w * 0.06 + iTime * 2.0) * 0.5 + 0.5;
-}
-
-float SPD_Noise( float w )
-{
-    //float fOffset = 0.0;
-    //float fOffset = iTime;
-    //float fOffset = 10.0;
-    //float fOffset = 784.0;
-    //float fOffset = 15825.0;
-        
-    //float fOffset = iMouse.x;
-    
-    //w += fOffset;
-    
-    float n = FBM( (w) * 0.02, 0.5 );
-    return n * n;
-}
-
-float Gaussian( float x, float u, float sd )
-{
-    float v = sd * sd;
-        
-    float d = x - u;
-    
-    float fScale = 1.0 / sqrt( TAU * v );
-    return fScale * exp( - ( d * d ) / 2.0 * v );    
-}
-
-float UnitGaussian( float x, float u, float sd )
-{
-    float v = sd * sd;
-        
-    float d = x - u;
-    
-    //float fScale = 1.0 / sqrt( TAU * v );
-    float fScale = 1.0;
-    return fScale * exp( - ( d * d ) / 2.0 * v );    
-}
-
-float SPD_Gaussian( float w )
-{
-    //float u = 780.0;//380.0;
-    
-    float u = 500.0 + sin(iTime) * 200.0;        
-    float sd = 0.04;  
-    
-    return UnitGaussian( w, u, sd );
-    
-    //return clamp( 1.0 - abs(d) * 0.02, 0.0, 1.0 );    
-    //return smoothstep( 0.0, 1.0, 1.0 - abs(d) * 0.02 );
-    
-}
-
-float GetSPD( float w )
-{
-    float result = 1.0;
-    switch( GetSPD() )
-    {
-        default:
-        case SPD_UNITY:
-        {
-            result = 1.0;    
-        }
-        break;
-
-    //return WavelengthToXYZLinear( w ).x;
-    //return WavelengthToConeLinear( w ).x;
-    //return SPD_Gaussian( w );
-    
-    //return WavelengthToLuminosityLinear( w );
-    
-		case SPD_GAUSSIAN_A:
-        {
-		    result = UnitGaussian( w, 600.0, 0.02 ) * sqrt(SPD_Noise( w + 123. ));
-    	}
-        break;
-
-        case SPD_GAUSSIAN_B:
-        {
-            result = UnitGaussian( w, 500.0, 0.02 ) * sqrt(SPD_Noise( w + 234. ));            
-        }
-        break;
-
-		case SPD_GAUSSIAN_ANIMATED:
-        {
-            result = UnitGaussian( w, 500.0 + sin(iTime) * 200.0, 0.02 ) * sqrt(SPD_Noise( w ));            
-        }
-        break;
-
-    //return SPD_Sin( w );
-    
-    //return SPD_Noise( w + 784.0 ) * WavelengthToXYZLinear(w).z;
-
-    //return dot( WavelengthToXYZLinear( w ), vec3(0.01, 0.3, 0.2));
-    
-        case SPD_NOISE_A:
-        {    
-            result = SPD_Noise( w + 784.0 );    
-        }
-        break;
-
-        case SPD_NOISE_B:
-        {    
-            result = SPD_Noise( w + 15825.0 );
-        }
-        break;
-    
-        case SPD_NOISE_C:
-        {    
-            result = SPD_Noise( w + 43.0 );
-        }
-        break;
-    
-        case SPD_BLACKBODY:
-        {    
-            float t = BLACKBODY_TEMP;
-            result = SPD_BlackBody( w, t ) * 0.4;
-        }
-        break;
-    
-        case SPD_RGB:
-        {    
-            bool show = UI_GetBool( DATA_CHECKBOX_A );
-
-            if ( show )
-            {    
-                vec3 vRGBFactor = GetRGBFactor();
-                result = dot( WavelengthToRGBLinear(w), vRGBFactor );
-            }
-            else
-            {
-                result = SPD_Noise( w + 784.0 );  
-            }
-        }    
-        break;
-    }
-
-    return result;
-}
-
-
-const int 
-    GRAPH_SPD = 0,
-    GRAPH_CONE_L = 1,
-    GRAPH_CONE_M = 2,
-    GRAPH_CONE_S = 3,
-    GRAPH_LUMINOSITY = 4,
-    GRAPH_R = 5,
-    GRAPH_G = 6, 
-    GRAPH_B = 7;
-
-const int 
-    GRAPH_SCALE_UNITY = 0,
-    GRAPH_SCALE_L = 1,
-    GRAPH_SCALE_M = 2,
-    GRAPH_SCALE_S = 3,
-    GRAPH_SCALE_R = 4,
-    GRAPH_SCALE_G = 5,
-    GRAPH_SCALE_B = 6;
-
-const int GRAPH_Y_NORMAL = 0,
-    GRAPH_Y_RGB = 1;
-
-float GraphFunction( float x, int function, int scale, int graphY )
-{
-    float w = mix(standardObserver1931_w_min, standardObserver1931_w_max, x);
-
-    float fScale = 1.0;
-    
-    switch ( scale )
-    {
-        case GRAPH_SCALE_UNITY:
-        break;
-        case GRAPH_SCALE_L:
-		    fScale = WavelengthToConeLinear( w ).x;
-        break;
-        case GRAPH_SCALE_M:
-		    fScale = WavelengthToConeLinear( w ).y;
-        break;
-        case GRAPH_SCALE_S:
-		    fScale = WavelengthToConeLinear( w ).z;
-        break;
-        
-        case GRAPH_SCALE_R:
-		    fScale = WavelengthToRGBLinear( w ).x;
-        break;
-        case GRAPH_SCALE_G:
-		    fScale = WavelengthToRGBLinear( w ).y;
-        break;
-        case GRAPH_SCALE_B:
-		    fScale = WavelengthToRGBLinear( w ).z;
-        break;        
-    }
-    
-    float fValue = 0.0;
-    
-    if ( function == GRAPH_SPD )
-    {
-    	fValue = GetSPD( w );
-    }
-    
-    if ( function == GRAPH_CONE_L )
-    {
-		fValue = WavelengthToConeLinear( w ).x;
-    }
-    if ( function == GRAPH_CONE_M )
-    {
-		fValue = WavelengthToConeLinear( w ).y;
-    }
-    if ( function == GRAPH_CONE_S )
-    {
-		fValue = WavelengthToConeLinear( w ).z;   
-    }
-    if ( function == GRAPH_LUMINOSITY )
-    {
-		fValue = WavelengthToLuminosityLinear( w );
-    }
-    
-    if ( function == GRAPH_R )
-    {
-		fValue = WavelengthToRGBLinear( w ).x; 
-        fValue *= GetRGBFactor().r;
-    }
-    if ( function == GRAPH_G )
-    {
-		fValue = WavelengthToRGBLinear( w ).y;
-        fValue *= GetRGBFactor().g;
-    }
-    if ( function == GRAPH_B )
-    {
-		fValue = WavelengthToRGBLinear( w ).z;
-        fValue *= GetRGBFactor().b;
-    }    
-    
-    fValue *= fScale;
-    
-    if ( graphY == GRAPH_Y_RGB )
-    {
-        fValue = fValue * 0.4 + 0.2;
-    }
-    
-    return fValue;
-}
-
-float GraphDyDx( float x, int function, int scale, int graphY )
-{
-    //float w = mix(standardObserver1931_w_min, standardObserver1931_w_max, x);    
-    //return cos( w * 0.06 + iTime * 2.0);
-    
-    float fDx = 0.01;
-    float fMagicNumber = 10.0;
-    return (GraphFunction( x + fDx, function, scale, graphY ) - GraphFunction( x -fDx, function, scale, graphY )) / (fMagicNumber * fDx);
-}
-
-
-float GraphInfo( DrawContext drawContext, int function, int scale, int graphY )
-{
-    vec2 vPos = drawContext.vUV;
-    vPos.y = vPos.y * 1.1 - 0.05;
-
-    float x = vPos.x;
-    
-    float fDyDx = GraphDyDx( x, function, scale, graphY );
-    float fDistScale = 1.0;
-    fDistScale = sqrt( 1.0 + fDyDx * fDyDx );
-    return (vPos.y - GraphFunction( x, function, scale, graphY )) / fDistScale;
-}
-
-float cross2d( in vec2 a, in vec2 b ) { return a.x*b.y - a.y*b.x; }
-
-// given a point p and a quad defined by four points {a,b,c,d}, return the bilinear
-// coordinates of p in the quad. Returns (-1,-1) if the point is outside of the quad.
-vec2 invBilinear( in vec2 p, in vec2 a, in vec2 b, in vec2 c, in vec2 d )
-{
-    vec2 res = vec2(-1.0);
-
-    vec2 e = b-a;
-    vec2 f = d-a;
-    vec2 g = a-b+c-d;
-    vec2 h = p-a;
-        
-    float k2 = cross2d( g, f );
-    float k1 = cross2d( e, f ) + cross2d( h, g );
-    float k0 = cross2d( h, e );
-    
-    // if edges are parallel, this is a linear equation. Do not this test here though, do
-    // it in the user code
-    //if( abs(k2)<0.001 )
-    //{
-	//	  float v = -k0/k1;
-	//    float u  = (h.x*k1+f.x*k0) / (e.x*k1-g.x*k0);
-    //    
-    //    if( v>0.0 && v<1.0 && u>0.0 && u<1.0 )  res = vec2( u, v );
-    //}
-	//else
-    {
-        // otherwise, it's a quadratic
-        float w = k1*k1 - 4.0*k0*k2;
-        if( w<0.0 ) return vec2(-1.0);
-        w = sqrt( w );
-
-        #if 1
-            float ik2 = 0.5/k2;
-            float v = (-k1 - w)*ik2; if( v<0.0 || v>1.0 ) v = (-k1 + w)*ik2;
-            float u = (h.x - f.x*v)/(e.x + g.x*v);
-            if( u<0.0 || u>1.0 || v<0.0 || v>1.0 ) return vec2(-1.0);
-            res = vec2( u, v );
-		#else
-            float v1 = (-k1 - w)/(2.0*k2);
-            float v2 = (-k1 + w)/(2.0*k2);
-            float u1 = (h.x - f.x*v1)/(e.x + g.x*v1);
-            float u2 = (h.x - f.x*v2)/(e.x + g.x*v2);
-            bool  b1 = v1>0.0 && v1<1.0 && u1>0.0 && u1<1.0;
-            bool  b2 = v2>0.0 && v2<1.0 && u2>0.0 && u2<1.0;
-
-            if(  b1 && !b2 ) res = vec2( u1, v1 );
-            if( !b1 &&  b2 ) res = vec2( u2, v2 );
-		#endif
-    }
-    
-    return res;
-}
-
-float GetGlare( float fDist )
-{
-    float fGlare = 0.0;
-    fDist = 1.0f - fDist;
-    if ( fDist < 0.0 )
-        return 0.0;
-    fGlare += pow(fDist, 20.0);
-    fGlare += pow(fDist, 4.0) * 0.1;
-    fGlare += pow(fDist, 100.0) * 5.0;    
-    
-    return fGlare;
-}
-
-float GetSpectrumGlare( float fDist )
-{
-    float fGlare = 0.0;
-    fDist = 1.0f - fDist;
-    if ( fDist < 0.0 )
-        return 0.0;
-    
-    fGlare += pow( fDist, 30.0);
-    fGlare += pow( fDist, 10.0) * 0.1;
-    //return UnitGaussian( fDist, 0.0, 20.0 );
-    
-    return fGlare * 0.005;
-}
-
-
-
-float GetPrismGlare( float fDist )
-{
-    float fGlare = 0.0;
-    fDist = 1.0f - fDist;
-    if ( fDist < 0.0 )
-        return 0.0;
-    
-    fGlare += pow( fDist, 100.0);
-    fGlare += pow( fDist, 30.0) * 0.1;
-    //return UnitGaussian( fDist, 0.0, 20.0 );
-    
-    return fGlare * 0.05;
-}
-
-const vec2 vPrismPoint = vec2(fGlobalXOffset + 0.8, 0.2);
-const vec2 vPrismN1 = normalize( vec2( 1, sqrt(3.0) ) );    
-const vec2 vPrismN2 = normalize( -vec2( -1, sqrt(3.0) ) );    
-const vec2 vPrismN3 = normalize( vec2( -1, 0 ) );    
-const float fPrismD1 = -dot( vPrismN1, vPrismPoint );
-const float fPrismD2 = -dot( vPrismN2, vPrismPoint );
-const float fPrismD3 = vPrismPoint.x - 0.2;
-
-
-float GetPrismDist( vec2 vUV )
-{    
-    float fD1 = dot( vUV, vPrismN1 ) + fPrismD1;
-    float fD2 = dot( vUV, vPrismN2 ) + fPrismD2;
-    float fD3 = dot( vUV, vPrismN3 ) + fPrismD3;
-                       
-    return max(max( fD1, fD2 ), fD3);
-}
-
-float ProjectPlane( float x, vec2 n, float d )
-{
-    float yi = d / n.y;
-    
-    float y = x * -n.x / n.y - yi;
-    
-    return y;
-}
-
-float PrismShade( vec2 vUV )
-{
-    float d = GetPrismDist( vUV );
-    
-    float fEpsilon = 0.001;
-    float fDX = GetPrismDist( vUV + vec2( fEpsilon, 0 ) );
-    float fDY = GetPrismDist( vUV + vec2( 0, fEpsilon ) );
-    
-    vec2 vNorm = normalize( vec2( fDX - d, fDY -d ) / fEpsilon );
-    
-	float fEdge = clamp( 1.0 - abs(d) * 200.0, 0.0, 1.0 );
-    
-    float fLight = dot( normalize( vec2(0.5, -0.4) ), vNorm );
-    
-    float fLightA = clamp( fLight * 0.5 + 0.5, 0.0, 1.0 );
-    float fLightB = pow( clamp( fLight, 0.0, 1.0 ), 100.0 ) * 2.0;
-    
-    float fShade = fEdge * (fLightA + fLightB + 0.5);
-        
-    if ( d < 0.0 )
-    {
-        fShade = max( fShade, 0.25 );   
-    }
-    
-    fShade = max( 0.0f, fShade );
-    
-	return fShade * 0.05;
-}
-
-void DrawSpectrum( inout DrawContext drawContext, vec3 vColBG )
-{   
-    vec2 vSpectrumUV = GetSpectrumUV( drawContext.vUV, 0 );
-    
-    float fGap = 0.01;
-
-    float fSpread0 = 0.01;
-    float x0 = vPrismPoint.x - 0.1 - fSpread0;
-    float x1 = vPrismPoint.x - 0.1 + fSpread0;
-    
-    vec2 v0 = vec2(x0, ProjectPlane( x0, vPrismN1, fPrismD1 ) );
-    vec2 v1 = vec2(x1, ProjectPlane( x1, vPrismN1, fPrismD1 ) );
-    vec2 v2 = vec2(fSpMaxX, fSpMinY - fGap);
-    vec2 v3 = vec2(fSpMinX, fSpMinY - fGap);
-    
-    vec2 vSpreadUV = invBilinear( drawContext.vUV, v0, v1, v2, v3 );    
-    bool inSpreadLight = InUnitSquare( vSpreadUV );
-
-    float fSpread1 = 0.005;
-    float x4 = vPrismPoint.x - 0.09 - fSpread1;
-    float x5 = vPrismPoint.x - 0.09 + fSpread1;
-    
-    vec2 v4 = vec2(x4, ProjectPlane( x4, vPrismN2, fPrismD2 ) );
-    vec2 v5 = vec2(x5, ProjectPlane( x5, vPrismN2, fPrismD2 ) );
-
-    vec2 vSpreadUV_B = invBilinear( drawContext.vUV, v0, v1, v5, v4 );    
-    bool inSpreadLightB = InUnitSquare( vSpreadUV_B );
-    
-
-    
-    if ( !inSpreadLight )
-    {
-        if ( inSpreadLightB )
-        {
-            inSpreadLight = true;
-            vSpreadUV = vSpreadUV_B;
-            vSpreadUV.y = 0.0;
-        }
-    }
-    
-#if !SHOW_SPREAD
-    inSpreadLight = false;
-#endif    
-    
-    // Hack convergence color
-    vSpreadUV.y = vSpreadUV.y * 0.96 + 0.04;
-    
-    vec2 vBeamA = (v4 + v5) * 0.5;
-    vec2 vBeamB = vec2(0.66 + fGlobalXOffset,0);
-    
-    float fBeamDist = LineInfo( drawContext.vUV, vBeamA, vBeamB );
-    float fBeam = clamp( abs(fBeamDist) * 200.0, 0.0, 1.0 );
-    fBeam = sqrt( 1.0 - fBeam * fBeam);
-    fBeam += GetGlare( abs( fBeamDist ) ) * 0.2;
-    
-    float fGlareDist = length( drawContext.vUV - vBeamA );
-    float fBeamGlare = GetGlare( fGlareDist );
-
-    
-#if !SHOW_BEAM    
-    fBeam = 0.0;
-    fBeamGlare = 0.0;
-#endif    
-
-    bool inSpectrum = InUnitSquare( vSpectrumUV );    
-
-#if SEPARATE_SPECTRUM    
-	inSpectrum = inSpectrum || InUnitSquare( GetSpectrumUV( drawContext.vUV, 1 ) ) || InUnitSquare( GetSpectrumUV( drawContext.vUV, 2 ) );
-#endif
-    
-#if !SHOW_SPECTRUM
-    inSpectrum = false;
-#endif
-    
-    float fSpreadLightW0 = mix(standardObserver1931_w_min - 20.0, standardObserver1931_w_max + 20.0, vSpreadUV.x);
-    float fSpectrumW0 = mix(standardObserver1931_w_min - 20.0, standardObserver1931_w_max + 20.0, vSpectrumUV.x);
-    
-    
-    vec3 vLightColor = vec3(0);
-    
-    vec3 vTotXYZ = vec3(0);
-    for( float w = standardObserver1931_w_min; w < NO_UNROLLF(standardObserver1931_w_max); w += 5.0 )
-    {
-        vec3 vCurrXYZ = WavelengthToXYZLinear( w );
-
-        float fPower = GetSPD( w );
-        
-        if ( inSpreadLight )
-        {
-            float fWeight = UnitGaussian( w, fSpreadLightW0, 0.2 * vSpreadUV.y);
-        	vTotXYZ += vCurrXYZ * fWeight * fPower * 0.01;
-        }
-
-        float t = (w - standardObserver1931_w_min) / (standardObserver1931_w_max - standardObserver1931_w_min);
-        
-#if SHOW_SPREAD        
-        {
-            vec2 vSpPos = vec2( mix( fSpMinX, fSpMaxX, t), fSpMinY - fGap);
-            
-            vec2 vOffset = vSpPos - drawContext.vUV;
-            float d = length( vOffset );
-            if ( vOffset.y > 0.0 && d < 0.5 )
-            {
-	        	vTotXYZ += vCurrXYZ * GetSpectrumGlare( d ) * fPower;
-            }
-        }
-        
-        {
-            vec2 vPrismPos = mix( v0, v1, t );
-            
-            vec2 vOffset = vPrismPos - drawContext.vUV;
-            float d = length( vOffset );
-            if ( d < 0.5 )
-            {
-	        	vTotXYZ += vCurrXYZ * GetPrismGlare( d ) * fPower;
-            }
-        }
-#endif        
-        
-        vLightColor += vCurrXYZ * fPower;
-    }
-    
-    vTotXYZ += vLightColor * (fBeam + fBeamGlare) * 0.03;
-
-#if DRAW_PRISM        
-    float fPrismShade = PrismShade( drawContext.vUV );    
-    vTotXYZ += vLightColor * fPrismShade * 0.1 * vec3( 0.8, 0.9, 1 );
-    vTotXYZ += fPrismShade * .3 * vec3( 0.8, 0.9, 1 );
-#endif    
-    
-    if ( inSpectrum )
-    {
-        vTotXYZ += WavelengthToXYZLinear(fSpectrumW0) * 0.3;
-    }
-    
-    /*if (  drawContext.vUV.y > fSpMinY - fGap )
-    {
-    	vTotXYZ += 0.5;
-    }*/
-    
-    mat3 cat = GetChromaticAdaptionTransform( mCAT_Bradford, XYZ_D65, XYZ_E );           
-	vTotXYZ = vTotXYZ * cat;
-        
-    vec3 vColor = XYZtosRGB( vTotXYZ );    
-    vColor = max( vColor, vec3(0) );
-    
-    vColor += vColBG;
-
-#if SHOW_LUMINOSITY_BAR    
-    vec2 vLuminosityUV = vSpectrumUV;
-    vLuminosityUV.y += 1.5;
-    if ( InUnitSquare( vLuminosityUV ) )
-    {
-        float l = WavelengthToLuminosityLinear( fSpectrumW0 ) ;
-        vColor += vec3(l);
-    }
-#endif    
-    
-    vColor = 1.0 - exp2( vColor * -2.0 ); // Tonemap
-    
-    vColor = pow( vColor, vec3(1.0 / 2.2) );
-        
-    drawContext.vResult = vColor;
-}
-
-void mainSPD( out vec4 fragColor, in vec2 fragCoord )
-{
-    // Normalized pixel coordinates (from 0 to 1)
-    vec2 vUV = fragCoord / iResolution.xy;
-
-    float fScale = 1.0f;
-    // scale down around centre of square
-    vec2 vDiagramUV = (vUV - 0.5) * fScale + 0.5;
-    
-    // aspect ratio adjust
-    vDiagramUV.x *= iResolution.x / iResolution.y;
-        
-    
-    // centre image horizontally
-    vDiagramUV.x += (1.0 - (iResolution.x / iResolution.y)) / 2.0;
-    
-    vec3 vColBg = texture( iChannel0, vUV * 2.0 ).rgb;
-    vColBg = vColBg * vColBg * 0.01;     
-    
-    vec3 vClearColor = vec3( 0.0 );
-    DrawContext drawContext = DrawContext_Init( vDiagramUV, vClearColor );
-    
-    DrawSpectrum( drawContext, vColBg );    
-    
-    //DrawLine( drawContext, vec3(0.5), vec2(0.1, 0.1), vec2(0.9, 0.9),  0.1 );
-    //DrawLine( drawContext, vec3(0.5), vec2(0.1, 0.9), vec2(0.9, 0.1),  0.1 );    
-            
-    vec2 vA = vec2(0.1, 0.5);
-    vec2 vB = vec2(0.9, 0.75);       
-
-    float fGraphLineThickness = 0.015;
-    vec3 vSPDColor = vec3(1);
-
-    int graphY = GRAPH_Y_NORMAL;
-#if RESPONSE_GRAPH_RGB
-    graphY = GRAPH_Y_RGB;
-#endif
-    
-    //graphY = GRAPH_Y_RGB;
-    
-#if SHOW_WEIGHTED_RESPONSE
-	{
-#if RESPONSE_GRAPH_LMS        
-        vec3 vGraphCols[3] = vec3[3]( 
-            vec3( .1, 0, 1 ), 
-            vec3( .3,1,.3 ), 
-            vec3( 1,1,.1 ) );
-        int graphScale[3] = int[3] ( GRAPH_SCALE_S, GRAPH_SCALE_M, GRAPH_SCALE_L );
-#endif        
-#if RESPONSE_GRAPH_RGB
-        vec3 vGraphCols[3] = vec3[3]( 
-            vec3( .8,0,0 ), 
-            vec3( 0,.8,0 ), 
-            vec3( 0,0,.8 ) );        
-        int graphScale[3] = int[3] ( GRAPH_SCALE_R, GRAPH_SCALE_G, GRAPH_SCALE_B );
-#endif        
-        for ( int i=0; i<NO_UNROLL(3); i++ )
-        {
-            int graphIndex = i;
-            vec2 vGraphUV = GetGraphUV( vDiagramUV, graphIndex );       
-            drawContext = DrawContext_Init( vGraphUV, drawContext.vResult );    
-		    if ( InUnitSquare(drawContext.vUV) )
-            {
-                        
-                float fGraphInfo = GraphInfo( drawContext, GRAPH_SPD, graphScale[i], graphY );
-
-                if ( graphY == GRAPH_Y_RGB )
-                {
-                	if ( drawContext.vUV.y < 0.21 ) fGraphInfo  = -fGraphInfo;
-                }                
-                
-                float fBlend = LineSmooth( drawContext, fGraphInfo, 0.0 );
-                
-                if ( graphY == GRAPH_Y_NORMAL )
-                {
-                	if ( drawContext.vUV.y < 0.03 ) fBlend  = 0.0;
-                }
-
-                
-                
-                fBlend *= 0.75;
-                DrawBlend( drawContext, vGraphCols[i], fBlend );
-            }
-        }
-    }        
-#endif
-    
-#if SHOW_RESPONSE_GRAPH    
-	{
-        
-#if RESPONSE_GRAPH_LMS
-        vec3 vGraphCols[3] = vec3[3]( 
-            vec3( .1, 0, 1 ), 
-            vec3( .3,1,.3 ), 
-            vec3( 1,1,.1 ) );
-        
-        int graphType[3] = int[3] ( GRAPH_CONE_S, GRAPH_CONE_M, GRAPH_CONE_L );
-#endif 
-#if RESPONSE_GRAPH_RGB
-        vec3 vGraphCols[3] = vec3[3]( 
-            vec3( 1,0,0 ), 
-            vec3( 0,1,0 ), 
-            vec3( 0,0,1 ) );
-        
-        int graphType[3] = int[3] ( GRAPH_R, GRAPH_G, GRAPH_B );
-#endif 
-        
-        for ( int i=0; i<NO_UNROLL(3); i++ )
-        {
-            int graphIndex = 0;
-            #if SEPARATE_RESPONSE_GRAPH
-			graphIndex = i;
-			#endif            
-            vec2 vGraphUV = GetGraphUV( vDiagramUV, graphIndex );       
-            drawContext = DrawContext_Init( vGraphUV, drawContext.vResult );    
-            
-		    if ( InUnitSquare(drawContext.vUV) )
-            {   
-#if RESPONSE_GRAPH_RGB                
-                {
-                    float fAxisInfo = drawContext.vUV.y - 0.22;
-                    float fBlend = LineSmooth( drawContext, abs(fAxisInfo), fGraphLineThickness );
-                    DrawBlend( drawContext, vec3(0.25), fBlend );
-                }
-#endif                
-                
-                float fGraphInfo = GraphInfo( drawContext, graphType[i], GRAPH_SCALE_UNITY, graphY );
-                float fBlend = LineSmooth( drawContext, abs(fGraphInfo), fGraphLineThickness );
-                DrawBlend( drawContext, vGraphCols[i], fBlend );
-            }
-        }
-    }
-#endif
-    
-
-#if SHOW_SPD_GRAPH    
-	{
-#if SEPARATE_SPD_GRAPH
-        for ( int i=0; i<NO_UNROLL(3); i++ )
-#else
-        int i = 0;
-#endif            
-        {
-            vec2 vGraphUV = GetGraphUV( vDiagramUV, i );       
-            drawContext = DrawContext_Init( vGraphUV, drawContext.vResult );    
-
-            if ( InUnitSquare(drawContext.vUV) )
-            {            
-                //float fLineInfo = LineInfo( drawContext.vUV, vA, vB );
-                float fGraphInfo = GraphInfo( drawContext, GRAPH_SPD, GRAPH_SCALE_UNITY, graphY );
-
-                float fBlend = LineSmooth( drawContext, abs(fGraphInfo), fGraphLineThickness );
-                DrawBlend( drawContext, vSPDColor, fBlend );
-            }
-        }
-    }
-#endif    
-        
-#if SHOW_LUMINOSITY_GRAPH
-	{
-        vec2 vGraphUV = GetGraphUV( vDiagramUV, 0 );       
-        drawContext = DrawContext_Init( vGraphUV, drawContext.vResult );    
-        
-        vec3 vGraphCols[2] = vec3[2]( 
-            vec3( 1,1,1 ),
-            vec3( .3,1,.3 )
-        );
-        
-        int graphType[2] = int[2] ( GRAPH_LUMINOSITY, GRAPH_CONE_M );
-        for ( int i=0; i<NO_UNROLL(SHOW_LUMINOSITY_GRAPH); i++ )
-        {
-		    if ( InUnitSquare(drawContext.vUV) )
-            {            
-                float fGraphInfo = GraphInfo( drawContext, graphType[i], GRAPH_SCALE_UNITY, 0 );
-                float fBlend = LineSmooth( drawContext, abs(fGraphInfo), fGraphLineThickness );
-                DrawBlend( drawContext, vGraphCols[i], fBlend );
-            }
-        }
-    }        
-#endif
-        
-            
-	//DrawLine( drawContext, vec3(0), vec2(0, 0), vec2(1, 0),  0.1 );
-
-    // Output to screen
-    fragColor = vec4(drawContext.vResult,1.0);
-
-    
-#if 0    
-    vec2 vNumSize = vec2(16);
-
-    vec4 vSample = texelFetch( iChannel2, ivec2(0), 0 );
-    float fBestOffset = vSample.x;
-    float fMin = vSample.y;
-    fragColor = mix( fragColor, vec4(1), PrintValue( (fragCoord - vec2(40,30)) / vNumSize, fBestOffset, 3.0, 2.0 ) );
-    fragColor = mix( fragColor, vec4(1), PrintValue( (fragCoord - vec2(160,30)) / vNumSize, fMin, 8.0, 6.0 ) );
-#endif    
-}
-
-
-void UI_Compose( vec2 fragCoord, inout vec3 vColor, out int windowId, out vec2 vWindowCoord, out float fShadow )
-{
-    vec4 vUISample = texelFetch( iChannelUI, ivec2(fragCoord), 0 );
-    
-    if ( fragCoord.y < 2.0 )
-    {
-        // Hide data
-        vUISample = vec4(1.0, 1.0, 1.0, 1.0);
-        return;
-    }
-    
-    vColor.rgb = vColor.rgb * (1.0f - vUISample.w) + vUISample.rgb;    
-    
-    windowId = -1;
-    vWindowCoord = vec2(0);
-    
-    fShadow = 1.0f;
-    if ( vUISample.a < 0.0 )
-    {
-        vWindowCoord = vUISample.rg;
-        windowId = int(round(vUISample.b));
-        
-        fShadow = clamp( -vUISample.a - 1.0, 0.0, 1.0);
-    }
-}
-
-void mainImage( out vec4 fragColor, in vec2 fragCoord )
-{
-    mainSPD( fragColor, fragCoord );
-    
-    int windowId;
-    vec2 vWindowCoord;
-    float fShadow;
-    UI_Compose( fragCoord, fragColor.rgb, windowId, vWindowCoord, fShadow );
-    
-}
-`;
-
-fragment = common + fragment;
-
-const fa = `
 #define iChannelUI 			iChannel0
 #define iChannelKeyboard 	iChannel1
 #define iChannelFont 		iChannel2
 
 #define SHADOW_TEST
 
-#define NEW_THEME
+//#define NEW_THEME
 
 #ifdef NEW_THEME
 vec3 cCheckboxOutline = vec3(0.4);
@@ -2930,10 +1099,9 @@ struct UIData_Value
     float fValue;
     float fRangeMin;
     float fRangeMax;
-    bool bInteger;
 };
 
-UIData_Value UI_GetDataValue( int iData, float fDefaultValue, float fRangeMin, float fRangeMax, bool bInteger )  
+UIData_Value UI_GetDataValue( int iData, float fDefaultValue, float fRangeMin, float fRangeMax )  
 {
     UIData_Value dataValue;
     
@@ -2950,7 +1118,6 @@ UIData_Value UI_GetDataValue( int iData, float fDefaultValue, float fRangeMin, f
     
     dataValue.fRangeMin = fRangeMin;
     dataValue.fRangeMax = fRangeMax;
-    dataValue.bInteger = bInteger;
     
     return dataValue;
 }
@@ -3067,6 +1234,7 @@ struct UIWindowDesc
     Rect initialRect;
     bool bStartMinimized;
     bool bStartClosed;
+    bool bOpenWindow;
     
     uint uControlFlags;    
     vec2 vMaxSize;
@@ -3100,7 +1268,7 @@ UIWindowState UI_GetWindowState( UIContext uiContext, int iControlId, int iData,
     vec4 vData1 = LoadVec4( iChannelUI, ivec2(iData,1) );
     
     window.bMinimized = (vData1.x > 0.0);    
-    window.bClosed = (vData1.y > 0.0);    
+    window.bClosed = (vData1.y > 0.0) && !desc.bOpenWindow;    
     
     // Clamp window position so title bar is always on canvas
 	vec2 vSafeMin = vec2(24.0);        
@@ -3140,6 +1308,11 @@ void UI_StoreWindowState( inout UIContext uiContext, UIWindowState window, int i
     vData1.w = 0.0f;
 
     StoreVec4( ivec2(iData,1), vData1, uiContext.vOutData, ivec2(uiContext.vFragCoord) );        
+}
+
+bool UI_ShouldProcessWindow( UIWindowState window )
+{
+    return !window.bMinimized && !window.bClosed;
 }
 
 void UI_WriteCanvasPos( inout UIContext uiContext, int iControlId )        
@@ -3405,10 +1578,6 @@ void UI_ProcessSlider( inout UIContext uiContext, int iControlId, inout UIData_V
         float fPosition = (uiContext.vMouseCanvasPos.x - fSlidePosMin) / (fSlidePosMax - fSlidePosMin);
         fPosition = clamp( fPosition, 0.0f, 1.0f );
         data.fValue = data.fRangeMin + fPosition * (data.fRangeMax - data.fRangeMin);
-        if ( data.bInteger )
-        {
-            data.fValue = floor( data.fValue + 0.5 );
-        }
         if ( !uiContext.bMouseDown )
         {
             uiContext.iActiveControl = IDC_NONE;
@@ -4125,18 +2294,41 @@ void PrintWindowTitle( inout PrintState state, LayoutStyle style, int controlId 
         uint strA[] = uint[] ( _C, _o, _n, _t, _r, _o, _l, _s );
         ARRAY_PRINT(state, style, strA);
     }
+    if ( controlId == IDC_WINDOW_IMAGE_CONTROL )
+    {
+        uint strA[] = uint[] ( _I, _m, _g, _SP, _C, _o, _n, _t, _r, _o, _l );
+        ARRAY_PRINT(state, style, strA);
+    }
+    if ( controlId == IDC_WINDOW_IMAGEA )
+    {
+        uint strA[] = uint[] ( _I, _m, _a, _g, _e, _SP, _A );
+        ARRAY_PRINT(state, style, strA);
+    }
+    if ( controlId == IDC_WINDOW_IMAGEB )
+    {
+        uint strA[] = uint[] ( _I, _m, _a, _g, _e, _SP, _B );
+        ARRAY_PRINT(state, style, strA);
+    }
+    if ( controlId == IDC_WINDOW_EDIT_COLOR )
+    {
+        uint strA[] = uint[] ( _C, _o, _l, _o, _r );
+        ARRAY_PRINT(state, style, strA);
+    }
 }
 
 struct UIData
 {
-    UIData_Bool checkboxA;
-    //DATA_WINDOW_VISIBLE
+    UIData_Bool backgroundImage;
+    UIData_Bool showImageWindow;
+    UIData_Bool buttonA;
     
-    UIData_Value floatA;
-    UIData_Value floatB;
-    UIData_Value floatC;    
+    UIData_Value backgroundBrightness;
+    UIData_Value backgroundScale;
+    UIData_Value imageBrightness;
 
-    UIData_Value floatSPD;    
+    UIData_Value editWhichColor;
+    UIData_Color bgColor;
+    UIData_Color imgColor;
 };    
 
     
@@ -4144,26 +2336,243 @@ UIData UI_GetControlData()
 {
     UIData data;
     
-    data.checkboxA = UI_GetDataBool( DATA_CHECKBOX_A, true );
+    data.backgroundImage = UI_GetDataBool( DATA_BACKGROUND_IMAGE, false );
+    data.showImageWindow = UI_GetDataBool( DATA_CHECKBOX_SHOW_IMAGE, true );
+    data.buttonA = UI_GetDataBool( DATA_BUTTONA, false );
     
-    data.floatA = UI_GetDataValue( DATA_FLOAT_A, 0.0583, 0.0, 1.0, false );
-    data.floatB = UI_GetDataValue( DATA_FLOAT_B, 0.2416,  0.0, 1.0, false );
-    data.floatC = UI_GetDataValue( DATA_FLOAT_C, 0.2000, 0.0, 1.0, false );
-
-    data.floatSPD = UI_GetDataValue( DATA_FLOAT_SPD, 3.0, 0.0, 8.0, true );
-        
+    data.backgroundBrightness = UI_GetDataValue( DATA_BACKGROUND_BRIGHTNESS, 0.5, 0.0, 1.0 );
+    data.backgroundScale = UI_GetDataValue( DATA_BACKGROUND_SCALE, 10.0, 1.0, 10.0 );
+    data.imageBrightness = UI_GetDataValue( DATA_IMAGE_BRIGHTNESS, 1.0, 0.0, 1.0 );
+    
+    data.editWhichColor = UI_GetDataValue( DATA_EDIT_WHICH_COLOR, -1.0, -1.0, 100.0 );
+    data.bgColor = UI_GetDataColor( DATA_BG_COLOR, vec3(0, 0.5, 0.5) );
+    data.imgColor = UI_GetDataColor( DATA_IMAGE_COLOR, vec3(1.0, 1.0, 1.0) );
+    
     return data;
 }
 
 void UI_StoreControlData( inout UIContext uiContext, UIData data )
 {
-    UI_StoreDataBool( uiContext, data.checkboxA, DATA_CHECKBOX_A );
+    UI_StoreDataBool( uiContext, data.backgroundImage, DATA_BACKGROUND_IMAGE );
+    UI_StoreDataBool( uiContext, data.showImageWindow, DATA_CHECKBOX_SHOW_IMAGE );
+    UI_StoreDataBool( uiContext, data.buttonA, DATA_BUTTONA );
 
-    UI_StoreDataValue( uiContext, data.floatA, DATA_FLOAT_A );
-    UI_StoreDataValue( uiContext, data.floatB, DATA_FLOAT_B );
-    UI_StoreDataValue( uiContext, data.floatC, DATA_FLOAT_C );
+    UI_StoreDataValue( uiContext, data.backgroundBrightness, DATA_BACKGROUND_BRIGHTNESS );
+    UI_StoreDataValue( uiContext, data.backgroundScale, DATA_BACKGROUND_SCALE );
+    UI_StoreDataValue( uiContext, data.imageBrightness, DATA_IMAGE_BRIGHTNESS );
+    
+    UI_StoreDataValue( uiContext, data.editWhichColor, DATA_EDIT_WHICH_COLOR );
+    UI_StoreDataColor( uiContext, data.bgColor, DATA_BG_COLOR );
+    UI_StoreDataColor( uiContext, data.imgColor, DATA_IMAGE_COLOR );
+}
 
-    UI_StoreDataValue( uiContext, data.floatSPD, DATA_FLOAT_SPD );
+void UI_ProcessWindowImageControl( inout UIContext uiContext, inout UIData uiData, int iControlId, int iData )
+{
+    UIWindowDesc desc;
+    
+    desc.initialRect = Rect( vec2(280, 24), vec2(180, 100) );
+    desc.uControlFlags = WINDOW_CONTROL_FLAG_TITLE_BAR;
+    desc.bStartClosed = false;
+    desc.bStartMinimized = false;
+    desc.bOpenWindow = false;
+    desc.vMaxSize = vec2(100000.0);
+
+    UIWindowState window = UI_ProcessWindowCommonBegin( uiContext, iControlId, iData, desc );
+        
+    // Controls...
+    if ( UI_ShouldProcessWindow( window ) )
+    {
+		UILayout uiLayout = UILayout_Reset();
+        
+		UILayout_StackControlRect( uiLayout, UIStyle_SliderSize() );
+        UI_ProcessSlider( uiContext, IDC_SLIDER_IMAGE_BRIGHTNESS, uiData.imageBrightness, uiLayout.controlRect );
+    }
+    
+    UI_ProcessWindowCommonEnd( uiContext, window, iData );
+}
+
+
+void UI_ProcessWindowImageB( inout UIContext uiContext, inout UIData uiData, int iControlId, int iData )
+{
+    UIWindowDesc desc;
+    
+    desc.initialRect = Rect( vec2(32, 8), vec2(192, 192) );
+    desc.bStartMinimized = false;
+    desc.bStartClosed = false;
+    desc.bOpenWindow = false;   
+    desc.uControlFlags = WINDOW_CONTROL_FLAG_TITLE_BAR | WINDOW_CONTROL_FLAG_MINIMIZE_BOX | WINDOW_CONTROL_FLAG_RESIZE_WIDGET;
+	desc.vMaxSize = vec2(100000.0);
+
+    UIWindowState window = UI_ProcessWindowCommonBegin( uiContext, iControlId, iData, desc );
+    
+    // Controls...
+    if ( UI_ShouldProcessWindow( window ) )
+    {    
+        UI_WriteCanvasUV( uiContext, iControlId );
+    }
+
+    UI_ProcessWindowCommonEnd( uiContext, window, iData );
+}
+
+void UI_ProcessWindowImageA( inout UIContext uiContext, inout UIData uiData, int iControlId, int iData )
+{
+    UIWindowDesc desc;
+    
+    vec2 vWindowIdealSize = UI_GetWindowSizeForContent( vec2(512, 512) );
+    desc.initialRect = Rect( vec2(96, 48 - 32), vec2( vWindowIdealSize.x, 350 ) );
+    desc.bStartMinimized = false;
+    desc.bStartClosed = false;
+    desc.bOpenWindow = false;      
+    desc.uControlFlags = WINDOW_CONTROL_FLAG_TITLE_BAR | WINDOW_CONTROL_FLAG_MINIMIZE_BOX | WINDOW_CONTROL_FLAG_RESIZE_WIDGET;
+
+    desc.vMaxSize = vWindowIdealSize;
+
+    UIWindowState window = UI_ProcessWindowCommonBegin( uiContext, iControlId, iData, desc );
+        
+    // Controls...
+    if ( UI_ShouldProcessWindow( window ) )
+    {        
+        Rect scrollbarPanelRect;
+
+        #if 0
+        // ScrollBar panel in fixed location
+        scrollbarPanelRect = Rect( vec2(10, 32), vec2(256) );
+        #else
+        // ScrollBar panel with parent window size        	
+        scrollbarPanelRect = Rect( vec2(0), uiContext.drawContext.vCanvasSize );
+        #endif
+
+        vec2 vScrollbarCanvasSize = vec2(512);
+
+        UIPanelState scrollbarPanelState;            
+        UI_ProcessScrollbarPanelBegin( uiContext, scrollbarPanelState, IDC_SCROLLBAR_PANEL, DATA_SCROLLBAR_PANEL, scrollbarPanelRect, vScrollbarCanvasSize );
+
+        // Controls...
+        {
+            UI_ProcessWindowImageControl( uiContext, uiData, IDC_WINDOW_IMAGE_CONTROL, DATA_WINDOW_IMAGE_CONTROL );
+            UI_ProcessWindowImageB( uiContext, uiData, IDC_WINDOW_IMAGEB, DATA_WINDOW_IMAGEB );
+
+            UI_WriteCanvasPos( uiContext, iControlId );
+        }
+
+        UI_ProcessScrollbarPanelEnd(uiContext, scrollbarPanelState);
+    }
+    
+    UI_ProcessWindowCommonEnd( uiContext, window, iData );
+}
+
+void PrintRGB( inout PrintState state, LayoutStyle style, vec3 vRGB )
+{
+    PrintCh( state, style, _R );
+    PrintCh( state, style, _COLON );
+
+    Print(state, style, vRGB.r, 2 );
+
+    PrintCh( state, style, _SP );
+    PrintCh( state, style, _G );
+    PrintCh( state, style, _COLON );
+
+    Print(state, style, vRGB.g, 2 );
+
+    PrintCh( state, style, _SP );
+    PrintCh( state, style, _B );
+    PrintCh( state, style, _COLON );
+
+    Print(state, style, vRGB.b, 2 );    
+}
+
+void UI_ProcessWindowEditColor( inout UIContext uiContext, inout UIData uiData, int iControlId, int iData )
+{
+    UIWindowDesc desc;
+    
+    desc.initialRect = Rect( vec2(256, 48), vec2(210, 260) );
+    desc.bStartMinimized = false;
+    desc.bStartClosed = false;
+    desc.bOpenWindow = true;        
+    desc.uControlFlags = WINDOW_CONTROL_FLAG_TITLE_BAR | WINDOW_CONTROL_FLAG_CLOSE_BOX;
+    desc.vMaxSize = vec2(100000.0);
+
+    UIWindowState window = UI_ProcessWindowCommonBegin( uiContext, iControlId, iData, desc );
+    
+    bool closeButtonPressed = false;
+    
+    // Controls...
+    if ( UI_ShouldProcessWindow( window ) )
+    {    
+		UILayout uiLayout = UILayout_Reset();
+        
+        LayoutStyle style;
+        RenderStyle renderStyle;             
+        UIStyle_GetFontStyleWindowText( style, renderStyle );
+        
+        UIData_Color dataColor;
+        
+        if ( uiData.editWhichColor.fValue == 0.0 )
+        {
+            dataColor = uiData.bgColor;
+        }
+        else
+        if ( uiData.editWhichColor.fValue == 1.0 )
+        {
+            dataColor = uiData.imgColor;
+        }
+        
+		UILayout_StackControlRect( uiLayout, UIStyle_ColorPickerSize().xy );                
+        UI_ProcessColorPickerSV( uiContext, IDC_COLOR_PICKER, dataColor, uiLayout.controlRect );
+        UILayout_StackRight( uiLayout );
+		UILayout_StackControlRect( uiLayout, UIStyle_ColorPickerSize().zy );        
+        UI_ProcessColorPickerH( uiContext, IDC_COLOR_PICKER+1000, dataColor, uiLayout.controlRect );
+        UILayout_StackDown( uiLayout );        
+        
+        {
+            style.vSize *= 0.6;
+
+            PrintState state = UI_PrintState_Init( uiContext, style, uiLayout.vCursor );        
+
+            vec3 vRGB = hsv2rgb(dataColor.vHSV);
+            PrintRGB( state, style, vRGB );
+                
+            UI_RenderFont( uiContext, state, style, renderStyle );
+                        
+			UILayout_SetControlRectFromText( uiLayout, state, style );
+	        UILayout_StackDown( uiLayout );            
+
+            style.vSize /= 0.6;            
+        }
+        
+        if ( uiData.editWhichColor.fValue == 0.0 )
+        {
+            uiData.bgColor = dataColor;
+        }
+        else
+        if ( uiData.editWhichColor.fValue == 1.0 )
+        {
+            uiData.imgColor = dataColor;
+        }
+    
+        {
+            PrintState state = UI_PrintState_Init( uiContext, style, uiLayout.vCursor );        
+            uint strA[] = uint[] ( _O, _k );
+            ARRAY_PRINT(state, style, strA);
+            UI_RenderFont( uiContext, state, style, renderStyle );
+			UILayout_SetControlRectFromText( uiLayout, state, style );
+
+            bool buttonPressed = UI_ProcessButton( uiContext, IDC_COLOR_PICKER + 2000, uiLayout.controlRect ); // Use text for button rect
+            if ( buttonPressed )
+            {
+                window.bClosed = true;
+            }
+	        UILayout_StackDown( uiLayout );                  
+        }        
+    }
+    
+    UI_ProcessWindowCommonEnd( uiContext, window, iData );
+    
+    if ( window.bClosed )
+    {
+        uiData.editWhichColor.fValue = -1.0;
+        //uiData.backgroundImage.bValue = false;
+    }    
 }
 
 void UI_ProcessWindowMain( inout UIContext uiContext, inout UIData uiData, int iControlId, int iData )
@@ -4172,135 +2581,134 @@ void UI_ProcessWindowMain( inout UIContext uiContext, inout UIData uiData, int i
     
     desc.initialRect = Rect( vec2(32, 128), vec2(380, 180) );
     desc.bStartMinimized = false;
-    desc.bStartClosed = true;
-    desc.uControlFlags = WINDOW_CONTROL_FLAG_TITLE_BAR | WINDOW_CONTROL_FLAG_MINIMIZE_BOX | WINDOW_CONTROL_FLAG_RESIZE_WIDGET | WINDOW_CONTROL_FLAG_CLOSE_BOX;    
+    desc.bStartClosed = false;
+    desc.bOpenWindow = false;    
+    desc.uControlFlags = WINDOW_CONTROL_FLAG_TITLE_BAR | WINDOW_CONTROL_FLAG_MINIMIZE_BOX | WINDOW_CONTROL_FLAG_RESIZE_WIDGET;    
     desc.vMaxSize = vec2(100000.0);
-    
+
     UIWindowState window = UI_ProcessWindowCommonBegin( uiContext, iControlId, iData, desc );
     
-    if ( window.bClosed )
-    {
-        //if ( uiContext.bMouseDown )
-        if ( Key_IsPressed( iChannelKeyboard, KEY_SPACE ) )
-        {
-            window.bClosed = false;
-        }
-    }
-    
-    if ( !window.bMinimized )
+    if ( UI_ShouldProcessWindow( window ) )
     {
         // Controls...
 
-        Rect scrollbarPanelRect = Rect( vec2(0), vec2( 300.0 + UIStyle_ScrollBarSize(), uiContext.drawContext.vCanvasSize.y ) );
+        UILayout uiLayout = UILayout_Reset();
+               
+        LayoutStyle style;
+        RenderStyle renderStyle;             
+        UIStyle_GetFontStyleWindowText( style, renderStyle );       
+        
+		UILayout_StackControlRect( uiLayout, UIStyle_CheckboxSize() );                
+        UI_ProcessCheckbox( uiContext, IDC_CHECKBOX_BACKGROUND_IMAGE, uiData.backgroundImage, uiLayout.controlRect );
+        UILayout_StackRight( uiLayout );
+        //UILayout_StackDown( uiContext.uiLayout );
+        
+		UILayout_StackControlRect( uiLayout, UIStyle_SliderSize() );                
+        UI_ProcessSlider( uiContext, IDC_SLIDER_BACKGROUND_BRIGHTNESS, uiData.backgroundBrightness, uiLayout.controlRect );
+        UILayout_StackRight( uiLayout );
 
-        vec2 vScrollbarCanvasSize = vec2(300, 200);
+        {
+        	PrintState state = UI_PrintState_Init( uiContext, style, uiLayout.vCursor );        
+            uint strA[] = uint[] ( _V, _a, _l, _u, _e, _COLON, _SP );
 
-        UIPanelState scrollbarPanelState;            
-        UI_ProcessScrollbarPanelBegin( uiContext, scrollbarPanelState, IDC_WINDOW_SCROLLBAR, DATA_WINDOW_SCROLLBAR, scrollbarPanelRect, vScrollbarCanvasSize );
+            ARRAY_PRINT(state, style, strA);
 
-        {        
-            UILayout uiLayout = UILayout_Reset();
+            Print(state, style, uiData.backgroundBrightness.fValue, 2 );
 
-            LayoutStyle style;
-            RenderStyle renderStyle;             
-            UIStyle_GetFontStyleWindowText( style, renderStyle );       
-
+            UI_RenderFont( uiContext, state, style, renderStyle );
             
-            UILayout_StackControlRect( uiLayout, UIStyle_SliderSize() );                
-            UI_ProcessSlider( uiContext, IDC_SLIDER_SPD, uiData.floatSPD, uiLayout.controlRect );       
-            //UILayout_StackDown( uiContext.uiLayout );    
-            UILayout_StackRight( uiLayout );
-
-            {
-                PrintState state = UI_PrintState_Init( uiContext, style, uiLayout.vCursor );        
-                uint strA[] = uint[] ( _S, _P, _D, _COLON, _SP );
-                ARRAY_PRINT(state, style, strA);
-                Print(state, style, int(uiData.floatSPD.fValue) );
-                UI_RenderFont( uiContext, state, style, renderStyle );
-                UILayout_SetControlRectFromText( uiLayout, state, style );
-            }
-            UILayout_StackDown( uiLayout );              
-
-            
-            
-            UILayout_StackControlRect( uiLayout, UIStyle_CheckboxSize() );                
-            UI_ProcessCheckbox( uiContext, IDC_CHECKBOX_A, uiData.checkboxA, uiLayout.controlRect );
-
-            UILayout_StackRight( uiLayout );
-            UILayout_StackDown( uiLayout );    
-
-
-            
-            UILayout_StackControlRect( uiLayout, UIStyle_SliderSize() );                
-            UI_ProcessSlider( uiContext, IDC_SLIDER_FLOAT_A, uiData.floatA, uiLayout.controlRect );
-
-            UILayout_StackRight( uiLayout );
-
-            {
-                PrintState state = UI_PrintState_Init( uiContext, style, uiLayout.vCursor );        
-                uint strA[] = uint[] ( _R, _COLON, _SP );
-
-                ARRAY_PRINT(state, style, strA);
-
-                Print(state, style, uiData.floatA.fValue, 4 );
-
-                UI_RenderFont( uiContext, state, style, renderStyle );
-
-                UILayout_SetControlRectFromText( uiLayout, state, style );
-            }
-
-            UILayout_StackDown( uiLayout );    
-
-            UILayout_StackControlRect( uiLayout, UIStyle_SliderSize() );                
-            UI_ProcessSlider( uiContext, IDC_SLIDER_FLOAT_B, uiData.floatB, uiLayout.controlRect );       
-            //UILayout_StackDown( uiContext.uiLayout );    
-            UILayout_StackRight( uiLayout );
-
-            {
-                PrintState state = UI_PrintState_Init( uiContext, style, uiLayout.vCursor );        
-                uint strA[] = uint[] ( _G, _COLON, _SP );
-                ARRAY_PRINT(state, style, strA);
-                Print(state, style, uiData.floatB.fValue, 4 );
-                UI_RenderFont( uiContext, state, style, renderStyle );
-                UILayout_SetControlRectFromText( uiLayout, state, style );
-            }
-            UILayout_StackDown( uiLayout );
-
-
-
-            UILayout_StackControlRect( uiLayout, UIStyle_SliderSize() );                
-            UI_ProcessSlider( uiContext, IDC_SLIDER_FLOAT_C, uiData.floatC, uiLayout.controlRect );       
-            //UILayout_StackDown( uiContext.uiLayout );    
-            UILayout_StackRight( uiLayout );
-
-            {
-                PrintState state = UI_PrintState_Init( uiContext, style, uiLayout.vCursor );        
-                uint strA[] = uint[] ( _B, _COLON, _SP );
-                ARRAY_PRINT(state, style, strA);
-                Print(state, style, uiData.floatC.fValue, 4 );
-                UI_RenderFont( uiContext, state, style, renderStyle );
-                UILayout_SetControlRectFromText( uiLayout, state, style );
-            }
-            UILayout_StackDown( uiLayout );     
-            
-            
-
-            #if 0
-            // Debug state
-            {
-                PrintState state = UI_PrintState_Init( uiContext, style, uiLayout.vCursor );
-                uint strA[] = uint[] ( _C, _t, _r, _l, _COLON );
-                ARRAY_PRINT(state, style, strA);
-
-                Print(state, style, uiContext.iActiveControl );
-                UI_RenderFont( uiContext, state, style, renderStyle );
-
-                UILayout_SetControlRectFromText( uiLayout, state, style );            
-            }        
-            #endif
+			UILayout_SetControlRectFromText( uiLayout, state, style );
         }
-           
-        UI_ProcessScrollbarPanelEnd(uiContext, scrollbarPanelState);
+        
+        UILayout_StackDown( uiLayout );    
+
+		UILayout_StackControlRect( uiLayout, UIStyle_SliderSize() );                
+        UI_ProcessSlider( uiContext, IDC_SLIDER_BACKGROUND_SCALE, uiData.backgroundScale, uiLayout.controlRect );       
+        //UILayout_StackDown( uiContext.uiLayout );    
+        UILayout_StackRight( uiLayout );
+
+        {
+            PrintState state = UI_PrintState_Init( uiContext, style, uiLayout.vCursor );        
+            uint strA[] = uint[] ( _V, _a, _l, _u, _e, _COLON, _SP );
+            ARRAY_PRINT(state, style, strA);
+            Print(state, style, uiData.backgroundScale.fValue, 1 );
+            UI_RenderFont( uiContext, state, style, renderStyle );
+			UILayout_SetControlRectFromText( uiLayout, state, style );
+        }
+        UILayout_StackDown( uiLayout );
+                        
+        {
+            // Draw color swatch
+            vec2 vSwatchSize = vec2( uiLayout.controlRect.vSize.y);
+			UILayout_StackControlRect( uiLayout, vSwatchSize );
+            if (uiContext.bPixelInView)
+            {
+                DrawRect( uiContext.vPixelCanvasPos, uiLayout.controlRect, vec4(hsv2rgb(uiData.bgColor.vHSV), 1.0), uiContext.vWindowOutColor );
+            }
+        }
+        
+        bool buttonAPressed = UI_ProcessButton( uiContext, IDC_BUTTONA, uiLayout.controlRect ); // Get button position from prev control
+        uiData.buttonA.bValue = buttonAPressed; // Only need to do this if we use it in another buffer
+        
+        if ( buttonAPressed )
+        {
+            uiData.editWhichColor.fValue = 0.0;
+        }        
+        
+        UILayout_StackRight( uiLayout );        
+        {
+            PrintState state = UI_PrintState_Init( uiContext, style, uiLayout.vCursor );
+            uint strA[] = uint[] ( _B, _G, _SP, _C, _o, _l );
+            ARRAY_PRINT(state, style, strA);
+			UILayout_SetControlRectFromText( uiLayout, state, style );            
+            UI_RenderFont( uiContext, state, style, renderStyle );
+             
+        }
+                
+        UILayout_StackRight( uiLayout );        
+        
+        {
+            // Draw color swatch
+            vec2 vSwatchSize = vec2(uiLayout.controlRect.vSize.y);
+			UILayout_StackControlRect( uiLayout, vSwatchSize );
+            if (uiContext.bPixelInView)
+            {
+                DrawRect( uiContext.vPixelCanvasPos, uiLayout.controlRect, vec4(hsv2rgb(uiData.imgColor.vHSV), 1.0), uiContext.vWindowOutColor );
+            }
+        }
+
+        bool buttonBPressed = UI_ProcessButton( uiContext, IDC_BUTTONB, uiLayout.controlRect );        
+        
+        if ( buttonBPressed )
+        {
+            uiData.editWhichColor.fValue = 1.0;
+        }        
+
+        UILayout_StackRight( uiLayout );        
+        
+        {
+            PrintState state = UI_PrintState_Init( uiContext, style, uiLayout.vCursor );                    
+            uint strA[] = uint[] ( _I, _M, _G, _SP, _B, _SP, _C, _o, _l );
+            ARRAY_PRINT(state, style, strA);			            
+			UILayout_SetControlRectFromText( uiLayout, state, style );            
+            UI_RenderFont( uiContext, state, style, renderStyle );            
+        }
+        
+        UILayout_StackDown( uiLayout );        
+        
+        #if 1
+        // Debug state
+        {
+            PrintState state = UI_PrintState_Init( uiContext, style, uiLayout.vCursor );
+            uint strA[] = uint[] ( _C, _t, _r, _l, _COLON );
+            ARRAY_PRINT(state, style, strA);
+
+            Print(state, style, uiContext.iActiveControl );
+            UI_RenderFont( uiContext, state, style, renderStyle );
+
+            UILayout_SetControlRectFromText( uiLayout, state, style );            
+        }        
+        #endif
     }    
     
     UI_ProcessWindowCommonEnd( uiContext, window, iData );
@@ -4312,8 +2720,28 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     UIData uiData = UI_GetControlData();
         
     // Content...
+    if ( uiData.editWhichColor.fValue >= 0.0 )
+    {
+	    UI_ProcessWindowEditColor( uiContext, uiData, IDC_WINDOW_EDIT_COLOR, DATA_WINDOW_EDIT_COLOR );
+    }
     
     UI_ProcessWindowMain( uiContext, uiData, IDC_WINDOW_CONTROLS, DATA_WINDOW_CONTROLS );
+
+#ifndef MAIN_WINDOW_ONLY    
+    
+    if ( uiData.showImageWindow.bValue )
+    {
+        UI_ProcessWindowImageA( uiContext, uiData, IDC_WINDOW_IMAGEA, DATA_WINDOW_IMAGEA );
+    }
+    
+    // Desktop Controls...
+    
+    UILayout uiLayout = UILayout_Reset();
+    
+	UILayout_StackControlRect( uiLayout, UIStyle_CheckboxSize() );                
+    UI_ProcessCheckbox( uiContext, IDC_CHECKBOX_SHOW_IMAGE, uiData.showImageWindow, uiLayout.controlRect );         
+    UILayout_StackDown( uiLayout );
+#endif    
     
     Rect composeRect = uiContext.drawContext.clip;
     UI_ComposeWindowLayer( uiContext, 0.0f, composeRect );
@@ -4326,77 +2754,131 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 }
 `;
 
-const fb = `
+const fragment = `
+const int
+    DATA_UICONTEXT						= 0,	
+	DATA_CHECKBOX_SHOW_IMAGE 			= 1,
+	DATA_WINDOW_CONTROLS   				= 2,
+	DATA_BACKGROUND_IMAGE				= 3,
+	DATA_BACKGROUND_BRIGHTNESS			= 4,
+	DATA_BACKGROUND_SCALE        		= 5,
+	DATA_WINDOW_IMAGE_CONTROL			= 6,
+	DATA_IMAGE_BRIGHTNESS 				= 7,
+	DATA_WINDOW_IMAGEA					= 8,
+	DATA_WINDOW_IMAGEB					= 9,
+    DATA_BUTTONA						= 10,
+    DATA_BG_COLOR						= 11,
+    DATA_IMAGE_COLOR					= 12,
+    DATA_WINDOW_EDIT_COLOR				= 13,
+    DATA_EDIT_WHICH_COLOR				= 14,
+    DATA_SCROLLBAR_PANEL				= 15;
+    
+const int
+    IDC_CHECKBOX_SHOW_IMAGE 			= 0,
+	IDC_WINDOW_CONTROLS      			= 1,
+	IDC_CHECKBOX_BACKGROUND_IMAGE 		= 2,
+	IDC_SLIDER_BACKGROUND_BRIGHTNESS	= 3,
+	IDC_SLIDER_BACKGROUND_SCALE        	= 4,
+	IDC_WINDOW_IMAGE_CONTROL			= 5,
+	IDC_SLIDER_IMAGE_BRIGHTNESS			= 6,
+	IDC_WINDOW_IMAGEA   				= 7,
+	IDC_WINDOW_IMAGEB   				= 8,
+    IDC_BUTTONA							= 9,
+    IDC_BUTTONB							= 10,
+    IDC_WINDOW_EDIT_COLOR       		= 11,
+    IDC_COLOR_PICKER 					= 12,
+    IDC_SCROLLBAR_PANEL					= 13;
 
-#define ACTIVE 0
+    #define iChannelUI iChannel0
 
-
-void mainImage( out vec4 fragColor, in vec2 fragCoord )
-{
-#if !ACTIVE
-    discard;
-#endif    
-    
-    if ( fragCoord.x > 4. || fragCoord.y > 4.) discard;
-    
-    float fOffsetA = 784.0;
-    
-    float steps = 1000.0;
-    
-    float fStart = float(iFrame) * steps;
-    
-    float fMin = 10000.0;
-    float fBestOffset = -1.0;
-    
-#if ACTIVE
-    for ( float f =0.; f< steps + max(0., -iTime); f+=1.0 )
+    float UI_GetFloat( int iData )
     {
-        float fCurr = fStart + f;
-        float t = Match( fOffsetA, fCurr );
+        return texelFetch( iChannelUI, ivec2(iData,0), 0 ).x;
+    }
+    
+    bool UI_GetBool( int iData )
+    {
+        return UI_GetFloat( iData ) > 0.5;
+    }
+    
+    vec3 UI_GetColor( int iData )
+    {
+        return texelFetch( iChannelUI, ivec2(iData,0), 0 ).rgb;
+    }
+    
+    
+    void UI_Compose( vec2 fragCoord, inout vec3 vColor, out int windowId, out vec2 vWindowCoord, out float fShadow )
+    {
+        vec4 vUISample = texelFetch( iChannelUI, ivec2(fragCoord), 0 );
         
-        if ( t < fMin )
+        if ( fragCoord.y < 2.0 )
         {
-            fMin = t;
-            fBestOffset = fCurr;
+            // Hide data
+            vUISample = vec4(1.0, 1.0, 1.0, 1.0);
+        }
+        
+        vColor.rgb = vColor.rgb * (1.0f - vUISample.w) + vUISample.rgb;    
+        
+        windowId = -1;
+        vWindowCoord = vec2(0);
+        
+        fShadow = 1.0f;
+        if ( vUISample.a < 0.0 )
+        {
+            vWindowCoord = vUISample.rg;
+            windowId = int(round(vUISample.b));
+            
+            fShadow = clamp( -vUISample.a - 1.0, 0.0, 1.0);
         }
     }
-
     
-    if ( iFrame > 1 )
+    
+    void mainImage( out vec4 fragColor, in vec2 fragCoord )
     {
-        vec4 vSample = texelFetch( iChannel0, ivec2(0), 0 );
-        float fPrevBestOffset = vSample.x;
-        float fPrevMin = vSample.y;
-
-        if ( fPrevMin < fMin )
+      vec2 vUV = fragCoord.xy / iResolution.xy;
+        vec3 vResult = UI_GetColor( DATA_BG_COLOR );
+    
+        if ( UI_GetBool(DATA_BACKGROUND_IMAGE) )
         {
-            fBestOffset = fPrevBestOffset;
-            fMin = fPrevMin;
+          vResult.rgb = textureLod( iChannel1, vUV * UI_GetFloat(DATA_BACKGROUND_SCALE), 0.0 ).rgb * UI_GetFloat( DATA_BACKGROUND_BRIGHTNESS );
         }
+        
+        int windowId;
+        vec2 vWindowCoord;
+        float fShadow;
+        UI_Compose( fragCoord, vResult, windowId, vWindowCoord, fShadow );
+            
+        if ( windowId == IDC_WINDOW_IMAGEA )
+        {
+            vResult.rgb = texelFetch( iChannel2, ivec2(vWindowCoord.xy), 0 ).rgb * UI_GetFloat( DATA_IMAGE_BRIGHTNESS );
+          vResult *= fShadow;
+        }
+    
+        if ( windowId == IDC_WINDOW_IMAGEB )
+        {
+            vResult.rgb = textureLod( iChannel3, vWindowCoord.xy, 0.0 ).rgb * UI_GetColor( DATA_IMAGE_COLOR );
+          vResult *= fShadow;
+        }
+            
+      fragColor = vec4(vResult,1.0);
     }
-#endif    
-    
-    fragColor = vec4(fBestOffset,fMin,1.0,1.0);
-    
-    
-}
 `;
 
 export default class implements iSub {
   key(): string {
-    return 'lsKczc';
+    return 'Xs2cR1';
   }
   name(): string {
-    return 'Spectral Power Distribution';
+    return 'Super Shader GUI 98';
   }
-  sort() {
-    return 285;
+  // sort() {
+  //   return 0;
+  // }
+  webgl() {
+    return WEBGL_2;
   }
   tags?(): string[] {
     return [];
-  }
-  webgl() {
-    return WEBGL_2;
   }
   main(): HTMLCanvasElement {
     return createCanvas();
@@ -4413,9 +2895,10 @@ export default class implements iSub {
   }
   channels() {
     return [
-      { type: 3 }, //
-      { type: 3 },
-      { type: 1, f: fb, fi: 2 },
+      webglUtils.DEFAULT_NOISE,
+      webglUtils.DEFAULT_NOISE,
+      webglUtils.DEFAULT_NOISE,
+      webglUtils.DEFAULT_NOISE,
     ];
   }
 }

@@ -40,7 +40,6 @@ void swap(inout float a, inout float b)
 }
 
 //
-//   Triangulated Heightfield Trick 2 - https://www.shadertoy.com/view/tlXSzB (Rigid, equilateral)
 //   Triangulated Heightfield Trick 3 - https://www.shadertoy.com/view/ttsSzX (Deforming, equilateral)
 //
 

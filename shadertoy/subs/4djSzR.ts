@@ -3,74 +3,10 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-#define NEW_LAVA 1
-#define TEMPERATURE 2200.0
-
-float fbm(vec2 p);
-float fizzerEmbers(inout vec3 diffuse, vec3 norm, float time, vec2 coord);
-
-vec3 blackbody(float t)
-{
-    t *= TEMPERATURE;
-    
-    float u = ( 0.860117757 + 1.54118254e-4 * t + 1.28641212e-7 * t*t ) 
-            / ( 1.0 + 8.42420235e-4 * t + 7.08145163e-7 * t*t );
-    
-    float v = ( 0.317398726 + 4.22806245e-5 * t + 4.20481691e-8 * t*t ) 
-            / ( 1.0 - 2.89741816e-5 * t + 1.61456053e-7 * t*t );
-
-    float x = 3.0*u / (2.0*u - 8.0*v + 4.0);
-    float y = 2.0*v / (2.0*u - 8.0*v + 4.0);
-    float z = 1.0 - x - y;
-    
-    float Y = 1.0;
-    float X = Y / y * x;
-    float Z = Y / y * z;
-
-    mat3 XYZtoRGB = mat3(3.2404542, -1.5371385, -0.4985314,
-                        -0.9692660,  1.8760108,  0.0415560,
-                         0.0556434, -0.2040259,  1.0572252);
-
-    return max(vec3(0.0), (vec3(X,Y,Z) * XYZtoRGB) * pow(t * 0.0004, 4.0));
-}
-
-vec3 lava(vec3 norm, float lavaHeight, vec3 p, float f0, vec2 coord, float time, float moveSpeed, vec3 diffuse, vec3 ro)
-{
-    float embers = fizzerEmbers(diffuse, norm, time, coord);
-    
-    float mask = max(0.0, 1.0 - abs(lavaHeight - p.y) * 16.0);
-    
-    vec2 uv = norm.yy - p.zx;
-    uv.x -= mask * lavaHeight + p.y;
-    float tex = 1.1 - texture(iChannel0, uv).x;
-    
-    float hot = smoothstep(0.2, 0.0, lavaHeight);
-    float cold = smoothstep(0.0, 1.0, (p.z + time * moveSpeed + sin(p.x + time * 0.2) + 1.0) * 0.3 + 0.1);
-    float glow = max(0.0, (1.0-mask)*4.0 * (0.1 - (p.y - lavaHeight) * (f0 * 1.5 - 0.5) * f0));
-    float haze = length(ro-p) * 0.025 * cold;
-    
-    float temp = ((hot * 2.4 + 2.8) * tex - cold) * (tex+0.2);
-    temp = mix(glow * 1.2, smoothstep(0.0, 1.5, temp) * 2.0, mask) + embers * 6.0;
-    
-    return diffuse * (1.0-mask) 
-                   + blackbody(temp) * vec3(2.6, 0.8, 0.5)
-                   + haze * vec3(0.5,0.1,0.05);
-}
-
-float fizzerEmbers(inout vec3 diffuse, vec3 norm, float time, vec2 coord)
-{
-    diffuse*=(0.5+0.5*norm.x)*2.5+vec3(1.0,0.35,0.04)*0.02;
-    float embers=smoothstep(0.77+sin(time*20.0)*0.01+sin(time)*0.01,1.0,fbm(coord*10.0+vec2(cos(coord.y*0.8+time*0.7)*10.0,time*4.0)));
-    embers+=smoothstep(0.77+sin(time*22.0)*0.01+sin(time*1.2)*0.01,1.0,fbm(vec2(100.0)+coord*8.0+vec2(time*8.0+cos(coord.y*0.3+time*0.3)*10.0,time*7.0)));
-    return embers;
-}
-
-
 #define MOTIONBLUR_EMBERS 	0 // Set to 1 to enable sampled motion blur on the embers.
 #define ADD_HEAT_GLOW 		0 // Set to 1 to make the rock glow red as the lava covers it.
 
 float moveSpeed=0.75;
-float time;
 
 float cubic(float x)
 {
@@ -184,14 +120,14 @@ vec3 tonemap(vec3 c)
 
 float evalLavaHeight(vec2 p)
 {
-    return mix(-0.5,0.2,cubic(clamp(1.0-(-p.y-time*moveSpeed)+sin(p.x+time*0.2),0.0,1.0)));
+    return mix(-0.5,0.2,cubic(clamp(1.0-(-p.y-iTime*moveSpeed)+sin(p.x+iTime*0.2),0.0,1.0)));
 }
 
-vec3 _sample(vec2 coord)
+vec3 samplef(vec2 coord)
 {
     // Set up ray.
-    vec3 ro=vec3(0.0,3.0,-2.0-time*moveSpeed+cos(time*1.0)*0.05);
-    vec3 rd=rotateY(3.1415926+sin(time*0.1),rotateX(1.0+sin(time*0.4)*0.05,normalize(vec3(coord,-1.3))));
+    vec3 ro=vec3(0.0,3.0,-2.0-iTime*moveSpeed+cos(iTime*1.0)*0.05);
+    vec3 rd=rotateY(3.1415926+sin(iTime*0.1),rotateX(1.0+sin(iTime*0.4)*0.05,normalize(vec3(coord,-1.3))));
 
     // Intersect the ray with the upper and lower planes of the heightfield.
     float t0=(0.5-ro.y)/rd.y;
@@ -232,14 +168,11 @@ vec3 _sample(vec2 coord)
     }
 
     vec3 norm=heightFieldNormal(p.xz);
-    
+
     // Base colour for the rocks.
     float f0=sqrt(fbm(p.xz*0.5));
     vec3 diffuse=mix(vec3(0.1,0.2,0.1)*0.5,mix(vec3(0.1),vec3(1.0,0.8,0.6)*0.3,f0),max(0.0,norm.y))*mix(0.7,0.2,p.y)*mix(0.3,1.0,fbm(p.xz*3.0));
 
-#if NEW_LAVA
-    return lava(norm, lavaHeight, p, f0, coord, time, moveSpeed, diffuse, ro);
-#else
     // Cheating by simply adding light from the lava into the diffuse albedo.
     diffuse+=vec3(1.0,0.35,0.04)*clamp((1.0-norm.y)*0.1+pow(max(0.0,(1.0-abs(lavaHeight-p.y)*4.0)),2.0),0.0,1.0)*0.4;
     diffuse=mix(1.5*vec3(1.0,0.35,0.04),diffuse,clamp((p.y-lavaHeight)*16.0,0.0,1.0));
@@ -261,43 +194,36 @@ vec3 _sample(vec2 coord)
     }
     embers/=8.0*0.5;
 #else
-    vec3 embers=vec3(1.0,0.35,0.04)*smoothstep(0.77+sin(time*20.0)*0.01+sin(time)*0.01,1.0,fbm(coord*10.0+vec2(cos(coord.y*0.8+time*0.7)*10.0,time*4.0)));
-    embers+=vec3(1.0,0.35,0.04)*smoothstep(0.77+sin(time*22.0)*0.01+sin(time*1.2)*0.01,1.0,fbm(vec2(100.0)+coord*8.0+vec2(time*8.0+cos(coord.y*0.3+time*0.3)*10.0,time*7.0)));
+    vec3 embers=vec3(1.0,0.35,0.04)*smoothstep(0.77+sin(iTime*20.0)*0.01+sin(iTime)*0.01,1.0,fbm(coord*10.0+vec2(cos(coord.y*0.8+iTime*0.7)*10.0,iTime*4.0)));
+    embers+=vec3(1.0,0.35,0.04)*smoothstep(0.77+sin(iTime*22.0)*0.01+sin(iTime*1.2)*0.01,1.0,fbm(vec2(100.0)+coord*8.0+vec2(iTime*8.0+cos(coord.y*0.3+iTime*0.3)*10.0,iTime*7.0)));
 #endif
     
     // Wrap lighting is applied here, both to the rock, lava, and glow from lava. This is not correct, but
     // it gives some substance to the lava and variation/shadow to the glow.
     return diffuse*(0.5+0.5*norm.x)*2.5+vec3(1.0,0.35,0.04)*0.02+embers+glow;
-#endif
 }
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
-    time=iTime;
     // Sample the scene, with a distorted coordinate to simulate heat haze.
     vec2 uv = fragCoord.xy / iResolution.xy;
     uv = (uv - vec2(0.5)) * 2.0;
     uv.x *= iResolution.x / iResolution.y;
-    fragColor.rgb=_sample(uv+vec2(cos(smoothNoise2(vec2(-time*10.0+uv.y*10.0,uv.x)))*0.01,0.0));
+    fragColor.rgb=samplef(uv+vec2(cos(smoothNoise2(vec2(-iTime*10.0+uv.y*10.0,uv.x)))*0.01,0.0));
     fragColor.rgb=tonemap(fragColor.rgb)*1.2;
     fragColor.a = 1.;
 }
-
-
 `;
 
 export default class implements iSub {
   key(): string {
-    return 'MdBSRW';
+    return '4djSzR';
   }
   name(): string {
-    return 'Blackbody Lava';
-  }
-  webgl() {
-    return WEBGL_2;
+    return 'Flowing Lava';
   }
   sort() {
-    return 284;
+    return 289;
   }
   tags?(): string[] {
     return [];
@@ -314,8 +240,5 @@ export default class implements iSub {
   destory(): void {}
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
     return () => {};
-  }
-  channels() {
-    return [webglUtils.WOOD_TEXTURE];
   }
 }

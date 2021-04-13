@@ -1779,3 +1779,32 @@ tlXSzB
 
 ![290](assets/290.jpg)
 
+# 291. Triangulated Heightfield Trick 3
+
+ttsSzX
+
+![291](assets/291.jpg)
+
+# 292. [SH17C] Surface Mesh Generation
+
+MdSBRc
+
+![292](assets/292.jpg)
+
+# 293. [2TC 15] Mystery Mountains
+
+llsGW7
+
+![293](assets/293.jpg)
+
+# 294. box & balloon Minimized
+
+Xt2XDt
+
+![294](assets/294.jpg)
+
+# 295. Sirenian Dawn
+
+XsyGWV
+
+![295](assets/295.jpg)

@@ -3,13 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-//   Triangulated Heightfield Trick 2 - https://www.shadertoy.com/view/tlXSzB (Rigid, equilateral)
-//   Triangulated Heightfield Trick 3 - https://www.shadertoy.com/view/ttsSzX (Deforming, equilateral)
-//
-
-
-// Use this to toggle between taking 1 sample of the heightfield and taking
-// 3 samples (to fully construct the triangle on every step).
 uniform bool u_single_sample;
 
 float minh = 0.0, maxh = 6.0;

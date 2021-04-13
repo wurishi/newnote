@@ -94,7 +94,6 @@ mat3 RotMatrixZ( float fAngle )
   
 }
 
-// hash function from https://www.shadertoy.com/view/4djSRW
 float Hash(float p)
 {
 	vec2 p2 = fract(vec2(p * 5.3983, p * 5.4427));

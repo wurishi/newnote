@@ -4,42 +4,6 @@ import * as webglUtils from '../webgl-utils';
 
 const fragment = `
 /*
-	[2TC 15] Mystery Mountains by Dave_Hoskins
-	https://www.shadertoy.com/view/llsGW7
-
-	Raytracing graphics is kinda like baking cakes. 
-	
-	I want yall to first see how magical 
-	the cake can be before trying to learn how to make it, because the thing we 
-	make at first isn't going to be one of those crazy 10 story wedding cakes. its just
-	going to be some burnt sugar bread. 
-	
-	Making art using code can be so fufilling, and so infinite, but to get there you 
-	need to learn some techniques that might not seem that inspiring. To bake a cake,
-	you first need to turn on an oven, and need to know what an oven even is. In this
-	tutorial we are going to be learning how to make the oven, how to turn it on, 
-	and how to mix ingredients. as you can see on our left, our cake isn't very pretty
-	but it is a cake. and thats pretty crazy for just one tutorial!
-
-	Once you have gone through this tutorial, you can see a 'minimized' version
-	here: https://www.shadertoy.com/view/Xt2XDt
-
-	where I've rewritten it using the varibles and functions that
-	are used alot throughout shadertoy. The inspiration examples above
-	probably seem completely insane, because of all the single letter variable
-	names, but keep in mind, that they all start with most of the same ingredients 
-	and overn that we will learn about right now!
-
-	
-	I've tried to break up the code into 'sections'
-	which have the 'SECTION 'BLAH'' label above them. Not sure
-	if thats gonna help or not, but please leave comments 
-	if you think something works or doesn't work, slash you 
-	have any questions!!!
-
-	or contact me at @vrtree || @cabbibo
-
-
 	Cheat sheet for vectors:
 
     x = left / right

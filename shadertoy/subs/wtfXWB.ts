@@ -39,18 +39,12 @@ void swap(inout float a, inout float b)
     b = temp;
 }
 
-//
-//   Triangulated Heightfield Trick 3 - https://www.shadertoy.com/view/ttsSzX (Deforming, equilateral)
-//
-
-// The isofunction. The surface to approximate is the set of points for which this function equals zero.
 float field(vec3 p)
 {
     // return max(textureLod(iChannel1, (p + p.zxy / 2.) / 70. - .4, 0.).r - .4, -(length(p.xy) - .5));
     return max(textureLod(iChannel1, p.xy / 70. - .4, 0.).r - .4, -(length(p.xy) - .5));
 }
 
-// Written by Shane, taken from https://www.shadertoy.com/view/MdSBRc
 // Tri-Planar blending function. Based on an old Nvidia tutorial.
 vec3 tex3D( sampler2D t, in vec3 p, in vec3 n){
 

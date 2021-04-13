@@ -3,10 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const f = `
-// Super Shader GUI
-// https://www.shadertoy.com/view/Xs2cR1
-// Shadertoy UI framework - @P_Malin
-
 // Todo: 
 // * window stacking order?
 

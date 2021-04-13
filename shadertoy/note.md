@@ -1808,3 +1808,33 @@ Xt2XDt
 XsyGWV
 
 ![295](assets/295.jpg)
+
+# 296. Noise animation - Electric
+
+ldlXRS
+
+![296](assets/296.jpg)
+
+# 297. Ether
+
+MsjSW3
+
+![297](assets/297.jpg)
+
+# 298. Noise animation - Flow
+
+MdlXRS
+
+![298](assets/298.jpg)
+
+# 299. Noise animation - Lava
+
+lslXRS
+
+![299](assets/299.jpg)
+
+# 300. Fancy ties
+
+ltfGDs
+
+![300](assets/300.jpg)

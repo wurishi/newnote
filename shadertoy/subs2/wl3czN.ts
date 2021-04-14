@@ -321,8 +321,6 @@ float waterMap(vec2 p)
     return waterDsp(p, iTime)*3.;
 }
 
-//7-taps version (3 blend, combined diff)
-//from my older shader: https://www.shadertoy.com/view/4sfSzf
 vec3 water_normal (vec2 p, float h, float dst)
 {
     const float wd = 0.5;

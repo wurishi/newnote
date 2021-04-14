@@ -2082,3 +2082,17 @@ wl3czN
 XtdGDB
 
 ![340](assets/340.jpg)
+
+# 341. Triangulator
+
+lllGRr
+
+![341](assets/341.jpg)
+
+# 342. Derivative based AA
+
+4sfSzf
+
+![342](assets/342.jpg)
+
+https://www.shadertoy.com/user/nimitz/sort=popular&from=56&num=8

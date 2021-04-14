@@ -1903,4 +1903,32 @@ lsSGzy
 
 ![310](assets/310.jpg)
 
-https://www.shadertoy.com/user/nimitz/sort=popular&from=24&num=8
+# 311. Re-entry
+
+4dGyRh
+
+![311](assets/311.jpg)
+
+# 312. Dynamism
+
+MtKSWW
+
+![312](assets/312.jpg)
+
+# 313. Hyperlepsy
+
+4lB3WV
+
+![313](assets/313.jpg)
+
+# 314. Noise animation - Watery
+
+MssSRS
+
+![314](assets/314.jpg)
+
+# 315. String theory
+
+XdSSz1
+
+![315](assets/315.jpg)

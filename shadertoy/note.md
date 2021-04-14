@@ -1848,3 +1848,59 @@ ltfGDs
 Md2Xzm
 
 ![301](assets/301.jpg)
+
+# 302. Magnetismic
+
+XlB3zV
+
+![302](assets/302.jpg)
+
+# 303. Fast edge detection
+
+4s2XRd
+
+![303](assets/303.jpg)
+
+# 304. Postcard
+
+XdBSWd
+
+![304](assets/304.jpg)
+
+# 305. Artistic shading
+
+Xtj3Dm
+
+![305](assets/305.jpg)
+
+# 306. Promethean
+
+4tB3zV
+
+![306](assets/306.jpg)
+
+# 307. Spherical polyhedra
+
+4dBXWD
+
+![307](assets/307.jpg)
+
+# 308. Sparse grid marching
+
+XlfGDs
+
+![308](assets/308.jpg)
+
+# 309. Overly satisfying
+
+Mts3zM
+
+![309](assets/309.jpg)
+
+# 310. Flaring
+
+lsSGzy
+
+![310](assets/310.jpg)
+
+https://www.shadertoy.com/user/nimitz/sort=popular&from=24&num=8

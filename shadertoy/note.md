@@ -2022,3 +2022,63 @@ Mlf3RX
 tljGDh
 
 ![330](assets/330.jpg)
+
+# 331. Satellite's eye
+
+4tX3Ws
+
+![331](assets/331.jpg)
+
+# 332. Colorful tessellation
+
+lslXDn
+
+![332](assets/332.jpg)
+
+# 333. [2TC 15]Judging Begins
+
+llXGzB
+
+![333](assets/333.jpg)
+
+# 334. Checkerboard reconstruction
+
+llXfzf
+
+![334](assets/334.jpg)
+
+# 335. Parallax mapping
+
+4lSGRh
+
+![335](assets/335.jpg)
+
+# 336. Cathode
+
+4lXcDH
+
+![336](assets/336.jpg)
+
+# 337. Piecewise dragon
+
+lsS3DD
+
+![337](assets/337.jpg)
+
+# 338. HURA generator
+
+MtlXD8
+
+![338](assets/338.png)
+
+# 339. Day at the Lake
+
+wl3czN
+
+![339](assets/339.jpg)
+
+# 340. Myrror
+
+XtdGDB
+
+![340](assets/340.jpg)

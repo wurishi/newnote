@@ -22,7 +22,6 @@ const fragment = `
 	More info about the contest: https://www.shadertoy.com/view/4tl3W8
 	
 
-	More info about the Judging: https://www.shadertoy.com/view/llXGzB
 */
 
 void mainImage( out vec4 f, vec2 w ){

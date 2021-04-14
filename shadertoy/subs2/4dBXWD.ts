@@ -3,27 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Spherical polyhedra by nimitz (twitter: @stormoid)
-// https://www.shadertoy.com/view/4dBXWD
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
-// Contact the author for other licensing options
-
-/*
-	Follow up to my "Sphere mappings" shader (https://www.shadertoy.com/view/4sjXW1)
-	
-	I was thinking about a cheap way to do icosahedral mapping and realized
-	I could just project on an axis and rotate the sphere for each projected
-	"facet".
-	
-	Here I am showing only tilings of the regular polyhedra but this technique can
-	be used for any tilings of the sphere, regular or not. (or even arbitrary projections)
-
-	I omitted the tetraedron since the small number of projections
-	results in heavy deformation.
-
-	Perhaps there is a way to make that process cheaper? Let me know.
-*/
-
 #define time iTime
 
 mat2 mm2(in float a){float c = cos(a), s = sin(a);return mat2(c,-s,s,c);}

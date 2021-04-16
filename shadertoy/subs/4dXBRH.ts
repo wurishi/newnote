@@ -1,29 +1,31 @@
 import { GUI } from 'dat.gui';
 import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
-
+//FINISH
 const fragment = `
-float hash( in vec2 p )  // replace this by something better
+uniform int u_noised_type;
+
+float hash( in vec2 p )
 {
     p  = 50.0*fract( p*0.3183099 + vec2(0.71,0.113));
     return -1.0+2.0*fract( p.x*p.y*(p.x+p.y) );
 }
 
-// return value noise (in x) and its derivatives (in yz)
 vec3 noised( in vec2 p )
 {
     vec2 i = floor( p );
     vec2 f = fract( p );
-	
-#if 1
-    // quintic interpolation
-    vec2 u = f*f*f*(f*(f*6.0-15.0)+10.0);
-    vec2 du = 30.0*f*f*(f*(f-2.0)+1.0);
-#else
-    // cubic interpolation
-    vec2 u = f*f*(3.0-2.0*f);
-    vec2 du = 6.0*f*(1.0-f);
-#endif    
+    vec2 u, du;
+    if(u_noised_type == 1) {
+      // quintic interpolation
+      u = f*f*f*(f*(f*6.0-15.0)+10.0);
+      du = 30.0*f*f*(f*(f-2.0)+1.0);
+    }
+    else {
+      // cubic interpolation
+      u = f*f*(3.0-2.0*f);
+      du = 6.0*f*(1.0-f);
+    }
     
     float va = hash( i + vec2(0.0,0.0) );
     float vb = hash( i + vec2(1.0,0.0) );
@@ -53,6 +55,11 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 }
 `;
 
+let gui: GUI;
+const api = {
+  u_noised_type: 1,
+};
+
 export default class implements iSub {
   key(): string {
     return '4dXBRH';
@@ -67,6 +74,8 @@ export default class implements iSub {
     return [];
   }
   main(): HTMLCanvasElement {
+    gui = new GUI();
+    gui.add(api, 'u_noised_type', { cubic: 0, quintic: 1 });
     return createCanvas();
   }
   userFragment(): string {
@@ -75,8 +84,20 @@ export default class implements iSub {
   fragmentPrecision?(): string {
     return PRECISION_MEDIUMP;
   }
-  destory(): void {}
+  destory(): void {
+    if (gui) {
+      gui.destroy();
+      gui = null;
+    }
+  }
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
-    return () => {};
+    const u_noised_type = webglUtils.getUniformLocation(
+      gl,
+      program,
+      'u_noised_type'
+    );
+    return () => {
+      u_noised_type.uniform1i(api.u_noised_type);
+    };
   }
 }

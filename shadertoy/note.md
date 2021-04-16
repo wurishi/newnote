@@ -41,8 +41,6 @@ npx webpack-dev-server
 
 
 
-# subs folder:
-
 # 1. Fovea detector
 
 4dsXzM
@@ -1840,8 +1838,6 @@ lslXRS
 ltfGDs
 
 ![300](assets/300.jpg)
-
-# subs2 folder:
 
 # 301. Fake glints
 

@@ -2143,4 +2143,32 @@ XdSSRw
 
 ![350](assets/350.jpg)
 
-https://www.shadertoy.com/user/nimitz/sort=popular&from=64&num=8
+# 351. C64 Simulation
+
+Mll3DH
+
+![351](assets/351.jpg)
+
+# 352. Discs?
+
+XslSWH
+
+![352](assets/352.jpg)
+
+# 353. 3d Graphing
+
+lsSXRD
+
+![353](assets/353.jpg)
+
+# 354. Cheap Bezier palettes
+
+MlVBDR
+
+![354](assets/354.jpg)
+
+# 355. MandelOct
+
+wlcfR8
+
+![355](assets/355.jpg)

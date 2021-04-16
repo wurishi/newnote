@@ -3,10 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-//Sirenian Dawn by nimitz (twitter: @stormoid)
-// https://www.shadertoy.com/view/XsyGWV
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
-
 #define ITR 90
 #define FAR 400.
 #define time iTime

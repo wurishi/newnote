@@ -29,7 +29,6 @@ vec3 enpos()
 float square(in vec2 p){ return max(abs(p.x),abs(p.y));}
 float loz(in vec2 p){ return abs(p.x)+abs(p.y);}
 
-//from Dave (https://www.shadertoy.com/view/4djSRW)
 vec2 hash2(float p)
 {
 	vec2 p2  = fract(p * vec2(5.3983, 5.4427));

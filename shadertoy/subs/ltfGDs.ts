@@ -39,7 +39,6 @@ vec3 nmzHash33(vec3 q)
 }
 
 
-//2dFoldings, inspired by Gaz/Knighty  see: https://www.shadertoy.com/view/4tX3DS
 vec2 foldHex(in vec2 p)
 {
     p.xy = abs(p.xy);

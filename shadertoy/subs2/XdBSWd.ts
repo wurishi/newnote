@@ -55,7 +55,6 @@ float terrain(in vec2 p)
 }
 
 float tmap(in vec3 p){ return p.y-terrain(p.zx);}
-//Using "cheap AA" from eiffie (https://www.shadertoy.com/view/XsSXDt)
 vec3 tmarch(in vec3 ro, in vec3 rd, in float d)
 {
 	float precis = 0.01;

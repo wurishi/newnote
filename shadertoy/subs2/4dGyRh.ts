@@ -183,7 +183,6 @@ vec3 marchVol2( in vec3 ro, in vec3 rd, in float t, in float mt )
 	return clamp(rz.rgb, 0.0, 1.0);
 }
 
-// MIT Licensed hash From Dave_Hoskins (https://www.shadertoy.com/view/4djSRW)
 vec3 hash33(vec3 p)
 {
     p = fract(p * vec3(443.8975,397.2973, 491.1871));

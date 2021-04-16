@@ -2172,3 +2172,33 @@ MlVBDR
 wlcfR8
 
 ![355](assets/355.jpg)
+
+# 356. 2D Folding
+
+4tX3DS
+
+![356](assets/356.jpg)
+
+# 357. Bit Packed Sprites
+
+XtsGRl
+
+![357](assets/357.png)
+
+# 358. Paper Kaleidoscope
+
+ls3GRr
+
+![358](assets/358.jpg)
+
+# 359. Yellow Manypus
+
+ltB3RK
+
+![359](assets/359.jpg)
+
+# 360. Superior easing
+
+ltBGDD
+
+![360](assets/360.jpg)

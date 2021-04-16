@@ -12,7 +12,6 @@ const buffA = `
 const float initalSpeed = 10.;
 #define time iTime
 
-//From Dave (https://www.shadertoy.com/view/4djSRW)
 vec2 hash(vec2 p)
 {
     vec3 p3 = fract(vec3(p.xyx) * vec3(443.897, 441.423, 437.195));

@@ -54,7 +54,6 @@ float trids2(in vec3 p)
     return tri((p.x*1.+1.5*tri(p.z+tri(p.y))) )*.02;
 }
 
-//See unlisted shader: https://www.shadertoy.com/view/ltBGDD
 float expOut(in float t, in float n) 
 {
 	float a = 1. + 1./(exp2(n) - 1.);

@@ -32,7 +32,6 @@ float trinz(in vec3 p, in float spd)
 }
 
 float slength(in vec3 p){ return max(abs(p.x), max(abs(p.y), abs(p.z))); }
-//2dFoldings, inspired by Gaz/Knighty (see: https://www.shadertoy.com/view/4tX3DS)
 vec2 foldHex(in vec2 p)
 {
     p.xy = abs(p.xy);

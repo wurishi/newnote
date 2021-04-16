@@ -16,7 +16,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { startSound, stopSound } from './sound-utils';
 
 // const context = (require as any).context('./subs', false, /.ts$/);
-const context = (require as any).context('./subs2', false, /.ts$/);
+const context = (require as any).context('./subs3', false, /.ts$/);
 const keys = context.keys();
 
 const gui = new GUI();

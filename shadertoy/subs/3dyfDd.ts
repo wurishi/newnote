@@ -3,10 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// .x = f(p)
-// .y = ∂f(p)/∂x
-// .z = ∂f(p)/∂y
-// .yz = ∇f(p) with ‖∇f(p)‖ = 1
 vec3 sdgTriangleIsosceles( in vec2 p, in vec2 q )
 {
     float w = sign(p.x);

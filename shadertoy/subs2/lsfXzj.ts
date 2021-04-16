@@ -3,10 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-/*
-	thanks to paniq for the inspiration (https://www.shadertoy.com/view/lssSWH)
-*/
-
 //max number of steps (much shorter loop on average)
 #define STEPS 50
 

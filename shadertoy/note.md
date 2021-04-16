@@ -2232,3 +2232,45 @@ XtVcWc
 lslXDf
 
 ![365](assets/365.jpg)
+
+# 366. Interval Arithmetic
+
+lssSWH
+
+![366](assets/366.jpg)
+
+# 367. 2D Vector Graphics Library
+
+lslXW8
+
+![367](assets/367.jpg)
+
+# 368. Ellipse - distance 2D
+
+4sS3zz
+
+![368](assets/368.jpg)
+
+# 369. Ellipse - distance 2D II
+
+4lsXDN
+
+![369](assets/369.jpg)
+
+# 370. Ellipse - distance 2D II No Trig
+
+tttfzr
+
+![370](assets/370.jpg)
+
+# 371. Ellipse - SDF (trigless, 3 iter)
+
+tt3yz7
+
+![371](assets/371.jpg)
+
+# 372. Ellipse Distance Comparison
+
+wtfyWj
+
+![372](assets/372.jpg)

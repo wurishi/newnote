@@ -63,7 +63,6 @@ vec3 normal(in vec3 p)
 					 e.xyx*map(p + e.xyx) + e.yyy*map(p + e.yyy) );   
 }
 
-//From TekF (https://www.shadertoy.com/view/ltXGWS)
 float cells(in vec3 p)
 {
     p = fract(p/2.0)*2.0;

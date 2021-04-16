@@ -4,18 +4,6 @@ import * as webglUtils from '../webgl-utils';
 
 const fragment = `
 /*
-	Kind of a follow-up to my 2d graphing shader: https://www.shadertoy.com/view/MdjGRy
-	but for plotting 2d functions in 3d this time.
-
-	Define the function at line 52.
-
-	Some nice things about this plotter:
-		-Very fast for most functions
-		-Has no problems with very high slopes
-		-Selectable Perspective/Orthography
-		-Works on both side of functions/surfaces
-		-Axial grid shaded by the function (transparent when underneath)
-
 	This is using the log-bisection method for finding the roots
 	see: https://www.shadertoy.com/view/4sSXzD
 */

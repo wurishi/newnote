@@ -3,18 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Satellite's eye by nimitz (twitter: @stormoid)
-// https://www.shadertoy.com/view/4tX3Ws
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
-// Contact the author for other licensing options
-
-/*
-Very few shaders on shadertoy use iq's great anylitic noise derivative technique 
-(http://www.iquilezles.org/www/articles/morenoise/morenoise.htm)
-
-The main goal was to get terrain that looks good enough at the "continental" scale
-*/
-
 #define time iTime
 
 #define CLOUDS

@@ -72,7 +72,6 @@ vec2 hash(vec2 p)
     return -1.0 + 2.0*fract(vec2(p3.x * p3.y, p3.z*p3.x));
 }
 
-//2D Simplex noise from iq: https://www.shadertoy.com/view/Msf3WH
 float noise(in vec2 p)
 {
     p *= 0.45;
@@ -140,11 +139,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 `;
 
 const buffB = `
-// Dynamism by nimitz (twitter: @stormoid)
-// https://www.shadertoy.com/view/MtKSWW
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
-// Contact the author for other licensing options
-
 #define time iTime
 #define time2 (time*2.1 + ((1.0+sin(time + sin(time*0.4+ cos(time*0.1)))))*1.5)
 #define time3 (time*1. + ((1.0+sin(time*0.9 + sin(time*0.34+ cos(time*0.21)))))*1.5)
@@ -157,7 +151,6 @@ vec2 hash(vec2 p)
     return -1.0 + 2.0*fract(vec2(p3.x * p3.y, p3.z*p3.x));
 }
 
-//2D Simplex noise from iq: https://www.shadertoy.com/view/Msf3WH
 float noise(in vec2 p)
 {
     p *= 0.45;
@@ -225,11 +218,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 `;
 
 const buffC = `
-// Dynamism by nimitz (twitter: @stormoid)
-// https://www.shadertoy.com/view/MtKSWW
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
-// Contact the author for other licensing options
-
 #define time iTime
 
 #define time2v (((1.0+sin(time + sin(time*0.4+ cos(time*0.1)))))*1.5)

@@ -282,8 +282,6 @@ float vxlAO(vec3 vp, vec3 sp, vec3 nor, vec3 alig)
 vec3 lgt = normalize( vec3(-.5, 0.19, -0.2) );
 vec3 lcol = vec3(1.,0.86,0.77)*1.3;
 
-//Laplacian-based curvature, a great way to add detail to any scene with sdf data
-//more detail: https://www.shadertoy.com/view/Xts3WM
 float curv(in vec3 p, in float w)
 {
     vec2 e = vec2(-1., 1.)*w;

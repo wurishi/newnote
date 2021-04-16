@@ -3,12 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Filaments by nimitz (twitter: @stormoid)
-// https://www.shadertoy.com/view/4lcSWs
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
-// Contact the author for other licensing options
-
-
 #define time iTime
 mat2 rot(in float a){float c = cos(a), s = sin(a);return mat2(c,s,-s,c);}
 

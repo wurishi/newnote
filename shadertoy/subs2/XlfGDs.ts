@@ -140,7 +140,6 @@ vec3 roty(vec3 p, float a){
     return vec3(c*p.x + s*p.z, p.y, -s*p.x + c*p.z);
 }
 
-//From TekF (https://www.shadertoy.com/view/ltXGWS)
 float cells(in vec3 p)
 {
     p = fract(p/2.0)*2.0;

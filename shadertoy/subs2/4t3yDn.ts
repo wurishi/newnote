@@ -3,10 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-//Orbit Noise
-//by nimitz 2018 (twitter: @stormoid)
-
-//See: https://www.shadertoy.com/view/Xt3cDn
 uint baseHash(uvec2 p)
 {
     uint h32 = p.y + 374761393U + p.x*3266489917U;
@@ -43,37 +39,6 @@ vec2 hash21(float x)
     return vec2(rz.xy & uvec2(0x7fffffffU))/float(0x7fffffff);
 }
 
-//Orbit Noise
-//by nimitz 2018 (twitter: @stormoid)
-
-/*
-	This began while I was looking for ways to render high quality noise for
-	offline noise pregeneration. I figured one of the main limitation with the
-	standard noise algorithm was the rigid grid, which inevitably ends up creating
-	linear artifacts in the produced noise.
-
-	So a natural way of avoiding this issue is to let the underlying grid move
-	somewhat freely. I started with experiments of moving cells on a grid and
-	rendering them additively, with some extra code to improve color distribution.
-	(I'll share those experimental noises here on shadertoy soon). Then I added
-	an extra layer of variation by making the cells also have brightness values.
-	This produced ok noise, but the underlying patterns were those of value noise,
-	which is somewhat low quality.
-
-	So to increase the quality, I instead used using two separate 2d vectors per cell,
-	one for the cell displacement and the second to generate a (random) brightness gradient,
-	this ends up creating noise that is pretty much gradient/coherent/perlin while the
-	cell displacement is zeroed, which exhibits strong linear patterns. But with increased
-	displacement, those artifacts disappear and the resulting noise is of very high quality.
-	As far as I'm aware, this technique is new so I'm taking the liberty of calling it "orbit noise"
-
-	The noise works very well with a 3 cell wide kernel (9 taps in 2d), but I am using
-	a 5-wide kernel here just to help make the animation more satisfying. I am also including
-	a 3D version of the noise to show that it is easy to extend to higher dimensions.
-*/
-
-//modified (simplified) nuttall filter for orbit noise
-//see: https://www.shadertoy.com/view/XtVcWc
 float nuttall(float x, float w)
 {
     const float pi = 3.14159265358979;

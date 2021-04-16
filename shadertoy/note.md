@@ -2202,3 +2202,33 @@ ltB3RK
 ltBGDD
 
 ![360](assets/360.jpg)
+
+# 361. Polyhedron again
+
+XlX3zB
+
+![361](assets/361.jpg)
+
+# 362. Honeycomb Pattern
+
+ltXGWS
+
+![362](assets/362.jpg)
+
+# 363. Bicubic/Biquadratic noise
+
+XlVcWV
+
+![363](assets/363.jpg)
+
+# 364. Filter reference
+
+XtVcWc
+
+![364](assets/364.jpg)
+
+# 365. Efficient Barycentric
+
+lslXDf
+
+![365](assets/365.jpg)

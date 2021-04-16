@@ -3,24 +3,11 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-/*
-	Quick laydown of what's going on:
-		-knighty's folding technique to get dodecahedron distance (see: https://www.shadertoy.com/view/XlX3zB)
-		-Linear extrapolation of sphere to "hyberbolize" the dodecahedron
-		-Fold symmetries are used to displace, shade and color
-		-Cheap analytic curvature for shading (see: https://www.shadertoy.com/view/Xts3WM)
-		-Wave noise for bump mapping (generalized triangle noise: https://www.shadertoy.com/view/XtX3DH)
-		-eiffie's auto-overstep raymarching method: https://www.shadertoy.com/view/ldSSDV
-		-Lighting mostly from iq
-*/
-
-//Type 1 to 4, Let me know which one you think looks best.
 #define TYPE 4
 
 #define ITR 130
 #define FAR 7.
 #define time iTime
-
 
 mat2 mm2(in float a){float c = cos(a), s = sin(a);return mat2(c,-s,s,c);}
 
@@ -91,7 +78,6 @@ vec3 normal(in vec3 p)
 					 e.xyx*map(p + e.xyx) + e.yyy*map(p + e.yyy) );   
 }
 
-//Cheap analytic curvature: https://www.shadertoy.com/view/Xts3WM
 float curv(in vec3 p)
 {
     vec2 e = vec2(-1., 1.)*0.03;

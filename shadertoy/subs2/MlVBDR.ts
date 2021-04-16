@@ -145,7 +145,6 @@ vec4 draw(in vec3 ro, in vec3 rd)
     return rez;
 }
 
-//from iq (https://www.shadertoy.com/view/4slGz4)
 vec3 lineCub( in vec3 ro, in vec3 rd, vec3 pa, vec3 pb )
 {
 	vec3 ba = pb - pa;

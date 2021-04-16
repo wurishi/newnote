@@ -3,14 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-/*
-	I am using iq's hexagon grid function: https://www.shadertoy.com/view/Xd2GR3
-
-	The nice thing is that the main generation loop seems to get optimized
-	out, so the limit on the order of these patterns seems very high, I tried with
-	v=9907 an no problems at all!
-*/
-
 const float v = 151.0;  //v should be a prime of the form 4n-1
 const float r = 32.0;
 
@@ -33,7 +25,6 @@ const float r = 32.0;
 
 #define time iTime
 
-//From iq: https://www.shadertoy.com/view/Xd2GR3
 vec4 hexagon(in vec2 p) 
 {
 	vec2 q = vec2( p.x*2.0*0.5773503, p.y + p.x*0.5773503 );

@@ -3,13 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const common = `
-// Day at the Lake by nimitz, 2020 (twitter: @stormoid)
-// https://www.shadertoy.com/view/wl3czN
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
-// Contact the author for other licensing options
-
-// Camera and cyclic noises (for clouds, water and terrain)
-
 #define FAR 30.
 
 const float fov = 1.3;
@@ -201,69 +194,6 @@ float mapSimp(vec3 p)
 `;
 
 let fragment = `
-// Day at the Lake by nimitz, 2020 (twitter: @stormoid)
-// https://www.shadertoy.com/view/wl3czN
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
-// Contact the author for other licensing options
-
-/*
-    Originally a shader that was meant to show off a new rain algorithm, which will now get it's
-    own shader at some point in the future.
-    
-    Was also supposed to be a full 24h day, but the addition of the moon and stars would have made
-    the compilation times a bit too high for my taste (based on current average hardware capacities).
-    
-
-  Technical details:
-
-    Cyclic noise:
-        An evolution/generalization of things like what I call "triangle noise" and that I've
-        used in multiple shaders before and more recently combinations of periodic circular 
-        functions (sine, cosine, etc).
-        The basic idea goes like this:
-            -Deform the coordinate system uisng a continuous (C0 is enough) periodic/cyclic function
-            -Generate an octave of noise using combinations of cyclic funtions
-            -Shape the generated octave with modulation functions (abs, pow, smoothstep, etc)
-            -Scale the deformation/offset/amplitude parameters for the next octave
-            -Scale and rotate (and offset if needed) the coordinate system before adding the next octave
-        
-        This shader demonstrates the versatility of the algorithm and some of the types of natural shapes
-        it can generate. Of note is how easily analityc derivatives can be computed and how easily the
-        deformation step can be modified to create more complex natural patterns (like erosion, advection,
-        circulation, etc)
-
-
-    Clouds:
-        Shaped with cyclic noise and using analytic derivative of said noise for both internal 
-        reshaping and for shading. 
-        Colored by sampling the atmosphere colors (at increased depths to mimic scattering of
-        light rays that are further away from the observer).
-        Drawn by excluding part of the volume from the render (on a smooth field like cyclic noisE)
-        to improve convergence speed. 
-        
-    Terrain:
-        Shaped with cyclic noise and a pre-deformation step for increased large-scale divesity. Evaluated
-        at lowed detail level for water reflections.
-        Improved my method for multi-scale curvature mapping for terrain illumination by performing
-        single-axis (variable axis based on scale) laplacian-like (divergence of gradient) numerical
-        evaluations. The idea is that small scale curvature visuals can be computed along the normal
-        of the terrain and as the scale increase the axis is moved towards the up/down axis to
-        better evaluate the large-scale depth of the terrain. This allows for both curvature, ao and
-        global illumination like results in a single function call of 9 terrain fetches, as opposed to
-        17 fetches (using tetrahedral curvature evaluations as per: https://www.shadertoy.com/view/Xts3WM)
-        
-    
-    Water:
-        Computing dynamically-spaced 3-tap averaged numerical derivative of a cyclic noise
-        function to disturb the water surface normal. With ggx distributed screenspace reflections
-        sampled on a blurred buffer to improve smoothness and reduce sample count.
-        
-        I tested using analitic derivative to improve performance but even when deriving from a
-        simplified cyclic function, the sensitivity of the analytic method did not result in
-        usable patterns. Perhaps some more investigation could lead to usable results.
-
-*/
-
 float marchSimp(in vec3 ro, in vec3 rd)
 {
 	float precis = 0.01;
@@ -424,13 +354,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 `;
 
 let buffA = `
-// Day at the Lake by nimitz, 2020 (twitter: @stormoid)
-// https://www.shadertoy.com/view/wl3czN
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
-// Contact the author for other licensing options
-
-// Main pass (sky and terrain)
-
 #define ITR 120
 #define time iTime
 
@@ -718,13 +641,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 `;
 
 let buffB = `
-// Day at the Lake by nimitz, 2020 (twitter: @stormoid)
-// https://www.shadertoy.com/view/wl3czN
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
-// Contact the author for other licensing options
-
-// Naive Pre-Blur for water reflections
-
 const int vTaps = 3;
 const int hTaps = 1;
 

@@ -34,7 +34,6 @@ float hash(uvec2 p)
     return float(h32) * (1.0/float(0xffffffffU));
 }
 #else
-//From iq: https://www.shadertoy.com/view/llGSzw
 float hash( uvec2 x )
 {
     uvec2 q = 1103515245U * ( (x>>1U) ^ (x.yx   ) );
@@ -52,9 +51,6 @@ void mainImage( out vec4 fragColor, vec2 fragCoord )
     if(fragCoord.x > SIZE || fragCoord.y > SIZE) 
         discard;
         
-    // Horizontal + Vertical Discrete Fourier Transform of the input 
-	// adapted from FabriceNeyret2's https://www.shadertoy.com/view/XtScWt
-	// In turn adapted from  Flyguy's https://www.shadertoy.com/view/MscGWS
     for(float i = 0.; i < SIZE; i++)  
     {
         vec2 xn = hash(uvec2(i + 0.5, fragCoord.y))*vec2(1,0);
@@ -139,11 +135,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 `;
 
 let buffC = `
-//Colors of noise by nimitz (2018) (twitter: @stormoid)
-
-// Horizontal + Vertical Inverse Discrete Fourier Transform of the input 
-// adapted from FabriceNeyret2's https://www.shadertoy.com/view/XtScWt
-
 vec2 cmul (vec2 a,float b) { return mat2(a,-a.y,a.x)*vec2(cos(b), sin(b)); }
 //#define Wrap(a) (fract((a + SIZE*0.5)/SIZE)*SIZE)
 #define Wrap(uv)   mod(uv+SIZE/2.,SIZE)                    // wrap [-1/2,1/2] to [0,1]
@@ -211,34 +202,6 @@ void mainImage( out vec4 fragColor, vec2 fragCoord )
 `;
 
 let fragment = `
-//Colors of noise by nimitz (2018) (twitter: @stormoid)
-
-/*
-	Input: Hash function (based on xxHash32)
-	Left side: Fourier space with phase in the blue component
-	Right side: Resulting noise
-
-	Drag the mouse on the left side to specify an low pass filter and on the right side to specify
-	a high pass filter. You can test with a ring filter or animated noise by phase rotation
-	with the defines in the "Common" tab.
-
-	High pass filtered blue noise is better suited to dithering applicationg than white noise.
-	On the other hand, low pass filtered noise is better suited for fractional noise generation or
-	applications where smooth noise is required.
-
-	Many more functions can be applied to the fourier space (Buf B) to create anisotropic noise or
-	even fbm-like noise using multiple primitives to shape the frequency domain. An define for an 
-	FBM example is in the "common" tab.
-
-	I am also getting the noise maximum and minimum values in Buffer D to renormalize the output
-	to 0..1 range.
-
-
-	Thanks to flyguy and FabriceNeyret2 for their implementation of the fourier transform which I
-	adaptated in the making of this shader.
-	See: https://www.shadertoy.com/view/MscGWS and https://www.shadertoy.com/view/XtScWt
-*/
-
 float renormalize(float c)
 {
     vec2 nx = texelFetch(iChannel2, ivec2(0, 0), 0).rg;

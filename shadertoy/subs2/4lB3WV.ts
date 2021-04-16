@@ -208,7 +208,6 @@ vec4 vmarch(in vec3 ro, in vec3 rd, in float sceneDist)
 
 vec3 lgt = normalize( vec3(.5, 0.8, 0.2) );
 
-//see: https://www.shadertoy.com/view/Xts3WM
 vec3 norcurv(in vec3 p, out float curv)
 {
     vec2 e = vec2(-1., 1.)*0.009;   

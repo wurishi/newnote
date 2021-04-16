@@ -56,7 +56,6 @@ float map( vec3 p )
 
 vec3 lgt;
 
-//modified from iq's "Hexagons - distance" (https://www.shadertoy.com/view/Xd2GR3)
 //return values: x = trigger, y = voxel shading, z = distance to voxel edge, w = lighting
 vec4 voxelize( vec2 p, float bias ) 
 {

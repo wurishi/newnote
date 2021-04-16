@@ -27,7 +27,6 @@ float heightmap(in vec2 p)
 	return rz*5.;
 }
 
-//from jessifin (https://www.shadertoy.com/view/lslXDf)
 vec3 bary(vec2 a, vec2 b, vec2 c, vec2 p) 
 {
     vec2 v0 = b - a, v1 = c - a, v2 = p - a;

@@ -63,7 +63,6 @@ void basis(in vec3 n, out vec3 f, out vec3 r)
     #endif
 }
 
-//from iq (https://www.shadertoy.com/view/4slGz4)
 vec3 dLine(in vec3 ro, in vec3 rd, in vec3 a, in vec3 b)
 {
 	vec3 ba = b - a;

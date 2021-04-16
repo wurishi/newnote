@@ -3,10 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-/*
-	Using my "Graphing" shader for display: https://www.shadertoy.com/view/MdjGRy
-*/
-
 #define SHOW_EXP
 #define SHOW_POLY
 

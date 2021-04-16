@@ -240,7 +240,6 @@ vec2 hash( vec2 p )
 	return -1.0 + 2.0*fract(sin(p)*43758.5453123);
 }
 
-//Based on the 2D simplex noise from iq: https://www.shadertoy.com/view/Msf3WH
 vec3 simplex2D( in vec2 p )
 {
     const float K1 = 0.366025404; // (sqrt(3)-1)/2;
@@ -385,7 +384,6 @@ vec2 hash( vec2 p )
 	return -1.0 + 2.0*fract(sin(p)*43758.5453123);
 }
 
-//Based on the 2D simplex noise from iq: https://www.shadertoy.com/view/Msf3WH
 vec3 simplex2D( in vec2 p )
 {
     const float K1 = 0.366025404; // (sqrt(3)-1)/2;

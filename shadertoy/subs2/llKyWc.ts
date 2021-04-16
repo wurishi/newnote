@@ -3,15 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const common = `
-//2D Signal Inspector
-//by nimitz 2018 (twitter: @stormoid)
-
-//Type 1 = Orbit noise (https://www.shadertoy.com/view/4t3yDn)
-//Type 2 = Bicubic noise (https://www.shadertoy.com/view/XlVcWV)
-//Type 3 = Value noise
-//Type 4 = Gradient noise (from iq : https://www.shadertoy.com/view/XdXGW8)
-//Type 5 = Simplex noise (modified from iq's to use normalized gradients as per the original paper)
-//Type 6 = FBM (base noise can be defined in buffer A)
 #define NOISE_TYPE 1
 
 #define SCROLL_COORDS
@@ -22,7 +13,6 @@ const common = `
 const float globalScale = 1.;
 
 
-//See: https://www.shadertoy.com/view/Xt3cDn
 uint baseHash(uvec2 p)
 {
     uint h32 = p.y + 374761393U + p.x*3266489917U;
@@ -54,7 +44,6 @@ vec4 hash42(vec2 x)
 `;
 
 let buffA = `
-//see: https://www.shadertoy.com/view/XtVcWc
 float nuttall(float x, float w)
 {
     const float pi = 3.14159265358979;
@@ -142,7 +131,6 @@ vec2 hashz( vec2 p ) // replace this by something better
     return normalize(-1.0 + 2.0*fract(sin(p)*43758.5453123) + 1e-7);
 }
 
-//from iq: https://www.shadertoy.com/view/Msf3WH
 float simplex( in vec2 p )
 {
     const float K1 = 0.366025404; // (sqrt(3)-1)/2;
@@ -165,7 +153,6 @@ float simplex( in vec2 p )
 
 vec2 hashg(vec2 x) { return hash22(x)*2.0-1.0;}
 
-//From iq: https://www.shadertoy.com/view/XdXGW8
 float gradientNoise( in vec2 p )
 {
     vec2 i = floor( p );
@@ -246,9 +233,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 `;
 
 let buffB = `
-//Horizontal + Vertical Discrete Fourier Transform of the input 
-//adapted from FabriceNeyret2's https://www.shadertoy.com/view/XtScWt
-
 vec2 cmul (vec2 a,float b) { return mat2(a,-a.y,a.x) * vec2(cos(b),sin(b)); } 
 
 void mainImage(out vec4 fragColor, vec2 fragCoord )

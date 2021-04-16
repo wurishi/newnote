@@ -3,12 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const buffA = `
-//Sinuous by nimitz (twitter: @stormoid)
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
-// Contact the author for other licensing options
-
-//Velocity handling
-
 const float initalSpeed = 10.;
 #define time iTime
 
@@ -19,7 +13,6 @@ vec2 hash(vec2 p)
     return fract(vec2(p3.x * p3.y, p3.z*p3.x))*2.0 - 1.0;
 }
 
-//From iq (https://www.shadertoy.com/view/XdXGW8)
 float noise( in vec2 p )
 {
     vec2 i = floor( p );
@@ -116,19 +109,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 `;
 
 const buffB = `
-//Sinuous by nimitz (twitter: @stormoid)
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
-// Contact the author for other licensing options
-
-//Rendering
-
-/*
-	This buffer renders each particles
-	multiple times per frame to allow particles
-	to move more than one pixel per frame while still
-	leaving a solid trail.
-*/
-
 #define time iTime
 
 //Anywhere under 800 "should" work fine (might slow down though)

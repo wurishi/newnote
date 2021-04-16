@@ -3,8 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// => https://www.shadertoy.com/view/wtfyWj
-
 float sdEllipse( vec2 p, vec2 e )
 {
     vec2 pAbs = abs(p);

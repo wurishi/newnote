@@ -3,11 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-/*
-	Follow up to my koch snowflake shader: https://www.shadertoy.com/view/XsfXDH
-	Using a much more elegant way of computing it.
-*/
-
 #define time iTime*0.35
 
 float koch(vec2 p)

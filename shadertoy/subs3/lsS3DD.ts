@@ -3,8 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-//using kali's tree function from "lonely tree": https://www.shadertoy.com/view/Xds3R7
-
 #define tau 6.28318530718
 
 const float maxiter=254.;

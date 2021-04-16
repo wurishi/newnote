@@ -56,8 +56,6 @@ float map(vec3 p)
 	return mix(d,length(p)-1.5,0.5);
 }
 
-
-//Based on TekF's "Anisotropic Highlights" (https://www.shadertoy.com/view/XdB3DG)
 vec3 shade( vec3 pos, vec3 rd, vec3 normal, vec3 ligt )
 {
 	vec3 lcol = vec3(.48,.45,.9);

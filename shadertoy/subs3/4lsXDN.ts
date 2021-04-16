@@ -3,14 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// In retrospect, it's the same as Antonalog's https://www.shadertoy.com/view/MtXXW7
-
-// ?????????????? : https://www.shadertoy.com/view/tt3yz7
-
-// List of some other 2D distances: https://www.shadertoy.com/playlist/MXdSRf
-//
-// and www.iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm
-
 float sdEllipse( vec2 p, vec2 ab )
 {
     // symmetry

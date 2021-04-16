@@ -665,8 +665,6 @@ void close_path() {
     line_to(_stack.start_pt);
 }
 
-// from https://www.shadertoy.com/view/ltXSDB
-
 // Test if point p crosses line (a, b), returns sign of result
 float test_cross(vec2 a, vec2 b, vec2 p) {
     return sign((b.y-a.y) * (p.x-a.x) - (b.x-a.x) * (p.y-a.y));

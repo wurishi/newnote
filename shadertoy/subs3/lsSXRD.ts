@@ -3,11 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-/*
-	This is using the log-bisection method for finding the roots
-	see: https://www.shadertoy.com/view/4sSXzD
-*/
-
 //distance to the xy plane
 #define HEIGHT 9.
 

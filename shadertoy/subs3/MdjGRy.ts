@@ -57,9 +57,6 @@ float de(const in vec2 p, const in float num)
     return float(smoothstep( 0., .13, de ));
 }
 
-
-//___________________Number Printing by @P_Malin____________________
-//             https://www.shadertoy.com/view/4sf3RN
 const float kCharBlank = 12.0;
 const float kCharMinus = 11.0;
 const float kCharDecimalPoint = 10.0;

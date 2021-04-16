@@ -86,7 +86,6 @@ float march(in vec3 ro, in vec3 rd)
 	return d;
 }
 
-//Raytraced box from iq: https://www.shadertoy.com/view/ld23DV
 vec2 iBox( in vec3 ro, in vec3 rd, in vec4 b) 
 {
     vec3 m = 1.0/rd;

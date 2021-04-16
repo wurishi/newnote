@@ -53,7 +53,6 @@ float crosshair(in vec2 p , in float tk, in float rt)
     return rz;
 }
 
-//inspired by otaviogood "runes" (https://www.shadertoy.com/view/MsXSRn)
 float text2(in vec2 p)
 {
     p = (p+vec2(1.75,-.8))*7.;

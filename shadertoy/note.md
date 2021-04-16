@@ -2288,3 +2288,33 @@ fdfXDH
 7sXSz4
 
 ![375](assets/375.jpg)
+
+# 376. Ellipse - Distance III
+
+MtXXW7
+
+![376](assets/376.jpg)
+
+# 377. Log-Bisection Tracing
+
+4sSXzD
+
+![377](assets/377.jpg)
+
+# 378. runes
+
+MsXSRn
+
+![378](assets/378.jpg)
+
+# 379. Anisotropic Highlights
+
+XdB3DG
+
+![379](assets/379.jpg)
+
+# 380. Koch snowflake IFS
+
+XsfXDH
+
+![380](assets/380.jpg)

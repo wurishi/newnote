@@ -415,6 +415,8 @@ export const DEFAULT_NOISE_BW = { type: 0, path: './textures/noise2.png' };
 
 export const ROCK_TEXTURE = { type: 0, path: './textures/rock.jpg' };
 
+export const ROCK2_TEXTURE = { type: 0, path: './textures/rock2.jpg' };
+
 export const WOOD_TEXTURE = { type: 0, path: './textures/wood.jpg' };
 
 export const TEXTURE_NEAREST = {

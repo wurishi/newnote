@@ -150,24 +150,31 @@ function initTHREE() {
   document.body.appendChild(threeRenderer.domElement);
 }
 
-function addThreeBox(fragment: string): void {
+function addThreeBox(fragment: string, webglV: string): void {
   threeMesh && threeScene.remove(threeMesh);
 
-  const shaderMaterial = new THREE.ShaderMaterial({
-    fragmentShader: fragment,
-    uniforms: {
-      iResolution: { value: [400, 300, 1] },
-      iTime: { value: 0 },
-      iMouse: { value: [mouseX, mouseY, clickX, clickY] },
-      iFrameRate: { value: 30 },
-      iFrame: { value: 0 },
-    },
-  });
+  if (webglV === WEBGL_2) {
+    console.log('webgl2 three 当前未完成');
+  } else {
+    const shaderMaterial = new THREE.ShaderMaterial({
+      fragmentShader: fragment,
+      uniforms: {
+        iResolution: { value: [400, 300, 1] },
+        iTime: { value: 0 },
+        iMouse: { value: [mouseX, mouseY, clickX, clickY] },
+        iFrameRate: { value: 30 },
+        iFrame: { value: 0 },
+      },
+    });
 
-  threeMesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), shaderMaterial);
-  threeScene.add(threeMesh);
+    threeMesh = new THREE.Mesh(
+      new THREE.BoxGeometry(10, 10, 10),
+      shaderMaterial
+    );
+    threeScene.add(threeMesh);
 
-  threeSM = shaderMaterial;
+    threeSM = shaderMaterial;
+  }
 }
 
 let mouseX = 0;
@@ -310,7 +317,7 @@ async function activeSub(name: string) {
 
   let fn = sub.initial ? sub.initial(gl, program) : null;
 
-  addThreeBox(f);
+  addThreeBox(f, webglV);
 
   requestAnimationFrame(render);
 

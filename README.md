@@ -126,7 +126,7 @@ Rust
 
 # shadertoy
 
-参考网站: [shadertoy](https://www.shadertoy.com/)
+参考网站: [shadertoy](https://www.shadertoy.com/) (*进行中*)
 
 # tensorflowjs
 
@@ -174,7 +174,7 @@ U3D JobSystem
 
 # vertexshaderart
 
-[参考资料](https://www.vertexshaderart.com/)
+[参考资料](https://www.vertexshaderart.com/) (*需要根据github重新写一套框架, 目前代码仅能实现极少数的效果*)
 
 # vivus
 
@@ -207,3 +207,5 @@ SVG 路径动画
 # zrender
 
 参考资料: [ZRender 官网 Examples](https://ecomfe.github.io/zrender-doc/public/examples.html) **(完成)**
+
+https://turtletoy.net/turtle/90a99d3469#AMOUNT=0.2

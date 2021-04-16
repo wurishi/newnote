@@ -2095,4 +2095,52 @@ lllGRr
 
 ![342](assets/342.jpg)
 
-https://www.shadertoy.com/user/nimitz/sort=popular&from=56&num=8
+# 343. Affine arithmetic 3d
+
+lsfXzj
+
+![343](assets/343.jpg)
+
+# 344. Moon voxels
+
+tdlSR8
+
+![344](assets/344.jpg)
+
+# 345. Cheap orthonormal basis
+
+4sSSW3
+
+![345](assets/345.jpg)
+
+# 346. 2D Voxels
+
+4slXW7
+
+![346](assets/346.jpg)
+
+# 347. Famous solid
+
+ltlGWM
+
+![347](assets/347.jpg)
+
+# 348. Orbit Noise
+
+4t3yDn
+
+![348](assets/348.jpg)
+
+# 349. Procedural Ordering
+
+4dsXzj
+
+![349](assets/349.jpg)
+
+# 350. Parametrics
+
+XdSSRw
+
+![350](assets/350.jpg)
+
+https://www.shadertoy.com/user/nimitz/sort=popular&from=64&num=8

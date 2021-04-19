@@ -229,6 +229,6 @@ export default class implements iSub {
     return () => {};
   }
   channels() {
-    return [{ type: 0, path: './textures/XsjXRm.png' }];
+    return [webglUtils.DEFAULT_NOISE];
   }
 }

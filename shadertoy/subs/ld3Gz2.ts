@@ -807,9 +807,9 @@ export default class implements iSub {
   channels() {
     return [
       { type: 0, path: './textures/noise.png' },
-      { type: 0, path: './textures/ld3Gz2_1.png' },
-      { type: 0, path: './textures/ld3Gz2_2.jpg' },
-      { type: 0, path: './textures/ld3Gz2_3.png' },
+      webglUtils.TEXTURE2,
+      webglUtils.TEXTURE4,
+      webglUtils.DEFAULT_NOISE,
     ];
   }
 }

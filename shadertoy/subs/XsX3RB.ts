@@ -373,21 +373,8 @@ export default class implements iSub {
     return [
       // { type: 1, f, fi: 0 },
       webglUtils.DEFAULT_NOISE,
-      // {
-      //   type: 0,
-      //   path: './textures/XsX3RB_1.jpg',
-      //   ...webglUtils.TEXTURE_MIPMAPS,
-      // },
-      {
-        type: 0,
-        path: './textures/XsX3RB_1.jpg',
-        ...webglUtils.TEXTURE_MIPMAPS,
-      },
-      {
-        type: 0,
-        path: './textures/XsX3RB_2.jpg',
-        ...webglUtils.TEXTURE_MIPMAPS,
-      },
+      webglUtils.TEXTURE7,
+      webglUtils.TEXTURE4,
     ];
   }
 }

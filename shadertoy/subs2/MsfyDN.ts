@@ -72,6 +72,6 @@ export default class implements iSub {
     return () => {};
   }
   channels() {
-    return [{ type: 0, path: './textures/sdfGzH_1.png' }];
+    return [webglUtils.FONT_TEXTURE];
   }
 }

@@ -190,6 +190,6 @@ export default class implements iSub {
     };
   }
   channels() {
-    return [{ type: 0, path: './textures/MdsSRs.png' }];
+    return [webglUtils.DEFAULT_NOISE_BW];
   }
 }

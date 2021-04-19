@@ -313,8 +313,7 @@ export default class implements iSub {
     return [
       webglUtils.DEFAULT_NOISE,
       {
-        type: 0,
-        path: './textures/WlByW3_1.png',
+        ...webglUtils.DEFAULT_NOISE3,
         ...webglUtils.TEXTURE_MIPMAPS,
       },
       { ...webglUtils.DEFAULT_NOISE, ...webglUtils.TEXTURE_MIPMAPS },

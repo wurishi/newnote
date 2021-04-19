@@ -989,8 +989,6 @@ export default class implements iSub {
     };
   }
   channels() {
-    return [
-      { type: 0, path: './textures/lsXGzH.jpg', ...webglUtils.TEXTURE_MIPMAPS },
-    ];
+    return [webglUtils.TEXTURE11];
   }
 }

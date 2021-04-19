@@ -220,16 +220,16 @@ export default class implements iSub {
       u_channel.uniform1i(api.channel);
     };
   }
-  channels() {
-    return [
-      {
-        path: './textures/fdX3zr.png',
-        type: 0,
-      },
-      {
-        path: './textures/fdX3zr_2.png',
-        type: 0,
-      },
-    ];
-  }
+  // channels() {
+  //   return [
+  //     {
+  //       path: './textures/fdX3zr.png',
+  //       type: 0,
+  //     },
+  //     {
+  //       path: './textures/fdX3zr_2.png',
+  //       type: 0,
+  //     },
+  //   ];
+  // }
 }

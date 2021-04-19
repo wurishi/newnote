@@ -52,7 +52,7 @@ export default class implements iSub {
   }
   channels() {
     return [
-      { type: 0, path: './textures/fdsGz8_1.png' },
+      webglUtils.DEFAULT_NOISE_BW,
       { type: 0, path: './textures/fdsGz8_2.png' },
     ];
   }

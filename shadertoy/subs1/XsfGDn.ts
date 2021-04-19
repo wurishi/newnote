@@ -67,8 +67,7 @@ export default class implements iSub {
   channels() {
     return [
       {
-        type: 0,
-        path: './textures/sdfGzH_2.png',
+        ...webglUtils.DEFAULT_NOISE3,
         [WebGLRenderingContext.TEXTURE_MIN_FILTER]:
           WebGLRenderingContext.LINEAR,
         [WebGLRenderingContext.TEXTURE_MAG_FILTER]:

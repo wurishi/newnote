@@ -413,11 +413,13 @@ export const DEFAULT_NOISE = { type: 0, path: './textures/noise.png' };
 
 export const DEFAULT_NOISE_BW = { type: 0, path: './textures/noise2.png' };
 
+export const DEFAULT_NOISE3 = { type: 0, path: './textures/noise3.png' };
+
 export const ROCK_TEXTURE = { type: 0, path: './textures/rock.jpg' };
 
 export const ROCK2_TEXTURE = { type: 0, path: './textures/rock2.jpg' };
 
-export const WOOD_TEXTURE = { type: 0, path: './textures/wood.jpg' };
+export const FONT_TEXTURE = { type: 0, path: './textures/font.png' };
 
 export const TEXTURE_NEAREST = {
   [WebGLRenderingContext.TEXTURE_MIN_FILTER]: WebGLRenderingContext.NEAREST,
@@ -496,6 +498,26 @@ export const TEXTURE8 = {
   path: './textures/texture8.jpg',
   ...TEXTURE_MIPMAPS,
 };
+
+export const TEXTURE9 = {
+  type: 0,
+  path: './textures/texture9.jpg',
+  ...TEXTURE_MIPMAPS,
+};
+
+export const TEXTURE10 = {
+  type: 0,
+  path: './textures/texture10.jpg',
+  ...TEXTURE_MIPMAPS,
+};
+
+export const TEXTURE11 = {
+  type: 0,
+  path: './textures/texture11.jpg',
+  ...TEXTURE_MIPMAPS,
+};
+
+export const WOOD_TEXTURE = TEXTURE8;
 
 export function createVideo(src = './media/video.ogv') {
   const video = document.createElement('video');

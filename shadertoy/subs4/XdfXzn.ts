@@ -9,31 +9,6 @@ import {
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// UPDATE: this method is now superseded by a new approach named Structured Sampling,
-// see here: https://www.shadertoy.com/view/Mt3GWs
-//
-// Example to illustrate volume sampling research undertaken right here on
-// shadertoy and published at siggraph 2015:
-//
-// http://advances.realtimerendering.com/s2015/index.html
-//
-// In particular this shader demonstrates Forward Pinning and Adaptive Sampling.
-// The general advection requires state and is not implemented here, see the Unity
-// implementation for this:
-//
-// https://github.com/huwb/volsample
-//
-// For a diagram shader illustrating the adaptive sampling:
-//
-// https://www.shadertoy.com/view/llXSD7
-// 
-//
-// Credits - this scene is mostly mash up of these two amazing shaders:
-//
-// Clouds by iq: https://www.shadertoy.com/view/XslGRr
-// Cloud Ten by nimitz: https://www.shadertoy.com/view/XtS3DD
-// 
-
 #define SAMPLE_COUNT 32
 #define DIST_MAX 128.
 #define MOUSEY (3.*iMouse.y/iResolution.y)
@@ -283,6 +258,12 @@ export default class implements iSub {
     return () => {};
   }
   channels() {
-    return [{ ...webglUtils.DEFAULT_NOISE, ...webglUtils.TEXTURE_MIPMAPS }];
+    return [
+      {
+        ...webglUtils.DEFAULT_NOISE,
+        ...webglUtils.TEXTURE_MIPMAPS,
+        ...webglUtils.NO_FLIP_Y,
+      },
+    ];
   }
 }

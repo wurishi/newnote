@@ -2619,6 +2619,66 @@ XlGcRh
 
 ![430](assets/430.jpg)
 
+# 431. Modified FNV-1A hash
+
+WtdfRX
+
+![431](assets/431.jpg)
+
+# 432. "Best" Integer Hash
+
+WttXWX
+
+![432](assets/432.jpg)
+
+# 433. Simplicity 3d
+
+ls2SDd
+
+![433](assets/433.jpg)
+
+# 434. Adaptive Sampling Diagram
+
+llXSD7
+
+![434](assets/434.png)
+
+# 435. Structured Vol Sampling
+
+Mt3GWs
+
+![435](assets/435.jpg)
+
+# 436. Simplicity
+
+lslGWr
+
+![436](assets/436.jpg)
+
+# 437. Dusty nebula 4
+
+MsVXWW
+
+![437](assets/437.jpg)
+
+# 438. Dusty nebula 3
+
+lsVSRW
+
+![438](assets/438.jpg)
+
+# 439. Protoplanetary disk
+
+MdtGRl
+
+![439](assets/439.jpg)
+
+# 440. Dusty nebula 1
+
+4lSXD1
+
+![440](assets/440.jpg)
+
 
 
 https://www.shadertoy.com/results?query=&sort=love&from=36&num=12

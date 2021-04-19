@@ -3,11 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-//CBS
-//Parallax scrolling fractal galaxy.
-//Inspired by JoshP's Simplicity shader: https://www.shadertoy.com/view/lslGWr
-
-// http://www.fractalforums.com/new-theories-and-research/very-simple-formula-for-fractal-patterns/
 float field(in vec3 p,float s) {
 	float strength = 7. + .03 * log(1.e-6 + fract(sin(iTime) * 4373.11));
 	float accum = s/4.;

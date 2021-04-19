@@ -3,6 +3,17 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
+// and "Protoplanetary disk" (https://www.shadertoy.com/view/MdtGRl) 
+// otaviogood's "Alien Beacon" (https://www.shadertoy.com/view/ld2SzK)
+// and Shane's "Cheap Cloud Flythrough" (https://www.shadertoy.com/view/Xsc3R4) shaders
+// Some ideas came from other shaders from this wonderful site
+// Press 1-2-3 to zoom in and zoom out.
+// License: Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
+//-------------------------------------------------------------------------------------
+
+#define ROTATION
+//#define MOUSE_CAMERA_CONTROL
+
 #define DITHERING
 #define BACKGROUND
 
@@ -23,35 +34,23 @@ float noise( in vec3 x )
 	return 1. - 0.82*mix( rg.x, rg.y, f.z );
 }
 
-float fbm(vec3 p)
+float rand(vec2 co)
 {
-   return noise(p*.06125)*.5 + noise(p*.125)*.25 + noise(p*.25)*.125 + noise(p*.4)*.2;
+	return fract(sin(dot(co*0.123,vec2(12.9898,78.233))) * 43758.5453);
 }
 
-float length2( vec2 p )
-{
-	return sqrt( p.x*p.x + p.y*p.y );
-}
-
-float length8( vec2 p )
-{
-	p = p*p; p = p*p; p = p*p;
-	return pow( p.x + p.y, 1.0/8.0 );
-}
-
-
-float Disk( vec3 p, vec3 t )
-{
-    vec2 q = vec2(length2(p.xy)-t.x,p.z*0.5);
-    return max(length8(q)-t.y, abs(p.z) - t.z);
-}
-
-const float nudge = 0.9;	// size of perpendicular vector
+//=====================================
+// otaviogood's noise from https://www.shadertoy.com/view/ld2SzK
+//--------------------------------------------------------------
+// This spiral noise works by successively adding and rotating sin waves while increasing frequency.
+// It should work the same on all computers since it's not based on a hash function like some other noises.
+// It can be much faster than other noise functions if you're ok with some repetition.
+const float nudge = 0.739513;	// size of perpendicular vector
 float normalizer = 1.0 / sqrt(1.0 + nudge*nudge);	// pythagorean theorem on that perpendicular to maintain scale
 float SpiralNoiseC(vec3 p)
 {
     float n = 0.0;	// noise amount
-    float iter = 2.0;
+    float iter = 1.0;
     for (int i = 0; i < 8; i++)
     {
         // add sin and cos scaled inverse with the frequency
@@ -68,22 +67,39 @@ float SpiralNoiseC(vec3 p)
     return n;
 }
 
+float SpiralNoise3D(vec3 p)
+{
+    float n = 0.0;
+    float iter = 1.0;
+    for (int i = 0; i < 5; i++)
+    {
+        n += (sin(p.y*iter) + cos(p.x*iter)) / iter;
+        p.xz += vec2(p.z, -p.x) * nudge;
+        p.xz *= normalizer;
+        iter *= 1.33733;
+    }
+    return n;
+}
+
 float NebulaNoise(vec3 p)
 {
-    float final = Disk(p.xzy,vec3(2.0,1.8,1.25));
-    final += fbm(p*90.);
-    final += SpiralNoiseC(p.zxy*0.5123+100.0)*3.0;
+   float final = p.y + 4.5;
+    final -= SpiralNoiseC(p.xyz);   // mid-range noise
+    final += SpiralNoiseC(p.zxy*0.5123+100.0)*4.0;   // large scale features
+    final -= SpiralNoise3D(p);   // more large scale features, but 3d
 
     return final;
 }
 
 float map(vec3 p) 
 {
+	#ifdef ROTATION
 	R(p.xz, iMouse.x*0.008*pi+iTime*0.1);
-
+	#endif
+    
 	float NebNoise = abs(NebulaNoise(p/0.5)*0.5);
     
-	return NebNoise+0.07;
+	return NebNoise+0.03;
 }
 //--------------------------------------------------------------
 
@@ -136,8 +152,25 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
 	// ro: ray origin
 	// rd: direction of the ray
-	vec3 rd = normalize(vec3((fragCoord.xy-0.5*iResolution.xy)/iResolution.y, 1.));
+	vec3 rd = normalize(vec3((gl_FragCoord.xy-0.5*iResolution.xy)/iResolution.y, 1.));
 	vec3 ro = vec3(0., 0., -6.+key*1.6);
+
+    #ifdef MOUSE_CAMERA_CONTROL
+    R(rd.yz, -iMouse.y*0.01*pi*2.);
+    R(rd.xz, iMouse.x*0.01*pi*2.);
+    R(ro.yz, -iMouse.y*0.01*pi*2.);
+    R(ro.xz, iMouse.x*0.01*pi*2.);
+    #else
+    R(rd.yz, -pi*3.93);
+    R(rd.xz, pi*3.2);
+    R(ro.yz, -pi*3.93);
+   	R(ro.xz, pi*3.2);    
+    #endif 
+    
+    #ifdef DITHERING
+	vec2 dpos = ( fragCoord.xy / iResolution.xy );
+	vec2 seed = dpos + fract(iTime);
+	#endif 
     
 	// ld, td: local, total density 
 	// w: weighting factor
@@ -159,30 +192,28 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 	t = min_dist*step(t,min_dist);
    
 	// raymarch loop
-	for (int i=0; i<64; i++) 
+	for (int i=0; i<56; i++) 
 	{
 	 
 		vec3 pos = ro + t*rd;
   
 		// Loop break conditions.
-	    if(td>0.9 || d<0.1*t || t>10. || sum.a > 0.99 || t>max_dist) break;
-        
+        if(td>0.9 || d<0.1*t || t>10. || sum.a > 0.99 || t>max_dist) break;
+	    
         // evaluate distance function
         float d = map(pos);
 		       
 		// change this string to control density 
-		d = max(d,0.0);
+		d = max(d,0.08);
         
         // point light calculations
         vec3 ldst = vec3(0.0)-pos;
         float lDist = max(length(ldst), 0.001);
 
-        // the color of light 
+        // star in center
         vec3 lightColor=vec3(1.0,0.5,0.25);
-        
-        sum.rgb+=(vec3(0.67,0.75,1.00)/(lDist*lDist*10.)/80.); // star itself
-        sum.rgb+=(lightColor/exp(lDist*lDist*lDist*.08)/30.); // bloom
-        
+        sum.rgb+=(lightColor/(lDist*lDist)/30.); // star itself and bloom around the light
+      
 		if (d<h) 
 		{
 			// compute local density 
@@ -195,12 +226,9 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 			td += w + 1./200.;
 		
 			vec4 col = vec4( computeColor(td,lDist), td );
-            
-            // emission
-            sum += sum.a * vec4(sum.rgb, 0.0) * 0.2;	
-            
+		
 			// uniform scale density
-			col.a *= 0.2;
+			col.a *= 0.185;
 			// colour by alpha
 			col.rgb *= col.a;
 			// alpha blend in contribution
@@ -209,17 +237,18 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 		}
       
 		td += 1./70.;
-
+       
+        // enforce minimum stepsize
+        d = max(d, 0.04); 
+      
         #ifdef DITHERING
-        vec2 uv = fragCoord.xy / iResolution.xy;
-        uv.y*=120.;
-        uv.x*=280.;
-        d=abs(d)*(.8+0.08*texture(iChannel2,vec2(uv.y,-uv.x+0.5*sin(4.*iTime+uv.y*4.0))).r);
+        // add in noise to reduce banding and create fuzz
+        d=abs(d)*(.8+0.2*rand(seed*vec2(i)));
         #endif 
 		
         // trying to optimize step size near the camera and near the light source
-        t += max(d * 0.1 * max(min(length(ldst),length(ro)),1.0), 0.01);
-        
+        t += max(d * 0.1 * max(min(length(ldst),length(ro)),1.0), 0.02);
+      
 	}
     
     // simple scattering
@@ -253,19 +282,19 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
 export default class implements iSub {
   key(): string {
-    return 'MdKXzc';
+    return 'MsVXWW';
   }
   name(): string {
-    return 'Supernova remnant';
+    return 'Dusty nebula 4';
   }
   sort() {
-    return 421;
-  }
-  tags?(): string[] {
-    return [];
+    return 437;
   }
   webgl() {
     return WEBGL_2;
+  }
+  tags?(): string[] {
+    return [];
   }
   main(): HTMLCanvasElement {
     return createCanvas();
@@ -281,10 +310,6 @@ export default class implements iSub {
     return () => {};
   }
   channels() {
-    return [
-      webglUtils.DEFAULT_NOISE, //
-      { type: 3 },
-      webglUtils.DEFAULT_NOISE3,
-    ];
+    return [webglUtils.DEFAULT_NOISE_BW];
   }
 }

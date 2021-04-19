@@ -19,11 +19,6 @@ float truncate( float a, float l )
 	return floor(a*l)/l;
 }
 
-// ==========================================================
-
-//Fowler–Noll–Vo hash function
-//https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function#FNV-1a_hash
-//from https://www.shadertoy.com/view/WtdfRX
 uvec4 fnv(uvec4 seed) {
     uvec4 h = (0x6A7F8FAAu^seed)*0x01000193u;
     h = ((h.wxyz>>11u)^h^seed.yzwx)*0x01000193u;
@@ -33,8 +28,6 @@ uvec4 fnv(uvec4 seed) {
 #define I2F (1./float(0xFFFFFFFFu))
 
 
-//note: from comments in https://www.shadertoy.com/view/WttXWX
-//note: see also https://arxiv.org/abs/2001.05304v1
 uint lcg(uint value)
 {
     //static uint value = 1;
@@ -45,7 +38,6 @@ uint lcg(uint value)
     return value;
 }
 
-//note: src https://www.shadertoy.com/view/4dlcR4
 uint hash12_xor_int(uint x, uint y)
 {
 	//note: improved constants by MBR, https://twitter.com/marc_b_reynolds/status/924771187070308352
@@ -117,7 +109,6 @@ uint baseHash(uvec2 p)
     return h32^(h32 >> 16);
 }
 
-//note: from https://www.shadertoy.com/view/WttXWX
 // bias: 0.020888578919738908 = minimal theoretic limit
 uint triple32(uint x)
 {
@@ -174,7 +165,6 @@ vec4 pcg4d_f( vec4 v )
                   			 							floatBitsToUint(v.w)) ));
 }
 
-//note: src https://www.shadertoy.com/view/llGSzw
 uint hashIQ(uint n)
 {
     // integer hash copied from Hugo Elias
@@ -182,8 +172,6 @@ uint hashIQ(uint n)
     return n * (n * n * 15731U + 789221U) + 1376312589U;
 }
 // Integer Hash - III
-// - Inigo Quilez, Integer Hash - III, 2017
-//   https://www.shadertoy.com/view/4tXyWN
 uint iqint3(uvec2 x)
 {
     uvec2 q = 1103515245U * ( (x>>1U) ^ (x.yx   ) );
@@ -250,7 +238,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         {
             hi = hash12_xor_int( uint(seed.x), uint(seed.y) ); //32b hash
             
-            //hi = baseHash( uvec2(seed) ); //from https://www.shadertoy.com/view/Xt3cDn
+            //hi = baseHash( uvec2(seed) );
             dbgcol = vec3(1,0,0);
         }
         else if ( hashindex == 1 )
@@ -265,7 +253,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         {
 
             //hi = iqint3( uvec2(seed) );
-        	hi = triple32( uint(seed.x) + triple32( uint(seed.y) ) ); //note: from https://www.shadertoy.com/view/WttXWX
+        	hi = triple32( uint(seed.x) + triple32( uint(seed.y) ) );
             dbgcol = vec3(0,0,1);
         }
         else if ( hashindex == 3 )

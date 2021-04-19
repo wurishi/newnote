@@ -380,7 +380,12 @@ export function getTexture(
         gl.generateMipmap(gl.TEXTURE_2D);
       }
 
-      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
+      gl.pixelStorei(
+        gl.UNPACK_FLIP_Y_WEBGL,
+        texParams.hasOwnProperty(gl.UNPACK_FLIP_Y_WEBGL)
+          ? texParams[gl.UNPACK_FLIP_Y_WEBGL]
+          : 1
+      );
 
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, tmp);
     },
@@ -517,6 +522,10 @@ export const TEXTURE12 = {
   type: 0,
   path: './textures/texture12.jpg',
   ...TEXTURE_MIPMAPS,
+};
+
+export const NO_FLIP_Y = {
+  [WebGLRenderingContext.UNPACK_FLIP_Y_WEBGL]: 0,
 };
 
 export const WOOD_TEXTURE = TEXTURE8;

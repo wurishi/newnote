@@ -289,8 +289,6 @@ float ign(vec2 v)
 
 
 // Integer Hash - I
-// - Inigo Quilez, Integer Hash - I, 2017
-//   https://www.shadertoy.com/view/llGSzw
 uint iqint1(uint n)
 {
     // integer hash copied from Hugo Elias
@@ -301,8 +299,6 @@ uint iqint1(uint n)
 }
 
 // Integer Hash - II
-// - Inigo Quilez, Integer Hash - II, 2017
-//   https://www.shadertoy.com/view/XlXcW4
 uvec3 iqint2(uvec3 x)
 {
     const uint k = 1103515245u;
@@ -315,8 +311,6 @@ uvec3 iqint2(uvec3 x)
 }
 
 // Integer Hash - III
-// - Inigo Quilez, Integer Hash - III, 2017
-//   https://www.shadertoy.com/view/4tXyWN
 uint iqint3(uvec2 x)
 {
     uvec2 q = 1103515245U * ( (x>>1U) ^ (x.yx   ) );
@@ -934,10 +928,6 @@ uint xorshift32(uint v)
     return v;
 }
 
-
-
-// xxhash (https://github.com/Cyan4973/xxHash)
-//   From https://www.shadertoy.com/view/Xt3cDn
 uint xxhash32(uint p)
 {
 	const uint PRIME32_2 = 2246822519U, PRIME32_3 = 3266489917U;
@@ -1079,8 +1069,6 @@ uvec3 hash(vec2 s)
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
-    // Thanks to "hash: visualising bitplanes" by hornet https://www.shadertoy.com/view/lt2yDm
-    
     // Normalized pixel coordinates (from 0 to 1)
     vec2 uv = fragCoord/iResolution.xy;
     uint bit = uint(8.0 * uv.x) + 8u * uint(4.0 * uv.y);

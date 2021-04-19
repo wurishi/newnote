@@ -3,10 +3,15 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
+// otaviogood's "Alien Beacon" (https://www.shadertoy.com/view/ld2SzK)
+// and Shane's "Cheap Cloud Flythrough" (https://www.shadertoy.com/view/Xsc3R4) shaders
+
+#define ROTATION
+
+//#define MOUSE_CAMERA_CONTROL
+
 #define DITHERING
 #define BACKGROUND
-
-//#define TONEMAPPING
 
 //-------------------
 #define pi 3.14159265
@@ -28,30 +33,23 @@ float fbm(vec3 p)
    return noise(p*.06125)*.5 + noise(p*.125)*.25 + noise(p*.25)*.125 + noise(p*.4)*.2;
 }
 
-float length2( vec2 p )
+float rand(vec2 co)
 {
-	return sqrt( p.x*p.x + p.y*p.y );
+	return fract(sin(dot(co*0.123,vec2(12.9898,78.233))) * 43758.5453);
 }
 
-float length8( vec2 p )
-{
-	p = p*p; p = p*p; p = p*p;
-	return pow( p.x + p.y, 1.0/8.0 );
-}
-
-
-float Disk( vec3 p, vec3 t )
-{
-    vec2 q = vec2(length2(p.xy)-t.x,p.z*0.5);
-    return max(length8(q)-t.y, abs(p.z) - t.z);
-}
-
-const float nudge = 0.9;	// size of perpendicular vector
+//=====================================
+// otaviogood's noise from https://www.shadertoy.com/view/ld2SzK
+//--------------------------------------------------------------
+// This spiral noise works by successively adding and rotating sin waves while increasing frequency.
+// It should work the same on all computers since it's not based on a hash function like some other noises.
+// It can be much faster than other noise functions if you're ok with some repetition.
+const float nudge = 0.739513;	// size of perpendicular vector
 float normalizer = 1.0 / sqrt(1.0 + nudge*nudge);	// pythagorean theorem on that perpendicular to maintain scale
 float SpiralNoiseC(vec3 p)
 {
     float n = 0.0;	// noise amount
-    float iter = 2.0;
+    float iter = 1.0;
     for (int i = 0; i < 8; i++)
     {
         // add sin and cos scaled inverse with the frequency
@@ -68,24 +66,37 @@ float SpiralNoiseC(vec3 p)
     return n;
 }
 
-float NebulaNoise(vec3 p)
+float SpiralNoise3D(vec3 p)
 {
-    float final = Disk(p.xzy,vec3(2.0,1.8,1.25));
-    final += fbm(p*90.);
-    final += SpiralNoiseC(p.zxy*0.5123+100.0)*3.0;
+    float n = 0.0;
+    float iter = 1.0;
+    for (int i = 0; i < 5; i++)
+    {
+        n += (sin(p.y*iter) + cos(p.x*iter)) / iter;
+        p.xz += vec2(p.z, -p.x) * nudge;
+        p.xz *= normalizer;
+        iter *= 1.33733;
+    }
+    return n;
+}
+
+float Nebulae(vec3 p)
+{
+	float final = p.y + 4.5;
+    final += SpiralNoiseC(p.zxy*0.123+100.0)*3.0;	// large scale features
+    final -= SpiralNoise3D(p);	// more large scale features, but 3d
 
     return final;
 }
 
 float map(vec3 p) 
 {
-	R(p.xz, iMouse.x*0.008*pi+iTime*0.1);
-
-	float NebNoise = abs(NebulaNoise(p/0.5)*0.5);
-    
-	return NebNoise+0.07;
+   #ifdef ROTATION
+   R(p.xz, iMouse.x*0.008*pi+iTime*0.1);
+   #endif
+   p.y+=4.1;
+   return Nebulae(p) + fbm(p*50.+iTime);
 }
-//--------------------------------------------------------------
 
 // assign color to the media
 vec3 computeColor( float density, float radius )
@@ -97,7 +108,7 @@ vec3 computeColor( float density, float radius )
 	// color added to the media
 	vec3 colCenter = 7.*vec3(0.8,1.0,1.0);
 	vec3 colEdge = 1.5*vec3(0.48,0.53,0.5);
-	result *= mix( colCenter, colEdge, min( (radius+.05)/.9, 1.15 ) );
+	result *= mix( colCenter, colEdge, min( (radius+.05)/1.30, 1.15 ) );
 	
 	return result;
 }
@@ -105,7 +116,7 @@ vec3 computeColor( float density, float radius )
 bool RaySphereIntersect(vec3 org, vec3 dir, out float near, out float far)
 {
 	float b = dot(dir, org);
-	float c = dot(org, org) - 8.;
+	float c = dot(org, org) - 20.;
 	float delta = b*b - c;
 	if( delta < 0.0) 
 		return false;
@@ -113,15 +124,6 @@ bool RaySphereIntersect(vec3 org, vec3 dir, out float near, out float far)
 	near = -b - deltasqrt;
 	far = -b + deltasqrt;
 	return far > 0.0;
-}
-
-// Applies the filmic curve from John Hable's presentation
-// More details at : http://filmicgames.com/archives/75
-vec3 ToneMapFilmicALU(vec3 _color)
-{
-	_color = max(vec3(0), _color - vec3(0.004));
-	_color = (_color * (6.2*_color + vec3(0.5))) / (_color * (6.2 * _color + vec3(1.7)) + vec3(0.06));
-	return _color;
 }
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
@@ -136,8 +138,27 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
 	// ro: ray origin
 	// rd: direction of the ray
-	vec3 rd = normalize(vec3((fragCoord.xy-0.5*iResolution.xy)/iResolution.y, 1.));
+	vec3 rd = normalize(vec3((gl_FragCoord.xy-0.5*iResolution.xy)/iResolution.y, 1.));
 	vec3 ro = vec3(0., 0., -6.+key*1.6);
+
+    #ifdef MOUSE_CAMERA_CONTROL
+    R(rd.yz, -iMouse.y*0.01*pi*2.);
+    R(rd.xz, iMouse.x*0.01*pi*2.);
+    R(ro.yz, -iMouse.y*0.01*pi*2.);
+    R(ro.xz, iMouse.x*0.01*pi*2.);
+    #else
+    R(rd.yz, -pi*3.93);
+    R(rd.xz, pi*3.2);
+    R(ro.yz, -pi*3.93);
+   	R(ro.xz, pi*3.2);    
+    #endif 
+    
+    #ifdef DITHERING
+	vec2 dpos = ( fragCoord.xy / iResolution.xy );
+	vec2 seed = dpos + fract(iTime);
+   	// randomizing the length 
+    //rd *= (1. + fract(sin(dot(vec3(7, 157, 113), rd.zyx))*43758.5453)*0.1-0.03);
+	#endif 
     
 	// ld, td: local, total density 
 	// w: weighting factor
@@ -165,24 +186,14 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 		vec3 pos = ro + t*rd;
   
 		// Loop break conditions.
-	    if(td>0.9 || d<0.1*t || t>10. || sum.a > 0.99 || t>max_dist) break;
-        
+        if(td>0.9 || d<0.1*t || t>10. || sum.a > 0.99 || t>max_dist) break;
+	    
         // evaluate distance function
         float d = map(pos);
 		       
 		// change this string to control density 
-		d = max(d,0.0);
-        
-        // point light calculations
-        vec3 ldst = vec3(0.0)-pos;
-        float lDist = max(length(ldst), 0.001);
-
-        // the color of light 
-        vec3 lightColor=vec3(1.0,0.5,0.25);
-        
-        sum.rgb+=(vec3(0.67,0.75,1.00)/(lDist*lDist*10.)/80.); // star itself
-        sum.rgb+=(lightColor/exp(lDist*lDist*lDist*.08)/30.); // bloom
-        
+		d = max(d,0.08);
+      
 		if (d<h) 
 		{
 			// compute local density 
@@ -194,13 +205,11 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 			// accumulate density
 			td += w + 1./200.;
 		
-			vec4 col = vec4( computeColor(td,lDist), td );
-            
-            // emission
-            sum += sum.a * vec4(sum.rgb, 0.0) * 0.2;	
-            
+			float radiusFromCenter = length(pos - vec3(0.0));
+			vec4 col = vec4( computeColor(td,radiusFromCenter), td );
+		
 			// uniform scale density
-			col.a *= 0.2;
+			col.a *= 0.185;
 			// colour by alpha
 			col.rgb *= col.a;
 			// alpha blend in contribution
@@ -209,17 +218,28 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 		}
       
 		td += 1./70.;
+       
+        // point light calculations
+        vec3 ldst = vec3(0.0)-pos;
+        float lDist = max(length(ldst), 0.001);
 
-        #ifdef DITHERING
-        vec2 uv = fragCoord.xy / iResolution.xy;
-        uv.y*=120.;
-        uv.x*=280.;
-        d=abs(d)*(.8+0.08*texture(iChannel2,vec2(uv.y,-uv.x+0.5*sin(4.*iTime+uv.y*4.0))).r);
-        #endif 
-		
-        // trying to optimize step size near the camera and near the light source
-        t += max(d * 0.1 * max(min(length(ldst),length(ro)),1.0), 0.01);
+        // star in center
+        vec3 lightColor=vec3(1.0,0.5,0.25);
+        sum.rgb+=lightColor/(lDist*lDist*6.); //add a bloom around the light
+
+        sum.a *= 0.8;
         
+        // enforce minimum stepsize
+        d = max(d, 0.1); 
+      
+        #ifdef DITHERING
+        // add in noise to reduce banding and create fuzz
+        d=abs(d)*(1.+0.2*rand(seed*vec2(i)));
+        #endif 
+	  
+        //t += max(d * 0.25, 0.02);
+        t += max(d * 0.1 * max(length(ldst),2.0), 0.02);
+      
 	}
     
     // simple scattering
@@ -242,30 +262,26 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         sum.xyz += starbg; 
     }
 	#endif
-   
-    #ifdef TONEMAPPING
-    fragColor = vec4(ToneMapFilmicALU(sum.xyz*2.2),1.0);
-	#else
-    fragColor = vec4(sum.xyz,1.0);
-	#endif
+    
+   fragColor = vec4(sum.xyz,1.0);
 }
 `;
 
 export default class implements iSub {
   key(): string {
-    return 'MdKXzc';
+    return 'lsVSRW';
   }
   name(): string {
-    return 'Supernova remnant';
+    return 'Dusty nebula 3';
   }
   sort() {
-    return 421;
-  }
-  tags?(): string[] {
-    return [];
+    return 438;
   }
   webgl() {
     return WEBGL_2;
+  }
+  tags?(): string[] {
+    return [];
   }
   main(): HTMLCanvasElement {
     return createCanvas();
@@ -281,10 +297,6 @@ export default class implements iSub {
     return () => {};
   }
   channels() {
-    return [
-      webglUtils.DEFAULT_NOISE, //
-      { type: 3 },
-      webglUtils.DEFAULT_NOISE3,
-    ];
+    return [webglUtils.DEFAULT_NOISE];
   }
 }

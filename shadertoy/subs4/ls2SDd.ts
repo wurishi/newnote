@@ -5,14 +5,24 @@ import * as webglUtils from '../webgl-utils';
 const fragment = `
 const int MAX_RAY_STEPS = 64;
 
-float noise( in vec3 x )
-{
-    vec3 p = floor(x);
-    vec3 f = fract(x);
-	f = f*f*(3.0-2.0*f);
-	vec2 uv = (p.xy+vec2(37.0,17.0)*p.z) + f.xy;
-	vec2 rg = textureLod( iChannel0, (uv+ 0.5)/256.0, 0.0 ).yx;
-	return -1.0+2.0*mix( rg.x, rg.y, f.z );
+vec2 mouse() {
+	return iMouse.xy / iResolution.xy - vec2(.5);
+}
+
+float field(in vec3 p) {
+	float strength = 7. + .03;
+	float accum = 0.;
+	float prev = 0.;
+	float tw = 0.;
+	for (int i = 0; i < 10; ++i) {
+		float mag = dot(p, p);
+		p = abs(p) / mag + vec3(-0.5 * (mouse().x + 1.0), -0.4 * (mouse().y + 1.0), -1.5);
+		float w = exp(-float(i) / 5.);
+		accum += w * exp(-strength * pow(abs(mag - prev), 2.3));
+		tw += w;
+		prev = mag;
+	}
+	return max(0., accum / tw);
 }
 
 vec2 rotate2d(vec2 v, float a) {
@@ -38,29 +48,22 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     
     
     float dis = 0.0;
-    float t1 = 2.0;
-    vec3 dir = vec3(0.,1.,0.);
-    float val;
     
     vec3 col = vec3(0);
     for(int i=0;i<MAX_RAY_STEPS;i++){
-	    //////////////////////////////////
-    	// participating media    
-    	vec3 q = rayPos - dir* t1; val  = 0.50000*noise( q * .05 );
-		q = q*2.0 - dir* t1; val += 0.25000*noise( q * .05  );
-		q = q*2.0 - dir* t1; val += 0.12500*noise( q * .05  );
-		q = q*2.0 - dir* t1; val += 0.06250*noise( q * .05  );
-        q = q*2.5 - dir* t1; val += 0.03125*noise( q * .8  );
-        //////////////////////////////////
         
+        
+        float val = field(rayPos * .053);
         float t = max(5.0 * val - .9, 0.0);
         
         col += sqrt(dis) * .1 * vec3(0.5 * t * t * t, .6 * t * t, .7 * t);
         
         dis += 1.0 / float(MAX_RAY_STEPS);
         
-        rayPos += rayDir * 1.0/ (.4);
+        rayPos += rayDir * 1.0/ (val + .35);
     }
+    
+    vec2 q = screenPos;
     
     col = min(col, 1.0) - .34 * (log(col + 1.0));
     
@@ -70,16 +73,13 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
 
 export default class implements iSub {
   key(): string {
-    return 'ltBXDm';
+    return 'ls2SDd';
   }
   name(): string {
-    return 'Emission clouds';
+    return 'Simplicity 3d';
   }
   sort() {
-    return 426;
-  }
-  webgl() {
-    return WEBGL_2;
+    return 433;
   }
   tags?(): string[] {
     return [];
@@ -96,8 +96,5 @@ export default class implements iSub {
   destory(): void {}
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
     return () => {};
-  }
-  channels() {
-    return [{ ...webglUtils.DEFAULT_NOISE, ...webglUtils.TEXTURE_MIPMAPS }];
   }
 }

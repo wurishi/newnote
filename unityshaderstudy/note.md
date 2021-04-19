@@ -1,6 +1,6 @@
 # Unity Shader 的学习笔记
 
-# 1
+# 1. 基本 Shader
 
 1.1 shader 是运行在 GPU 上的程序.
 
@@ -70,3 +70,52 @@ Pass {
 
 1.4.3 最后是使用降级着色器 Fallback , 作用是当编写的 Shader 无法完成渲染任务时备选的渲染方案, 以防渲染程序报错崩溃.
 
+# 2. 镂空透明
+
+早期做 3D 模型时会用到透明贴图来表现人物模型头发镂空的效果, 具体讲究"黑透白不透", 意为用一张带 alpha 通道的黑白贴图做 mask 遮罩, 黑色的部分表示透明, 白色的部分表示不透明. 将这张特殊的贴图放到三维软件特殊的通道上即可实现模型的镂空透明的效果.
+
+Shader 里的镂空透明效果和上面有一定联系, 大致就是利用 alpha 的混合, 两种不同的重叠的色值按照一定的比例混合, 得到一个最终颜色. 当这两个重叠的颜色中有一个颜色的混合系数为零, 那么重叠的部分就只会显示另一种颜色. 即, 这个混合系数为零的颜色被另一个颜色遮挡一样, 相对的当上方的颜色混合系数为零, 那么就只显示下方的颜色了, 这样就实现了透明的效果.
+
+```glsl
+Shader "Custom/Shader2"
+{
+    Properties
+    {
+        _Color("Color", Color) = (1, 1, 1, 1) // 设置主颜色
+        _MainTex("Albedo(RGB)", 2D) = "white"{} // 设置主纹理
+    }
+    SubShader
+    {
+        // 使用透明队列渲染标签
+        Tags{"Queue" = "Transparent"}
+        Pass
+        {
+            // 定义材质
+            Material
+            {
+                Diffuse[_Color] // 漫反射
+                Ambient[_Color] // 环境光
+            }
+            // 使用 Alpha 混合功能必须要预先开启, 使用 Blend 指令
+            Blend SrcAlpha OneMinusSrcAlpha
+            // 开启标准顶点光照
+            Lighting On
+            // 纹理设置
+            SetTexture[_MainTex]
+            {
+                constantColor[_Color]
+                Combine texture*primary DOUBLE, texture*constant
+            }
+        }
+    }
+    Fallback "Diffuse"
+}
+```
+
+这里的 Material 代码块可以将 Properties 块中的属性值绑定到固定函数光照材质设置上. SetTexture 代码块定义了我们想要使用的纹理以及如何在渲染中混合, 组合和应用这些纹理.
+
+我们设置一个恒定的颜色值, 即材质的颜色: _Color. 之后用 Combine 命令执行将纹理和颜色值混合, 通常写为 `Combine ColorPart, AlphaPart`, 这里的 ColorPart 和 AlphaPart 分别定义颜色(RGB)和Alpha(A) 分量的混合, AlphaPart 可以省略.
+
+上面代码中的 `Combine texture*primary DOUBLE, texture*constant` 这里的 texture 是来自当前纹理 (_MainTex) 的颜色, 它与 primary 顶点颜色相乘 (*). 主色是顶点光照颜色, 根据上面的材质值计算得出, 最后将结果乘以 2 来增加光照强度 (DOUBLE). Alpha 值则是由 `texture * constant`(constant 是 constantColor 设置的).
+
+和 Standard Shader 相比, 当 Standard Shader 的 Rendering Mode 选择为 Transparent 后, 也会有镂空效果, 并且场景中的光线可以在平面上产生相对应穿过物体透明部分的阴影, 但目前我们自己编写的 Shader 影子还是实心的, 这里涉及到光照阴影处理部分, 后面再研究.

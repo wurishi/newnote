@@ -300,7 +300,7 @@ export default class implements iSub {
   channels() {
     return [
       webglUtils.DEFAULT_NOISE, //
-      { type: 0, path: './textures/wljSz1_2.png' },
+      webglUtils.TEXTURE2,
       webglUtils.ROCK_TEXTURE, //
     ];
   }

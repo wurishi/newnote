@@ -837,10 +837,6 @@ export default class implements iSub {
     return () => {};
   }
   channels() {
-    return [
-      { type: 0, path: './textures/fdl3z8_1.jpg' },
-      { type: 0, path: './textures/fdl3z8_2.png' },
-      { type: 0, path: './textures/fdl3z8_3.jpg' },
-    ];
+    return [webglUtils.TEXTURE5, webglUtils.DEFAULT_NOISE, webglUtils.TEXTURE6];
   }
 }

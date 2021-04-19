@@ -356,13 +356,9 @@ export default class implements iSub {
   channels() {
     return [
       { ...webglUtils.ROCK2_TEXTURE, ...webglUtils.TEXTURE_MIPMAPS }, //
-      {
-        type: 0,
-        path: './textures/fdl3z8_3.jpg',
-        ...webglUtils.TEXTURE_MIPMAPS,
-      },
+      webglUtils.TEXTURE6,
       { ...webglUtils.DEFAULT_NOISE, ...webglUtils.TEXTURE_MIPMAPS },
-      { type: 0, path: './textures/ssXXzn.jpg', ...webglUtils.TEXTURE_MIPMAPS },
+      webglUtils.TEXTURE7,
     ];
   }
 }

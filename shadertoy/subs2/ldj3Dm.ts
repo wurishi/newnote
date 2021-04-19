@@ -444,7 +444,7 @@ export default class implements iSub {
   channels() {
     return [
       webglUtils.WOOD_TEXTURE, // 水面泡沫
-      { type: 0, path: './textures/fdl3z8_3.jpg' }, // 水底
+      webglUtils.TEXTURE6, // 水底
       webglUtils.DEFAULT_NOISE,
       webglUtils.ROCK_TEXTURE, // 水面2?
     ];

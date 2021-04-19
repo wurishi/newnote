@@ -346,7 +346,7 @@ export default class implements iSub {
   channels() {
     return [
       webglUtils.WOOD_TEXTURE,
-      { type: 0, path: './textures/fdl3z8_3.jpg' },
+      webglUtils.TEXTURE6,
     ];
   }
 }

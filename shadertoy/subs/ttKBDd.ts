@@ -220,12 +220,9 @@ export default class implements iSub {
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
     return () => {};
   }
-  channels() {
-    return [
-      {
-        type: 0,
-        path: './textures/ttKBDd.png',
-      },
-    ];
-  }
+  // channels() {
+  //   return [
+  //     webglUtils.DEFAULT_NOISE,
+  //   ];
+  // }
 }

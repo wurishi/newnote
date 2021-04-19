@@ -455,6 +455,48 @@ export const TEXTURE1 = {
   ...TEXTURE_MIPMAPS,
 };
 
+export const TEXTURE2 = {
+  type: 0,
+  path: './textures/texture2.png',
+  ...TEXTURE_MIPMAPS,
+};
+
+export const TEXTURE3 = {
+  type: 0,
+  path: './textures/texture3.jpg',
+  ...TEXTURE_MIPMAPS,
+};
+
+export const TEXTURE4 = {
+  type: 0,
+  path: './textures/texture4.jpg',
+  ...TEXTURE_MIPMAPS,
+};
+
+export const TEXTURE5 = {
+  type: 0,
+  path: './textures/texture5.jpg',
+  ...TEXTURE_MIPMAPS,
+};
+
+export const TEXTURE6 = {
+  type: 0,
+  path: './textures/texture6.jpg',
+  ...TEXTURE_MIPMAPS,
+};
+
+export const TEXTURE7 = {
+  type: 0,
+  path: './textures/texture7.jpg',
+  ...TEXTURE_MIPMAPS,
+};
+
+export const TEXTURE8 = {
+  type: 0,
+  path: './textures/texture8.jpg',
+  ...TEXTURE_MIPMAPS,
+};
+
 export function createVideo(src = './media/video.ogv') {
   const video = document.createElement('video');
   let videoAdded = false;

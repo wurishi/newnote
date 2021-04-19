@@ -911,21 +911,9 @@ export default class implements iSub {
       // { type: 1, f: `void mainImage(out vec4 fragColor, in vec2 fragCoord) {
       //   fragColor = vec4(0,0,0,1);
       // }`, fi: 0 },
-      {
-        type: 0,
-        path: './textures/4dtGWM_0.png',
-        ...webglUtils.TEXTURE_MIPMAPS,
-      },
-      {
-        type: 0,
-        path: './textures/4dtGWM_1.jpg',
-        ...webglUtils.TEXTURE_MIPMAPS,
-      },
-      {
-        type: 0,
-        path: './textures/4dtGWM_2.jpg',
-        ...webglUtils.TEXTURE_MIPMAPS,
-      },
+      webglUtils.TEXTURE2,
+      webglUtils.TEXTURE3,
+      webglUtils.TEXTURE4,
     ];
   }
 }

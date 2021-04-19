@@ -202,7 +202,6 @@ float hashIQf(uint n)
 }
 
 
-//note: src https://www.shadertoy.com/view/4djSRW
 float hash12_float(vec2 p)
 {
     #define HASHSCALE1 .1031

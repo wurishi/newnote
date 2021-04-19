@@ -29,7 +29,7 @@ vec3 N31(float p) {
    return fract(vec3((p3.x + p3.y)*p3.z, (p3.x+p3.z)*p3.y, (p3.y+p3.z)*p3.x));
 }
 float N2(vec2 p)
-{	// Dave Hoskins - https://www.shadertoy.com/view/4djSRW
+{	
 	vec3 p3  = fract(vec3(p.xyx) * vec3(443.897, 441.423, 437.195));
     p3 += dot(p3, p3.yzx + 19.19);
     return fract((p3.x + p3.y) * p3.z);

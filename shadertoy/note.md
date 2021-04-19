@@ -2438,3 +2438,21 @@ MsV3z3
 XdGfRR
 
 ![400](assets/400.jpg)
+
+# 401. Watercolor painting
+
+NdsXRB
+
+![401](assets/401.jpg)
+
+# 402. hash: visualising bitplanes
+
+lt2yDm
+
+![402](assets/402.jpg)
+
+# 403. Terrain Tubes
+
+4sjXzG
+
+![403](assets/403.jpg)

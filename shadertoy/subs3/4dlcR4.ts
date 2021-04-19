@@ -3,12 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// WIP mods base on viz from: https://www.shadertoy.com/view/lt2yDm
-// * no problem with either input being zero (old version said diff..was thinking about non XOR version)
-// * 
-
-
-// constant commments: popcnt | 3-lsb | integer factorization
 //#define W0 0x3504f333u  // 15 | | 3*2309*128413 <- original
 //#define W1 0xf1bbcdcbu  // 21 | | 7*349*1660097 <- original
 

@@ -151,23 +151,6 @@ vec3 hash33(vec3 p)
 	return vec3(q) * UIF;
 }
 
-// Creative Commons Attribution-ShareAlike 4.0 International Public License
-// Created by David Hoskins. May 2018
-
-
-// Almost a direct copy of most of "Simplest Fastest 2D Hash" with additional hash types.
-// https://www.shadertoy.com/view/MdcfDj
-
-// For use in WebGL 2 shaders.
-// The float versions should still be in integer steps, but they can be negetive.
-
-
-// The defines don't need to change for scaling purposes,
-// but I'll keep them in for any future needs.
-
-
-//---------------------------------------------------------------------------------------------------------------
-//===============================================================================================================
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
 

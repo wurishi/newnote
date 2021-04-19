@@ -47,8 +47,6 @@ float cycl(in float x)
     return mix(-abs(sin(x*7.31))*1.7+.7,abs(1.0+sin(x*4.0))*1.4-1.75, 0.7)*2.;
 }
 
-//The terrain is partially inspired by iq's "Terrain Tubes"
-//(https://www.shadertoy.com/view/4sjXzG)
 const mat2 m2 = mat2(1.6,-1.2,1.2,1.6);
 float terrain(in vec2 p)
 {

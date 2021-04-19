@@ -449,6 +449,12 @@ export const TEXTURE_MIPMAPS = {
   [WebGLRenderingContext.TEXTURE_MAG_FILTER]: WebGLRenderingContext.LINEAR,
 };
 
+export const TEXTURE1 = {
+  type: 0,
+  path: './textures/texture1.jpg',
+  ...TEXTURE_MIPMAPS,
+};
+
 export function createVideo(src = './media/video.ogv') {
   const video = document.createElement('video');
   let videoAdded = false;

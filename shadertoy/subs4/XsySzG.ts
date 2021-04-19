@@ -69,14 +69,207 @@ const f = `
 #define _color(x,y,id,v) setCursor(x,y);print_color(id,v);
 #define _box(p,s,c) print_box(p,s,c);
 #define _cursor(x,y)  setCursor(x,y);
-/* gfx func */ void setCursor(int x, int y){pos = vec2(float(x),iResolution.y-float(y));}float extract_bit(float n, float b){    b = clamp(b,-1.0,24.0);    return floor(mod(floor(n / pow(2.0,floor(b))),2.0));   }float sprite(vec4 spr, vec2 size, vec2 uv){    uv = floor(uv);    float bit = (size.x-uv.x-1.0) + uv.y * size.x;    bool bounds = all(greaterThanEqual(uv,vec2(0))) && all(lessThan(uv,size));        float pixels = 0.0;    pixels += extract_bit(spr.x, bit - 72.0);    pixels += extract_bit(spr.y, bit - 48.0);    pixels += extract_bit(spr.z, bit - 24.0);    pixels += extract_bit(spr.w, bit - 00.0);        return bounds ? pixels : 0.0;}float char(vec4 ch){    float px = sprite(ch, vec2(8, 12), uv - pos);    pos.x += 8.;    return px;}vec4 get_digit(float d){    d = floor(d);    if(d == 0.0) return ch_0;    if(d == 1.0) return ch_1;    if(d == 2.0) return ch_2;    if(d == 3.0) return ch_3;    if(d == 4.0) return ch_4;    if(d == 5.0) return ch_5;    if(d == 6.0) return ch_6;    if(d == 7.0) return ch_7;    if(d == 8.0) return ch_8;    if(d == 9.0) return ch_9;    return ch_0;}float print_float(float number){    float result = 0.0;        for(int i = MAX_DIGIT-1; i >= -FLOAT_PRECISION;i--)    {        float digit = mod( number / pow(10.0, float(i)) , 10.0);                if(i == -1)        {            result += char(ch_per);        }                if((abs(number) > pow(10.0, float(i))) || i <= 0)        {            result += char(get_digit(digit));        }    }     return result;}float print_int(float number){    float result = 0.0;        for(int i = MAX_DIGIT;i >= 0;i--)    {        float digit = mod( number / pow(10.0, float(i)) , 10.0);        if(abs(number) > pow(10.0, float(i)) || i == 0)        {            result += char(get_digit(digit));        }    }       return result;}vec3 hsv2rgb( in vec3 c ){vec3 rgb = clamp( abs(mod(c.x*6.0+vec3(0.0,4.0,2.0),6.0)-3.0)-1.0, 0.0, 1.0 );rgb = rgb*rgb*(3.0-2.0*rgb);return c.z * mix( vec3(1.0), rgb, c.y);}vec3 widgetSelected(){    return texture(iChannel0, vec2(.5,2.5)/iResolution.xy).rgb;}vec4 uiSlider(int id){return texture(iChannel0, vec2(float(id)+.5,0.5)/iResolution.xy);}vec4 uiColor(int id){return texture(iChannel0, vec2(float(id)+.5,1.5)/iResolution.xy);}float roundBox( in vec2 p, in vec2 b, in float r ) {    vec2 q = abs(p) - b;    vec2 m = vec2( min(q.x,q.y), max(q.x,q.y) );    float d = (m.x > 0.0) ? length(q) : m.y;     return d - r;}void print_slider( int id, float v ){    vec2 puv = uv-vec2(.5);    vec3 select = widgetSelected();    float sl2 = SLIDER_LENGTH/2.;    vec4 value = uiSlider(id);    if(value.a == 0.)        value.r = v;        bool selected = ( select.r == .1 && select.g*255. == float(id) );    bool mouseAndNoSelect = iMouse.w>.5 && roundBox( iMouse.xy-pos-vec2(sl2,6.), vec2(sl2,3.), 5.) < 0. && select.r == 0.;         if(mouseAndNoSelect || selected)    	value.r = clamp((iMouse.x-pos.x-2.)/SLIDER_LENGTH,0.,1.);    float d = roundBox( uv-pos-vec2(sl2,6.), vec2(sl2,3.), 5.);    float layer = clamp(sign(-d),0.,1.);    col.rgb += vec3((clamp( 1.3-abs(d) , 0., 2.))*max(.0,-sign(uv.x-pos.x-value.r*SLIDER_LENGTH))*.5 );    col.rgb += WIDGET_COLOR*vec3( clamp( 1.-abs(d)*.75 , 0., 1.) );    col.a += layer + clamp( 1.-abs(d) , 0., 1.);        float oldx = pos.x;    pos.x += SLIDER_LENGTH-8.*4.;    _float(value.r)    pos.x = oldx;        if(puv.x == float(id) && puv.y==0.)        col = vec4(value.r,0.,0.,1.);        if(puv.x == 0. && puv.y == 2.)    {        if(iMouse.w<.5)            col = vec4(0.);        else if(mouseAndNoSelect)        	col = vec4(.1,float(id)/255.,0.,0.);    }}void print_color( int id, vec3 v){    vec2 puv = uv-vec2(.5);    vec3 select = widgetSelected();    float sl2 = SLIDER_LENGTH/2.;    vec4 color = uiColor(id);    if(color.a == 0.)        color.rgb = v;        bool selected = ( select.r == .2 && select.g*255. == float(id) );    bool mouseAndNoSelect = iMouse.w>.5 && roundBox( iMouse.xy-pos-vec2(sl2,6.), vec2(sl2,3.), 5.) < 0. && select.r == 0.;         if(mouseAndNoSelect || selected)    	color.rgb = hsv2rgb( vec3( (iMouse.x-pos.x)/(SLIDER_LENGTH*.9),1.,1.) );    float d = roundBox( uv-pos-vec2(sl2,6.), vec2(sl2,3.), 5.);    float layer = clamp(sign(-d),0.,1.);    col.rgb += vec3( layer*color*max(.0,sign(uv.x-pos.x-SLIDER_LENGTH*.9)));    col.rgb += WIDGET_COLOR*vec3( clamp( 1.-abs(d)*.75 , 0., 1.) );    col.a += layer + clamp( 1.-abs(d) , 0., 1.);        if((mouseAndNoSelect || selected) && uv.x-pos.x-SLIDER_LENGTH*.9<0.)        col.rgb += layer*hsv2rgb( vec3( (uv.x-pos.x)/(SLIDER_LENGTH*.9),1.,1.) );            if(puv.x == float(id) && puv.y==1.)        col = vec4(color.rgb,1.);        if(puv.x == 0. && puv.y == 2.)    {        if(iMouse.w<.5)            col = vec4(0.);        else if(mouseAndNoSelect)        	col = vec4(.2,float(id)/255.,0.,0.);    }}void print_box(vec2 p, vec2 s, vec4 c){    if(uv.x>p.x && uv.x <p.x+s.x && uv.y>p.y && uv.y<p.y+s.y)        col += c;}
 
+void setCursor(int x, int y)
+{
+    pos = vec2(float(x),iResolution.y-float(y));
+}
+
+float extract_bit(float n, float b)
+{
+    b = clamp(b,-1.0,24.0);
+    return floor(mod(floor(n / pow(2.0,floor(b))),2.0));   
+}
+float sprite(vec4 spr, vec2 size, vec2 uv)
+{
+    uv = floor(uv);
+    float bit = (size.x-uv.x-1.0) + uv.y * size.x;
+    bool bounds = all(greaterThanEqual(uv,vec2(0))) && all(lessThan(uv,size));
+    
+    float pixels = 0.0;
+    pixels += extract_bit(spr.x, bit - 72.0);
+    pixels += extract_bit(spr.y, bit - 48.0);
+    pixels += extract_bit(spr.z, bit - 24.0);
+    pixels += extract_bit(spr.w, bit - 00.0);
+    
+    return bounds ? pixels : 0.0;
+}
+
+float char(vec4 ch)
+{
+    float px = sprite(ch, vec2(8, 12), uv - pos);
+    pos.x += 8.;
+    return px;
+}
+
+vec4 get_digit(float d)
+{
+    d = floor(d);
+    if(d == 0.0) return ch_0;
+    if(d == 1.0) return ch_1;
+    if(d == 2.0) return ch_2;
+    if(d == 3.0) return ch_3;
+    if(d == 4.0) return ch_4;
+    if(d == 5.0) return ch_5;
+    if(d == 6.0) return ch_6;
+    if(d == 7.0) return ch_7;
+    if(d == 8.0) return ch_8;
+    if(d == 9.0) return ch_9;
+    return ch_0;
+}
+
+float print_float(float number)
+{
+    float result = 0.0;
+    
+    for(int i = MAX_DIGIT-1; i >= -FLOAT_PRECISION;i--)
+    {
+        float digit = mod( number / pow(10.0, float(i)) , 10.0);
+        
+        if(i == -1)
+        {
+            result += char(ch_per);
+        }
+        
+        if((abs(number) > pow(10.0, float(i))) || i <= 0)
+        {
+            result += char(get_digit(digit));
+        }
+    } 
+    return result;
+}
+
+float print_int(float number)
+{
+    float result = 0.0;
+    
+    for(int i = MAX_DIGIT;i >= 0;i--)
+    {
+        float digit = mod( number / pow(10.0, float(i)) , 10.0);
+
+        if(abs(number) > pow(10.0, float(i)) || i == 0)
+        {
+            result += char(get_digit(digit));
+        }
+    }   
+    return result;
+}
+
+
+vec3 hsv2rgb( in vec3 c ){vec3 rgb = clamp( abs(mod(c.x*6.0+vec3(0.0,4.0,2.0),6.0)-3.0)-1.0, 0.0, 1.0 );rgb = rgb*rgb*(3.0-2.0*rgb);return c.z * mix( vec3(1.0), rgb, c.y);}
+
+vec3 widgetSelected()
+{
+    return texture(iChannel0, vec2(.5,2.5)/iResolution.xy).rgb;
+}
+vec4 uiSlider(int id){return texture(iChannel0, vec2(float(id)+.5,0.5)/iResolution.xy);}
+vec4 uiColor(int id){return texture(iChannel0, vec2(float(id)+.5,1.5)/iResolution.xy);}
+
+float roundBox( in vec2 p, in vec2 b, in float r ) 
+{
+    vec2 q = abs(p) - b;
+    vec2 m = vec2( min(q.x,q.y), max(q.x,q.y) );
+    float d = (m.x > 0.0) ? length(q) : m.y; 
+    return d - r;
+}
+
+
+void print_slider( int id, float v )
+{
+    vec2 puv = uv-vec2(.5);
+    vec3 select = widgetSelected();
+    float sl2 = SLIDER_LENGTH/2.;
+    vec4 value = uiSlider(id);
+    if(value.a == 0.)
+        value.r = v;
+    
+    //Check if value changed
+    bool selected = ( select.r == .1 && select.g*255. == float(id) );
+    bool mouseAndNoSelect = iMouse.w>.5 && roundBox( iMouse.xy-pos-vec2(sl2,6.), vec2(sl2,3.), 5.) < 0. && select.r == 0.; 
+    
+    if(mouseAndNoSelect || selected)
+    	value.r = clamp((iMouse.x-pos.x-2.)/SLIDER_LENGTH,0.,1.);
+
+    //Draw slider
+    float d = roundBox( uv-pos-vec2(sl2,6.), vec2(sl2,3.), 5.);
+    float layer = clamp(sign(-d),0.,1.);
+    col.rgb += vec3((clamp( 1.3-abs(d) , 0., 2.))*max(.0,-sign(uv.x-pos.x-value.r*SLIDER_LENGTH))*.5 );
+    col.rgb += WIDGET_COLOR*vec3( clamp( 1.-abs(d)*.75 , 0., 1.) );
+    col.a += layer + clamp( 1.-abs(d) , 0., 1.);
+    
+    //Draw value
+    float oldx = pos.x;
+    pos.x += SLIDER_LENGTH-8.*4.;
+    _float(value.r)
+    pos.x = oldx;
+    
+    //Save value
+    if(puv.x == float(id) && puv.y==0.)
+        col = vec4(value.r,0.,0.,1.);
+    
+    //Save selection
+    if(puv.x == 0. && puv.y == 2.)
+    {
+        if(iMouse.w<.5)
+            col = vec4(0.);
+        else if(mouseAndNoSelect)
+        	col = vec4(.1,float(id)/255.,0.,0.);
+    }
+}
+void print_color( int id, vec3 v)
+{
+    vec2 puv = uv-vec2(.5);
+    vec3 select = widgetSelected();
+    float sl2 = SLIDER_LENGTH/2.;
+    vec4 color = uiColor(id);
+    if(color.a == 0.)
+        color.rgb = v;
+    
+    //Check if value changed
+    bool selected = ( select.r == .2 && select.g*255. == float(id) );
+    bool mouseAndNoSelect = iMouse.w>.5 && roundBox( iMouse.xy-pos-vec2(sl2,6.), vec2(sl2,3.), 5.) < 0. && select.r == 0.; 
+    
+    if(mouseAndNoSelect || selected)
+    	color.rgb = hsv2rgb( vec3( (iMouse.x-pos.x)/(SLIDER_LENGTH*.9),1.,1.) );
+
+    //Draw slider
+    float d = roundBox( uv-pos-vec2(sl2,6.), vec2(sl2,3.), 5.);
+    float layer = clamp(sign(-d),0.,1.);
+    col.rgb += vec3( layer*color*max(.0,sign(uv.x-pos.x-SLIDER_LENGTH*.9)));
+    col.rgb += WIDGET_COLOR*vec3( clamp( 1.-abs(d)*.75 , 0., 1.) );
+    col.a += layer + clamp( 1.-abs(d) , 0., 1.);
+    
+    if((mouseAndNoSelect || selected) && uv.x-pos.x-SLIDER_LENGTH*.9<0.)
+        col.rgb += layer*hsv2rgb( vec3( (uv.x-pos.x)/(SLIDER_LENGTH*.9),1.,1.) );
+    
+    
+    //Save value
+    if(puv.x == float(id) && puv.y==1.)
+        col = vec4(color.rgb,1.);
+    
+    //Save selection
+    if(puv.x == 0. && puv.y == 2.)
+    {
+        if(iMouse.w<.5)
+            col = vec4(0.);
+        else if(mouseAndNoSelect)
+        	col = vec4(.2,float(id)/255.,0.,0.);
+    }
+}
+
+
+void print_box(vec2 p, vec2 s, vec4 c)
+{
+    if(uv.x>p.x && uv.x <p.x+s.x && uv.y>p.y && uv.y<p.y+s.y)
+        col += c;
+}
 
 //FUNCTIONS :
 // _cursor(x,y) : define the cursor (0,0) == top-left
 // _slider(x,y,id,v) : define a slider at the position x,y with an ID and a default value float v
 // _color(x,y,id,v) : define a color picker at the position x,y with an ID and a default value vec3 v
 // _box(x,y,sx,sy,c) : define a layout box at the position x,y with the size sx,sy and a color vec4 c
+
 //_[a..Z] : write a character at the position of the cursor
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
@@ -88,7 +281,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         
     float t = mod(iTime,10.);
     int jump = int( abs(cos(t*7.))/exp(t*2.)*30. );
-    _cursor(42,30-jump) _B _l _a _b _l _a _b _l _a
+    _cursor(42,30) _B _l _a _b _l _a _b _l _a
     _slider(20,50, 0, .75) _R _o _u _g _h _n _e _s _s
     _slider(20,80, 1, 0.) _M _e _t _a _l _l _i _c
     _color (20,110, 0, vec3(1.,.7,.0)) _M _a _t _e _r _i _a _l _spc  _c _o _l _o _r
@@ -98,17 +291,9 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 `;
 
 const fragment = `
-
-/*
-Thx to :
-Abstract Corridor - Shane : https://www.shadertoy.com/view/MlXSWX
-*/
-
 //Only what you need in your shaders to get the IU inputs
 float uiSlider(int id){return texture(iChannel0, vec2(float(id)+.5,0.5)/iResolution.xy).r;}
 vec3 uiColor(int id){return texture(iChannel0, vec2(float(id)+.5,1.5)/iResolution.xy).rgb;}
-
-
 
 vec3 sampleEnvMap(vec3 rd, float lod);
 float ambientOcclusion( in vec3 p, in vec3 n, float maxDist, float falloff );
@@ -126,7 +311,7 @@ vec3 shade( in vec3 p, in vec3 n, in vec3 ro, in vec3 rd, vec2 v )
     if(d>30.)
         return sampleEnvMap(-rd,.9)*2.;
     
-    n = doBumpMap(iChannel1, p*.25, n, .05);
+    n = doBumpMap(iChannel1, p*.25, n, .1);
     
     float ao = clamp( pow( ambientOcclusion(p,n,.5,1.), 20.)*5., 0., 1.);
     float fre = clamp(1.0+dot(n,rd), 0.0, 1.0 );
@@ -141,12 +326,16 @@ vec3 shade( in vec3 p, in vec3 n, in vec3 ro, in vec3 rd, vec2 v )
 
 
 
+//Distance field func
 vec3 raymarche( in vec3 ro, in vec3 rd, in vec2 nfplane );
 vec3 normal( in vec3 p );
 float map( in vec3 p );
 
 mat3 lookat( in vec3 fw, in vec3 up );
 mat3 rotate( in vec3 v, in float angle);
+
+
+
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
     
@@ -172,8 +361,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         
 	fragColor = vec4( col, 1. );
 }
-
-
 
 //From Shane
 float tex3D( sampler2D tex, in vec3 p, in vec3 n ){
@@ -235,9 +422,9 @@ vec3 sampleEnvMap(vec3 rd, float lod)
     col += vec3(1.)* clamp( pow(1.-roundBox(uv-vec2(.67,.5), vec2(.05,.05),.01),r), 0., 1.);
     col += vec3(1.)* clamp( pow(1.-roundBox(uv-vec2(.67,.67), vec2(.05,.05),.01),r), 0., 1.);
     col += vec3(1.)* clamp( pow(1.-roundBox(uv-vec2(.5,.67), vec2(.05,.05),.01),r), 0., 1.);
-    col += vec3(1.,.5,.1)*2. * clamp( pow(1.-roundBox(uv-vec2(.3,.7), vec2(.01,.01),.2),r), 0., 1.);
+    col += vec3(1.,.5,.1)*5. * clamp( pow(1.-roundBox(uv-vec2(.2,.7), vec2(.01,.01),.1),r), 0., 1.);
     
-    return min(col*(1.-lod*.8),vec3(1.));
+    return min(col*(1.-lod*.9),vec3(1.));
 }
 
 
@@ -316,16 +503,16 @@ mat3 lookat( in vec3 fw, in vec3 up )
 
 export default class implements iSub {
   key(): string {
-    return 'ldKSDm';
+    return 'XsySzG';
   }
   name(): string {
-    return 'UI easy to integrate';
+    return 'UI readable';
+  }
+  sort() {
+    return 449;
   }
   webgl() {
     return WEBGL_2;
-  }
-  sort() {
-    return 445;
   }
   tags?(): string[] {
     return [];
@@ -346,7 +533,6 @@ export default class implements iSub {
   channels() {
     return [
       { type: 1, f, fi: 0 }, //
-      webglUtils.TEXTURE2,
     ];
   }
 }

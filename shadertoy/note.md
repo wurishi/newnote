@@ -2715,6 +2715,24 @@ ll3GWs
 
 ![446](assets/446.png)
 
+# 447. Rounded Box - distance 2D
+
+4llXD7
+
+![447](assets/447.jpg)
+
+# 448. 96-bit 8x12 Font
+
+Mt2GWD
+
+![448](assets/448.jpg)
+
+# 449. UI readable
+
+XsySzG
+
+![449](assets/449.jpg)
+
 
 
 https://www.shadertoy.com/results?query=&sort=love&from=36&num=12

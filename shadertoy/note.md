@@ -2456,3 +2456,45 @@ lt2yDm
 4sjXzG
 
 ![403](assets/403.jpg)
+
+# 404. Protean clouds
+
+3l23Rh
+
+![404](assets/404.jpg)
+
+# 405. Rainforest
+
+4ttSWf
+
+![405](assets/405.jpg)
+
+# 406. Rhodium liquid carbon
+
+llK3Dy
+
+![406](assets/406.jpg)
+
+# 407. Simplicity Galaxy
+
+MslGWN
+
+![407](assets/407.jpg)
+
+# 408. Main Sequence Star
+
+4dXGR4
+
+![408](assets/408.jpg)
+
+# 409. Playing marble
+
+MtX3Ws
+
+![409](assets/409.jpg)
+
+# 410. The Drive Home
+
+MdfBRX
+
+![410](assets/410.jpg)

@@ -2378,3 +2378,63 @@ Xtf3zn
 MsB3WR
 
 ![390](assets/390.jpg)
+
+# 391. Voxel Ambient Occlusion
+
+ldl3DS
+
+![391](assets/391.jpg)
+
+# 392. cheap sky simulation
+
+ttSGzh
+
+![392](assets/392.jpg)
+
+# 393. Canyon
+
+MdBGzG
+
+![393](assets/393.jpg)
+
+# 394. 1D Quadratic Dual Interpolation
+
+WtXSR7
+
+![394](assets/394.jpg)
+
+# 395. Tone mapping
+
+lslGzl
+
+![395](assets/395.jpg)
+
+# 396. Simplest Fastest 2D Hash
+
+MdcfDj
+
+![396](assets/396.jpg)
+
+# 397. Toolbox of Noisey Goodness
+
+4dVBzz
+
+![397](assets/397.jpg)
+
+# 398. 2D Weyl hash #1 (integer)
+
+MsV3z3
+
+![398](assets/398.jpg)
+
+# 399. 2D Weyl hash 32-bit XOR
+
+4dlcR4
+
+![399](assets/399.jpg)
+
+# 400. Hash without Sine 2 (WebGL 2)
+
+XdGfRR
+
+![400](assets/400.jpg)

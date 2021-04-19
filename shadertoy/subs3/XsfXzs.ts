@@ -22,7 +22,6 @@ vec3 wheel(in vec3 a, in vec3 b, in vec3 c, in float delta)
 						  a,clamp((delta-0.666)*3., 0., 1.));
 }
 
-//Reinhard based tone mapping (https://www.shadertoy.com/view/lslGzl)
 vec3 tone(vec3 color, float gamma)
 {
 	float white = 2.;

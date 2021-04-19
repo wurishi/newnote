@@ -464,10 +464,6 @@ vec3 shade(in vec3 pos, in vec3 rd, float d)
     return col;
 }
 
-//-----------------------------Sky rendering---------------------------
-// modified from an prototype public domain implementation by shadertoy user Jodie: https://www.shadertoy.com/view/ttSGzh
-// That version has some serious accuracy issues, I modified it to somewhat match the Hosek-Wilkie sky model visuals.
-
 #define atmoDepth 8228.
 #define earthRadius 6371000.
 #define mieDepth 1800

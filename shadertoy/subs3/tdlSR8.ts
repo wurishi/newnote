@@ -3,14 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const common = `
-// Moon voxels
-// by nimitz 2019 (twitter: @stormoid)
-// https://www.shadertoy.com/view/tdlSR8
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
-// Contact the author for other licensing options
-
-//Utility hash and noise functions here
-
 vec2 hash2(uint x)
 {
     uvec2 p = x * uvec2(3266489917U, 668265263U);
@@ -46,32 +38,6 @@ float valueNoise(vec2 p)
 `;
 
 let fragment = `
-/*
-	Showing off a hybrid sphere-tracing(raymarching)/
-	voxel intersection hybrid algorithm with this little diorama.
-	
-	A few other technically interesting things about this shader:
-	
-        -Using a new method for rendering 3D terrain, using summed triangle
-        wave octaves with rotation and displacement, will post more on this
-        technique soon.
-	
-        -Using 2D triangle folding for the modelling of the rocket to speed up
-        evaluation, this type of space folding (be it 2D or 3D) can be used 
-        with any geometry that has any type of symmetry to accelerate evals.
-
-		-Using a very simple form of AA, displacing the screen each frame by
-		a fraction of a pixel to get only the pixels on the edge of the coverage
-		limit and blending over a few frames to smooth the result.
-
-	As for the rendering of this scene:
-
-	Materials are defined per-voxel and the colors are quantitized to 16 
-	colors per channel to replicate the "pixel art" look but the lighting 
-	calculations are done in full color. Also using voxel AO based on fb39ca4's
-	technique, which is barely visible in non-fullscreen mode.
-*/
-
 #define ITR 60
 #define FAR 10.
 //#define BOUNDED
@@ -80,11 +46,6 @@ let fragment = `
 //Voxel size
 const float scl = 0.014;
 const float hscl = scl*0.5;
-
-
-//------------------------------------------------------------
-//--------------Base distance functions (from iq)-------------
-//-----------https://www.shadertoy.com/view/Xds3zN------------
 
 float sdBox( vec3 p, vec3 b )
 {
@@ -262,10 +223,6 @@ vec2 marchVxl(in vec3 ro, in vec3 rd, float near, float far, out vec3 alig, out 
 	return vec2(travel, bxNfo.y);
 }
 
-
-//inspired by fb39ca4's Voxel AO (https://www.shadertoy.com/view/ldl3DS)
-//and by reinder's and shane's modifications of fb39ca4's code
-//written to be clean-ish, self-contained and to support any voxel size
 float vxlAO(vec3 vp, vec3 sp, vec3 nor, vec3 alig) 
 {
     sp = fract(sp/scl);

@@ -116,9 +116,7 @@ float fbm(in vec2 p, in float d)
 
 vec4 clouds(in vec3 ro, in vec3 rd, in bool wtr)
 {   
-	
-    //Base sky coloring is from iq's "Canyon" (https://www.shadertoy.com/view/MdBGzG)
-    float sun = clamp(dot(lgt,rd),0.0,1.0 );
+	float sun = clamp(dot(lgt,rd),0.0,1.0 );
     hor = mix( 1.*vec3(0.70,1.0,1.0), vec3(1.3,0.55,0.15), 0.25+0.75*sun );
     vec3 col = mix( vec3(0.5,0.75,1.), hor, exp(-(4.+ 2.*(1.-sun))*max(0.0,rd.y-0.05)) );
     col *= 0.4;

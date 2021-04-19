@@ -3,10 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// List of ray-surface intersectors at https://www.shadertoy.com/playlist/l3dXRf
-// and http://iquilezles.org/www/articles/intersectors/intersectors.htm
-
-
 vec4 iRoundedCone( in vec3  ro, in vec3  rd, 
                    in vec3  pa, in vec3  pb, 
                    in float ra, in float rb )

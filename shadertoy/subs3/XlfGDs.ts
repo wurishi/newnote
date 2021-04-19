@@ -25,7 +25,6 @@ const float scr3 = scr + (1.-scr)*2./3.;
 mat2 mm2(in float a){float c = cos(a), s = sin(a);return mat2(c,s,-s,c);}
 float hash(vec2 x){	return fract(cos(dot(x.xy,vec2(2.31,53.21))*124.123)*412.0); }
 
-//From Dave (https://www.shadertoy.com/view/XlfGWN)
 float hash13(vec3 p){
 	p  = fract(p * vec3(.16532,.17369,.15787));
     p += dot(p.xyz, p.yzx + 19.19);

@@ -3,9 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// otaviogood's "Alien Beacon" (https://www.shadertoy.com/view/ld2SzK)
-// and Shane's "Cheap Cloud Flythrough" (https://www.shadertoy.com/view/Xsc3R4) shaders
-
 #define ROTATION
 
 //#define MOUSE_CAMERA_CONTROL
@@ -38,12 +35,6 @@ float rand(vec2 co)
 	return fract(sin(dot(co*0.123,vec2(12.9898,78.233))) * 43758.5453);
 }
 
-//=====================================
-// otaviogood's noise from https://www.shadertoy.com/view/ld2SzK
-//--------------------------------------------------------------
-// This spiral noise works by successively adding and rotating sin waves while increasing frequency.
-// It should work the same on all computers since it's not based on a hash function like some other noises.
-// It can be much faster than other noise functions if you're ok with some repetition.
 const float nudge = 0.739513;	// size of perpendicular vector
 float normalizer = 1.0 / sqrt(1.0 + nudge*nudge);	// pythagorean theorem on that perpendicular to maintain scale
 float SpiralNoiseC(vec3 p)

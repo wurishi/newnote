@@ -3,78 +3,29 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-#define EXPLOSION_SEED 2.
 
-const float expRadius = 2.7;
-const vec3 expCenter = vec3(0.,expRadius,0.);
+// change this to get different explosions :)
+#define EXPLOSION_SEED 0.
 
-/* original
-vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-vec4 permute(vec4 x) { return mod289(((x*34.0)+1.0)*x); }
-vec4 taylorInvSqrt(vec4 r){ return 1.79284291400159 - 0.85373472095314 * r; }
+// uncomment this to get a cross section view
+//#define CROSS_SECTION
 
-float noise(vec3 v)
-{
-	const vec2  C = vec2(1.0/6.0, 1.0/3.0);
-	const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);
-	// First corner
-	vec3 i  = floor(v + dot(v, C.yyy));
-	vec3 x0 = v - i + dot(i, C.xxx);
-	// Other corners
-	vec3 g = step(x0.yzx, x0.xyz);
-	vec3 l = 1.0 - g;
-	vec3 i1 = min(g.xyz, l.zxy);
-	vec3 i2 = max(g.xyz, l.zxy);
-	vec3 x1 = x0 - i1 + C.xxx;
-	vec3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y
-	vec3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y
-	// Permutations
-	i = mod289(i);
-	vec4 p = permute( permute( permute( i.z + vec4(0.0, i1.z, i2.z, 1.0)) + i.y + vec4(0.0, i1.y, i2.y, 1.0 )) + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));
-	// Gradients: 7x7 points over a square, mapped onto an octahedron.
-	// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)
-	float n_ = 0.142857142857; // 1.0/7.0
-	vec3  ns = n_ * D.wyz - D.xzx;
-	vec4 j = p - 49.0 * floor(p * ns.z * ns.z);  //  mod(p,7*7)
-	vec4 x_ = floor(j * ns.z);
-	vec4 y_ = floor(j - 7.0 * x_);    // mod(j,N)
-	vec4 x = x_ *ns.x + ns.yyyy;
-	vec4 y = y_ *ns.x + ns.yyyy;
-	vec4 h = 1.0 - abs(x) - abs(y);
-	vec4 b0 = vec4(x.xy, y.xy);
-	vec4 b1 = vec4(x.zw, y.zw);
-	vec4 s0 = floor(b0) * 2.0 + 1.0;
-	vec4 s1 = floor(b1) * 2.0 + 1.0;
-	vec4 sh = -step(h, vec4(0.0));
-	vec4 a0 = b0.xzyw + s0.xzyw * sh.xxyy;
-	vec4 a1 = b1.xzyw + s1.xzyw * sh.zzww;
-	vec3 p0 = vec3(a0.xy, h.x);
-	vec3 p1 = vec3(a0.zw, h.y);
-	vec3 p2 = vec3(a1.xy, h.z);
-	vec3 p3 = vec3(a1.zw, h.w);
-	//Normalise gradients
-	vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
-	p0 *= norm.x;
-	p1 *= norm.y;
-	p2 *= norm.z;
-	p3 *= norm.w;
-	// Mix final noise value
-	vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
-	m = m * m;
-	return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));
-}
-*/
+// the bounding sphere of the explosion. this is less general but means that
+// ray cast is only performed for nearby pixels, and raycast can begin from the sphere
+// (instead of walking out from the camera)
+float expRadius;
+vec3 expCenter;
 
-// iq's noise
+//iq's LUT 3D noise
 float noise( in vec3 x )
 {
-    vec3 p = floor(x);
     vec3 f = fract(x);
-	f = f*f*(3.0-2.0*f);
-	vec2 uv = (p.xy+vec2(37.0,17.0)*p.z) + f.xy;
-	vec2 rg = texture( iChannel1, (uv+ 0.5)/256.0, -100.0 ).yx;
-	return -1.0+2.0*mix( rg.x, rg.y, f.z );
+    vec3 p = x - f; // this avoids the floor() but doesnt affect performance for me.
+    f = f*f*(3.0-2.0*f);
+     
+    vec2 uv = (p.xy+vec2(37.0,17.0)*p.z) + f.xy;
+    vec2 rg = textureLod( iChannel0, (uv+ 0.5)/256.0, 0.0 ).yx;
+    return mix( rg.x, rg.y, f.z );
 }
 
 // assign colour to the media
@@ -86,10 +37,10 @@ vec3 computeColour( float density, float radius )
 	// the media
 	vec3 result = mix( 1.1*vec3(1.0,0.9,0.8), vec3(0.4,0.15,0.1), density );
 	
-	// colour added for nebula
-	vec3 colBottom = 3.1*vec3(0.8,1.0,1.0);
+	// colour added for explosion
+	vec3 colBottom = 3.1*vec3(1.0,0.5,0.05);
 	vec3 colTop = 2.*vec3(0.48,0.53,0.5);
-	result *= mix( colBottom*2.0, colTop, min( (radius+.5)/1.7, 1.0 ) );
+	result *= mix( colBottom, colTop, min( (radius+.5)/1.7, 1.0 ) );
 	
 	return result;
 }
@@ -97,13 +48,12 @@ vec3 computeColour( float density, float radius )
 // maps 3d position to colour and density
 float densityFn( in vec3 p, in float r, out float rawDens, in float rayAlpha )
 {
-    float l = length(p);
 	// density has dependency on mouse y coordinate (linear radial ramp)
-	float mouseIn = 0.75;
+	float mouseIn = 0.85;
 	if( iMouse.z > 0.0 )
 		mouseIn = iMouse.y/iResolution.y;
 	float mouseY = 1.0 - mouseIn;
-    float den = 1. - 1.5*r*(4.*mouseY+.5);
+    float den = -0.1 - 1.5*r*(4.*mouseY+.5);
     
 	// offset noise based on seed
     float t = EXPLOSION_SEED;
@@ -114,19 +64,21 @@ float densityFn( in vec3 p, in float r, out float rawDens, in float rayAlpha )
     vec3 q = p - dir* t; f  = 0.50000*noise( q );
 	q = q*2.02 - dir* t; f += 0.25000*noise( q );
 	q = q*2.03 - dir* t; f += 0.12500*noise( q );
-	q = q*2.40 - dir* t; f += 0.06250*noise( q );
-    q = q*2.50 - dir* t; f += 0.03125*noise( q );
-    
+	q = q*2.01 - dir* t; f += 0.06250*noise( q );
+	q = q*2.02 - dir* t; f += 0.03125*noise( q );
+	
 	// add in noise with scale factor
-	rawDens = den + 4.0*f*l;
+	rawDens = den + 4.0*f;
 	
     den = clamp( rawDens, 0.0, 1.0 );
     
-    //if (den>0.9) den = -3.*den;
-    
 	// thin out the volume at the far extends of the bounding sphere to avoid
 	// clipping with the bounding sphere
-	den *= l*0.6-smoothstep(0.8,0.,r/expRadius);
+	den *= 1.-smoothstep(0.8,1.,r/expRadius);
+	
+	#ifdef CROSS_SECTION
+	den *= smoothstep(.0,.1,-p.x);
+	#endif
 	
 	return den;
 }
@@ -140,7 +92,7 @@ vec4 raymarch( in vec3 rayo, in vec3 rayd, in float expInter, in vec2 fragCoord 
     // dither start pos to break up aliasing
 	vec3 pos = rayo + rayd * (expInter + step*texture( iChannel0, fragCoord.xy/iChannelResolution[0].x ).x);
 	
-    for( int i=0; i<48; i++ )
+    for( int i=0; i<25; i++ )
     {
         if( sum.a > 0.99 ) continue;
 		
@@ -155,17 +107,17 @@ vec4 raymarch( in vec3 rayo, in vec3 rayd, in float expInter, in vec2 fragCoord 
 		vec4 col = vec4( computeColour(dens,radiusFromExpCenter), dens );
 		
 		// uniform scale density
-		col.a *= 0.2;
+		col.a *= 0.6;
 		
 		// colour by alpha
-		col.rgb *= col.a/0.8;
+		col.rgb *= col.a;
 		
 		// alpha blend in contribution
 		sum = sum + col*(1.0 - sum.a);  
 		
 		// take larger steps through negative densities.
 		// something like using the density function as a SDF.
-		float stepMult = 1. + 2.5*(1.-clamp(rawDens+1.,1.,1.));
+		float stepMult = 1. + 2.5*(1.-clamp(rawDens+1.,0.,1.));
 		
 		// step along ray
 		pos += rayd * step * stepMult;
@@ -173,7 +125,6 @@ vec4 raymarch( in vec3 rayo, in vec3 rayd, in float expInter, in vec2 fragCoord 
 	
     return clamp( sum, 0.0, 1.0 );
 }
-
 
 // iq's sphere intersection
 float iSphere(in vec3 ro, in vec3 rd, in vec4 sph)
@@ -196,7 +147,7 @@ float iSphere(in vec3 ro, in vec3 rd, in vec4 sph)
 
 vec3 computePixelRay( in vec2 p, out vec3 cameraPos )
 {
-    // camera orbits around nebula
+    // camera orbits around explosion
 	
     float camRadius = 3.8;
 	// use mouse x coord
@@ -232,8 +183,10 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     vec2 p = -1.0 + 2.0*q;
     p.x *= iResolution.x / iResolution.y;
     
-	vec3 rayDir, cameraPos;
+    expRadius = 1.75;
+	expCenter = vec3(0.,expRadius,0.);
 	
+	vec3 rayDir, cameraPos;
     rayDir = computePixelRay( p, cameraPos );
 	
 	vec4 col = vec4(0.);
@@ -247,26 +200,27 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 	}
 	
     // smoothstep final color to add contrast
-    fragColor = vec4(col.xyz*col.xyz*(3.0-2.0*col.xyz),1.0);
+    fragColor.xyz = col.xyz*col.xyz*(3.0-2.0*col.xyz);
+    fragColor.a = 1.;
 }
 
 `;
 
 export default class implements iSub {
   key(): string {
-    return '4lSXD1';
+    return 'Xss3DS';
   }
   name(): string {
-    return 'Dusty nebula 1';
+    return 'Anatomy of an explosion';
   }
   sort() {
-    return 440;
-  }
-  tags?(): string[] {
-    return [];
+    return 442;
   }
   webgl() {
     return WEBGL_2;
+  }
+  tags?(): string[] {
+    return [];
   }
   main(): HTMLCanvasElement {
     return createCanvas();
@@ -284,13 +238,8 @@ export default class implements iSub {
   channels() {
     return [
       {
-        type: 0,
-        path: './textures/4ddGWr.png',
-        ...webglUtils.TEXTURE_NEAREST,
-        ...webglUtils.NO_FLIP_Y,
-      }, //
-      {
         ...webglUtils.DEFAULT_NOISE,
+        ...webglUtils.TEXTURE_MIPMAPS,
         ...webglUtils.NO_FLIP_Y,
       },
     ];

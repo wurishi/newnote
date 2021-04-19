@@ -2679,6 +2679,42 @@ MdtGRl
 
 ![440](assets/440.jpg)
 
+# 441. Alien Beacon
+
+ld2SzK
+
+![441](assets/441.jpg)
+
+# 442. Anatomy of an explosion
+
+Xss3DS
+
+![442](assets/442.jpg)
+
+# 443. Pyroclastic fireball
+
+MtXSzS
+
+![443](assets/443.jpg)
+
+# 444. weaved Voronoï
+
+ltsXRM
+
+![444](assets/444.jpg)
+
+# 445. UI easy to integrate
+
+ldKSDm
+
+![445](assets/445.jpg)
+
+# 446. Structured Sampling Diagram
+
+ll3GWs
+
+![446](assets/446.png)
+
 
 
 https://www.shadertoy.com/results?query=&sort=love&from=36&num=12

@@ -3,22 +3,9 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-//
-// For diagram shader showing how samples are taken:
-//
 // https://www.shadertoy.com/view/ll3GWs
 //
-// We are in the process of writing up this technique. The following github repos
-// is the home of this research.
 //
-// https://github.com/huwb/volsample
-//
-// 
-//
-// Additional credits - this scene is mostly mash up of these two amazing shaders:
-//
-// Clouds by iq: https://www.shadertoy.com/view/XslGRr
 // Cloud Ten by nimitz: https://www.shadertoy.com/view/XtS3DD
 // 
 

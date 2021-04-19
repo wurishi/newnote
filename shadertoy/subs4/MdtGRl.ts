@@ -3,13 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-//-------------------------------------------------------------------------------------
-// Based on "Dusty nebula 1" (https://www.shadertoy.com/view/4lSXD1) 
-// and Shane's "Cheap Cloud Flythrough" (https://www.shadertoy.com/view/Xsc3R4) shaders
-// Some ideas came from other shaders from this wonderful site
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0
-//-------------------------------------------------------------------------------------
-
 //#define MOUSE_CAMERA_CONTROL
 
 // comment this string to see fluffy clouds

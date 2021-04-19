@@ -3,43 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-/*
-	Perspex Web Lattice
-	-------------------
-	
-	I felt that Shadertoy didn't have enough Voronoi examples, so I made another one. :) I'm
-	not exactly sure what it's supposed to be... My best guess is that an Alien race with no 
-	common sense designed a monitor system with physics defying materials. :)
-
-	Technically speaking, there's not much to it. It's just some raymarched 2nd order Voronoi.
-	The dark perspex-looking web lattice is created by manipulating the Voronoi value slightly 
-	and giving the effected region an ID value so as to color it differently, but that's about
-	it. The details are contained in the "heightMap" function.
-
-	There's also some subtle edge detection in order to give the example a slight comic look. 
-	3D geometric edge detection doesn't really differ a great deal in concept from 2D pixel 
-	edge detection, but it obviously involves more processing power. However, it's possible to 
-	combine the edge detection with the normal calculation and virtually get it for free. Kali 
-	uses it to great effect in his "Fractal Land" example. It's also possible to do a
-	tetrahedral version... I think Nimitz and some others may have done it already. Anyway, 
-	you can see how it's done in the "nr" (normal) function.
-
-	Geometric edge related examples:
-
-	Fractal Land - Kali
-	https://www.shadertoy.com/view/XsBXWt
-
-	Rotating Cubes - Shau
-	https://www.shadertoy.com/view/4sGSRc
-
-	Voronoi mesh related:
-
-    // I haven't really looked into this, but it's interesting.
-	Weaved Voronoi - FabriceNeyret2 
-    https://www.shadertoy.com/view/ltsXRM
-
-*/
-
 #define FAR 2.
 
 int id = 0; // Object ID - Red perspex: 0; Black lattice: 1.
@@ -230,14 +193,6 @@ vec3 rotHue(vec3 p, float a){
 }
 */
 
-// Simple environment mapping. Pass the reflected vector in and create some
-// colored noise with it. The normal is redundant here, but it can be used
-// to pass into a 3D texture mapping function to produce some interesting
-// environmental reflections.
-//
-// More sophisticated environment mapping:
-// UI easy to integrate - XT95    
-// https://www.shadertoy.com/view/ldKSDm
 vec3 eMap(vec3 rd, vec3 sn){
     
     vec3 sRd = rd; // Save rd, just for some mixing at the end.

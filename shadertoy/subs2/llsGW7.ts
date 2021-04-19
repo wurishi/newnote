@@ -53,7 +53,7 @@ export default class implements iSub {
   }
   channels() {
     return [
-      { type: 0, path: './textures/llsGW7.jpg', ...webglUtils.TEXTURE_MIPMAPS }, //
+      webglUtils.TEXTURE12, //
     ];
   }
 }

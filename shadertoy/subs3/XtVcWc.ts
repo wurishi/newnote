@@ -210,7 +210,6 @@ float derivPlot(vec2 p, float w, int type)
 
 #define chr(A) col -= getChar(pp, A),pp.x-=0.5
 
-//for codes see: https://www.shadertoy.com/view/ldSBzd
 float getChar(vec2 p, int char)
 {
 	vec2 pos = vec2(char%16, 15 - char / 16);

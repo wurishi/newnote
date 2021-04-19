@@ -3,14 +3,13 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// comment this string to see each part in full screen
-#define BOTH
-// uncomment this string to see left part
-//#define LEFT
-
-//#define LOW_QUALITY
+// https://www.shadertoy.com/view/MdKXzc
+//-------------------------------------------------------------------------------------
+// Based on "Dusty nebula 4" (https://www.shadertoy.com/view/MsVXWW) 
+// and "Protoplanetary disk" (https://www.shadertoy.com/view/MdtGRl) 
 
 #define DITHERING
+#define BACKGROUND
 
 //#define TONEMAPPING
 
@@ -29,21 +28,34 @@ float noise( in vec3 x )
 	return 1. - 0.82*mix( rg.x, rg.y, f.z );
 }
 
-float fbm( vec3 p )
+float fbm(vec3 p)
 {
    return noise(p*.06125)*.5 + noise(p*.125)*.25 + noise(p*.25)*.125 + noise(p*.4)*.2;
 }
 
-float Sphere( vec3 p, float r )
+float length2( vec2 p )
 {
-    return length(p)-r;
+	return sqrt( p.x*p.x + p.y*p.y );
 }
 
-const float nudge = 4.;	// size of perpendicular vector
+float length8( vec2 p )
+{
+	p = p*p; p = p*p; p = p*p;
+	return pow( p.x + p.y, 1.0/8.0 );
+}
+
+
+float Disk( vec3 p, vec3 t )
+{
+    vec2 q = vec2(length2(p.xy)-t.x,p.z*0.5);
+    return max(length8(q)-t.y, abs(p.z) - t.z);
+}
+
+const float nudge = 0.9;	// size of perpendicular vector
 float normalizer = 1.0 / sqrt(1.0 + nudge*nudge);	// pythagorean theorem on that perpendicular to maintain scale
 float SpiralNoiseC(vec3 p)
 {
-    float n = -mod(iTime * 0.2,-2.); // noise amount
+    float n = 0.0;	// noise amount
     float iter = 2.0;
     for (int i = 0; i < 8; i++)
     {
@@ -61,15 +73,11 @@ float SpiralNoiseC(vec3 p)
     return n;
 }
 
-float VolumetricExplosion(vec3 p)
+float NebulaNoise(vec3 p)
 {
-    float final = Sphere(p,4.);
-    #ifdef LOW_QUALITY
-    final += noise(p*12.5)*.2;
-    #else
-    final += fbm(p*50.);
-    #endif
-    final += SpiralNoiseC(p.zxy*0.4132+333.)*3.0; //1.25;
+    float final = Disk(p.xzy,vec3(2.0,1.8,1.25));
+    final += fbm(p*90.);
+    final += SpiralNoiseC(p.zxy*0.5123+100.0)*3.0;
 
     return final;
 }
@@ -78,9 +86,9 @@ float map(vec3 p)
 {
 	R(p.xz, iMouse.x*0.008*pi+iTime*0.1);
 
-	float VolExplosion = VolumetricExplosion(p/0.5)*0.5; // scale
+	float NebNoise = abs(NebulaNoise(p/0.5)*0.5);
     
-	return VolExplosion;
+	return NebNoise+0.07;
 }
 //--------------------------------------------------------------
 
@@ -131,8 +139,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     key += 0.7*texture(iChannel1, vec2(KEY_2,0.25)).x;
     key += 0.7*texture(iChannel1, vec2(KEY_3,0.25)).x;
 
-    vec2 uv = fragCoord/iResolution.xy;
-    
 	// ro: ray origin
 	// rd: direction of the ray
 	vec3 rd = normalize(vec3((fragCoord.xy-0.5*iResolution.xy)/iResolution.y, 1.));
@@ -158,40 +164,19 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 	t = min_dist*step(t,min_dist);
    
 	// raymarch loop
-    #ifdef LOW_QUALITY
-	for (int i=0; i<56; i++)
-    #else
-    for (int i=0; i<86; i++)
-    #endif
+	for (int i=0; i<64; i++) 
 	{
 	 
 		vec3 pos = ro + t*rd;
   
 		// Loop break conditions.
-	    if(td>0.9 || d<0.12*t || t>10. || sum.a > 0.99 || t>max_dist) break;
+	    if(td>0.9 || d<0.1*t || t>10. || sum.a > 0.99 || t>max_dist) break;
         
         // evaluate distance function
         float d = map(pos);
-        
-        #ifdef BOTH
-        /*
-        if (uv.x<0.5)
-        {
-            d = abs(d)+0.07;
-        }
-        */
-        //split screen variant
-        //d = uv.x < 0.5 ? abs(d)+0.07 : d;
-        
-        d = cos(iTime)*uv.x < 0.1 ? abs(d)+0.07 : d;
-        #else
-        #ifdef LEFT
-        d = abs(d)+0.07;
-        #endif
-		#endif
-        
+		       
 		// change this string to control density 
-		d = max(d,0.03);
+		d = max(d,0.0);
         
         // point light calculations
         vec3 ldst = vec3(0.0)-pos;
@@ -200,6 +185,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         // the color of light 
         vec3 lightColor=vec3(1.0,0.5,0.25);
         
+        sum.rgb+=(vec3(0.67,0.75,1.00)/(lDist*lDist*10.)/80.); // star itself
         sum.rgb+=(lightColor/exp(lDist*lDist*lDist*.08)/30.); // bloom
         
 		if (d<h) 
@@ -216,7 +202,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 			vec4 col = vec4( computeColor(td,lDist), td );
             
             // emission
-            sum += sum.a * vec4(sum.rgb, 0.0) * 0.2 / lDist;	
+            sum += sum.a * vec4(sum.rgb, 0.0) * 0.2;	
             
 			// uniform scale density
 			col.a *= 0.2;
@@ -230,34 +216,37 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 		td += 1./70.;
 
         #ifdef DITHERING
-        vec2 uvd = uv;
-        uvd.y*=120.;
-        uvd.x*=280.;
-        d=abs(d)*(.8+0.08*texture(iChannel2,vec2(uvd.y,-uvd.x+0.5*sin(4.*iTime+uvd.y*4.0))).r);
+        vec2 uv = fragCoord.xy / iResolution.xy;
+        uv.y*=120.;
+        uv.x*=280.;
+        d=abs(d)*(.8+0.08*texture(iChannel2,vec2(uv.y,-uv.x+0.5*sin(4.*iTime+uv.y*4.0))).r);
         #endif 
 		
-        // trying to optimize step size
-        #ifdef LOW_QUALITY
-        t += max(d*0.25,0.01);
-        #else
-        t += max(d * 0.08 * max(min(length(ldst),d),2.0), 0.01);
-        #endif
-        
+        // trying to optimize step size near the camera and near the light source
+        t += max(d * 0.1 * max(min(length(ldst),length(ro)),1.0), 0.01);
         
 	}
     
     // simple scattering
-    #ifdef LOW_QUALITY    
-    sum *= 1. / exp( ld * 0.2 ) * 0.9;
-    #else
-    sum *= 1. / exp( ld * 0.2 ) * 0.8;
-    #endif
+	sum *= 1. / exp( ld * 0.2 ) * 0.6;
         
    	sum = clamp( sum, 0.0, 1.0 );
    
     sum.xyz = sum.xyz*sum.xyz*(3.0-2.0*sum.xyz);
     
 	}
+
+    #ifdef BACKGROUND
+    // stars background
+    if (td<.8)
+    {
+        vec3 stars = vec3(noise(rd*500.0)*0.5+0.5);
+        vec3 starbg = vec3(0.0);
+        starbg = mix(starbg, vec3(0.8,0.9,1.0), smoothstep(0.99, 1.0, stars)*clamp(dot(vec3(0.0),rd)+0.75,0.0,1.0));
+        starbg = clamp(starbg, 0.0, 1.0);
+        sum.xyz += starbg; 
+    }
+	#endif
    
     #ifdef TONEMAPPING
     fragColor = vec4(ToneMapFilmicALU(sum.xyz*2.2),1.0);
@@ -269,19 +258,19 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
 export default class implements iSub {
   key(): string {
-    return 'lsySzd';
+    return 'MdKXzc';
   }
   name(): string {
-    return 'Volumetric explosion';
+    return 'Supernova remnant';
   }
   sort() {
-    return 420;
-  }
-  webgl() {
-    return WEBGL_2;
+    return 421;
   }
   tags?(): string[] {
     return [];
+  }
+  webgl() {
+    return WEBGL_2;
   }
   main(): HTMLCanvasElement {
     return createCanvas();

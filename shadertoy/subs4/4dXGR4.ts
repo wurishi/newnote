@@ -3,10 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// based on https://www.shadertoy.com/view/lsf3RH by
-// trisomie21 (THANKS!)
-// My apologies for the ugly code.
-
 float snoise(vec3 uv, float res)	// by trisomie21
 {
 	const vec3 s = vec3(1e0, 1e2, 1e4);

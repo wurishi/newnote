@@ -3,9 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-//note: SEE ALSO https://www.shadertoy.com/view/XlGcRh
-//////////////////////////////////////////////////////
-
 #define MAX_HASH 9.0
 //#define VIS_HASH 2
 
@@ -134,7 +131,6 @@ uint triple32(uint x)
     return x;
 }
 
-//note: from https://www.shadertoy.com/view/XlGcRh
 uvec2 pcg2d(uvec2 v)
 {
     v = v * 1664525u + 1013904223u;

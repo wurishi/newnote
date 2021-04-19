@@ -3,10 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Tokyo by night in the rain. The car model is made by Eiffie
-// (Shiny Toy': https://www.shadertoy.com/view/ldsGWB). 
-// I have never been in Tokyo btw.
-
 #define BUMPMAP
 #define MARCHSTEPS 128
 #define MARCHSTEPSREFLECTION 48
@@ -73,11 +69,6 @@ float opU( float d2, float d1 ) { return min( d1,d2); }
 float opS( float d2, float d1 ) { return max(-d1,d2); }
 float smin( float a, float b, float k ) { return -log(exp(-k*a)+exp(-k*b))/k; } //from iq
 
-//----------------------------------------------------------------------
-// Map functions
-
-// car model is made by Eiffie
-// shader 'Shiny Toy': https://www.shadertoy.com/view/ldsGWB
 
 float mapCar(in vec3 p0){ 
 	vec3 p=p0+vec3(0.0,1.24,0.0);

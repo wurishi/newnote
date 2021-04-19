@@ -2558,3 +2558,67 @@ Mld3Rn
 lsySzd
 
 ![420](assets/420.jpg)
+
+# 421. Supernova remnant
+
+MdKXzc
+
+![421](assets/421.jpg)
+
+# 422. Cheap Cloud Flythrough
+
+Xsc3R4
+
+![422](assets/422.jpg)
+
+# 423. Cloudy spikeball
+
+MljXDw
+
+![423](assets/423.jpg)
+
+# 424. Sample Pinning
+
+XdfXzn
+
+![424](assets/424.jpg)
+
+# 425. FakeVolumetricClouds
+
+XlsXzN
+
+![425](assets/425.jpg)
+
+# 426. Emission clouds
+
+ltBXDm
+
+![426](assets/426.jpg)
+
+# 427. Charmap
+
+ldSBzd
+
+![427](assets/427.jpg)
+
+# 428. Ball Of Fire
+
+lsf3RH
+
+![428](assets/428.jpg)
+
+# 429. The wave
+
+lsj3Dw
+
+![429](assets/429.jpg)
+
+# 430. Hash Functions for GPU Rendering
+
+XlGcRh
+
+![430](assets/430.jpg)
+
+
+
+https://www.shadertoy.com/results?query=&sort=love&from=36&num=12

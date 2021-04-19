@@ -41,3 +41,32 @@ Range(min, max), Float, Int, Color(num, num, num, num), Vector(num, num, num, nu
 真正用于呈现渲染的代码都放在 SubShader 块, 其主要由可选标签, 通用状态以及一个通道列表构成.
 
 每个 Shader 都包含一个 SubShader 列表, 游戏运行时会根据实际的运行环境从上到下选择一个合适的 SubShader 来使用. 
+
+
+
+1.4.2 SubShader 语法结构:
+
+```glsl
+SubShader {
+    [Tags]
+    [CommonState]
+    Pass {}
+}
+```
+
+重要的代码和核心渲染逻辑基本都在 Pass 块中, 一个 SubShader 可以包含多个 Pass 块, Pass 的语法:
+
+```glsl
+Pass {
+    [Name and Tags]
+    [RenderSetup] // 可以设置显卡的各种状态
+    // 例如:
+    // Lighting (光照, 开启或者关闭对应 On 和 Off)
+    // Material {材质块}
+    // SeparateSpecular (开启或者关闭顶点光照相关的镜面高光颜色, 允许高光有不同的颜色)
+    [TextureSetup]
+}
+```
+
+1.4.3 最后是使用降级着色器 Fallback , 作用是当编写的 Shader 无法完成渲染任务时备选的渲染方案, 以防渲染程序报错崩溃.
+

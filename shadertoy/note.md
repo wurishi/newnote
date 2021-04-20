@@ -2798,3 +2798,67 @@ Ml2XDV
 XdsGDB
 
 ![460](assets/460.jpg)
+
+# 461. [SH17C] Physically Based Shading
+
+4sSfzK
+
+![461](assets/461.jpg)
+
+# 462. Bricks Game
+
+MddGzf
+
+![462](assets/462.jpg)
+
+# 463. Tileable Water Caustic
+
+MdlXz8
+
+![463](assets/463.jpg)
+
+# 464. 2d signed distance functions
+
+4dfXDn
+
+![464](assets/464.jpg)
+
+# 465. Planet Shadertoy
+
+4tjGRh
+
+![465](assets/465.jpg)
+
+# 466. [SIG15] Mario World 1-1
+
+XtlSD7
+
+![466](assets/466.jpg)
+
+# 467. Generators
+
+Xtf3Rn
+
+![467](assets/467.jpg)
+
+# 468. Spherical Harmonics lighting
+
+lt2GRD
+
+![468](assets/468.jpg)
+
+# 469. Wet stone
+
+ldSSzV
+
+![469](assets/469.jpg)
+
+# 470. Atmospheric Scattering Sample
+
+lslXDr
+
+![470](assets/470.jpg)
+
+
+
+https://www.shadertoy.com/results?query=&sort=love&from=48&num=12

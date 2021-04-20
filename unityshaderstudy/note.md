@@ -163,7 +163,7 @@ ShaderLab 的结构
 | SubShader 标签类型   | 说明                                                         | 例子例子例子例子例子例子例子例子例子例子例子例子例子例子例子例子例子例子例子例子例子例子例子例子例子例子例子 |
 | -------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | Queue                | 控制渲染顺序, 指定该物体属于哪一个渲染队列, 可用于指定所有透明物体在不透明物体后面被渲染. | Tags{"Queue" = "Transparent"}                                |
-| RenderType           | 对着色器进行分类, 可以被用于着色器替换功能.                  | Tags{"RenderType" = "Opaqure"}                               |
+| RenderType           | 对着色器进行分类, 可以被用于着色器替换功能.                  | Tags{"RenderType" = "Opaque"}                                |
 | DisableBatching      | 一些 SubShader 在使用批处理功能时会出现问题, 例如使用了模型空间下的坐标进行顶点动画, 这时可以用这个标签来指定是否使用批处理. | Tags{"DisableBatching" = "True"}                             |
 | ForceNoShadowCasting | 控制使用该 SubShader 的物体是否会投射阴影.                   | Tags{"ForceNoShadowCasting" = "True"}                        |
 | IgnoreProjector      | 通常用于半透明物体, 如果为 True, 那么使用该 SubShader 的物体将不会受 projector 的影响. | Tags{"IgnoreProjector" = "True"}                             |
@@ -177,3 +177,170 @@ ShaderLab 的结构
 | LightMode      | 定义该 Pass 在 Unity 的渲染流水线中的角色 | Tags{"LightMode" = "ForwardBase"}          |
 | RequireOptions | 用于指定当满足某些条件时才渲染该 Pass     | Tags{"RequireOptions" = "SoftVergetation"} |
 
+# 5. 三种 Shader 类型
+
+## 5.1 表面着色器
+
+Unity 自己创造的一种 Shader 类型, 目的是为了使用者操作更加的方便, 相较于原本的 Shader 要写的代码要少很多. 实际上当 Unity 要编译一个表面着色器时背后还是要转换成对应的顶点/片元着色器.
+
+一个简单的表面着色器如下:
+
+```glsl
+Shader "Custom/testShader"
+{
+    SubShader
+    {
+        Tags{"RenderType" = "Opaque"}
+        CGPROGRAM
+        #pragma surface surf Lambert
+        struct Input
+        {
+            float4 color:COLOR;
+        };
+        void surf (Input IN, inout SurfaceOutput o)
+        {
+            o.Albedo = 1;
+        }
+        ENDCG
+    }
+    FallBack "Diffuse"
+}
+```
+
+表面着色器被定义在 SubShader 中的 CGPROGRAM 和 ENDCG 之间, 这其中的代码是使用 CG/HLSL 写的, 这与实际上的 CG/HLSL 代码几乎是一样的. 当然你也可以使用 GLSL 来写, 跟 CG/HLSL 类似, GLSL 的代码要嵌套在 GLSLPROGRAM 和 ENDGLSL 中, 这就限制了能发布的平台, 只能放在 MacOSX, OpenGLES2.0 等, 放在 DirectX 平台上就不适用了.
+
+## 5.2 顶点/片元着色器
+
+相比表面着色器要复杂一些, 但灵活性也是更高. 顶点/片元着色器代码也是写在 CGPROGRAM 和 ENDCG 之间, 但是是在 Pass 块中而不是在 SubShader 块, 这就需要我们自己去写代码定义每个 Pass 块的功能, 这样我们可以控制实际渲染的细节, 代码也是用 CG/HLSL 编写的.
+
+一个简单的顶点/片元着色器:
+
+```glsl
+Shader "Custom/testShader"
+{
+    SubShader
+    {
+        Pass
+        {
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+            float4 vert(float4 v : POSITION) : SV_POSITION
+            {
+                return UnityObjectToClipPos (v);
+            }
+            fixed4 frag() : SV_Target
+            {
+                return fixed4(1.0, 0.0, 0.0, 1.0);
+            }
+            ENDCG
+        }
+    }
+}
+```
+
+## 5.3 固定函数着色器
+
+一般是用在比较陈旧的设备上, 这些设备不支持可编程管线着色器, 固定函数着色器的编写需要完全使用 ShaderLab 的语法而不是 CG/HLSL. 现在大多数 GPU 都支持可编程渲染, 所以固定管线也就慢慢被淘汰了.
+
+一个简单的固定函数代码:
+
+```glsl
+Shader "Custom/testShader"
+{
+    Properties
+    {
+        _Color ("Main Color", Color) = (1, 0.5, 0.5, 1)
+    }
+    SubShader
+    {
+        Pass
+        {
+            Material
+            {
+                Diffuse[_Color]
+            }
+            Lighting On
+        }
+    }
+}
+```
+
+# 6. 涉及的数学知识
+
+## 6.1 笛卡尔坐标系
+
+笛卡尔坐标系有二维和三维. 二维笛卡尔坐标系包含一个原点, 以及过原点并相互垂直的两条向量, 也就是 X轴和 Y轴. 这是我们一般意义上的二维笛卡尔坐标系, 而 OpenGL 和 DirectX 使用了不同的二维笛卡尔坐标系:
+
+- DirectX 在进行屏幕映射时使用的 2D笛卡尔坐标系, 是以左上角为坐标原点.
+- OpenGL 在进行屏幕映射时使用的 2D笛卡尔坐标素, 是以左下角为坐标原点.
+
+三维笛卡尔坐标系是定义了三个坐标轴和原点, 三个向量相交于原点并相互垂直, 坐标轴也称为该坐标系的基矢量. 当各个向量长度为1时称为标准正交基, 当向量长度不为1的时候称为正交基. 三维笛卡尔坐标系也有两种情况: 左手坐标系和右手坐标系.
+
+在 Unity 中, 场景里面的世界坐标是以左手坐标系为主, 但摄像机观察视锥空间是以右手坐标系为主, Z轴刚好与世界坐标系相反.
+
+## 6.2 点, 向量和标量
+
+点是多维空间中的一个位置, 没有大小. 一般用2到3个实数来表示, 如P(Px, Py), 表示二维空间中的点, P(Px, Py, Pz)表示三维空间中的点. 向量也称为矢量, 用来描述偏移量, 是指有大小和方向的有向线段, 矢量的大小也称模. 最简单的例子如速度即为典型的矢量. 而标量是只有大小没有方向, 矢量的表示方法和点有点类似, 可以使用 p = (x, y) 表示二维矢量, p = (x, y, z) 表示三维矢量, p = (x, y, z, w) 表示四维矢量.
+
+### 矢量的模
+
+也就是矢量的大小, 矢量的长度, 假定有一个矢量 P=(Px, Py, Pz), 该矢量模的计算公式如下:
+$$
+|P| = \sqrt{(x^2+y^2+z^2)}
+$$
+模为1的矢量为单位矢量, 零矢量是矢量的每个分量都是0, 即P=(0,0,0).
+
+### 矢量和标量的乘法和除法
+
+假定有个矢量P=(Px, Py, Pz), 标量K, 则:
+
+`K*P = (K*Px, K*Py, K*Pz)`
+
+`P/K = (Px/K, Py/K, Pz/K), K ≠ 0`
+
+我们不能把矢量和标量相加或相减, 就像我们不能把速度和距离相加一样.
+
+### 矢量间的乘法, 点积和叉积
+
+在 Unity Shader 中, 可以直接使用 Dot(a, b) 的代码来对两个矢量进行计算, 点积的公式有两种:
+
+其一:
+$$
+a \cdot b = (ax, ay, az) \cdot (bx, by, bz)
+$$
+其二:
+$$
+a \cdot b = |a||b| \cos \theta
+$$
+点积的几何意义很重要, 几乎应用到了图形学的各个方面, 比如计算投影. 投影的值可以是负数, 投影结果的正负号与两个计算矢量的方向有关. 当它们方向相反(夹角大于90度), 结果小于0. 方向相互垂直时, 结果等于0, 方向相同时(夹角小于90度), 结果大于0.
+
+点积的计算结果是一个标量, 它可以结合标题乘法或者矢量加减法, 一个矢量和本身进行点积的结果是该矢量模的平方.
+
+叉积, 又称为外积, 与点积不同的是计算后的结果是矢量而不是标量. 叉积不满足交换律, 两个矢量进行叉积结果会得到一个同时垂直于这两个矢量的新矢量. 叉积通常用来计算垂直于一个平面或三角形的矢量, 也可以判断三角形面片的朝向, 我们一般说的法线垂直于平面以及法线翻转和叉积就有很大关系. 叉积也有两个计算公式:
+
+其一:
+$$
+a \times b = (ax, ay, az) \times (bx, by, bz) = (ay*bz - az*by, az*bx-ax*bz, ax*by - ay*bx)
+$$
+其二:
+$$
+|a \times b| = |a||b| \sin \theta
+$$
+
+### 矢量间的相加和相减
+
+其结果生成一个新的矢量, 不同维度间的矢量不能参与运行.
+
+假定有矢量a=(ax, ay, az) 和矢量 b=(bx, by, bz), 则:
+$$
+a+b = (ax+bx, ay+by, az+bz)
+$$
+
+$$
+a-b = (ax-bx, ay-by, az-bz)
+$$
+
+一般矢量间的加法和减法用来计算一点相对于另外一点的位移, 比如空间中有点a和点b, 我们可以用矢量A和矢量B来表示它们相对于原点的位移(连接原点到点a的矢量为矢量A, 连接原点到点b的矢量为矢量B), 如果想要计算点b相对于点a的位移, 可以通过 `B - A`得到.
+
+## 6.3 矩阵

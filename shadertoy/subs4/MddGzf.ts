@@ -344,7 +344,6 @@ float hash1( in float n )
     return fract(sin(n)*138.5453123);
 }
 
-// Digit data by P_Malin (https://www.shadertoy.com/view/4sf3RN)
 const int[] font = int[](0x75557, 0x22222, 0x74717, 0x74747, 0x11574, 0x71747, 0x71757, 0x74444, 0x75757, 0x75747);
 const int[] powers = int[](1, 10, 100, 1000, 10000);
 int PrintInt( in vec2 uv, in int value )

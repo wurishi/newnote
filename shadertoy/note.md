@@ -2859,6 +2859,52 @@ lslXDr
 
 ![470](assets/470.jpg)
 
+# 471. llamels
 
+ltsGz4
 
-https://www.shadertoy.com/results?query=&sort=love&from=48&num=12
+![471](assets/471.jpg)
+
+# 472. Lens Flare Example
+
+4sX3Rs
+
+![472](assets/472.jpg)
+
+# 473. Flare Mania
+
+lsBGDK
+
+![473](assets/473.jpg)
+
+# 474. Water world
+
+lslGDB
+
+![474](assets/474.jpg)
+
+# 475. Floating Mountains
+
+XsSGDy
+
+![475](assets/475.jpg)
+
+# 476. Clouds and Sun With Flare
+
+4sl3zl
+
+![476](assets/476.jpg)
+
+# 477. musk's lens flare mod
+
+XdfXRX
+
+![477](assets/477.jpg)
+
+# 478. Digital Brain
+
+4sl3Dr
+
+![478](assets/478.jpg)
+
+https://www.shadertoy.com/results?query=&sort=love&from=60&num=12

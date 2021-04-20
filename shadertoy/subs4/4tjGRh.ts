@@ -494,12 +494,6 @@ vec4 renderStars( const in vec3 rd ) {
 	return   vec4( col, 1 ); 
 } 
 
-//-----------------------------------------------------
-// Atmospheric Scattering by GLtracy
-// 
-// https://www.shadertoy.com/view/lslXDr
-//-----------------------------------------------------
-
 const float ATMOSPHERE_K_R = 0.166;
 const float ATMOSPHERE_K_M = 0.0025;
 const float ATMOSPHERE_E = 12.3;
@@ -652,12 +646,6 @@ vec3 renderAtmosphericLow( const in vec3 ro, const in vec3 rd ) {
     return atmosphericInScatterLow( ro, rd, e, SUN_DIRECTION );
 }
 
-//-----------------------------------------------------
-// Seascape by TDM
-// 
-// https://www.shadertoy.com/view/Ms2SD1
-//-----------------------------------------------------
-
 const int   SEA_ITER_GEOMETRY = 3;
 const int   SEA_ITER_FRAGMENT = 5;
 
@@ -785,13 +773,6 @@ void renderSea( const in vec3 ro, const in vec3 rd, inout vec3 n, inout float at
     
     att = clamp(SEA_HEIGHT+p.y, 0.,1.);
 }
-
-//-----------------------------------------------------
-// Terrain based on Elevated and Terrain Tubes by IQ
-//
-// https://www.shadertoy.com/view/MdX3Rr
-// https://www.shadertoy.com/view/4sjXzG
-//-----------------------------------------------------
 
 #ifndef HIDE_TERRAIN
 
@@ -993,11 +974,6 @@ vec4 renderTerrain( const in vec3 ro, const in vec3 rd, inout vec3 intersection,
 
 #endif
 
-//-----------------------------------------------------
-// LLamels by Eiffie
-//
-// https://www.shadertoy.com/view/ltsGz4
-//-----------------------------------------------------
 #ifdef DISPLAY_LLAMEL
 float llamelMapSMin(const in float a,const in float b,const in float k){
     float h=clamp(0.5+0.5*(b-a)/k,0.0,1.0);return b+h*(a-b-k+k*h);
@@ -1248,12 +1224,6 @@ vec4 renderPlanet( const in vec3 ro, const in vec3 rd, const in vec3 up, inout f
 
  	return vec4( col, 1. ); 
 }
-
-//-----------------------------------------------------
-// Lens flare by musk
-//
-// https://www.shadertoy.com/view/4sX3Rs
-//-----------------------------------------------------
 
 vec3 lensFlare( const in vec2 uv, const in vec2 pos) {
 	vec2 main = uv-pos;

@@ -265,6 +265,7 @@ async function activeSub(name: string) {
   const v = webglV === WEBGL_2 ? vertex2 : vertex;
 
   let f = webglV === WEBGL_2 ? fragment2 : fragment;
+  f = f.replace('{COMMON}', sub.common ? sub.common() : '');
   f = f.replace(
     '{PRECISION}',
     sub.fragmentPrecision ? sub.fragmentPrecision() : PRECISION_MEDIUMP
@@ -491,6 +492,7 @@ async function createChannelList(
           const v = webglV ? vertex2 : vertex;
 
           let f = webglV === WEBGL_2 ? fragment2 : fragment;
+          f = f.replace('{COMMON}', sub.common ? sub.common() : '');
           f = f.replace(
             '{PRECISION}',
             sub.fragmentPrecision ? sub.fragmentPrecision() : PRECISION_MEDIUMP

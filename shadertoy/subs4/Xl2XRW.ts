@@ -73,7 +73,6 @@ const float k_fFarClip = 20.0;
 
 float Hash( float p ) 
 {
-    // https://www.shadertoy.com/view/4djSRW - Dave Hoskins
 	vec2 p2 = fract(vec2(p) * MOD2);
     p2 += dot(p2.yx, p2.xy+19.19);
 	return fract(p2.x * p2.y);    
@@ -82,7 +81,6 @@ float Hash( float p )
 
 vec2 Hash2( float p ) 
 {
-    // https://www.shadertoy.com/view/4djSRW - Dave Hoskins
 	vec3 p3 = fract(vec3(p) * vec3(.1031, .1030, .0973));
 	p3 += dot(p3, p3.yzx + 19.19);
     return fract((p3.xx+p3.yz)*p3.zy);

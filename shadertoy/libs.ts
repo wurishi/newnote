@@ -33,6 +33,8 @@ uniform sampler2D iChannel3;
 
 uniform vec3 iChannelResolution[4];
 
+{COMMON}
+
 {USER_FRAGMENT}
 
 void main() {
@@ -60,6 +62,8 @@ uniform sampler2D iChannel3;
 uniform vec3 iChannelResolution[4];
 
 out vec4 outputColor;
+
+{COMMON}
 
 {USER_FRAGMENT}
 
@@ -95,6 +99,7 @@ export interface iSub {
     canvas?: any;
   }[];
   webgl?(): string;
+  common?(): string;
 }
 
 export function createCanvas(style?: {

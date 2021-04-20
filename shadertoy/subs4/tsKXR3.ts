@@ -161,12 +161,6 @@ vec4 softclamp(float a, float b, vec4 x, float k) {
 	return (softmin(vec4(b),softmax(vec4(a),x,k),k) + softmax(vec4(a),softmin(vec4(b),x,k),k)) / 2.0;    
 }
 
-
-
-
-// GGX from Noby's Goo shader https://www.shadertoy.com/view/lllBDM
-
-// MIT License: https://opensource.org/licenses/MIT
 float G1V(float dnv, float k){
     return 1.0/(dnv*(1.0-k)+k);
 }
@@ -190,11 +184,7 @@ float ggx(vec3 n, vec3 v, vec3 l, float rough, float f0){
     float spec = dnl * d * f * vis;
     return spec;
 }
-// End Noby's GGX
 
-
-// Modified from Shane's Bumped Sinusoidal Warp shadertoy here:
-// https://www.shadertoy.com/view/4l2XWK
 vec3 light(vec2 uv, float BUMP, float SRC_DIST, vec2 dxy, float iTime, inout vec3 avd) {
     vec3 sp = vec3(uv-0.5, 0);
     vec3 light = vec3(cos(iTime/2.0)*0.5, sin(iTime/2.0)*0.5, -SRC_DIST);

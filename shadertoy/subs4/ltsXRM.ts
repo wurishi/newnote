@@ -50,7 +50,6 @@ vec3 worley( vec2 p , float k) {
     return sqrt(d);
 }
 
-// distance to Voronoi borders, as explained in https://www.shadertoy.com/view/ldl3W8 
 float worleyD( vec2 p, float k) {
     float d = 1e15;
     vec2 ip = floor(p);

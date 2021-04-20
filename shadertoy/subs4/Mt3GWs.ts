@@ -3,12 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// https://www.shadertoy.com/view/ll3GWs
-//
-//
-// Cloud Ten by nimitz: https://www.shadertoy.com/view/XtS3DD
-// 
-
 #define SAMPLE_COUNT 40
 #define PERIOD 1.
 
@@ -130,7 +124,6 @@ vec4 raymarch( in vec3 ro, in vec3 rd )
 
         // data for next sample
         vec4 data = t.x < t.y ? vec4( t.x, wt.x, dt.x, 0. ) : vec4( t.y, wt.y, 0., dt.y );
-        // somewhat similar to: https://www.shadertoy.com/view/4dX3zl
         //vec4 data = mix( vec4( t.x, wt.x, dt.x, 0. ), vec4( t.y, wt.y, 0., dt.y ), float(t.x > t.y) );
         vec3 pos = ro + data.x * rd;
         float w = data.y;

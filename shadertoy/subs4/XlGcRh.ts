@@ -156,8 +156,6 @@ uint esgtsa(uint s)
     return s;
 }
 
-
-
 // UE4's RandFast function
 // https://github.com/EpicGames/UnrealEngine/blob/release/Engine/Shaders/Private/Random.ush
 float fast(vec2 v)
@@ -168,10 +166,7 @@ float fast(vec2 v)
 }
 
 
-
-
 // Hash without Sine
-// https://www.shadertoy.com/view/4djSRW
 float hashwithoutsine11(float p)
 {
     p = fract(p * .1031);

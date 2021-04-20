@@ -98,17 +98,9 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 `;
 
 const fragment = `
-
-/*
-Thx to :
-Abstract Corridor - Shane : https://www.shadertoy.com/view/MlXSWX
-*/
-
 //Only what you need in your shaders to get the IU inputs
 float uiSlider(int id){return texture(iChannel0, vec2(float(id)+.5,0.5)/iResolution.xy).r;}
 vec3 uiColor(int id){return texture(iChannel0, vec2(float(id)+.5,1.5)/iResolution.xy).rgb;}
-
-
 
 vec3 sampleEnvMap(vec3 rd, float lod);
 float ambientOcclusion( in vec3 p, in vec3 n, float maxDist, float falloff );

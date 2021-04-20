@@ -2907,4 +2907,18 @@ XdfXRX
 
 ![478](assets/478.jpg)
 
+# 479. furball
+
+XsfGWN
+
+![479](assets/479.jpg)
+
+# 480. Where the River Goes
+
+Xl2XRW
+
+![480](assets/480.jpg)
+
+
+
 https://www.shadertoy.com/results?query=&sort=love&from=60&num=12

@@ -580,22 +580,15 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 `;
 
 const buffB = `
-// Meta CRT - @P_Malin
-// https://www.shadertoy.com/view/4dlyWX#
-// In which I add and remove aliasing
-
 #define SHADERTOY
 
 // Commodore 64 by hubbe
 //#define C64
 
-// https://www.shadertoy.com/view/lsl3Rn
 //#define SPECTRUM
 
-// https://www.shadertoy.com/view/MdsGzr
 //#define ELITE
 
-// https://www.shadertoy.com/view/4lG3Wz
 //#define MANDELBROT
 
 #ifdef ELITE
@@ -1759,14 +1752,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
 //#define LOW_QUALITY
 
-// The main characters are made up from a number of curve segments.
-// I made another shader to illustrate how these work:
-//
-//     https://www.shadertoy.com/view/Xds3Dn
-//
-// The middle of the characters are filled in triangles or convex quadrilaterals
-// Enable this define to see just the curved sections:
-
 //#define CURVES_ONLY
 
 // Initially I made most of characters this way but I ran into the constant register limit. 
@@ -2506,10 +2491,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 `;
 
 const buffC = `
-// Meta CRT - @P_Malin
-// https://www.shadertoy.com/view/4dlyWX#
-// In which I add and remove aliasing
-
 // Scene Rendering
 
 #define ENABLE_TAA_JITTER
@@ -3468,10 +3449,6 @@ void mainImage( out vec4 vFragColor, in vec2 vFragCoord )
 `;
 
 const buffD = `
-// Meta CRT - @P_Malin
-// https://www.shadertoy.com/view/4dlyWX#
-// In which I add and remove aliasing
-
 // Temporal Anti-aliasing Pass
 
 #define ENABLE_TAA
@@ -3575,10 +3552,6 @@ void mainImage( out vec4 vFragColor, in vec2 vFragCoord )
 `;
 
 const fragment = `
-// Meta CRT - @P_Malin
-// https://www.shadertoy.com/view/4dlyWX#
-// In which I add and remove aliasing
-
 // Uncomment different defines in Buf B to run different shaders on TV
 
 // Postprocessing Pass

@@ -3,35 +3,9 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Shadertoy font shader - @P_Malin
-
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-
-// ----------------------------------------------------------------------------------------
-
 //#define LOW_QUALITY
 
-// The main characters are made up from a number of curve segments.
-// I made another shader to illustrate how these work:
-//
-//     https://www.shadertoy.com/view/Xds3Dn
-//
-// The middle of the characters are filled in triangles or convex quadrilaterals
-// Enable this define to see just the curved sections:
-
 //#define CURVES_ONLY
-
-// Initially I made most of characters this way but I ran into the constant register limit. 
-// To avoid this, the curved sections of the â€˜oâ€™, â€˜aâ€™ and â€˜dâ€™ are oval shapes. 
-// Also I managed to cut the constant data down dramatically by sharing a lot of
-// the shapes in the font (see the comments in the function Shadertoy() ). 
-// For example the tails for â€˜hâ€™, â€™aâ€™, â€˜dâ€™, â€˜tâ€™, the left hand side of the â€˜yâ€™ and the 
-// top of the â€˜hâ€™ all use the same shape! 
-// I was probably more happy that I should have been when I realised I could share
-// the shape making the curve of the â€˜râ€™ with the little loop on the â€˜oâ€™.
-//
-// I experimented with a distance field version but it looked like it would involve 
-// a lot more work and I thought Iâ€™d already spent too much time on this shader :)
 
 #ifdef LOW_QUALITY
 

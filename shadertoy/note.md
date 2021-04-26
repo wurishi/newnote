@@ -2945,4 +2945,44 @@ lslGDn
 
 
 
+# 485. Hot Shower
+
+4lf3Rj
+
+![485](assets/485.jpg)
+
+# 486. Mostly Harmless
+
+MdsGzr
+
+![486](assets/486.png)
+
+# 487. VGA Mandelbrot
+
+4lG3Wz
+
+![487](assets/487.jpg)
+
+# 488. Implicit Curve Example
+
+Xds3Dn
+
+![488](assets/488.png)
+
+# 489. Volumetric Stanford Bunny
+
+MdlyDs
+
+![489](assets/489.jpg)
+
+# 490. Humanoid Silhouettes
+
+4scBWN
+
+![490](assets/490.png)
+
+
+
+
+
 https://www.shadertoy.com/results?query=&sort=love&from=72&num=12

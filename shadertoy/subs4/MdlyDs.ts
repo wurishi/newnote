@@ -158,7 +158,6 @@ float3 worldPosTocubePos(float3 worldPos)
     return worldPos*0.15 + float3(0.0,-0.5,0.0);
 }
 
-// From https://www.shadertoy.com/view/4s23DR
 bool cube(vec3 org, vec3 dir, out float near, out float far)
 {
 	// compute intersection of ray with all six bbox planes

@@ -103,7 +103,7 @@ NOTE: Not all the lessons work (yet)!
 Once you start feeling comfortable you can distill shaders down to their bare essence.
 
     "Empty Glass"
-    https://www.shadertoy.com/view/4s2GDV
+    4s2GDV
 
 As an homage I've provided them here as lessons. :-)
 
@@ -847,9 +847,6 @@ float draw( vec3 p )
 
 
 #if LESSON == 101 // Empty Glass
-    // https://www.shadertoy.com/view/4s2GDV
-    // df_obj()
-    // Slightly cleaned up
     // p *= 1.25; // Sadly we can't scale down as we run into precision issues...
 
     float a  = (length(p.xz)-1.0-p.y*.15)*.85,

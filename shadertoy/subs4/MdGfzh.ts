@@ -823,12 +823,6 @@ float Humanoid( in vec2 uv, in float phase ) {
     return max( f, -uv.y );
 }
 
-//
-// Lens flare, original based on:
-// musk's lens flare by mu6k  
-//
-// https://www.shadertoy.com/view/4sX3Rs
-//
 float lensflare(vec2 fragCoord) {
     vec3 ro, ta;
     mat3 cam = getCamera( iTime, iMouse/iResolution.xyxy, ro, ta );

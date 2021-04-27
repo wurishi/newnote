@@ -514,7 +514,6 @@ struct Surface
 };
     
 #ifdef ENABLE_NIMITZ_TRIANGLE_NOISE
-// https://www.shadertoy.com/view/4ts3z2
 
 float tri(in float x){return abs(fract(x)-.5);}
 vec3 tri3(in vec3 p){return vec3( tri(p.z+tri(p.y)), tri(p.z+tri(p.x)), tri(p.y+tri(p.x)));}
@@ -845,7 +844,6 @@ vec3 GetSceneColour( const in vec3 vRayOrigin,  const in vec3 vRayDir )
     return vResult;
 }
 
-// Code from https://www.shadertoy.com/view/ltlSWf 
 void BlockRender(in vec2 fragCoord)
 {
     const float blockRate = 15.0;

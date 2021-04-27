@@ -3,22 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Super simple raymarching example. Created by Reinder Nijhoff 2017
-// Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
-// @reindernijhoff
-// 
-// https://www.shadertoy.com/view/4dSBz3
-//
-// This is the shader used as example in my ray march tutorial: https://www.shadertoy.com/view/4dSfRc
-//
-// Created for the Shadertoy Competition 2017 
-//
-
-//
-// Distance field function for the scene. It combines
-// the seperate distance field functions of three spheres
-// and a plane using the min-operator.
-//
 float map(vec3 p) {
     float d = distance(p, vec3(-1, 0, -5)) - 1.;     // sphere at (-1,0,5) with radius 1
     d = min(d, distance(p, vec3(2, 0, -3)) - 1.);    // second sphere
@@ -27,9 +11,6 @@ float map(vec3 p) {
     return d;
 }
 
-//
-// Calculate the normal by taking the central differences on the distance field.
-//
 vec3 calcNormal(in vec3 p) {
     vec2 e = vec2(1.0, -1.0) * 0.0005;
     return normalize(

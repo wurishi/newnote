@@ -158,7 +158,6 @@ const fragment = `
 #define ErrorPeriod 30.0
 #define ErrorRange 0.003
 
-// Reference: https://www.shadertoy.com/view/MsSGD1
 float triangle(float x)
 {
 	return abs(1.0 - mod(abs(x), 2.0)) * 2.0 - 1.0;

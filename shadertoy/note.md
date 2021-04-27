@@ -3047,6 +3047,66 @@ MsS3WV
 
 ![501](assets/501.jpg)
 
+# 502. ray/cone & ray/frustum
+
+4s23DR
+
+![502](assets/502.jpg)
+
+# 503. Hand-drawn Sketch
+
+MsSGD1
+
+![503](assets/503.jpg)
+
+# 504. Flux Core
+
+ltlSWf
+
+![504](assets/504.jpg)
+
+# 505. Empty Glass
+
+4s2GDV
+
+![505](assets/505.jpg)
+
+# 506. Menger Journey
+
+Mdf3z7
+
+![506](assets/506.jpg)
+
+# 507. Interactive thinks
+
+Xt3SR4
+
+![507](assets/507.jpg)
+
+# 508. Glitch transform
+
+XtyXzW
+
+![508](assets/508.jpg)
+
+# 509. Desert Canyon
+
+Xs33Df
+
+![509](assets/509.jpg)
+
+# 510. Grid of Cylinders
+
+4dSGW1
+
+![510](assets/510.jpg)
+
+# 511. Warped Extruded Skewed Grid
+
+wtfBDf
+
+![511](assets/511.jpg)
 
 
-https://www.shadertoy.com/results?query=&sort=love&from=96&num=12
+
+https://www.shadertoy.com/results?query=&sort=love&from=108&num=12

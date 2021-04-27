@@ -3,21 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Mountains. By David Hoskins - 2013
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-
-// https://www.shadertoy.com/view/4slGD4
-// A ray-marched version of my terrain renderer which uses
-// streaming texture normals for speed:-
-// http://www.youtube.com/watch?v=qzkBnCBpQAM
-
-// It uses binary subdivision to accurately find the height map.
-// Lots of thanks to Inigo and his noise functions!
-
-// Video of my OpenGL version that 
-// http://www.youtube.com/watch?v=qzkBnCBpQAM
-
-// Stereo version code thanks to Croqueteer :)
 //#define STEREO 
 
 float treeLine = 0.0;

@@ -3,37 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-//------------------------------------------------------------------------------------------
-//
-// Implicit curve segment example - @P_Malin
-//
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-//
-//------------------------------------------------------------------------------------------
-//
-// I made this shader to explain the curve segment code in my shadertoy font shader:
-//
-//	 https://www.shadertoy.com/view/lslGDn
-//
-// Click and drag the mouse to move the control points
-//
-//------------------------------------------------------------------------------------------
-//
-// GPU Gems 3 has an article explaining something much better:
-// http://http.developer.nvidia.com/GPUGems3/gpugems3_ch25.html
-//
-// There is some more advanced work in this paper:
-// "Random-access rendering of general vector graphics"
-// http://research.microsoft.com/en-us/um/people/hoppe/proj/ravg/
-//
-// Also see more examples here:
-// http://glsl.heroku.com/e#4976.0
-// http://glsl.heroku.com/e#4978.0
-// http://glsl.heroku.com/e#5007
-//
-//------------------------------------------------------------------------------------------
-
-
 //#define QUADRATIC_CURVE
 //#define FULLSCREEN_CURVE
 

@@ -3,9 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// musk's lense flare, modified by icecool.
-// See the original at: https://www.shadertoy.com/view/4sX3Rs 
-
 float noise(float t)
 {
 	return texture(iChannel0,vec2(t, 0.0) / iChannelResolution[0].xy).x;

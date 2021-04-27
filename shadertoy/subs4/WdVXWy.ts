@@ -30,20 +30,6 @@ vec2 uvSmooth(vec2 uv,vec2 res)
 `;
 
 const fragment = `
-// created by florian berger (flockaroo) - 2019
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-
-// single pass CFD - with some self consistency fixes
-
-// drawing the liquid
-
-// same fluid as in "Spilled" - https://www.shadertoy.com/view/MsGSRd
-// ...but with self-consistent-ish velocity field
-// the previous method was just defined implicitely by the rotations on multiple scales
-// here the calculated velocity field is put back into the stored field
-
-// use mouse to push fluid, press I to init
-
 #define Res  (iResolution.xy)
 
 #define RandTex iChannel1

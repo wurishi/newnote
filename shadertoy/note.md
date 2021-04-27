@@ -3041,6 +3041,12 @@ lscczl
 
 ![500](assets/500.jpg)
 
+# 501. Crystal Skull
+
+MsS3WV
+
+![501](assets/501.jpg)
+
 
 
 https://www.shadertoy.com/results?query=&sort=love&from=96&num=12

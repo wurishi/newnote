@@ -4,23 +4,6 @@ import * as webglUtils from '../webgl-utils';
 
 const fragment = `
 /*
-HOWTO Get Started With Ray Marching
-by Michael Pohoreski aka MysticReddit
-Version 0.51, July 2017
-
-= Introduction =
-
-Are you wondering how some of those awesome ShaderToy demos are created?
-Want to learn about ray marching but have NO idea how to start?
-
-This is a mini-tutorial on how to get started with ray marching
-in the spirit of the famous "NeHe OpenGL Tutorials".
-I dub it the PoHo of Ray Marching. :-)
-
-For now we're not going to write a ray marching renderer; instead we'll
-simply play around with an existing one to get familiar the techniques
-of constructive solid geometry and distance functions to see how they work.
-
 = Steps =
 
 1. First, you'll want to read this introduction:
@@ -106,7 +89,7 @@ NOTE: Not all the lessons work (yet)!
 4. View iq's "Reference" implementation
 
     "Raymarching - Primitives
-    https://www.shadertoy.com/view/Xds3zN
+    Xds3zN
 
 
 5. Creative time!
@@ -116,40 +99,6 @@ NOTE: Not all the lessons work (yet)!
 
    b) Modify the draw() function
       Create your masterpiece code in the section labeled 'CREATE ME!
-
-Remember:
-
- *Everyone* was a "noob" at one point!
- *None* of us was born knowing this stuff!
-
-Have fun!
-
-
-Master Refence:
-
-    http://d.hatena.ne.jp/hanecci/20131005/p1
-
-More references:
-
-    Raymarching - Primitives
-    https://www.shadertoy.com/view/Xds3zN
-
-    http://blog.ruslans.com/2015/01/raymarching-christmas-tree.html
-    https://www.shadertoy.com/view/XlXGRM
-
-    http://www.hugi.scene.org/online/hugi37/hugi%2037%20-%20coding%20adok%20on%20ray%20casting,%20ray%20tracing,%20ray%20marching%20and%20the%20like.htm
-
-    http://www.pouet.net/topic.php?which=7931&page=1
-
-    A "simple" ray marcher
-    Menger Sponge
-    https://www.shadertoy.com/view/4sX3Rn
-    http://www.iquilezles.org/www/articles/menger/menger.htm]
-
-Note: This code was shamelessly copied and cleaned up from the excellent demo:
-
-    "Crystal Skull"
-    https://www.shadertoy.com/view/MsS3WV
 
 Once you start feeling comfortable you can distill shaders down to their bare essence.
 
@@ -923,7 +872,6 @@ float draw( vec3 p )
 
 
 #if LESSON == 102 // Crystal Skull
-    // https://www.shadertoy.com/view/MsS3WV
     // skull()
     // replaced 'float d = ...' with 'd = ...'
     p.y += sin(p.y*1.6)*0.2;

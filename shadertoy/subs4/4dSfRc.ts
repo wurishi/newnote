@@ -3,14 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const buffA = `
-// You can find this shader here:
-//     https://www.shadertoy.com/view/Xds3zN
-//
-
-// SLIDE NAVIGATION FUNCTIONS
-
-// Load & store functions
-
 #define SLIDE_FADE_STEPS 45
 
 #define TITLE_DELAY   45
@@ -328,15 +320,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
 `;
 
 const buffB = `
-// You can find this shader here:
-//     https://www.shadertoy.com/view/Xds3zN
-//
-
-// RENDER SCENE
-
-
-// Load & store functions
-
 #define SLIDE_FADE_STEPS 60
 
 int SLIDE = 0;
@@ -415,17 +398,6 @@ vec4 tut_render(in vec2 uv, const int steps) {
         return vec4(0, 0, 0, 1);
     }
 }
-
-//
-// render full scene
-//
-// Most of this is taken from: 'Raymarching - Primitives' by Inigo Quilez.
-//
-// You can find this shader here:
-//     https://www.shadertoy.com/view/Xds3zN
-//
-
-//------------------------------------------------------------------
 
 float sdPlane( vec3 p, float d ) {
 	return p.y - d;
@@ -866,12 +838,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
 }`;
 
 const buffC = `
-// You can find this shader here:
-//     https://www.shadertoy.com/view/Xds3zN
-//
-
-// COPY LAST FRAME FOR FADES
-
 #define SLIDE_FADE_STEPS 60 
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
@@ -887,12 +853,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
 }`;
 
 const buffD = `
-// You can find this shader here:
-//     https://www.shadertoy.com/view/Xds3zN
-//
-
-// FONT RENDERING
-
 #define FONT_UV_WIDTH 160.
 
 ivec4 LoadVec4( in ivec2 vAddr ) {
@@ -1119,12 +1079,6 @@ void mainImage( out vec4 outCol, in vec2 fragCoord ) {
 }`;
 
 const fragment = `
-// You can find this shader here:
-//     https://www.shadertoy.com/view/Xds3zN
-//
-
-// COMPOSITE IMAGE
-
 #define SLIDE_FADE_STEPS 60
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {

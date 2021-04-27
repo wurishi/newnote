@@ -3107,6 +3107,56 @@ wtfBDf
 
 ![511](assets/511.jpg)
 
+# 512. Abstract Glassy Field
+
+4ttGDH
+
+![512](assets/512.jpg)
+
+# 513. Star Nursery
+
+XsfGzH
+
+![513](assets/513.jpg)
+
+# 514. Apollonian
+
+4ds3zn
+
+![514](assets/514.jpg)
+
+# 515. Fires
+
+XsXSWS
+
+![515](assets/515.jpg)
+
+# 516. Neon Lit Hexagons
+
+MsVfz1
+
+![516](assets/516.jpg)
+
+# 517. Greek Temple
+
+ldScDh
+
+![517](assets/517.jpg)
+
+# 518. attic
+
+Mdl3Rr
+
+![518](assets/518.jpg)
+
+# 519. Tree in the wind
+
+tdjyzz
+
+![519](assets/519.jpg)
 
 
-https://www.shadertoy.com/results?query=&sort=love&from=108&num=12
+
+
+
+https://www.shadertoy.com/results?query=&sort=love&from=120&num=12

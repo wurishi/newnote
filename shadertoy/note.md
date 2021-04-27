@@ -2981,8 +2981,66 @@ MdlyDs
 
 ![490](assets/490.png)
 
+# 491. jetstream
+
+XlsGRs
+
+![491](assets/491.jpg)
+
+# 492. HOWTO: Ray Marching
+
+XllGW4
+
+![492](assets/492.jpg)
+
+# 493. Noise Contour
+
+MscSzf
+
+![493](assets/493.png)
+
+# 494. galaxy3
+
+Xsl3zX
+
+![494](assets/494.jpg)
+
+# 495. Oceanic
+
+4sXGRM
+
+![495](assets/495.jpg)
+
+# 496. Mountains
+
+4slGD4
+
+![496](assets/496.jpg)
+
+# 497. Luminescence
+
+4sXBRn
+
+![497](assets/497.jpg)
+
+# 498. sound - acid jam
+
+ldfSW2
+
+![498](assets/498.jpg)
+
+# 499. The Universe Within
+
+lscczl
+
+![499](assets/499.jpg)
+
+# 500. Super simple raymarching example
+
+4dSBz3
+
+![500](assets/500.jpg)
 
 
 
-
-https://www.shadertoy.com/results?query=&sort=love&from=72&num=12
+https://www.shadertoy.com/results?query=&sort=love&from=96&num=12

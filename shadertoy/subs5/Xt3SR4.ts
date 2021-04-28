@@ -5,13 +5,13 @@ import * as webglUtils from '../webgl-utils';
 const fragment = `
 // Created by sebastien durand - 11/2016
 //-------------------------------------------------------------------------------------
-// Based on "Type 2 Supernova" by Duke (https://www.shadertoy.com/view/lsyXDK) 
-// Sliders from IcePrimitives by Bers (https://www.shadertoy.com/view/MscXzn)
+// Based on "Type 2 Supernova" 
+// Sliders from IcePrimitives
 // License: Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
 //-------------------------------------------------------------------------------------
 
 #define SPIRAL_NOISE_ITER 8
-//#define SHANE_ORGANIC  // from: https://www.shadertoy.com/view/MsjBDR
+//#define SHANE_ORGANIC
 
 float hash( const in vec3 p ) {
     return fract(sin(dot(p,vec3(127.1,311.7,758.5453123)))*43758.5453123);
@@ -26,7 +26,7 @@ float pn(in vec3 x) {
 }
 
 //-------------------------------------------------------------------------------------
-// otaviogood's noise from https://www.shadertoy.com/view/ld2SzK
+// otaviogood's noise
 //--------------------------------------------------------------
 // This spiral noise works by successively adding and rotating sin waves while increasing frequency.
 // It should work the same on all computers since it's not based on a hash function like some other noises.
@@ -63,15 +63,12 @@ float map(vec3 p, vec4 id) {
 }
 #endif
 
-//-------------------------------------------------------------------------------------
-// Based on [iq: https://www.shadertoy.com/view/MsS3Wc]
-//-------------------------------------------------------------------------------------
 vec3 hsv2rgb(float x, float y, float z) {	
 	return z+z*y*(clamp(abs(mod(x*6.+vec3(0,4,2),6.)-3.)-1.,0.,1.)-1.);
 }
 
 //-------------------------------------------------------------------------------------
-// Based on "Type 2 Supernova" by Duke (https://www.shadertoy.com/view/lsyXDK) 
+// Based on "Type 2 Supernova"
 //-------------------------------------------------------------------------------------
 vec4 renderSuperstructure(vec3 ro, vec3 rd, const vec4 id) {
     const float max_dist=20.;
@@ -120,7 +117,7 @@ vec4 renderSuperstructure(vec3 ro, vec3 rd, const vec4 id) {
 }
 
 // ---------------------------------------------------
-// Bers : https://www.shadertoy.com/view/MscXzn
+// Bers
 // ---------------------------------------------------
 vec4 processSliders(in vec2 uv, out vec4 sliderVal) {
     sliderVal = textureLod(iChannel1,vec2(0),0.0);
@@ -154,7 +151,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
 const buffA = `
 //Buffer A : slider management (this is not required)
-// Bers : https://www.shadertoy.com/view/MscXzn
+// Bers
 
 #define saturate(x) clamp(x,0.0,1.0)
 

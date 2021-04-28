@@ -3,12 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Frozen wasteland
-// By Dave Hoskins
-// https://www.shadertoy.com/view/Xls3D2
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-
-
 #define ITR 90
 #define FAR 110.
 #define time iTime

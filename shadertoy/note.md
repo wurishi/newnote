@@ -3341,6 +3341,68 @@ MlXyDl
 
 ![550](assets/550.jpg)
 
+# 551. River Flight
+
+4sSXDG
+
+![551](assets/551.jpg)
+
+# 552. Hemispherical SDF AO
+
+4sdGWN
+
+![552](assets/552.jpg)
+
+# 553. Alien cocoons
+
+MsdGz2
+
+![553](assets/553.jpg)
+
+# 554. Type 2 Supernova
+
+lsyXDK
+
+![554](assets/554.jpg)
+
+# 555. Type 2 Supernova VR
+
+XdKSDV
+
+![555](assets/555.jpg)
+
+# 556. IcePrimitives
+
+MscXzn
+
+![556](assets/556.jpg)
+
+# 557. [SH17A] Transparent Isoslices
+
+MsjBDR
+
+![557](assets/557.jpg)
+
+# 558. Weather
+
+4dsXWn
+
+![558](assets/558.jpg)
+
+# 559. Rasterizer - Object
+
+4slGzn
+
+![559](assets/559.jpg)
+
+# 560. The Inversion Machine
+
+4dsGD7
+
+![560](assets/560.jpg)
+
+
+
 
 
 https://www.shadertoy.com/results?query=&sort=love&from=144&num=12

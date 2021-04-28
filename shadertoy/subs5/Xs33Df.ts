@@ -26,21 +26,17 @@ const fragment = `
 	Outdoor terrain shaders:
 
 	Elevated - iq
-	https://www.shadertoy.com/view/MdX3Rr
 	Based on his (RGBA's) famous demo, Elevated.
 	http://www.pouet.net/prod.php?which=52938
 
 	// How a canyon's really done. :)
 	Canyon - iq
-	https://www.shadertoy.com/view/MdBGzG
 
 	// Too many good ones to choose from, but here's one.
 	// Mountains - Dave_Hoskins
-	https://www.shadertoy.com/view/4slGD4
 
 	// Awesome.
     River Flight - Dr2
-    https://www.shadertoy.com/view/4sSXDG
 
 */
 
@@ -118,9 +114,6 @@ float map(in vec3 p){
 }
 
 
-// Log-Bisection Tracing
-// https://www.shadertoy.com/view/4sSXzD
-//
 // Log-Bisection Tracing by nimitz (twitter: @stormoid)
 // License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
 // Contact: nmz@Stormoid.com
@@ -277,8 +270,7 @@ float softShadow(in vec3 ro, in vec3 rd, in float start, in float end, in float 
 // function and have been looking for an excuse to use it. For a better version, and usage, 
 // refer to XT95's examples below:
 //
-// Hemispherical SDF AO - https://www.shadertoy.com/view/4sdGWN
-// Alien Cocoons - https://www.shadertoy.com/view/MsdGz2
+// Hemispherical SDF AO
 float calculateAO( in vec3 p, in vec3 n, float maxDist )
 {
 	float ao = 0., l;

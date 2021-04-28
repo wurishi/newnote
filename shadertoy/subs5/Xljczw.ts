@@ -47,7 +47,6 @@ const fragment = `
 
 	// You can't do a hexagonal grid example without referencing this. :) Very stylish.
 	Hexagons - distance - iq
-	https://www.shadertoy.com/view/Xd2GR3
 
 */
 

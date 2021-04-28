@@ -3221,8 +3221,36 @@ XlX3Rj
 
 ![530](assets/530.jpg)
 
+# 531. Circle pattern
+
+lss3Df
+
+![531](assets/531.jpg)
+
+# 532. Bokeh disc
+
+4d2Xzw
+
+![532](assets/532.jpg)
+
+# 533. Cloud Phase function comparison
+
+4sjBDG
+
+![533](assets/533.png)
+
+# 534. Helix Distance
+
+MstcWs
+
+![534](assets/534.jpg)
+
+# 535. Soft Shadow Variation
+
+lsKcDD
+
+![535](assets/535.jpg)
 
 
 
-
-https://www.shadertoy.com/results?query=&sort=love&from=132&num=12
+https://www.shadertoy.com/results?query=&sort=love&from=144&num=12

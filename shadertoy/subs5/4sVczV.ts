@@ -116,12 +116,6 @@ vec3 polarToCart(vec3 p) {
     );
 }
 
-
-// --------------------------------------------------------
-// Helix
-// https://www.shadertoy.com/view/MstcWs
-// --------------------------------------------------------
-
 vec2 closestPointOnRepeatedLine(vec2 line, vec2 point){
 
     // Angle of the line
@@ -366,7 +360,6 @@ vec3 _calcNormal(vec3 pos){
     return normalize(nor);
 }
 
-// https://www.shadertoy.com/view/lsKcDD
 float softshadow( in vec3 ro, in vec3 rd, in float mint, in float tmax )
 {
     float res = 1.0;

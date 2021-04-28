@@ -17,7 +17,6 @@ const vec3 SUN_POWER = vec3(1.0,0.9,0.6) * 750.;
 const vec3 LOW_SCATTER = vec3(1.0, 0.7, 0.5);
 
 // Ocean parameter
-// Procedural generation mostly from TDM https://www.shadertoy.com/view/Ms2SD1
 const int ITER_GEOMETRY = 3;
 const int ITER_FRAGMENT = 5;
 const float SEA_HEIGHT = 0.6;
@@ -129,7 +128,6 @@ float clouds(vec3 p, out float cloudHeight, bool fast)
 #endif
 }
 
-// From https://www.shadertoy.com/view/4sjBDG
 float numericalMieFit(float costh)
 {
     // This function was optimized to minimize (delta*delta)/reference in order to capture

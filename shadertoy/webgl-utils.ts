@@ -524,6 +524,12 @@ export const TEXTURE12 = {
   ...TEXTURE_MIPMAPS,
 };
 
+export const TEXTURE13 = {
+  type: 0,
+  path: './textures/texture13.jpg',
+  ...TEXTURE_MIPMAPS,
+};
+
 export const NO_FLIP_Y = {
   [WebGLRenderingContext.UNPACK_FLIP_Y_WEBGL]: 0,
 };

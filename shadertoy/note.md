@@ -3155,8 +3155,74 @@ tdjyzz
 
 ![519](assets/519.jpg)
 
+# 520. [SH16B] Speed Drive 80
+
+4ldGz4
+
+![520](assets/520.jpg)
+
+# 521. h e e e l i x
+
+4sVczV
+
+![521](assets/521.jpg)
+
+# 522. Frozen wasteland
+
+Xls3D2
+
+![522](assets/522.jpg)
+
+# 523. Noise blur
+
+4dlGDN
+
+![523](assets/523.jpg)
+
+# 524. starDust
+
+4sSSWz
+
+![524](assets/524.jpg)
+
+# 525. Then and Before - PC4k by Altair
+
+3ddGzn
+
+![525](assets/525.jpg)
+
+# 526. Hexagonal Maze Flow
+
+llSyDh
+
+![526](assets/526.jpg)
+
+# 527. Dolphin
+
+4sS3zG
+
+![527](assets/527.jpg)
+
+# 528. doski canady
+
+ldS3Wm
+
+![528](assets/528.jpg)
+
+# 529. Colored lines
+
+tsBSWD
+
+![529](assets/529.jpg)
+
+# 530. Circuits
+
+XlX3Rj
+
+![530](assets/530.jpg)
 
 
 
 
-https://www.shadertoy.com/results?query=&sort=love&from=120&num=12
+
+https://www.shadertoy.com/results?query=&sort=love&from=132&num=12

@@ -9,6 +9,7 @@ const options = webpack({
     open: true,
     port: 9000,
     contentBase: path.join(__dirname),
+    // host: '172.16.2.0'
   },
   module: {
     rules: [

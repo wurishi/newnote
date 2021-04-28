@@ -418,7 +418,7 @@ const fragment = `
    License https://creativecommons.org/licenses/by-nc-sa/3.0/
 
    This is an update to my "Wythoff construction" shader:
-   https://www.shadertoy.com/view/ldXczX 
+   ldXczX 
 
    I've learned a bit since I wrote that, and was able to add
    a few new features I couldn't figure out last time:
@@ -435,10 +435,8 @@ const fragment = `
    helpful/inspiring examples, especially:
  
      - Polyhedron again (knighty)
-       https://www.shadertoy.com/view/XlX3zB
 
      - 2D Folding (gaz)
-       https://www.shadertoy.com/view/4tX3DS
 
    These links were helpful when creating this shader:
 

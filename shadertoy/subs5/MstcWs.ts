@@ -281,7 +281,6 @@ vec3 render(Hit hit){
 
 // --------------------------------------------------------
 // Ray Marching
-// Adapted from: https://www.shadertoy.com/view/Xl2XWt
 // --------------------------------------------------------
 
 const float MAX_TRACE_DISTANCE = 30.;

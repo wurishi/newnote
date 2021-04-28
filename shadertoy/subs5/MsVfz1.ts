@@ -32,10 +32,8 @@ const fragment = `
 
 	// Shau has a heap of bright glowing examples, but here's a few.
 	OTT - shau
-	https://www.shadertoy.com/view/4sVyDd
 
 	43% Burnt - shau
-	https://www.shadertoy.com/view/XljBWW
 
 	Angle Grinder - shau
 	https://www.shadertoy.com/view/XtsfWX

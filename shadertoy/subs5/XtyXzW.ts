@@ -262,7 +262,6 @@ Model map( vec3 p , bool glitchMask){
 
 // --------------------------------------------------------
 // LIGHTING
-// https://www.shadertoy.com/view/Xds3zN
 // --------------------------------------------------------
 
 float softshadow( in vec3 ro, in vec3 rd, in float mint, in float tmax )
@@ -329,7 +328,6 @@ vec3 doLighting(Material material, vec3 pos, vec3 nor, vec3 ref, vec3 rd) {
 
 // --------------------------------------------------------
 // Ray Marching
-// Adapted from: https://www.shadertoy.com/view/Xl2XWt
 // --------------------------------------------------------
 
 const float MAX_TRACE_DISTANCE = 30.; // max trace distance
@@ -438,7 +436,6 @@ vec3 render(Hit hit){
 
 // --------------------------------------------------------
 // Camera
-// https://www.shadertoy.com/view/Xl2XWt
 // --------------------------------------------------------
 
 mat3 calcLookAtMatrix( in vec3 ro, in vec3 ta, in float roll )
@@ -483,7 +480,6 @@ Hit raymarchPixel(vec2 p, bool glitchPass) {
 
 // --------------------------------------------------------
 // Gamma
-// https://www.shadertoy.com/view/Xds3zN
 // --------------------------------------------------------
 
 const float GAMMA = 2.2;

@@ -3251,6 +3251,40 @@ lsKcDD
 
 ![535](assets/535.jpg)
 
+# 536. Minimal Hexagonal Grid
+
+Xljczw
+
+![536](assets/536.jpg)
+
+# 537. Wythoff construction
+
+ldXczX
+
+![537](assets/537.jpg)
+
+# 538. FixingPixelArt
+
+XsjSzR
+
+![538](assets/538.jpg)
+
+# 539. OTT
+
+4sVyDd
+
+![539](assets/539.jpg)
+
+# 540. 43% Burnt
+
+XljBWW
+
+![540](assets/540.jpg)
+
+
+
+
+
 
 
 https://www.shadertoy.com/results?query=&sort=love&from=144&num=12

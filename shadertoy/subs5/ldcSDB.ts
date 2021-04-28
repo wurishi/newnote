@@ -5,8 +5,6 @@ import * as webglUtils from '../webgl-utils';
 const buffA = `
 /*
     Generates a vector field using a dynamical system. 
-	To see it in action on its own see this shadertoy:
-    https://www.shadertoy.com/view/XddSRX
 */
 
 bool reset() {

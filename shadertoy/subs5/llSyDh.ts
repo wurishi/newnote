@@ -42,14 +42,12 @@ const fragment = `
 
 	// You can't do a hexagonal grid example without referencing this. :) Very stylish.
 	Hexagons - distance - iq
-	https://www.shadertoy.com/view/Xd2GR3
 	
 
 	// Simpler hexagonal grid example that attempts to explain the grid setup used to produce 
 	// the pattern here.
 	//
 	Minimal Hexagonal Grid - Shane
-	https://www.shadertoy.com/view/Xljczw
 
 */
 

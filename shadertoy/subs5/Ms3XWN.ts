@@ -23,7 +23,7 @@ const fragment = `
 // License Creative Commons Attribution-NonCommercial-ShareAlike 3.0
 
 
-// postprocess (thanks to Timothy Lottes for the CRT filter - https://www.shadertoy.com/view/XsjSzR)
+// postprocess (thanks to Timothy Lottes for the CRT filter - XsjSzR)
 
 
 
@@ -722,7 +722,7 @@ float sdCircle( in vec2 p, in float r )
 
 //============================================================
 
-// digit data by P_Malin (https://www.shadertoy.com/view/4sf3RN)
+// digit data by P_Malin
 // converted to LUT and integer logic by iq
 const int[] font = int[]( 
     7 + 5*16 + 5*256 + 5*4096 + 7*65536,

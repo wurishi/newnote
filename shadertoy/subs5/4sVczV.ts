@@ -377,7 +377,6 @@ float softshadow( in vec3 ro, in vec3 rd, in float mint, in float tmax )
     return clamp( res, 0.0, 1.0 );
 }
 
-// https://www.shadertoy.com/view/Xds3zN
 float calcAO( in vec3 pos, in vec3 nor )
 {
     float occ = 0.0;
@@ -394,7 +393,6 @@ float calcAO( in vec3 pos, in vec3 nor )
 }
 
 
-// Adapted from https://www.shadertoy.com/view/Xds3zN
 vec3 doLighting(vec3 pos, vec3 nor, vec3 rd) {
 
     vec3 col;

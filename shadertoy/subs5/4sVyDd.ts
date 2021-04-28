@@ -414,7 +414,6 @@ const buffC = `
 //-----------------------------------------------------
 
 //Edge detection verbatim from 834144373
-//https://www.shadertoy.com/view/MdyyRt
 
 /*----------------------
 	Edge Detection

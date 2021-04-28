@@ -373,8 +373,8 @@ vec3 getSky(in vec3 ro, in vec3 rd, vec3 sunDir){
 // value and some surrounding values - arranged in a simplex tetrahedral fashion for minimal
 // calculations, I'm assuming. Almost common sense... almost. :)
 //
-// Original usage (I think?) - Cheap curvature: https://www.shadertoy.com/view/Xts3WM
-// Other usage: Xyptonjtroz: https://www.shadertoy.com/view/4ts3z2
+// Original usage (I think?) - Cheap curvature
+// Other usage: Xyptonjtroz
 float curve(in vec3 p){
 
     const float eps = .05, amp = 4., ampInit = .5;

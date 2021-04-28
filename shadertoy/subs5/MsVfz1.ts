@@ -36,12 +36,9 @@ const fragment = `
 	43% Burnt - shau
 
 	Angle Grinder - shau
-	https://www.shadertoy.com/view/XtsfWX
-
 
     // Great example.
 	Neon World - zguerrero
-    https://www.shadertoy.com/view/MlscDj
 
 */
 
@@ -747,7 +744,6 @@ vec3 texBump( sampler2D tx, in vec3 p, in vec3 n, float bf){
 //
 // More sophisticated environment mapping:
 // UI easy to integrate - XT95    
-// https://www.shadertoy.com/view/ldKSDm
 vec3 envMap(vec3 p){
     
     p *= 3.;

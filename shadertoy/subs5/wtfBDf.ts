@@ -60,17 +60,12 @@ const fragment = `
 
     // Tiling on steroids. Very cool.
     Wythoffian Tiling Generator - mla
-    https://www.shadertoy.com/view/wlGSWc
     //
     Based on:
     // 
 	Wythoff Uniform Tilings + Duals - fizzer
-	https://www.shadertoy.com/view/3tyXWw
     //
     Tilings - knighty
-    https://www.shadertoy.com/view/4sf3zX
-
-
 */
 
 
@@ -507,7 +502,6 @@ float n3D(in vec3 p){
 //
 // More sophisticated environment mapping:
 // UI easy to integrate - XT95    
-// https://www.shadertoy.com/view/ldKSDm
 vec3 envMap(vec3 p){
     
     p *= 6.;

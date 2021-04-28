@@ -44,7 +44,6 @@ const fragment = `
     // Blocks" example), but I liked the simpler way Iomateron compared distances, so 
 	// I've adopted that portion of his code.
 	Iomateron - simple hexagonal tiles
-	https://www.shadertoy.com/view/MlXyDl
 
 	// You can't do a hexagonal grid example without referencing this. :) Very stylish.
 	Hexagons - distance - iq

@@ -19,9 +19,6 @@ const float lightHeight     = 1.;
 
 const float tau =  radians(360.);
 
-
-// https://www.shadertoy.com/view/4djSRW
-
 float hash12(vec2 p)
 {
 	vec3 p3  = fract(vec3(p.xyx) * .1031);
@@ -216,7 +213,6 @@ const buffC = `
 
 // Pressure solver 1st interation
 
-// Impired by https://www.shadertoy.com/view/MdSczK by Trirop
 // Since in shadertoy we don't have countless pass we need to do many pass at once.
 
 
@@ -622,15 +618,6 @@ void mainImage( out vec4 fragColor, in vec2 C )
 `;
 
 const buffD = `
-// Created by David Gallardo - xjorma/2020
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0
-
-// Pressure solver 2nd interation
-
-// Impired by https://www.shadertoy.com/view/MdSczK by Trirop
-// Since in shadertoy we don't have countless passed we need to do many pass at once.
-
-
 float div(int x,int y)
 {
     return texelFetch(iChannel0, ivec2(gl_FragCoord.xy) + ivec2(x,  y) , 0).y;

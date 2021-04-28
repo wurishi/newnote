@@ -3281,9 +3281,65 @@ XljBWW
 
 ![540](assets/540.jpg)
 
+# 541. Edge FXAA
 
+MdyyRt
 
+![541](assets/541.jpg)
 
+# 542. Angle Grinder
+
+XtsfWX
+
+![542](assets/542.jpg)
+
+# 543. Neon World
+
+MlscDj
+
+![543](assets/543.jpg)
+
+# 544. Venice
+
+MdXGW2
+
+![544](assets/544.jpg)
+
+# 545. Escher's prentententoonstelling
+
+Mdf3zM
+
+![545](assets/545.jpg)
+
+# 546. Bridge
+
+Mds3z2
+
+![546](assets/546.jpg)
+
+# 547. Wythoffian Tiling Generator
+
+wlGSWc
+
+![547](assets/547.jpg)
+
+# 548. Wythoff Uniform Tilings +Duals
+
+3tyXWw
+
+![548](assets/548.jpg)
+
+# 549. Tilings
+
+4sf3zX
+
+![549](assets/549.png)
+
+# 550. simple hexagonal tiles
+
+MlXyDl
+
+![550](assets/550.jpg)
 
 
 

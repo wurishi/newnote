@@ -3,18 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Weather. By David Hoskins, May 2014.
-// @ https://www.shadertoy.com/view/4dsXWn
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-
-// Who needs mathematically correct simulations?! :)
-// It ray-casts to the bottom layer then steps through to the top layer.
-// It uses the same number of steps for all positions.
-// The larger steps at the horizon don't cause problems as they are far away.
-// So the detail is where it matters.
-// Unfortunately this can't be used to go through the cloud layer,
-// but it's fast and has a massive draw distance.
-
 vec3 sunLight  = normalize( vec3(  0.35, 0.14,  0.3 ) );
 const vec3 sunColour = vec3(1.0, .7, .55);
 float gTime, cloudy;

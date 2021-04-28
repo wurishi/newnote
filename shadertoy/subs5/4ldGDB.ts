@@ -5,7 +5,6 @@ import * as webglUtils from '../webgl-utils';
 const buffA = `
 /*
     A fracturing dynamical system
-	see: https://www.shadertoy.com/view/MsyXRW
 */
 
 #define _G0 0.25
@@ -160,7 +159,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 const buffB = `
 /*
     A fluid-like dynamical system
-	see: https://www.shadertoy.com/view/XddSRX
 */
 
 vec2 normz(vec2 x) {

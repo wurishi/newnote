@@ -410,7 +410,6 @@ float shadow(in vec3 p, in vec3 l, float ma)
 }
 
 // checkerbord
-// https://www.shadertoy.com/view/XlcSz2
 float checkersTextureGradBox( in vec2 p, in vec2 ddx, in vec2 ddy )
 {
     // filter kernel
@@ -601,7 +600,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     
     
     // AA
-    // https://www.shadertoy.com/view/Msl3Rr
     for(int y = 0; y < 2; y++) {
         for(int x = 0; x < 2; x++) {
             vec2 off = vec2(float(x),float(y))/2.;

@@ -29,7 +29,7 @@ const common = `
 //  FALLING_SAND: sand blocks fall if unstable 
 //#define FALLING_SAND
 //  MAP: map rendering
-#define MAP
+//#define MAP
 //	HIGHLIGHT 0.=disabled else higlight of  unconnected blocks, sand with 4+ horizontal steps, cascading diamonds connected to gold
 #define HIGHLIGHT 0.
 //	SURFACE_CACHE:  secondary cache mode with buffer C (1=surface blocks,2=heightmap,0=disabled)
@@ -45,19 +45,21 @@ const common = `
 // 	EXCLUDE_CACHE:view only mode, with disabled buffer B 
 //#define EXCLUDE_CACHE
 //	WATER_LEVEL: level of water (10.=caves, 55.= islands); 50% of the areas use WATER_LEVEL2
-#define WATER_LEVEL 12.
-#define WATER_LEVEL2 45.
+#define WATER_LEVEL 40.
+#define WATER_LEVEL2 10.
 //	WATER_FLOW: enable water flow (value= levelling distance)
-#define WATER_FLOW 250.
+//#define WATER_FLOW 250.
 //  BUILD_DISTANCE average distance between costructions
 #define BUILD_DISTANCE 160.
 
-//use 124 bits per texel (it's warking but not necessary yet)
-//#define ENCODE124
-// flickering light from fireflies at night
-#define FIREFLIES
-
 //------------------------------------------------------
+//"Cubemap utils" by rory618. https://shadertoy.com/view/wdsBRn
+#define FACES_B 1
+#define FACES_C 1
+#define ResB vec2(1024*FACES_B, 1024)
+#define ResC vec2(1024*FACES_C, 1024)
+
+//-------------------------------------
 
 //SHARED VARIABLES
 #define var(name, x, y) const vec2 name = vec2(x, y)
@@ -88,21 +90,19 @@ var(_pixelSize,19,varRow);
 var(_inventory,20,varRow);
 var(_demo,21,varRow);
 var(_mouseBusy,22,varRow);
-var(_torch,23,varRow);
-var(_flow,24,varRow);
 //old value are stored in rows with y=n where n is the iFrame difference
 var(_old, 0, 1); 
 
 //BUFFER B
 const int  BUFFER_B = 1;
-const vec2 packedChunkSize_B = vec2(13,7);
+const vec2 packedChunkSize_B = vec2(10,10);
 const float heightLimit_B = packedChunkSize_B.x * packedChunkSize_B.y;
 
 //BUFFER C
 #if SURFACE_CACHE==1
 const int  BUFFER_C = 2;
 const float SURFACE_C=45.;
-const vec2 packedChunkSize_C = vec2(7,4);
+const vec2 packedChunkSize_C = vec2(6,6);
 const float heightLimit_C = packedChunkSize_C.x * packedChunkSize_C.y ;
 #elif SURFACE_CACHE==2
 const int  BUFFER_C = 2;
@@ -140,26 +140,27 @@ vec2 swizzleChunkCoord(vec2 chunkCoord) {
 }
 
 
-float calcLoadDist_B(vec2 iResolutionxy) {
-    vec2  chunks = floor(iResolutionxy / packedChunkSize_B); 
+float calcLoadDist_B() {
+    vec2  chunks = floor(ResB / packedChunkSize_B); 
     float gridSize = min(chunks.x, chunks.y);    
     return floor((gridSize - 1.) / 2.);
 }
 
-vec4 calcLoadRange_B(vec2 pos,vec2 iResolutionxy, float border) {
-	vec2 d = (calcLoadDist_B(iResolutionxy) - border)* vec2(-1,1);
+vec4 calcLoadRange_B(vec2 pos, float border) {
+	vec2 d = (calcLoadDist_B() - border)* vec2(-1,1);
     return floor(pos).xxyy + d.xyxy;
 }
 
 #if SURFACE_CACHE>0
-float calcLoadDist_C(vec2 iResolutionxy) {
-    vec2  chunks = floor(iResolutionxy / packedChunkSize_C); 
+float calcLoadDist_C() {
+    vec2  chunks = floor(ResC / packedChunkSize_C); 
     float gridSize = min(chunks.x, chunks.y);    
     return floor((gridSize - 1.) / 2.);
 }
 
-vec4 calcLoadRange_C(vec2 pos,vec2 iResolutionxy, float border) {
-	vec2 d = (calcLoadDist_C(iResolutionxy) - border)* vec2(-1,1);
+
+vec4 calcLoadRange_C(vec2 pos, float border) {
+	vec2 d = (calcLoadDist_C() - border)* vec2(-1,1);
     return floor(pos).xxyy + d.xyxy;
 }
 #endif 
@@ -182,7 +183,7 @@ vec2 voxToTexCoord(vec3 voxCoord,int bufferId) {
 #else
     vec2 packedChunkSize= packedChunkSize_B;
 #endif
-    vec3 p = floor(voxCoord);
+    vec3 p =floor(voxCoord);
     return swizzleChunkCoord(p.xy) * packedChunkSize + vec2(mod(p.z, packedChunkSize.x), floor(p.z / packedChunkSize.x));
 }
 
@@ -199,15 +200,19 @@ struct voxel {
     int buffer;
      
 };
-#ifndef ENCODE124
+ 
 float gb(float c, float start, float bits){return mod(floor(c/pow(2.,start)),pow(2.,bits));}//get bits
 
 //lazy version:
-//#define sb(f,s,b,v) f+=(v-gb(f,s,b))*pow(2.,s)
+#define sb(f,s,b,v) f+=(v-gb(f,s,b))*pow(2.,s)
 //strict version (use in case of strange behaviours):
-#define sb(f,s,b,v) f+=(clamp(floor(v+.5),0.,pow(2.,b)-1.)-gb(f,s,b))*pow(2.,s)
-//experimenting  124bit encode/decode functions from tsGBWy
+//#define sb(f,s,b,v) f+=(clamp(floor(v+.5),0.,pow(2.,b)-1.)-gb(f,s,b))*pow(2.,s)
 
+// each voxel is decoded/encoded with the pixel 64 bits
+// r bit 1-6 id        bit 7-8 value     bit 9-16 unused
+// g bit 1-4 light.s   bit 5-8 light.t   bit 9-16 life
+// b bit 1-4 shape     bit 5-8 rotation  bit 9-16 unused 
+// a bit 1-8 ground                      bit 9-16 surface
 voxel decodeVoxel(vec4 t) {
 	voxel o;
     o.id        = gb(t.r,0., 6.);
@@ -215,7 +220,7 @@ voxel decodeVoxel(vec4 t) {
     
     o.light.s   = gb(t.g,0., 4.) ;
     o.light.t   = gb(t.g,4., 4.);
-    o.life      = gb(t.g,8., 8.);
+    o.life      = gb(t.g,8., 7.);
     
     o.shape     = int(gb(t.b,0., 4.));
     o.rotation  = gb(t.b,4., 4.);
@@ -232,118 +237,22 @@ vec4 encodeVoxel(voxel v) {
     
     sb(t.g,0.,4.,v.light.s);
     sb(t.g,4.,4.,v.light.t);
-    sb(t.g,8.,8.,v.life); 
+    sb(t.g,8.,7.,v.life); 
     
     sb(t.b,0.,4.,float(v.shape));
     sb(t.b,4.,4.,v.rotation);
     
     sb(t.a,0.,8.,v.ground);
-    sb(t.a,8.,8.,v.surface);
+    sb(t.a,8.,7.,v.surface);
     return t;
 }
-#else
-#define BITS 32.
-#define MAXUINT  0xFFFFFFFFu 
-
-
-// pixel is a 128 bit mask (0-31 -> x, 32-63 -> y, 64-95 -> z, 96-127 -> w)
-uint getBit(inout uvec4 bm, uint i)
-{
-    uint bv = i/uint(BITS),  bi= i%uint(BITS);
-       
-    return  (bm[bv]  &  (1u<<bi) )>0u?1u:0u;
-}
-
-//works only if n<=32u 
-uint getBits(inout uvec4 bm, uint k, uint n){
-   
-    
-    uint bv = k/uint(BITS),  bi= k%uint(BITS);
-    if(n+bi<=32u){
-        //inside vec4 dimension
-        uint m = (1u<<n)-1u; 
-        return (bm[bv] & (m<<bi) )>>bi;
-    }
-    else
-    {
-        //cross dimension
-        uint n1= 32u-bi, n2 = bi+n-32u;
-        uint m1 =(1u<<n1)-1u, m2= (1u<<n2)-1u;
-        return ((bm[bv] & (m1<<bi) )>>bi) 
-             + ((bm[bv+1u] & m2 )<<n1);
-    }
-}
-
-// set bit value in a 128 bit mask 
-void setBit(inout uvec4 bm, uint i, uint val){
-    uint bv = i/uint(BITS),  bi= i%uint(BITS);
-    bm[bv]  &= ( MAXUINT - (1u<<bi) );
-    if(val>0u)  bm[bv]  +=(1u<<bi);
-}
-
-void setBits(inout uvec4 bm, uint i, uint n, uint val){
-    val =clamp( val, 0u, (1u<<n)-1u) ;
-
-    //TODO REPLACE WITH A SINGLE EXPRESSION WITHOUT CYCLING
-    uint bv = i/uint(BITS),  bi= i%uint(BITS);
-    if(n+bi<=32u){
-        bm[bv]  &= ( MAXUINT - (((1u<<n)-1u ) <<bi) );
-        bm[bv]  +=(val<<bi);
-    }
-    else
-    {
-        for(uint j=0u; j<n;j++) 
-        {
-            uint b = (val  &  (1u<<j) )>0u?1u:0u;
-            setBit(bm, i+j, b);
-        }
-    }
-}
-
-voxel decodeVoxel(vec4 t) {
-	voxel o;
-    uvec4 iv =  floatBitsToUint(t);
-    o.id        = float(getBits(iv,0u,6u)); 
-    o.value     = int(getBits(iv,6u,2u));   
-    o.light.s   = float(getBits(iv,8u, 4u) );
-    o.light.t   = float(getBits(iv,12u, 4u));
-    o.life      = float(getBits(iv,16u, 9u));
-    
-    o.shape     = int(getBits(iv,64u, 4u));
-    o.rotation  = float(getBits(iv,68u, 4u));
-    
-    o.ground    = float(getBits(iv,72u, 8u));
-    o.surface   = float(getBits(iv,80u, 8u));
-    return o;
-}
-
-vec4 encodeVoxel(voxel v) {
-	uvec4 iv = uvec4(MAXUINT);
-    setBits(iv, 0u,6u,uint(v.id));
-    setBits(iv, 6u,2u,uint(v.value));    
-    setBits(iv,8u,4u,uint(v.light.s));
-    setBits(iv,12u,4u,uint(v.light.t));
-    setBits(iv,16u,9u,uint(v.life)); 
-    iv.y=1u; //unused
-    setBits(iv,64u,4u,uint(v.shape));
-    setBits(iv,68u,4u,uint(v.rotation));
-    setBits(iv,72u,8u,uint(v.ground));
-    setBits(iv,80u,8u,uint(v.surface));
-    iv.w=1u; //unused
-    
-    uvec4 c = uvec4( getBits(iv,24u,7u),getBits(iv,56u,7u),getBits(iv,88u,7u),getBits(iv,120u,7u));
-    setBit(iv,31u,c.x==0u?1u:0u);setBit(iv,63u,c.y==0u?1u:0u);setBit(iv,95u,c.z==0u?1u:0u);setBit(iv,127u,c.w==0u?1u:0u);
-    
-    return uintBitsToFloat(iv);
-}
-#endif
 
 float lightDefault(float z){
 	if(z>55.) return 15.;
     else if(z>45.) return 14.; 
-    else if(z>35.) return 11.; 
-    else if(z>10.) return 8.;
-    else return 5.;
+    else if(z>35.) return 12.; 
+    else if(z>10.) return 4.;
+    else return 1.;
 }
 
 voxel newVox(float z){
@@ -361,20 +270,42 @@ voxel newVox(float z){
     vox.buffer=0;
     return vox;
 }
-
-vec4 readMapTex(vec2 pos, sampler2D iChannel,vec3 resolution) {
+/*
+vec4 readMapTex(vec2 pos, sampler2D iChannel,vec2 resolution) {
     return texture(iChannel, (floor(pos) + 0.5) /  (floor (resolution.xy)), 0.0);   
  
 }
+*/
 
+vec4 tx(samplerCube tx, vec2 p, int id){    
+  
+    vec2 uv = fract(p) - .5;
+    // It's important to snap to the pixel centers.
+    //p = (floor(p*cubemapRes) + .5)/cubemapRes; 
+    
+    vec3[6] fcP = vec3[6](vec3(-.5, uv.yx), vec3(.5, uv.y, -uv.x), vec3(uv.x, -.5, uv.y),
+                          vec3(uv.x, .5, -uv.y), vec3(-uv.x, uv.y, -.5), vec3(uv, .5));
+    
+    return texture(tx, fcP[id]);
+}
 
-voxel getCachedVoxel(vec3 p,sampler2D iChannel,vec3 resolution,int bufferId) {
+vec4 readMapTexCube(vec2 pos, samplerCube iChannel,int bufferId) {
+
+     
+    int faceId=0;
+    if(bufferId==2)  faceId=5;
+    
+    return tx(iChannel,  (floor(pos) + 0.5) /  floor (ResB) ,faceId);
+ 
+}
+
+voxel getCachedVoxelCube(vec3 p,samplerCube iChannel,int bufferId) {
     if(p.z>heightLimit_B || p.z<0.){voxel vox; vox.id=0.; return vox;}
-    voxel vox= decodeVoxel(readMapTex(voxToTexCoord(p, bufferId),iChannel,resolution));
+    
+    voxel vox= decodeVoxel(readMapTexCube(voxToTexCoord(p, bufferId),iChannel,bufferId));
     vox.buffer=bufferId;
     return vox;
 }
-
 
 float isSolidVoxel(voxel vox) {
     
@@ -486,7 +417,7 @@ lowp float snoise(in mediump vec3 v){
   lowp vec4 m = max(.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.);
   return -0.334 +.5 + 12. * dot( m * m * m, vec4( dot(p0,x0), dot(p1,x1),dot(p2,x2), dot(p3,x3) ) );
 }
-// Optimized Ashima Simplex noise2D by @makio64 4sdGD8
+// Optimized Ashima Simplex noise2D by @makio64
 // Original shader : https://github.com/ashima/webgl-noise/blob/master/src/noise2D.glsl
 // snoise return a value between 0 & 1
 
@@ -648,7 +579,7 @@ float sdCross( vec3 p, vec3 b )
 }
 
 
-voxel getGeneratedVoxel(vec3 voxelCoord,bool caves,int frame){
+voxel getGeneratedVoxel(vec3 voxelCoord,bool caves){
 
     	voxel vox=newVox(voxelCoord.z);
 #ifdef FLAT
@@ -663,7 +594,7 @@ voxel getGeneratedVoxel(vec3 voxelCoord,bool caves,int frame){
             else if(i==3)  h=-1.; 
             else h=0.;
             
-            layer[i+min(frame,0)]=overworld(voxelCoord+ vec3(0,0,h));
+            layer[i]=overworld(voxelCoord+ vec3(0,0,h));
             if(!layer[0]) break;
         }
          
@@ -694,7 +625,6 @@ voxel getGeneratedVoxel(vec3 voxelCoord,bool caves,int frame){
     	//WATER
     	if(vox.id == 0. && voxelCoord.z < WATER_LEVEL) {
             vox.id=12.; 
-            if(voxelCoord.z > WATER_LEVEL -2.) vox.shape=3;
 #ifdef WATER_FLOW
             vox.life=WATER_FLOW;    
 #endif                
@@ -712,13 +642,13 @@ voxel getGeneratedVoxel(vec3 voxelCoord,bool caves,int frame){
    
     	float type =hash13(buildCoord);
     	float type2 =hash13(buildCoord+vec3(1.));
-        if(type2>.5 && vox.id == 0. && voxelCoord.z < WATER_LEVEL2) {
+        if(type2<.5 && vox.id == 0. && voxelCoord.z < WATER_LEVEL2) {
             vox.id=12.; 
 #ifdef WATER_FLOW
             vox.life=WATER_FLOW;
             
             
-            if(voxelCoord.z > WATER_LEVEL2-2.) vox.shape=3; else vox.shape=0;
+            if(voxelCoord.z > WATER_LEVEL2-2.) vox.shape=3;
 #endif                
          }
     	if(type<.2) {
@@ -734,8 +664,7 @@ voxel getGeneratedVoxel(vec3 voxelCoord,bool caves,int frame){
         }
 #endif
     
-#endif
-        
+#endif       
   	
         return vox;
 		
@@ -751,11 +680,8 @@ bool inRange(vec2 p, vec4 r) {
 
 
 voxel getVoxelData( vec3 voxelCoord,
-                    sampler2D iChannel_B, 
-                    sampler2D iChannel_C, 
+                    samplerCube iChannel_Cube, 
                     int frame, 
-                    vec3 resolution_B, 
-                    vec3 resolution_C,
                     vec4 range_B,
                     vec4 range_C,
                     vec3 offset,
@@ -763,14 +689,14 @@ voxel getVoxelData( vec3 voxelCoord,
                     int caller){
   
 #ifdef EXCLUDE_CACHE
-    return getGeneratedVoxel(voxelCoord,true,frame); 
+    return getGeneratedVoxel(voxelCoord,true); 
 #else    
     
  
     if (inRange(voxelCoord.xy,range_B) && frame > 0 && voxelCoord.z <heightLimit_B  
         && (caller!=2)  //comment this line to enable persistence between cache (doesn't handle resolution change)
        ) {
-        return getCachedVoxel(voxelCoord  - offset,iChannel_B,resolution_B,BUFFER_B); 
+        return getCachedVoxelCube(voxelCoord  - offset,iChannel_Cube,BUFFER_B); 
         
     }
 #if SURFACE_CACHE==1     
@@ -780,17 +706,17 @@ voxel getVoxelData( vec3 voxelCoord,
               //&& (caller!=1) //
               
              ) {
-        return getCachedVoxel(voxelCoord - vec3(0.,0.,SURFACE_C) - offset,iChannel_C,resolution_C,BUFFER_C); 
+        return getCachedVoxelCube(voxelCoord - vec3(0.,0.,SURFACE_C) - offset,iChannel_Cube,BUFFER_C); 
          
     }
 #elif SURFACE_CACHE==2
     if (inRange(voxelCoord.xy,range_C) && frame > 0){
          if ( voxelCoord.z >= 0.&& voxelCoord.z <heightLimit_C  && (caller==2) ) {
             // BUFFER C previous frame
-        	return getCachedVoxel(voxelCoord - offset,iChannel_C,resolution_C,BUFFER_C); 
+        	return getCachedVoxelCube(voxelCoord - offset,iChannel_Cube,BUFFER_C); 
          }
         if(caller!=2){
-        	voxel vo= getCachedVoxel(vec3(voxelCoord.xy,0.) - offset,iChannel_C,resolution_C,BUFFER_C);
+        	voxel vo= getCachedVoxelCube(vec3(voxelCoord.xy,0.) - offset,iChannel_Cube,BUFFER_C);
          	if(vo.ground>0. && vo.ground< heightLimit_B  ){
                 //Above max height of BUFFER C --> air
                 float h=voxelCoord.z-vo.ground;
@@ -818,7 +744,7 @@ voxel getVoxelData( vec3 voxelCoord,
     }    
 #endif
   
-    return getGeneratedVoxel(voxelCoord,caves,frame);
+    return getGeneratedVoxel(voxelCoord,caves);
 #endif
 }
 
@@ -827,8 +753,8 @@ voxel getVoxelData( vec3 voxelCoord,
     vec4 range_B = load(frame+_loadRange_B);  \
     vec4 range_C = load(frame+_loadRange_C);  \
     vec3 offset =(id==0?vec3(0.): floor(vec3(load(frame+_pos).xy, 0.)));   \
-    if(id==2)  v= getCachedVoxel(p-offset,iChannel2,iChannelResolution[2],2); \
-    else v= getCachedVoxel(p-offset,iChannel1,iChannelResolution[1],1);}
+    if(id==2)  v= getCachedVoxelCube(p-offset,iChannel1,2); \
+    else v= getCachedVoxelCube(p-offset,iChannel1,1);}
 
 
 #define getVoxel(p,v,id)           \
@@ -836,107 +762,17 @@ voxel getVoxelData( vec3 voxelCoord,
     vec4 range_B = load(frame+_loadRange_B);  \
     vec4 range_C = load(frame+_loadRange_C);  \
     vec3 offset =(id==0?vec3(0.): floor(vec3(load(frame+_pos).xy, 0.)));   \
-    v= getVoxelData(p,iChannel1,iChannel2,iFrame,iChannelResolution[1],iChannelResolution[2],range_B,range_C,offset,true,id);}
+    v= getVoxelData(p,iChannel1,iFrame,range_B,range_C,offset,true,id);}
 
 
 
-void structures(vec3 voxelCoord, inout voxel vox, vec3 oldOffset, int iFrame, float iTime){
-
-    // STRUCTURES REPEATED EVERY 80x80 SQUARE  
-    vec3  buildCoord = vec3(floor((oldOffset.xy -vec2(3260. -40.,9650. -40.))/BUILD_DISTANCE)*BUILD_DISTANCE,0.)   +vec3(3260.,9650.,50.);
-    //vec3  buildCoord= +vec3(3260.,9650.,50.);
 
 
-    //RANDOM POSITION INSIDE THE 80x80 SQUARE
-    if(length(oldOffset.xy -vec2(3260, 9650.))>50.) buildCoord += floor(hash33(buildCoord) *vec3(50.,50, .10)) -vec3(25.,25, 5.);
-    
-    //REBUILD EVERY 30 FRAMES
 
-    if(iFrame==0 || (mod(float(iFrame),30.)==0.)  && vox.value<1){
-
-   float type =hash13(buildCoord);
-#if STRUCTURES==2
-         
-    	if(type<.2) {
-            //PYRAMID          
-
-            if(abs(sdOctahedron(voxelCoord -  buildCoord -vec3(-2.,-3.,2.),31.))<.5
-              && abs(voxelCoord.x-buildCoord.x+2.)<.5 && voxelCoord.y-buildCoord.y>-2.
-               && voxelCoord.z>48.
-              ) {vox.id=1.; vox.shape=6;}
-
-   		 }
-#endif
-    
-        //TOWER
-        if(length(voxelCoord.xy - buildCoord.xy - vec2(-2.,-3.))<2.  && voxelCoord.z <75.)  {vox.id=1.;vox.shape=0;}
-        if(length(voxelCoord.xy - buildCoord.xy - vec2(-2.,-3.))<1.  && voxelCoord.z <75.)  {vox.id=14.;vox.shape=0;}
-        if(WATER_LEVEL<35. ){
-            
-             //CAVE IF UNDER TERRAIN LEVEL
-            if(sdBox(voxelCoord-  buildCoord - vec3(0.,0.,-4.), vec3(10.,9.,4.)) <.5){ vox.id=1.;vox.shape=0;}
-       		 if(sdBox(voxelCoord-  buildCoord - vec3(0.,0.,-4.), vec3(8.,7.,2.)) <.5) vox.id=0.;
-            //HOUSE
-            float house=sdBox(voxelCoord- buildCoord - vec3(-0.5,5.,-4.5), vec3(2.5,3.,2.5));
-            if( abs(house) <.5 ) {vox.id=7.;vox.shape=0; }
-
-            if(sdBox(voxelCoord- buildCoord- vec3(.5,1.,-7.), vec3(6.,8.,0.5)) <.5) {vox.id=9.;vox.shape=0;}
-            if(sdBox(voxelCoord- buildCoord- vec3(2.,4.,-5.), vec3(.1,.1,1.5)) <.5) vox.id=0.;
-            if(sdBox(voxelCoord- buildCoord- vec3(2.,6.,-5.), vec3(.1,.1,1.5)) <.5) {vox.id=14.;vox.shape=0;}
-
-            if(length(voxelCoord - buildCoord - vec3(3.,5.,-2.))<0.5)  {vox.id=6.; vox.shape=0; vox.light.t=15.;}
-            if(length(voxelCoord - buildCoord- vec3(3.,3.,-2.))<0.5)  {vox.id=6.; vox.shape=0; vox.light.t=15.;}
-            if(length(voxelCoord - buildCoord- vec3(-2.,7.,-4.))<0.5)  {vox.id=6.; vox.shape=0; vox.light.t=15.;}
-
-
-            //WATER SOURCE
-            if(length(voxelCoord - buildCoord- vec3(+22.,4.,-8.))<0.5)  {vox.id=15.; vox.shape=0; }
-
-            //POOL
-            //if(sdBox(voxelCoord-  buildCoord - vec3(7.,10.,-9.), vec3(2.,2.,2.)) <.5) vox.id=12.;
-            if(sdBox(voxelCoord- buildCoord- vec3(8.,1.,-9.), vec3(3.,3.,1.5)) <.5) {vox.id=9.;vox.shape=0;}
-            if(sdBox(voxelCoord- buildCoord- vec3(8.,1.,-8.), vec3(2.,2.,1.5)) <.5) {vox.id=12.; vox.life=255.;vox.value=1;vox.shape=0;}
-
-       
-        }
- 
-        //ELEVATOR PLATFORMS (3 LEVELS)
-        if(type>.2){
-            if(sdBox(voxelCoord-buildCoord- vec3(-1.5,-3.,23.), vec3(4.,5.,0.5)) <.5) {vox.id=9.;vox.shape=0;}
-            if(abs(sdBox(voxelCoord-buildCoord- vec3(-1.5,-3.,24.), vec3(4.,5.,0.5))) <.5) {vox.id=9.; vox.shape=4; vox.rotation=1.;}
-            if(abs(sdBox(voxelCoord-buildCoord- vec3(-1.5,-3.5,24.), vec3(3.5,5.,0.5))) <.5) {vox.id=9.; vox.shape=4;}
-
-
-            if(sdBox(voxelCoord- buildCoord-vec3(-1.5,-3.,-26.), vec3(4.,4.,0.5)) <.5) {vox.id=9.; vox.shape=0;}
-
-            if(length(voxelCoord.xy - buildCoord.xy - vec2(-2.,-5.))<2. && abs(voxelCoord.z -buildCoord.z -1.)<27. && voxelCoord.z>WATER_LEVEL)  {vox.id=0.;}
-            if(length(voxelCoord.xy - buildCoord.xy - vec2(-2.,-1.))<2. && abs(voxelCoord.z- buildCoord.z -1.)<27. && voxelCoord.z>WATER_LEVEL)  {vox.id=0.;}
-
-
-            // LIGHTs
-            //if(length(voxelCoord - buildCoord  - vec3(-2.,-3.,30.))<2.5)  {vox.id=6.;  vox.light.t=15.;}
-            if(length(voxelCoord - buildCoord - vec3(-2.,-3.,-26.))<2.5)  {vox.id=6.;  vox.light.t=15.;vox.shape=0;}
-        }
-    }
-
-
-    // ELEVATOR- UP
-    if(length(voxelCoord.xy - buildCoord.xy - vec2(-2.,-5.))<2. && abs(voxelCoord.z -buildCoord.z +26.-abs(mod((iTime-1.),100.)-50.) )<.5 )  {vox.id=0.;}
-    if(length(voxelCoord.xy - buildCoord.xy - vec2(-2.,-5.))<2. && abs(voxelCoord.z -buildCoord.z +26.-abs(mod((iTime),100.)-50.) )<.5 )  {vox.id=9.;vox.shape=0;}
-
-
-    //ELEVATOR DOWN
-    if(length(voxelCoord.xy - buildCoord.xy - vec2(-2.,-1.))<2. && abs(voxelCoord.z -buildCoord.z -24.+abs(mod((iTime-1.),100.)-50.) )<.5 )  {vox.id=0.;}
-    if(length(voxelCoord.xy - buildCoord.xy - vec2(-2.,-1.))<2. && abs(voxelCoord.z -buildCoord.z -24. +abs(mod((iTime),100.)-50.) )<.5 )  {vox.id=9.;vox.shape=0;}
-
-
-}
-
-
-`;
+    `;
 
 const buffA = `
-#define KEY_FORWARDS 87
+    #define KEY_FORWARDS 87
 #define KEY_BACKWARDS 83
 #define KEY_LEFT 65
 #define KEY_RIGHT 68
@@ -957,8 +793,6 @@ const buffA = `
 #define KEY_STATS 114
 #define KEY_DUMP1 115
 #define KEY_DUMP2 116
-#define KEY_TORCH 118
-#define KEY_FLOW 119
 #define KEY_TELEPORT 84
 #define KEY_INCREASE_PERFORMANCE 117
 #define KEY_WORLD 89
@@ -1021,9 +855,13 @@ voxel getCachedVoxel(vec3 p) {
     return getCachedVoxel(p,iChannel1,iChannelResolution[1],BUFFER_B);
 }*/
 
+
+
 float isSolidVoxel(bool slope,vec3 p) {
     voxel t;
+  
     getCVoxel(p,t,0);
+    //t= getCachedVoxelCube2(p,iChannel1,ResB);
     return isSolidVoxel(t) * (!slope || t.shape!=6?1.:0.);
 }
 
@@ -1100,6 +938,7 @@ float hash12(vec2 p)
     p3 += dot(p3, p3.yzx + 19.19);
     return fract((p3.x + p3.y) * p3.z);
 }
+
 
 float tileableWorley(in vec2 p, in float numCells)
 {
@@ -1360,7 +1199,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
                 float demo =load(_demo).r;
 				float map=load(_map).r;;
 
-                    
                 if (iFrame <2  ) {
 #ifdef FAST_NOISE  
                     pos = vec3(2952.8,10140.8,89.);
@@ -1385,7 +1223,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
                 if(demo>0. && 
                    (keyDown(KEY_JUMP)>.0||keyDown(KEY_FORWARDS)>0. || iMouse.z>0. ))
                 {
-                    inventory=1.;
+                    //inventory=1.;
                     map=1.;
                     demo=0.;
                 }
@@ -1518,9 +1356,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
                     bool(keyToggled(KEY_DUMP1))?1.:0.,
                     bool(keyToggled(KEY_DUMP2))?1.:0.
                 );
-                float torch = bool(keyToggled(KEY_TORCH))?1.:0.;
-                float flow = bool(keyToggled(KEY_FLOW))?1.:0.;
-                
+                 
                 map = mod( map +keyPress(KEY_MAP),3.);
                 inventory = floor(mod( inventory + keyPress(KEY_INVENTORY),3.));
                 if(inventory<2.) selected=clamp(selected,0., NUM_ITEMS-1.);
@@ -1693,9 +1529,9 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
                 store3(_pos, pos);
                 store2(_angle, angle);
-                store4(_loadRange_B,calcLoadRange_B(pos.xy,iChannelResolution[1].xy,0.));
+                store4(_loadRange_B,calcLoadRange_B(pos.xy,0.));
 #if SURFACE_CACHE>0
-                store4(_loadRange_C,calcLoadRange_C(pos.xy,iChannelResolution[1].xy,0.));
+                store4(_loadRange_C,calcLoadRange_C(pos.xy,0.));
 #endif
                 store4(_mouse, mouse);
                 //store1(_inBlock, inBlock);
@@ -1712,11 +1548,9 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
                 store1(_loadDistLimit, loadDistLimit);
                 store1(_rayLimit, rayLimit);
                 store1(_map,map);
-                store1(_pixelSize,pixelSize);
+                store1(_pixelSize,1.);
                 store1(_inventory,inventory);
                 store1(_demo,demo);
-                store1(_torch,torch);
-                store1(_flow,flow);
                
 
 
@@ -1727,443 +1561,32 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     }
     else setTexture(fragColor,fragCoord);
 }
+
+
+
 `;
 
-const buffB = `
-void  lightDiffusion(inout voxel vox,in voxel temp ,vec3 rPos){
-  if(vox.id != 6. && vox.id != 26. ){
-    vox.light.s =  max( vox.light.s  ,  	temp.light.s  -(rPos.z==1.?0.:1.) - (vox.id==0.?0.: vox.id==11.?5.:15.));       	
-    vox.light.t =  max( vox.light.t,   temp.light.t - (vox.id==0.|| vox.id==12.?1.:vox.id==11.? 5.:15.)); 
-    
-  }        
-}
+const fragment = `
+// Fork of "Voxel Game Evolution" by kastorp. https://shadertoy.com/view/wsByWV
+// 2020-07-07 07:20:30
 
-//VOXEL MEMORY 1 - NEAR BLOCKS
-void mainImage( out vec4 fragColor, in vec2 fragCoord )
-{
-#ifdef EXCLUDE_CACHE
-  discard;
-#else
- 
-  vec2 textelCoord = floor(fragCoord);
-  vec3 offset = floor(vec3(load(_pos).xy, 0.));
-  vec3 voxelCoord = texToVoxCoord(textelCoord, offset,BUFFER_B); 
+/*---------------------------------------------------------
+	THIS SHADER IS BASED ON  "[SH16C] Voxel Game" by fb39ca4  
+  	
 
-  vec4 newRange= calcLoadRange_B(offset.xy,iChannelResolution[1].xy,0.);
-  
-  if(!inRange(voxelCoord.xy, newRange)) {discard;}
-  
-  vec4 pick = load(_pick);   
+CONTROLS:
+    drag mouse to move view 
+    WASD or arrows to move
+    Space to jump
+    Double-tap space to start flying, use space and shift to go up and down.
 
-  voxel vox ; 
-  getVoxel( voxelCoord,vox,1);
-
-  if (voxelCoord == pick.xyz || vox.value==2 )  {
-      if(vox.value==0)vox.value=1;
-      
-      if (pick.a == 1. &&  vox.id != 16. && load(_pickTimer).r > 1.) 
-      {vox.value=1; 
-              vox.id = 0.; 
-              vox.shape=0;  
-           vox.light.t=0.;
-           vox.life=0.;
-           vox.ground=0.;
-      }
-      else if (pick.a == 2.) 
-      {
-          vox.id = getInventory(load(_selectedInventory).r);
-          if(vox.id==10.) vox.life=3.;
-          else if (vox.id==12.)vox.life=64.;
-          else vox.life=0.;               
-          vox.value=1;
-          vox.shape=0;
-      } 
-      else if (pick.a == 3. && vox.id != 10. && vox.id != 11. && vox.id != 12.) 
-        { if(vox.shape<7) vox.shape++; else vox.shape=0;}
-      else  if (pick.a == 4. && vox.id != 10. && vox.id != 11. && vox.id != 12.) 
-        {if(vox.rotation<3.) vox.rotation++; else vox.rotation=0.;}
-      else if (pick.a == 5. && vox.id != 10. && vox.id != 11. && vox.id != 12.) 
-        { if(vox.rotation<12.) vox.rotation+=4.; else vox.rotation= mod(vox.rotation , 4.);}     
-  } 
-      
-   if(voxelCoord == pick.xyz  &&  pick.a == 6. ) 
-   {vox.value= 2 ;}
-  
-  if(voxelCoord == pick.xyz  &&  pick.a == 7. ) 
-   {
-      if(vox.value==2) vox.value=1;
-       else vox.value=2;          
-   }
-  if(load(_pickTimer).r >1. && pick.a == 6. && vox.value==2)
-   {vox.value= 1 ;}
-
-   // SUN LIGHT SOURCES
- 
-  if (voxelCoord.z >= heightLimit_B - 2.) {
-      vox.light.s = 15.;   
-  } else  {
-      //vox.light.s=0.; //correct but initial value is better oon surface
-      vox.light.s = lightDefault(voxelCoord.z);       
-  }
-  
-  // TORCH LIGHT SOURCES
-  if(vox.id==12.) vox.light.t=max(2.,vox.light.t);
-  else if(vox.id==6.) vox.light.t=15.;
-  else vox.light.t=clamp(vox.light.t- (hash(iTime)>.5?1.:0.),0.,15.);
-   
-  if(length( load(_pos).xyz + vec3(0,0,3.)- voxelCoord.xyz) <2.) vox.light.t=max( 12.,vox.light.t);
-
-      
-      
-  voxel temp;
-  float air=0.;
-  //int border=0;    
-  
-  //NEIGHBOURS 2=ABOVE 5=BELOW, 0-1-3-4= SIDES
-  float iE=0.;
-    
-  float g=MAX_GROUND;
-  
-  voxel next[9];
-  for(int j=0;j<=2;j++){
-      for(int i=0;i<3;i++){
-          vec3 n= vec3(i==0?1.:0. ,i==1?1.:0.,i==2?1.:0.) * vec3((j==0?1.:-1.));
-#ifdef WATER_FLOW            
-          // lateral voxels, random direction
-          if(j==2) {
-              int k= int(hash(iTime)*4.);// iFrame%4;
-            n = vec3(   (1- k/2) * (-1 +(k%2)*2), (k/2)* (-1 +(k%2)*2)  ,1-i);;
-          }
-#endif            
-          voxel temp;
-          getVoxel(voxelCoord + n ,temp,1 );           
-      next[i+3*j]= temp;
-          
-          if(j!=2){
-              if(voxelCoord.z> 80.) {vox.light.s=15.;vox.light.t=0.;}
-              else  lightDiffusion(vox,temp,n);
-
-              //ELECTRICITY DIFFUSION
-              if(vox.id==17.){
-                  if(temp.id==8.) iE=10.;
-                  if(temp.id==17. && temp.life>1.) iE=max(iE,temp.life-1.);
-              }
-              //GROUND DISTANCE
-              if(vox.id!=0. && vox.id!=12. &&vox.id!=26.){
-                  if(voxelCoord.z <=1.) g=1.;
-                  if(temp.id!=0. && temp.id!=12. &&vox.id!=26. && temp.ground>0. )  g=min(g, temp.ground+(i+3*j==5?0.:vox.id==13.?10.:1.)); 
-              }
-
-             if(temp.id==0.) air += pow(2., float(j*3+i));
-
-              //LEAFS:
-             if(temp.id==11.  && temp.life>0. &&vox.id==0.) {vox.id=11.;  vox.life=temp.life-1.; }  
-          }
-      }
-  }
-    
-  vec3 pos = load(_pos).xyz;
-  
-  //ELECTRICITIY
-  if(vox.id==17.){
-      vox.life=max(iE,vox.life-1.);
-      //if(iE>0.) vox.light.t=15.; else vox.light.t=0.;
-  }
-  
-  //GROUND CONNECTION: blocks not connected to the ground or sand with 4+ horizontal steps
-  if(vox.id!=0. && vox.id!=12. &&vox.id!=26.){
-      vox.ground=clamp(min(vox.ground+2.,g),0.,MAX_GROUND);
-              
-      //FALLING BLOCK
-#ifdef FALLING_SAND
-      if(vox.ground>=MAX_GROUND 
-         && length(pos.xy-voxelCoord.xy)<load(_loadDistLimit).r -5.
-         &&  (next[5].id==0.|| next[5].id==12.)) vox.value=3;
-#endif        
-  }
-         
-if(sdBox(pos-voxelCoord -vec3(0.,0.,1.),vec3(.5,.5,.5))<=.01 &&vox.id==3.) vox.id=2.;
-     
-  //ABOVE    
-  if(next[2].id==0.  &&  vox.id==2.) {if(hash13(voxelCoord +iTime ) >.95 && hash(iTime)>.99) vox.id=3.;vox.life=0.;}
-  if(next[2].id==0.  &&  vox.id==3.) {if(hash13(voxelCoord +iTime+30.) >.95 && hash(iTime +30.)>.99) vox.life=clamp(vox.life+1.,0.,3.);}
-  if(next[2].id==3.  &&  vox.id==3.) {vox.id=2.;}
-  if(next[2].value==3 && (vox.id==0.|| vox.id==12.)) {vox.id=next[2].id;} 
-  
-  //BELOW
-  if(next[5].id==10.  && next[5].life>0. && vox.id==0.) {vox.id=10.;  vox.life=next[5].life-1.; vox.ground=0.;}
-  if(next[5].id==10.  && next[5].life<1.) {vox.id=11.;  vox.life=TREE_SIZE;}	
-  if((next[5].id!=3.|| next[5].shape!=0)  &&  vox.id==0.) {vox.life=0.;}
-  if((next[5].id!=0.|| next[5].id==12.)  &&  vox.value==3) {vox.id=0.; vox.value=0;vox.life=0.;}
-
-#ifdef WATER_FLOW
-  if(load(_flow).r>0.5) {
-  if(vox.id==0.) vox.life=0.;           
-  if(vox.id==12. || vox.id==0.){
-    
-      float w= vox.id==12.?vox.life:0.;
-      float w_new=w;
-      
-      float w_U  = next[2].id==12.?next[2].life:0.;//(next[2].id==0.? 0.:-1.);
-      float w_D  = next[5].id==12.?next[5].life:(next[5].id==0.? 0.:-1.);
-      float w_LU = next[6].id==12.?next[6].life:(next[6].id==0.? 0.:-1.);
-      float w_L  = next[7].id==12.?next[7].life:(next[7].id==0.? 0.:-1.);
-      float w_LD = next[8].id==12.?next[8].life:(next[8].id==0.? 0.:-1.);
-
-             
-      float OW=.0;
-      float FL=.9; // lateral flow
-      //TRANSITIONS 
-      
-      //RULE 1 OUT          
-      if( w>0. && w_D < WATER_FLOW && w_D>-1.) { w_new =max(0.,w +w_D -WATER_FLOW   ); }       
-      //RULE 1 IN    
-       if( w_U>0. && w<WATER_FLOW ) {w_new=min(WATER_FLOW, w + w_U);}
-
-          
-       // RULE2_OUT 
-      if(w>0. && (w_LD>= WATER_FLOW*OW || w_D<0.) && (w_L < w -2. ) && w_L>=0. && w_LU <1. )
-      {w_new= w -floor(w-w_L)*FL;}
-
-      //RULE2 IN        
-      if( ( w_L >0. ) && (w_LD>=WATER_FLOW*(1.-OW*2.) || w_LD<0.) && (w<w_L-2.) && (w_U <1.))
-      {w_new  =  w + floor((w_L-w)*FL );}  
+	O,P to decrease/increase speed of day/night cycles   
+    k,L to decrease/increase pixel sizes 
+	T to teleport to a random location
+    Page Up/Down to increase or decrease zoom 
 
 
-      //INFINITE SOURCE
-      if(next[7].id==15. || next[5].id==15. || next[2].id==15. ){ w_new  =  WATER_FLOW; }
-      
-      
-    if(w_new >0. && vox.value==0) {vox.id=12.; vox.life= clamp(w_new,0.,WATER_FLOW);}
-    if(w_new <.1 &&  vox.value==0){vox.id=0.;vox.life= 0.;}
-      if( vox.value==1) {vox.value=0;}
-#ifdef SUBVOXEL
-      //surface water is half block
-      if( next[2].id!=12. && vox.id==12.){
-          if(vox.life < WATER_FLOW*.3) vox.shape=2;
-          else vox.shape=3;
-           
-      }
-      else  vox.shape=0;
-  
-#endif
-      
-  }
-}
-#endif
-  if(next[5].id==3.  &&  vox.id==0.) {vox.life=1.;}
-  
-#ifdef TREE_DETAIL	
-  if(vox.id==11.) vox.shape=8;
-  if(vox.id==10.) {vox.shape=9;};
-#endif
-
-#ifdef FIREFLIES 
-  //if(vox.id==26.){vox.id=0.;  vox.light.t=15.;}
-  if(vox.id==26.){if(vox.light.t>1.) vox.light.t--; else vox.id=0.;vox.light.s=15.; }
-  
-  if(voxelCoord.z<35. || abs(load(_time).r-750.)<250.)
-      if( air>=62. && (voxelCoord.z < heightLimit_B - 1.)){
-          if(vox.id==0.  && hash13(voxelCoord +vec3(iTime))>0.9999  ) {vox.id=26.;  vox.light.t=15.;}
-      } 
-#endif
-  
-#if STRUCTURES>0
-  vec3 oldOffset = floor(vec3(load(_old+_pos).xy, 0.));
-structures( voxelCoord,   vox,  oldOffset,  iFrame,  iTime);
-#endif
-  
-  fragColor = encodeVoxel(vox);
-#endif
-}
-`;
-
-const buffC = `
-/*
-VOXEL MEMORY 2 - SURFACE 
-  mode = 1 it's just a copy of buffer B, working in a limited z range
-  mode = 2 stores onlythe surface block with the height, for a wider area
-*/
-
-void mainImage( out vec4 fragColor, in vec2 fragCoord )
-{
-#ifdef EXCLUDE_CACHE
-    discard;
-#endif
-    
-#ifndef SURFACE_CACHE
-    discard;
-#elif SURFACE_CACHE==2
-    vec2 textelCoord = floor(fragCoord);
-    vec3 offset = floor(vec3(load(_pos).xy, 0.));
-    vec3 voxelCoord = texToVoxCoord(textelCoord, offset,BUFFER_C); 
-
-    vec4 newRange_C= calcLoadRange_C(offset.xy,iChannelResolution[1].xy,0.);
-
-    if(!inRange(voxelCoord.xy, newRange_C)) {
-        discard;
-     
-    }
-    voxel vox;  
-    getVoxel( voxelCoord,vox,2);
-
-    if(voxelCoord.z==0. && vox.ground >100.){
-    	voxel temp;
-        float h= vox.ground-100.;
-        getVoxel(vec3(voxelCoord.xy,h),temp,2);
-        float id = temp.id;
-        if(id !=0.){
-            vox=temp;
-            vox.ground=h;
-        }
-        else vox.ground--;           
-    } 	
- 
-    //NEIGHBOURS
-    if(voxelCoord.z==0. && vox.ground<100.){
-       vec3 s = vec3(1.,0.,0. );
-       vec3 t = vec3(0.,1.,0. );    
-       voxel v[9];    
-       for (int i =-1; i <=1; i++) {
-            for (int j =-1; j <=1  ; j++) {
-               
-                getVoxel(voxelCoord + s* float(i)+t*float(j),v[4+ i+3*j +min(iFrame,0) ] ,2 );                     	
-                voxel temp = v[4+ i+3*j ];
-                if(i+3*j !=0 && temp.id==10. && temp.ground <100. && temp.ground> vox.ground -TREE_SIZE -1.) {
-                	vox.id=11.; vox.shape=8;vox.ground=temp.ground+TREE_SIZE+2.;vox.life=0.;
-                }
-            }
-        }
-    }
-    
-    fragColor = encodeVoxel(vox);
-
-#elif SURFACE_CACHE==1
-    vec2 textelCoord = floor(fragCoord);
-    vec3 offset = floor(vec3(load(_pos).xy, 0.));
-    vec3 voxelCoord = texToVoxCoord(textelCoord, offset,BUFFER_C); 
-
-    voxelCoord.z+=SURFACE_C;
-	//vec4 newrange_B = calcLoadRange_B(offset.xy,iChannelResolution[1].xy,1.);
-    vec4 newRange_C= calcLoadRange_C(offset.xy,iChannelResolution[1].xy,0.);
-    //if (inRange(voxelCoord.xy,newrange_B)  ||    
-    if(!inRange(voxelCoord.xy, newRange_C)) {
-        discard;       
-    }
-
-    voxel vox;    
-    getVoxel( voxelCoord,vox,2);
-
-   	// SUN LIGHT SOURCES  
-    if (voxelCoord.z >= heightLimit_C- 2.) {
-        vox.light.s = 15.;   
-    } else  {
-        //vox.light.s=0.; //correct but initial value is better oon surface
-        vox.light.s = lightDefault(voxelCoord.z);       
-    }
-    
-    // TORCH LIGHT SOURCES
-    if(vox.id==12.) vox.light.t=max(2.,vox.light.t);
-    else if(vox.id==6.) vox.light.t=15.;
-    if(length( load(_pos).xyz + vec3(0,0,3.)- voxelCoord.xyz) <2.) vox.light.t=max( 12.,vox.light.t);
-    
-    
-        
-	//LIGHT DIFFUSE
-    voxel temp;
-    float air=0.;
-    //int border=0;    
-    
-   
-    //NEIGHBOURS 2=ABOVE 5=BELOW, 0-1-3-4= SIDES
-    float iE=0.;
-       
-    float g=MAX_GROUND;
-    
-    voxel next[6];
-    for(int j=0;j<=1;j++){
-        for(int i=0;i<3;i++){
-            vec3 n= vec3(i==0?1.:0. ,i==1?1.:0.,i==2?1.:0.) * vec3((j==0?1.:-1.));
-      
-            if(voxelCoord.z >= heightLimit_C +SURFACE_C-1.) break;
-            if( voxelCoord.z <SURFACE_C +1.) break;
-            voxel temp;
-            getVoxel(voxelCoord + n,temp,2);//- vec3(0.,0.,SURFACE_C));
-            
-    		next[i+3*j]= temp;
-            
-            if(voxelCoord.z> heightLimit_C +SURFACE_C) vox.light.s=15.;
-                else lightDiffusion(vox,temp,n);
-            
-            //ELECTRICITY DIFFUSION
-            if(vox.id==17.){
-            	if(temp.id==8.) iE=10.;
-                if(temp.id==17. && temp.life>1.) iE=max(iE,temp.life-1.);
-            }
-
-            
-           if(temp.id==0.) air += pow(2., float(j*3+i));
-            
-            //LEAFS:
-           if(temp.id==11.  && temp.life>0. &&vox.id==0.) {vox.id=11.;  vox.life=temp.life-1.; }
-     
-        }
-    }
-    
-    
-    vec3 pos = load(_pos).xyz;
-    
-    //ELECTRICITIY
-    if(vox.id==17.){
-        vox.life=max(iE,vox.life-1.);
-        //if(iE>0.) vox.light.t=15.; else vox.light.t=0.;
-    }
-        
-	if(sdBox(pos-voxelCoord -vec3(0.,0.,1.),vec3(.5,.5,.5))<=.01 &&vox.id==3.) vox.id=2.;
-    
-    
-    //ABOVE    
-    if(next[2].id==0.  &&  vox.id==2.) {if(hash13(voxelCoord +iTime ) >.95 && hash(iTime)>.99) vox.id=3.;vox.life=0.;}
-    if(next[2].id==0.  &&  vox.id==3.) {if(hash13(voxelCoord +iTime+30.) >.95 && hash(iTime +30.)>.99) vox.life=clamp(vox.life+1.,0.,3.);}
-    if(next[2].id==3.  &&  vox.id==3.) {vox.id=2.;}
-    if(next[2].id==12. && vox.id==0.) {vox.id=12.;}
-    if(next[2].value==3 && (vox.id==0.|| vox.id==12.)) {vox.id=next[2].id;} 
-    
-    //BELOW
-    if(next[5].id==10.  && next[5].life>0. && vox.id==0.) {vox.id=10.;  vox.life=next[5].life-1.; vox.ground=0.;}
-    if(next[5].id==10.  && next[5].life<1.) {vox.id=11.;  vox.life=TREE_SIZE;}
-    if((next[5].id!=3.|| next[5].shape!=0)  &&  vox.id==0.) {vox.life=0.;}
-    if((next[5].id!=0.|| next[5].id==12.)  &&  vox.value==3) {vox.id=0.; vox.value=0;vox.life=0.;}
-    if(next[5].id==3.  &&  vox.id==0.) {vox.life=1.;}
-    
-#ifdef TREE_DETAIL	
-    if(vox.id==11.) vox.shape=8;
-    if(vox.id==10.) {vox.shape=9;};
-#endif
-
-
-    // FIREFLIES 
-    //if(vox.id==26.){vox.id=0.;  vox.light.t=15.;}
-    if(vox.id==26.){if(vox.light.t>1.) vox.light.t--; else vox.id=0.;vox.light.s=15.; }
-    
-    if(voxelCoord.z<35. || abs(load(_time).r-750.)<250.)
-        if( air>=62. && (voxelCoord.z < heightLimit_C +SURFACE_C - 1.)){
-            if(vox.id==0.  && hash13(voxelCoord +vec3(iTime))>0.9999  ) {vox.id=26.;  vox.light.t=15.;}
-
-        } 
-
-#ifdef STRUCTURES
-    vec3 oldOffset = floor(vec3(load(_old+_pos).xy, 0.));
-	structures( voxelCoord,   vox,  oldOffset,  iFrame,  iTime);
-#endif
-    
-    fragColor = encodeVoxel(vox);
-#endif
-}
-`;
-
-const buffD = `
-
+//-----------------------------------------------------*/
 
 vec2 max24(vec2 a, vec2 b, vec2 c, vec2 d) {
 	return max(max(a, b), max(c, d));   
@@ -2176,7 +1599,7 @@ float lightLevelCurve(float t) {
 
 vec3 lightmap(in vec2 light) {
     light = 15. - light;
-	if(load(_torch).r>0.5) light.t=13.;
+	//if(load(_torch).r>0.5) light.t=13.;
     
     return clamp(mix(vec3(0), mix(vec3(0.11, 0.11, 0.21), vec3(1), lightLevelCurve(load(_time).r)), pow(.8, light.s)) + mix(vec3(0), vec3(1.3, 1.15, 1), pow(.75, light.t)), 0., 1.);   
 
@@ -2411,7 +1834,7 @@ vec3 shade_grass(in xs_t xs) {
 	return color;
 }	
 #endif
-//-----------------------------
+
 #define BUMPFACTOR 0.3
 #define EPSILON 0.1
 
@@ -2729,12 +2152,12 @@ rayCastResults rayCast(vec3 rayPos0, vec3 rayDir,int maxRayDist,vec4 range,int r
     
     
     if(load(_stats).r>0.5){
-    	vec4 range_B= calcLoadRange_B(rayPos.xy,iResolution.xy,1.);
+    	vec4 range_B= calcLoadRange_B(rayPos.xy,1.);
         if(res.hit && inRange(mapPos.xy, range)  && !inRange(mapPos.xy, range_B)) vox.id = 8.;    
 
 
 #if SURFACE_CACHE>0        
-        vec4 range_C1= calcLoadRange_C(rayPos.xy,iResolution.xy,1.);
+        vec4 range_C1= calcLoadRange_C(rayPos.xy,1.);
 		vec4 range_C0 = load(_old+_loadRange_C);
         if(res.hit && inRange(mapPos.xy, range_C0)  && !inRange(mapPos.xy, range_C1)) vox.id = 17.;    
 #endif
@@ -2948,7 +2371,7 @@ void getCam(in vec2 uv, in vec2 res, in float time, out vec3 ro, out vec3 rd) {
     rd = RD(ro, cp, uv, res);
 }
 
-void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
+void mainImage_D( out vec4 fragColor, in vec2 fragCoord ) {
  
     float pixelSize = load(_pixelSize).r;
     vec2 renderResolution = ceil(iResolution.xy / pixelSize); 
@@ -3030,70 +2453,11 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
 #endif        
     //fragColor = texture(iChannel2, fragCoord / 3. / iResolution.xy);
 }
-`;
-
-const fragment = `
-/*---------------------------------------------------------
-	THIS SHADER IS BASED ON  "[SH16C] Voxel Game" by fb39ca4  
-  	
-	when switching to full screen press L until you get better performance (K for higher resolution)
-
-CONTROLS:
-    drag mouse to move view and select blocks
-    WASD or arrows to move
-    Space to jump
-    Double-tap space to start flying, use space and shift to go up and down.
-
-    mouse double click to select/unselect a block (doesn't work well with low framerate
-    Q + mouse button to place block 
-    E + mouse button to destroy blocks 
-	R + mouse button to change shape of a block 
-	F + mouse button to rotate a shape on z axis 
-	G + mouse button to rotate a shape on y axis
-	C + mouse button to select multiple blocks (hold on "C" to clear selection)
-	destroy,place, shape,rotate also work on selected blocks, without mouse button
-
-    mouse click on inventory to select a block type
-	M to toggle map
-	I to toggle inventory (hidden, simple, full)
-
-	O,P to decrease/increase speed of day/night cycles   
-    k,L to decrease/increase pixel sizes 
-	T to teleport to a random location
-    Page Up/Down to increase or decrease zoom 
-	F7 enable/disable torch light diffusion (flickering on some GPUs)
-	F8 enable/disable water flow
-
-BLOCK MECHANICS:
-
-	 TORCH= light
-	 TREE= grows if placed
-	 DIAMOND= illumninated if close to GOLD or other illuminated diamonds
-	 RED BLOCK= mirror 
-	 WATER= semtrasparent, flows downwards
-	 SAND = falls if in empty space or with 4 horizontal steps
-	 PINK MARBLE= infinite water source
-
-CONFIGURATION:
-	see #define settings in "Common" file 
-
-BUFFERS:
-    "BUFFER A": actions, collisions, settings, material textures
-    "BUFFER B": voxel cache, nearest blocks full height 
-    "BUFFER C": surface voxel cache (just one block for every xy position)
-    "BUFFER D": rendering, map
-    "IMAGE"   : gui, stats
-
-CHANGELOG & TODO: 
-	see bottom of the file
-
-//-----------------------------------------------------*/
-
-
 #ifdef STATS
 
 // ---- 8< ---- GLSL Number Printing - @P_Malin ---- 8< ----
 // Creative Commons CC0 1.0 Universal (CC-0) 
+
 float DigitBin(const in int x)
 {
     return x==0?480599.0:x==1?139810.0:x==2?476951.0:x==3?476999.0:x==4?350020.0:x==5?464711.0:x==6?464727.0:x==7?476228.0:x==8?481111.0:x==9?481095.0:0.0;
@@ -3192,7 +2556,7 @@ vec4 drawInventory(vec2 c) {
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     float pixelSize = load(_pixelSize).r;
     vec2 renderResolution = ceil(iResolution.xy / pixelSize); 
-    fragColor = texture(iChannel3, fragCoord * renderResolution / iResolution.xy / iResolution.xy);
+     mainImage_D( fragColor, fragCoord ) ;
     //fragColor = texture(iChannel3, fragCoord);
     
     if(load(_inventory).r>.0){   
@@ -3228,7 +2592,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
         fragColor = mix( fragColor, vec2(1,.5).xxyx, PrintValue(fragCoord, vec2(0.0, 85.), vec2(8,15), 1./ iTimeDelta, 5.0, 1.0));
 
 #if SURFACE_CACHE>0
-        fragColor = mix( fragColor, vec2(1,.5).yxxx, PrintValue(fragCoord, vec2(0., 65.), vec2(8,15), calcLoadDist_C( iChannelResolution[2].xy), 5.0, 2.0));
+        fragColor = mix( fragColor, vec2(1,.5).yxxx, PrintValue(fragCoord, vec2(0., 65.), vec2(8,15), calcLoadDist_C(), 5.0, 2.0));
         fragColor = mix( fragColor, vec2(1,.5).xxxx, PrintValue(fragCoord, vec2(0., 45.), vec2(8,15),  heightLimit_C, 5.0, 2.0));
 #endif
         fragColor = mix( fragColor, vec2(1,.5).xxxx, PrintValue(fragCoord, vec2(0., 25.), vec2(8,15),  load(_rayDistMax).r, 5.0, 2.0));
@@ -3246,92 +2610,23 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     if(load(_stats).b>.5) fragColor= texture(iChannel0, fragCoord /iResolution.xy/3.);
 
 #endif
-fragColor.a = 1.;
 }
-/*
-CHANGELOG 
-	- 20200425: added elevators
-	            added repeated towers
-                20200425-1902: fixed map key
-	- 20200426: new materials; voxel.value to store user actions and prevent override
-         	    select from inventory with mouse
-    	 	    more realistic elevator, stabilizing adaptive pixelSize and renderDistance
-                fix: when placing & destroying a block, it becomes invisible
-                fix: tree grows correctly when placed
-                water block not solid and semi-transparent 
-    - 20200427: structures are placed randomly; water in caves and water swimming
-                added optional "#define FAST_COMPILE" (uncomment row32 of file common to reduce compilation time by half)
-                Pyramids
-                water flow downward
-    - 20200428: water refraction and waves
-	            fog and clouds
-	- 20200429: cut compilation time - removed duplicated call to render() in buffer D
-	- 20200501: compilation optimization and fixed inventory bug
-	 		    replaced voxel traversal algorithm with the one described in "Voxel Edge Occlusion" by Iq
-	 			skeleton for subvoxels
-	- 20200502: revised light diffusion and default
-	- 20200503: added shapes (change shape with "R")
-	            shape rotation ( with "F")
-	- 20200504: shape vertical rotation ( with "G") ... not always working
-	            disabled unecessary keys
-	            multiselection with "C" 
-	- 20200505: shadows; working but unfinished
-	            fixed shadows (#ifdef SHADOW);now working
-	- 20200509: webgl 1.0 compatibility and compilation optimization
-	            compilation optimization
-	- 20200510: tree detail (can be disable)
-	            optimization: discard if unused texels in buffer A & C
-	            revised textures (need to refine) 
-	            refactoring - merged buffer A & buffer C with better performances
-	- 20200511: refactoring in buffer B neightbour scan; grass prototype
-	            grass rendering from MdsGzS
-	- 20200512: configurable cloud density , grass height & pathway
-	- 20200513: inventory toggle with "I" 
-	            proof of concept: electriciy with gold=source, diamond=wire
-	- 20200514: lighing of unconnected blocks or sand with more than 4 horizontal steps
-	            falling sand if  more than 4 horizontal steps
-	- 20200515: demo mode at start
-	- 20200518: minimalist mirror (red block)
-	- 20200520: revised encode/decodeVoxel in order to exploit al 64 pixel bits
-	- 20200522: refactoring calcOcclusion()
-	- 20200523: mouse double click 
-	- 20200524: refactoring: reused raycasting in buffer D for mouse pointer
-	- 20200526: added buffer C(surface cache) and other refactoring
-	- 20200603: added water physics and water source (pink marble) - work in progress
-	- 20200608: performance optimization and revised subvoxel rendering with SUBTEXTURE
-	- 20200609: refactoring calcOcclusion (less code & reduced compilation time)
-	            refactoring reflection (mirror block) and refraction (water)
-	- 20200611: heightmap cache in buffer C (much faster and many new possibilities)
-	            far trees (work in progress)
-	- 20200612: fixed shadows & occlusion  for subvoxels
-                map view rotation, detailed buildings, configurable building distance
-	- 20200625: variable water level (50% of the territory is flooded)
-	- 20200704: more realistic water refraction and reflection (inspired by Venice shader)
-	- 20200712: pseudo Fresnel reflection 
-	- 20200723: enable/disable torch(F7) and water flow (F8)
 
-TODO LIST:
-	- substitute buffer B/C with cubemap  (done but not working 3t2yWR)
-	- more shapes and materials 
-	- more menus (shape, rotation, etc..) 
-	- circuits (wire, gate, flip-flop, sensor, etc...) --> in a fork
-	- portals
-    - constructions: bridge, tower,wall, road
-	- explosions
-
-*/
 `;
 
 export default class implements iSub {
   key(): string {
-    return 'wsByWV';
+    return '3t2yWR';
   }
   name(): string {
-    return 'Voxel Game Evolution';
+    return 'Voxel Game Evolution (Cubemap)';
   }
   // sort() {
   //   return 0;
   // }
+  common() {
+    return common;
+  }
   tags?(): string[] {
     return [];
   }
@@ -3340,9 +2635,6 @@ export default class implements iSub {
   }
   webgl() {
     return WEBGL_2;
-  }
-  common() {
-    return common;
   }
   userFragment(): string {
     return fragment;
@@ -3355,11 +2647,6 @@ export default class implements iSub {
     return () => {};
   }
   channels() {
-    return [
-      { type: 1, f: buffA, fi: 0 }, //
-      { type: 1, f: buffB, fi: 1 }, //
-      { type: 1, f: buffC, fi: 2 }, //
-      { type: 1, f: buffD, fi: 3 }, //
-    ];
+    return [{ type: 1, f: buffA, fi: 0 }];
   }
 }

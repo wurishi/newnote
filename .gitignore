@@ -14,3 +14,9 @@ webpack/**/dist/*
 reduxsaga/coverage/**/*
 shadertoy/media/*
 vertexshaderart/media/*
+learnu3d/*/Library/
+learnu3d/*/Temp/
+learnu3d/*/.idea/
+learnu3d/*/Logs/
+learnu3d/*/obj/
+learnu3d/*/*.csproj

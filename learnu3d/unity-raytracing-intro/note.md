@@ -70,3 +70,16 @@
 
 启用 Path Tracing 后, 之前使用的 Ambient Occlusion, Screen Space Reflection, Recursive Rendering, SubSurface Scattering, Screen Space Global Illumination 等功能将失效, 因为 Path Tracing 将使用自己的一整套光追算法, 为场景生成阴影, 反射, 折射和全局光照. 无需再使用, 反射探针, 光照探针和光照贴图.
 
+# 3. Ambient Occlusion 环境光遮蔽
+
+AO 效果一般是比较细节上的变化, 可以通过菜单打开 Window -> Render Pipeline -> Render Piepline Debug 面板, 选择 Lighting 选项, 找到 Fullscreen Debug Mode 选择 ScreenSpaceAmbientOcclusion 模式. 在此模型下可以更直观的观察到 AO 效果打开/关闭的效果变化.
+
+光栅化必须依赖当前帧的深度缓冲信息(Depth Buffer), 当屏幕中物体离开屏幕或者被完全遮挡时, 针对这个物体的环境光遮蔽效果就会失效, 光追算法不会有这个问题.
+
+| 属性                     | 效果         |
+| ------------------------ | ------------ |
+| Intensity                | 控制AO的强度 |
+| Direct Lighting Strength | 直接光照强度 |
+| Layer Mask               | 层遮罩       |
+| Quality                  | 质量设置     |
+

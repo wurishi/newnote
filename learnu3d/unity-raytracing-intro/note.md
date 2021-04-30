@@ -40,7 +40,7 @@
 
 在 Rending 下 Realtime Raytracing (Preview) 选择已经选上了, 表示当前项目已经支持实时光线追踪.
 
-在 Lighting 下 Screen Space Ambient Occlusion 也已经选上了, 表示当前项目已经支持屏幕空间的环境光遮敝效果.
+在 Lighting 下 Screen Space Ambient Occlusion 也已经选上了, 表示当前项目已经支持屏幕空间的环境光遮蔽效果.
 
 另外在 Lighting 可以打开 Screen Space Global Illumination 用来开启基于屏幕空间的全局光照.
 
@@ -55,3 +55,18 @@
 在 Scene 面板, 选择 Camera 图标, 找到 Camera Anti-aliasing 选项, 选择 Temporal Antialiasing 选项.
 
 此外, 要让这个选项生效, 还需要在 Scene 面板的 effect 小图标里面勾上 Always Refresh 选项.
+
+# 2. HDRP 中应用实时光线追踪的方式
+
+## 2.1 在传统光照贴图, 反射探针和光照探针的基础上添加光追功能
+
+环境光遮蔽, 屏幕空间反射, 屏幕空间阴影等功能在普通的 HDRP 项目中也可以使用, 他们会使用传统的光栅化算法实现. 如果项目升级成支持 DXR 时, 则会使用光追算法实现.
+
+## 2.2 使用光追版本的屏幕空间全局光替代传统光照贴图 (继续使用反射探针和光照探针)
+
+可以不再使用烘焙的光照信息, 因为从 2020.2.2 版本开始, 可以直接使用 Screen Space Global Illumination 功能(屏幕空间全局光照功能), 为场景添加间接光照信息. 注意, 启用 SSGI 后, 将不再使用烘焙后的光照信息.
+
+## 2.3 使用 Volume 上的 Path Tracing 一站式光追算法
+
+启用 Path Tracing 后, 之前使用的 Ambient Occlusion, Screen Space Reflection, Recursive Rendering, SubSurface Scattering, Screen Space Global Illumination 等功能将失效, 因为 Path Tracing 将使用自己的一整套光追算法, 为场景生成阴影, 反射, 折射和全局光照. 无需再使用, 反射探针, 光照探针和光照贴图.
+

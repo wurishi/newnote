@@ -226,3 +226,22 @@ Shader 为 HDRP/Lit, Surface Type 为 Transparent, Index Of Refraction 为 1.55.
 | Ray Length     | 射线长度 (摄像机到物体之间的距离大于射线长度时, 递归式渲染就不生效了, 表面将直接显示天空的颜色) |
 | Min Smoothness | 最小光滑度, 要参与递归式渲染, 物体表面的光滑度必须大于这个值. |
 
+# 10. 应用小结
+
+# 11. Path Tracing 功能讲解
+
+是 Unity 提供的一站式光追解决方案.
+
+Path Tracing 算法会从相机射出射线, 当射线遇到物体表面时, 会发生反射或者折射. 它会一直重复这个过程, 直到这条射线达到光源. 这些从相机到光源由一系列射线组成的路径, 就是 Path Tracing 中的 Path.
+
+启用了 Path Tracing 将不再需要反射探针. 另外上述的3, 4, 5, 7, 8, 9 功能都将被自动禁用. 
+
+目前 Path Tracing 对 Volumetric Fog 还不支持. Shader 支持 Lit, LayeredLit 和 Unlit. 还不支持 LitTessellation, Decal 等. 随着版本更新以上功能将逐步支持.
+
+| 属性              | 效果                                                         |
+| ----------------- | ------------------------------------------------------------ |
+| Maximum Samples   | 最大采样值 (组成最终图像所需要的渲染帧数)                    |
+| Minimum Depth     | 每个光线追踪路径上可能发生的最小光线反弹数. (min:2, max:2 时仅会显示第二次反弹的间接光照, 烘焙的光照信息因为光追功能已经禁用) |
+| Maximum Depth     | 每个光线追踪路径上可能发生的最大光线反弹数.                  |
+| Maximum Intensity | 最大亮度 (限制每次光线反弹所获得的最大亮度)                  |
+

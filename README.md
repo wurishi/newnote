@@ -58,7 +58,7 @@ electron
 
 # learnu3d
 
-[unity-raytracing-intro (Unity实时光追系列)](https://learn.u3d.cn/tutorial/unity-raytracing-intro#)
+[unity-raytracing-intro (Unity实时光追系列)](https://learn.u3d.cn/tutorial/unity-raytracing-intro#) **(完成)**
 
 # leetcode
 

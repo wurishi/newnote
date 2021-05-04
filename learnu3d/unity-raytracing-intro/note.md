@@ -208,5 +208,21 @@ SSS 效果模拟的物理现象是, 光线不止会在物体表面发生散射, 
 
 然后调整物体材质的 Surface Inputs 的 Base Map. 使用合适的主色调图片.
 
+# 9. Recursive Rendering 递归式渲染
 
+适用渲染包含多个层次的反射和折射效果的透明物体.
+
+首先要在 Volume 中添加 Recursive Rendering 重载, 其次要在需要递归式渲染的物体材质上打开本功能, 另外还可以打开 Receive SSR Transparent 让透明材质接收屏幕空间反射效果.
+
+在 Shader Graph 中可以在 Graph Inspector -> HDRP -> Surface Option 中打开 Recursive Rendering 选项.
+
+水晶材质:
+
+Shader 为 HDRP/Lit, Surface Type 为 Transparent, Index Of Refraction 为 1.55. Base Map 设置为一个带透明的颜色.
+
+| 属性           | 效果                                                         |
+| -------------- | ------------------------------------------------------------ |
+| Max Depth      | 最大深度 (光追计算反射和折射时反弹和折射的最大次数)          |
+| Ray Length     | 射线长度 (摄像机到物体之间的距离大于射线长度时, 递归式渲染就不生效了, 表面将直接显示天空的颜色) |
+| Min Smoothness | 最小光滑度, 要参与递归式渲染, 物体表面的光滑度必须大于这个值. |
 

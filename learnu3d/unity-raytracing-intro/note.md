@@ -85,7 +85,7 @@ AO 效果一般是比较细节上的变化, 可以通过菜单打开 Window -> R
 
 # 4. Screen Space Reflection 屏幕空间反射
 
- 在 HDRP 中, 系统会按以下顺序会场景提供反射信息, 
+在 HDRP 中, 系统会按以下顺序会场景提供反射信息, 
 
 Screen Space Reflection -> Reflection Probes(反射探针) -> Volume 中 HDRI Sky 配置的来自天空的反射.
 
@@ -113,7 +113,7 @@ Mode 为 Quality 质量模式
 
 # 5. Screen Space Global Illumination 屏幕空间全局光照
 
-如果无效, 需要检查默认相机的 Custom Frame Setting 或者 Project Setting 中的 HDRP Default Setting 中 Frame Settings for Camera 的配置中是否启用了 SSGI.
+如果在 Volume 中启用 SSGI 无效, 需要检查默认相机的 Custom Frame Setting 或者 Project Setting 中的 HDRP Default Setting 中 Frame Settings for Camera 的配置中是否启用了 SSGI.
 
 另外还要检查场景中所有 Material(材质)是否启用了 Receive SSR/SSGI 选项.
 
@@ -144,4 +144,31 @@ Mode 为 Quality 质量模式
 | Sample Count | 采样数. (控制每帧中每个像素发出的射线数量)   |
 | Bounce Count | 反弹次数. (控制光追射线在物体表面的反弹次数) |
 
-开启 SSGI 后, 将不再需要使用烘焙的光照贴图
+# 6. Light Cluster 结构
+
+要让 Light Cluster 有效, 在 Volume 中至少需要启用以下几个重载之一:
+
+- Screen Space Reflection
+- Screen Space Global Illumination
+- Recursive Rendering
+- SubSurface Scattering
+
+因为这几个重载用到了 Light Cluster.
+
+Light Cluster 是以上几个功能的光追版本的基础设施.
+
+当光追射线与物体表面相遇时, 需要知道周围空间中的灯光才能将它们用于具体的光追计算. HDRP 会在计算当前光追效果时, 以当前相机的位置为中心点, 在相机周围创建一个与坐标轴对齐的网格结构. 这个网格结构由多个单元格组成, 每个单元格保存了影响此区域的所有光照信息.
+
+| 属性                 | 效果                            |
+| -------------------- | ------------------------------- |
+| Camera Cluster Range | 控制网格结构离开相机的最远距离. |
+
+该选项主要是用于观察每个单元格中实际的灯光数量是否超过了配置中的最大灯光数量 (最大配置为24).
+
+单元格中最大灯光数量选项在:
+
+Project Settings -> Quality -> HDRP -> 当前的配置信息 (HDRPRaytracing) 中的 Lighting -> Lights 中的 Maximum Lights per Cell (Ray Tracing) .
+
+在 Render Pipeline Debug 中, Fullscreen Debug Mode 使用 LightCluster 后, 如果该单元格的实际灯光数超过配置的最大灯光数时, 该区域就会出现漏光现象, 在 LightCluster Mode 下整个单元格会变成红色.
+
+另外可以通过在 LightCluster Mode 中观察网格覆盖区域(因为覆盖区域是以当前相机为中心点扩展的), 如果网格区域未覆盖到, 也会有漏光现象.

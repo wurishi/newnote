@@ -189,3 +189,24 @@ Project Settings -> Quality -> HDRP -> 当前的配置信息 (HDRPRaytracing) �
 
 最后要选择物体材质, 选择 Transparency Inputs 下的 Refraction Model, 并根据物体本身形状选择形状. 调节 Index Of Refraction (折射率) 和 Transmittance Color 调节阴影颜色.
 
+# 8. Subsurface Scattering 次表面散射
+
+SSS 效果模拟的物理现象是, 光线不止会在物体表面发生散射, 光线还会先折射到物体内部, 在物体内部发生多次散射后从物体表面的某一点射出.
+
+要使用该功能, 要先将物体材质的 Shader 设为 HDRP/Lit, 并将 Material Type 改成 Subsurface Scattering. 然后在 Surface Inputs 中, 为 Diffusion Profile 创建并选择一个新的 Profile.
+
+接着在 Volume 中添加 SubSurface Scattering 重载, 并开启 Ray Tracing.
+
+调整 Diffusion Profile Settings
+
+| 属性                | 效果                                                         |
+| ------------------- | ------------------------------------------------------------ |
+| Scattering Distance | 散射距离                                                     |
+| Index of Refraction | 折射率 (模拟真实物体材质时, 可以通过上网搜索其折射率)        |
+| Transmission Mode   | 传输模式 (Thick Object 有厚度的物体; Thin Object 较薄的物体) |
+| Transmission tint   | 光线在物体内部传输时的着色                                   |
+
+然后调整物体材质的 Surface Inputs 的 Base Map. 使用合适的主色调图片.
+
+
+

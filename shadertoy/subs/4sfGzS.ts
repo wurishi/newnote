@@ -1,15 +1,10 @@
 import { GUI } from 'dat.gui';
 import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
-
+//FINISH
 const fragment = `
-//#define USE_PROCEDURAL
+uniform int u_noise;
 
-//===============================================================================================
-//===============================================================================================
-//===============================================================================================
-
-#ifdef USE_PROCEDURAL
 float hash(vec3 p)  // replace this by something better
 {
     p  = fract( p*0.3183099+.1 );
@@ -17,7 +12,7 @@ float hash(vec3 p)  // replace this by something better
     return fract( p.x*p.y*p.z*(p.x+p.y+p.z) );
 }
 
-float noise( in vec3 x )
+float noise1( in vec3 x )
 {
     vec3 i = floor(x);
     vec3 f = fract(x);
@@ -32,41 +27,43 @@ float noise( in vec3 x )
                    mix( hash(i+vec3(0,1,1)), 
                         hash(i+vec3(1,1,1)),f.x),f.y),f.z);
 }
-#else
-float noise( in vec3 x )
+
+float noise2( in vec3 x )
 {
-    #if 1
-    
-    vec3 i = floor(x);
-    vec3 f = fract(x);
+  vec3 i = floor(x);
+  vec3 f = fract(x);
 	f = f*f*(3.0-2.0*f);
 	vec2 uv = (i.xy+vec2(37.0,17.0)*i.z) + f.xy;
 	vec2 rg = textureLod( iChannel0, (uv+0.5)/256.0, 0.0).yx;
 	return mix( rg.x, rg.y, f.z );
-    
-    #else
-    
-    ivec3 i = ivec3(floor(x));
-    vec3 f = fract(x);
+}
+
+float noise3(in vec3 x) {
+  ivec3 i = ivec3(floor(x));
+  vec3 f = fract(x);
 	f = f*f*(3.0-2.0*f);
 	ivec2 uv = i.xy + ivec2(37,17)*i.z;
 	vec2 rgA = texelFetch( iChannel0, (uv+ivec2(0,0))&255, 0 ).yx;
-    vec2 rgB = texelFetch( iChannel0, (uv+ivec2(1,0))&255, 0 ).yx;
-    vec2 rgC = texelFetch( iChannel0, (uv+ivec2(0,1))&255, 0 ).yx;
-    vec2 rgD = texelFetch( iChannel0, (uv+ivec2(1,1))&255, 0 ).yx;
-    vec2 rg = mix( mix( rgA, rgB, f.x ),
-                   mix( rgC, rgD, f.x ), f.y );
-    return mix( rg.x, rg.y, f.z );
-    
-    #endif
+  vec2 rgB = texelFetch( iChannel0, (uv+ivec2(1,0))&255, 0 ).yx;
+  vec2 rgC = texelFetch( iChannel0, (uv+ivec2(0,1))&255, 0 ).yx;
+  vec2 rgD = texelFetch( iChannel0, (uv+ivec2(1,1))&255, 0 ).yx;
+  vec2 rg = mix( mix( rgA, rgB, f.x ),
+                  mix( rgC, rgD, f.x ), f.y );
+  return mix( rg.x, rg.y, f.z );
 }
-#endif
 
-//===============================================================================================
-//===============================================================================================
-//===============================================================================================
-//===============================================================================================
-//===============================================================================================
+float noise(in vec3 x) {
+  if(u_noise == 1) {
+    return noise1(x);
+  }
+  else if(u_noise == 2) {
+    return noise2(x);
+  }
+  else {
+    return noise3(x);
+  }
+}
+
 
 const mat3 m = mat3( 0.00,  0.80,  0.60,
                     -0.80,  0.36, -0.48,
@@ -159,6 +156,11 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 }
 `;
 
+let gui: GUI;
+const api = {
+  u_noise: 1,
+};
+
 export default class implements iSub {
   key(): string {
     return '4sfGzS';
@@ -176,6 +178,8 @@ export default class implements iSub {
     return [];
   }
   main(): HTMLCanvasElement {
+    gui = new GUI();
+    gui.add(api, 'u_noise', [1, 2, 3]);
     return createCanvas();
   }
   userFragment(): string {
@@ -184,9 +188,17 @@ export default class implements iSub {
   fragmentPrecision?(): string {
     return PRECISION_MEDIUMP;
   }
-  destory(): void {}
+  destory(): void {
+    if (gui) {
+      gui.destroy();
+      gui = null;
+    }
+  }
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
-    return () => {};
+    const u_noise = webglUtils.getUniformLocation(gl, program, 'u_noise');
+    return () => {
+      u_noise.uniform1i(api.u_noise);
+    };
   }
   channels() {
     return [webglUtils.DEFAULT_NOISE];

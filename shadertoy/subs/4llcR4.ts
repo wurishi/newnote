@@ -1,9 +1,9 @@
 import { GUI } from 'dat.gui';
 import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
-
+//FINISH
 const fragment = `
-//#define USESMOOTH
+#define USESMOOTH
 
 
 //===============================================================================================
@@ -12,7 +12,7 @@ const fragment = `
 
 float noiseNew( in vec3 x )
 {
-    return texture( iChannel0, x/32.0 ).x;    // <---------- Sample a 3D texture!
+    return texture( iChannel0, (x/32.0).xy ).x;    // <---------- Sample a 3D texture!
 }
 
 float noiseOld( in vec3 x )
@@ -31,7 +31,7 @@ float noiseNew( in vec3 x )
 	x += 0.5;
 	vec3 fx = fract( x );
 	x = floor( x ) + fx*fx*(3.0-2.0*fx);
-    return texture( iChannel0, (x-0.5)/32.0 ).x;
+    return texture( iChannel0, ((x-0.5)/32.0).xy ).x;
 
 }
 
@@ -169,6 +169,9 @@ export default class implements iSub {
   tags?(): string[] {
     return [];
   }
+  webgl() {
+    return WEBGL_2;
+  }
   main(): HTMLCanvasElement {
     return createCanvas();
   }
@@ -181,5 +184,8 @@ export default class implements iSub {
   destory(): void {}
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
     return () => {};
+  }
+  channels() {
+    return [{ type: 3 }, webglUtils.DEFAULT_NOISE];
   }
 }

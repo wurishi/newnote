@@ -1,11 +1,12 @@
 import { GUI } from 'dat.gui';
 import { createCanvas, iSub, PRECISION_MEDIUMP } from '../libs';
 import * as webglUtils from '../webgl-utils';
-
+//FINISH
 const fragment = `
+uniform float u_min_dist;
+uniform float u_max_dist;
+
 const int MAX_MARCHING_STEPS = 255;
-const float MIN_DIST = 0.0;
-const float MAX_DIST = 100.0;
 const float EPSILON = 0.0001;
 
 /**
@@ -302,9 +303,9 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     
     vec3 worldDir = viewToWorld * viewDir;
     
-    float dist = shortestDistanceToSurface(eye, worldDir, MIN_DIST, MAX_DIST);
+    float dist = shortestDistanceToSurface(eye, worldDir, u_min_dist, u_max_dist);
     
-    if (dist > MAX_DIST - EPSILON) {
+    if (dist > u_max_dist - EPSILON) {
         // Didn't hit anything
         fragColor = vec4(0.0, 0.0, 0.0, 0.0);
 		return;
@@ -325,6 +326,12 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 }
 `;
 
+let gui: GUI;
+const api = {
+  u_min_dist: 0,
+  u_max_dist: 100,
+};
+
 export default class implements iSub {
   key(): string {
     return '4tcGDr';
@@ -339,6 +346,9 @@ export default class implements iSub {
     return [];
   }
   main(): HTMLCanvasElement {
+    gui = new GUI();
+    gui.add(api, 'u_min_dist', 0, 100);
+    gui.add(api, 'u_max_dist', 0, 100);
     return createCanvas();
   }
   userFragment(): string {
@@ -347,8 +357,18 @@ export default class implements iSub {
   fragmentPrecision?(): string {
     return PRECISION_MEDIUMP;
   }
-  destory(): void {}
+  destory(): void {
+    if (gui) {
+      gui.destroy();
+      gui = null;
+    }
+  }
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
-    return () => {};
+    const u_min_dist = webglUtils.getUniformLocation(gl, program, 'u_min_dist');
+    const u_max_dist = webglUtils.getUniformLocation(gl, program, 'u_max_dist');
+    return () => {
+      u_min_dist.uniform1f(api.u_min_dist);
+      u_max_dist.uniform1f(api.u_max_dist);
+    };
   }
 }

@@ -1,13 +1,13 @@
 import { GUI } from 'dat.gui';
 import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
-
+//FINISH
 const fragment = `
-#define STARFIELD_LAYERS_COUNT 12.0
+uniform float u_layers_count;
 
 float PI = 3.1415;
-float MIN_DIVIDE = 64.0;
-float MAX_DIVIDE = 0.01;
+uniform float u_min_divide;
+uniform float u_max_divide;
 
 mat2 Rotate(float angle) {
     float s = sin(angle);
@@ -67,7 +67,7 @@ vec3 StarFieldLayer(vec2 uv, float rotAngle) {
             color = color * (0.4 * sin(deltaTimeTwinkle)) + 0.6;
 
             color = color * vec3(1, 0.1,  0.9 + size);
-            float dimByDensity = 15.0/STARFIELD_LAYERS_COUNT;
+            float dimByDensity = 15.0/u_layers_count;
             col += star * size * color * dimByDensity;
          }
     }
@@ -85,9 +85,9 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     vec3 col = vec3(0.0);
     float rotAngle = deltaTime * 0.09;
 
-    for (float i=0.0; i < 1.0; i += (1.0/STARFIELD_LAYERS_COUNT)) {
+    for (float i=0.0; i < 1.0; i += (1.0/u_layers_count)) {
         float layerDepth = fract(i + deltaTime);
-        float layerScale = mix(MIN_DIVIDE,MAX_DIVIDE,layerDepth);
+        float layerScale = mix(u_min_divide,u_max_divide,layerDepth);
         float layerFader = layerDepth * smoothstep(0.1, 1.1, layerDepth);
         float layerOffset = i * (3430.00 + fract(i));
         mat2 layerRot = Rotate(rotAngle * i * -10.0);
@@ -100,6 +100,12 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 }
 `;
 
+let gui: GUI;
+const api = {
+  u_layers_count: 12,
+  u_min_divide: 64,
+  u_max_divide: 0.01,
+};
 export default class implements iSub {
   key(): string {
     return '7dsGWS';
@@ -117,6 +123,10 @@ export default class implements iSub {
     return [];
   }
   main(): HTMLCanvasElement {
+    gui = new GUI();
+    gui.add(api, 'u_layers_count', 1, 100, 1);
+    gui.add(api, 'u_min_divide', 0.01, 100, 1);
+    gui.add(api, 'u_max_divide', 0.01, 100, 0.01);
     return createCanvas();
   }
   userFragment(): string {
@@ -125,8 +135,32 @@ export default class implements iSub {
   fragmentPrecision?(): string {
     return PRECISION_MEDIUMP;
   }
-  destory(): void {}
+  destory(): void {
+    if (gui) {
+      gui.destroy();
+      gui = null;
+    }
+  }
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
-    return () => {};
+    const u_layers_count = webglUtils.getUniformLocation(
+      gl,
+      program,
+      'u_layers_count'
+    );
+    const u_min_divide = webglUtils.getUniformLocation(
+      gl,
+      program,
+      'u_min_divide'
+    );
+    const u_max_divide = webglUtils.getUniformLocation(
+      gl,
+      program,
+      'u_max_divide'
+    );
+    return () => {
+      u_layers_count.uniform1f(api.u_layers_count);
+      u_min_divide.uniform1f(api.u_min_divide);
+      u_max_divide.uniform1f(api.u_max_divide);
+    };
   }
 }

@@ -1,8 +1,9 @@
 import { GUI } from 'dat.gui';
 import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
-
+//FINISH
 const fragment = `
+uniform int u_mode;
 // hash functions adapted from https://stackoverflow.com/a/12996028/5199168
 uvec4 hash(uvec4 x){
     x = ((x >> 16u) ^ x.yzwx) * 0x45d9f3bu;
@@ -51,10 +52,18 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     if(fragCoord.y > iResolution.y/2.)
         p *= -1;
     
-    //fragColor = noise(p.w);
-    //fragColor = noise(p.xy-p.w);
-    //fragColor = noise(ivec3(p.xy-p.w, p.z));
-    fragColor = noise(p);
+    if(u_mode == 1) {
+      fragColor = noise(p.w);
+    }
+    else if(u_mode == 2) {
+      fragColor = noise(p.xy-p.w);
+    }
+    else if(u_mode == 3) {
+      fragColor = noise(ivec3(p.xy-p.w, p.z));
+    }
+    else {
+      fragColor = noise(p);
+    }
     
     //test channel correlations
     if(fragCoord.x > iResolution.x/2.)
@@ -63,6 +72,11 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         fragColor = fragColor.argb;
 }
 `;
+
+let gui: GUI;
+const api = {
+  u_mode: 1,
+};
 
 export default class implements iSub {
   key(): string {
@@ -81,6 +95,8 @@ export default class implements iSub {
     return [];
   }
   main(): HTMLCanvasElement {
+    gui = new GUI();
+    gui.add(api, 'u_mode', { x: 1, xy: 2, xyz: 3, xyzw: 4 });
     return createCanvas();
   }
   userFragment(): string {
@@ -89,8 +105,16 @@ export default class implements iSub {
   fragmentPrecision?(): string {
     return PRECISION_MEDIUMP;
   }
-  destory(): void {}
+  destory(): void {
+    if (gui) {
+      gui.destroy();
+      gui = null;
+    }
+  }
   initial?(gl: WebGLRenderingContext, program: WebGLProgram): Function {
-    return () => {};
+    const u_mode = webglUtils.getUniformLocation(gl, program, 'u_mode');
+    return () => {
+      u_mode.uniform1i(api.u_mode);
+    };
   }
 }

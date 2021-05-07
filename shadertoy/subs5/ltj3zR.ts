@@ -116,12 +116,10 @@ float noise (in vec3 x)
 
 
 
-// Taken from https://www.shadertoy.com/view/4ts3z2
 float tri(in float x){return abs(fract(x)-.5);}
 vec3 tri3(in vec3 p){return vec3( tri(p.z+tri(p.y*1.)), tri(p.z+tri(p.x*1.)), tri(p.y+tri(p.x*1.)));}
                                  
 
-// Taken from https://www.shadertoy.com/view/4ts3z2
 float triNoise3D(in vec3 p, in float spd)
 {
     float z=1.4;
@@ -673,13 +671,6 @@ vec2 bass(float time, float tt, float note)
                 
                 *exp(-1.0*tt) );
 }
-
-
-/*
-	
-	From https://www.shadertoy.com/view/4ts3z2
-
-*/
 
 //Audio by Dave_Hoskins
 

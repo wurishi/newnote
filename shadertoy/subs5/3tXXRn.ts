@@ -3,17 +3,12 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const common = `
-
-// Spherical Fibonnacci points, as described by Benjamin Keinert, Matthias Innmann, 
-// Michael Sanger and Marc Stamminger in their paper (below)
-
 //=================================================================================================
 // http://lgdv.cs.fau.de/uploads/publications/spherical_fibonacci_mapping_opt.pdf
 //=================================================================================================
 const float PI  = 3.14159265359;
 const float PHI = 1.61803398875;
 
-// Originally from https://www.shadertoy.com/view/lllXz4
 // Modified by fizzer to put out the vector q.
 vec2 inverseSF( vec3 p, float n, out vec3 outq ) 
 {

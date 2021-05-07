@@ -3,41 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-/*
-    Abstract Plane
-    --------------
-
-	Performing 2nd order distance checks on randomized 3D tiles to add some pronounced 
-	surfacing to a warped plane... Verbose description aside, it's a pretty simple process. :)
-
-	I put this example together some time ago, but couldn't afford a reflective pass, so 
-	forgot about it. Anyway, I was looking at XT95's really nice "UI" example - plus a 
-	couple of my own - and realized that a little bit of environment mapping would work 
-	nicely. I'm using a less sophisticated environment mapping function than XT95's, but 
-	it produces the desired effect. 
-	
-    By the way, XT95's is really worth taking a look at. It gives off a vibe of surrounding 
-	area lights. I tested it on other surfaces and was pretty pleased with the results. The 
-	link is below.
-
-	As for the geometry itself, it's just a variation of 3D repetitive tiling. I colored in
-	some of the regions - Greyscale with a splash of color is on page five of the "Tired Old 
-	Cliche Design" handbook. :) However, I also to wanted to show that it's possible to 
-	identify certain regions within the tile in a similar way to which it is done with regular 
-	Voronoi.	
-
-	Other examples:
-    
-	// Excellent environment mapping example.
-	UI easy to integrate - XT95    
-	https://www.shadertoy.com/view/ldKSDm
-
-	// As abstact terrain shaders go, this is my favorite. :)
-	Somewhere in 1993 - nimitz
-	https://www.shadertoy.com/view/Md2XDD
-*/
-
-
 #define FAR 40.
 
 // 2x2 matrix rotation. Note the absence of "cos." It's there, but in disguise, and comes courtesy
@@ -74,7 +39,6 @@ float drawObject(in vec3 p){
 // The 3D tiling process. I've explained it in the link below, if you're interested in the process.
 //
 // Cellular Tiled Tunnel
-// https://www.shadertoy.com/view/MscSDB
 float cellTile(in vec3 p){
     
     p /= 5.5;
@@ -235,14 +199,6 @@ vec3 texBump( sampler2D tx, in vec3 p, in vec3 n, float bf){
 	
 }
 
-// Cool curve function, by Shadertoy user, Nimitz.
-//
-// I think it's based on a discrete finite difference approximation to the continuous
-// Laplace differential operator? Either way, it gives you the curvature of a surface, 
-// which is pretty handy. I used it to do a bit of fake shadowing.
-//
-// Original usage (I think?) - Cheap curvature: https://www.shadertoy.com/view/Xts3WM
-// Other usage: Xyptonjtroz: https://www.shadertoy.com/view/4ts3z2
 float curve(in vec3 p, in float w){
 
     vec2 e = vec2(-1., 1.)*w;
@@ -253,19 +209,6 @@ float curve(in vec3 p, in float w){
     return 0.125/(w*w) *(t1 + t2 + t3 + t4 - 4.*map(p));
 }
 
-
-// Very basic pseudo environment mapping... and by that, I mean it's fake. :) However, it 
-// does give the impression that the surface is reflecting the surrounds in some way.
-//
-// Anyway, the idea is very simple. Obtain the reflected ray at the surface hit point, then 
-// pass it into a 3D function. If you wanted, you could convert the 3D ray coordinates (p) 
-// to polar coordinates and index into a repeat texture. It can be pretty convincing (in an 
-// abstract way) and allows environment mapping without the need for a cube map, or a 
-// reflective pass.
-//
-// More sophisticated environment mapping:
-// UI easy to integrate - XT95    
-// https://www.shadertoy.com/view/ldKSDm
 vec3 envMap(vec3 p){
    
     // Some functions work, and others don't. The surface is created with the function

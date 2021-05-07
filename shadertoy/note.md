@@ -3575,8 +3575,50 @@ MsfGRr
 
 ![589](assets/589.jpg)
 
+# 590. Abstract Plane
+
+4sGSRV
+
+![590](assets/590.jpg)
+
+# 591. [NV15] Impact
+
+ltj3zR
+
+![591](assets/591.jpg)
+
+# 592. Waves
+
+4dsGzH
+
+![592](assets/592.jpg)
+
+# 593. Smiley Tutorial
+
+lsXcWn
+
+![593](assets/593.jpg)
+
+# 594. Neptune Racing
+
+XtX3Rr
+
+![594](assets/594.jpg)
+
+# 595. Oblivion radar
+
+4s2SRt
+
+![595](assets/595.jpg)
+
+# 596. Triangle Grid Contouring
+
+WtfGDX
+
+![596](assets/596.jpg)
 
 
 
 
-https://www.shadertoy.com/results?query=&sort=love&from=180&num=12
+
+https://www.shadertoy.com/results?query=&sort=love&from=192&num=12

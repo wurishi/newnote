@@ -3,6 +3,25 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const common = `
+// Old watch (RT). Created by Reinder Nijhoff 2018
+// @reindernijhoff
+//
+// https://www.shadertoy.com/view/MlyyzW
+//
+// I have moved all ray-march code to this tab, in order to keep the RT-code in Buffer B 
+// more readable. The physically-based properties of the materials are also defined here.
+//
+// The hash functions are copy-paste from "Quality hashes collection WebGL2" by Nimitz:
+// https://www.shadertoy.com/view/Xt3cDn
+//
+// All (signed) distance field (SDF) code is copy-paste from the excellent framework by 
+// Inigo Quilez:
+//
+// https://www.shadertoy.com/view/Xds3zN
+//
+// More info here: http://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
+//
+
 #define MAT_TABLE    1.
 #define MAT_PENCIL_0 2.
 #define MAT_PENCIL_1 3.
@@ -17,7 +36,36 @@ const common = `
 #define CLOCK_OFFSET_Y 0.42
 #define PENCIL_POS vec3(-0.31,-0.2, -.725)
 
-float MAX_T = 10.;
+float TIME = 11344.;
+#define MAX_T 10.
+
+//
+// Hash functions by Nimitz:
+// https://www.shadertoy.com/view/Xt3cDn
+//
+
+uint baseHash(uvec2 p) {
+    p = 1103515245U*((p >> 1U)^(p.yx));
+    uint h32 = 1103515245U*((p.x)^(p.y>>3U));
+    return h32^(h32 >> 16);
+}
+
+float hash1(inout float seed) {
+    uint n = baseHash(floatBitsToUint(vec2(seed+=.1,seed+=.1)));
+    return float(n)/float(0xffffffffU);
+}
+
+vec2 hash2(inout float seed) {
+    uint n = baseHash(floatBitsToUint(vec2(seed+=.1,seed+=.1)));
+    uvec2 rz = uvec2(n, n*48271U);
+    return vec2(rz.xy & uvec2(0x7fffffffU))/float(0x7fffffff);
+}
+
+vec3 hash3(inout float seed) {
+    uint n = baseHash(floatBitsToUint(vec2(seed+=.1,seed+=.1)));
+    uvec3 rz = uvec3(n, n*16807U, n*48271U);
+    return vec3(rz & uvec3(0x7fffffffU))/float(0x7fffffff);
+}
 
 //
 // SDF functions (by Inigo Quilez).
@@ -131,16 +179,6 @@ vec2 rotate( in vec2 p, const float t ) {
 }
 
 //
-// Hash without Sine by Dave Hoskins.
-//
-
-float hash11(float p) {
-	vec3 p3  = fract(vec3(p) * .1031);
-    p3 += dot(p3, p3.yzx + 19.19);
-    return fract((p3.x + p3.y) * p3.z);
-}
-
-//
 // SDF of the scene.
 //
 
@@ -163,14 +201,15 @@ vec2 map( in vec3 pos, in vec3 p1, in vec3 ps, in vec3 pm, in vec3 ph,
             dChain0 = 10.;
             float pth1z = floor(pos.z*5.);
             if (pth1z > 5.) {
-	            float pth1 = hash11(floor(pos.z*5.));
+            	float pth21 = floor(pos.z*5.);
+	            float pth1 = hash1(pth21);
     	        vec3 pt1 = vec3(pos.x + .3*sin(pos.z)- pth1 *.02 + 0.02, pos.y-h - pth1 *.03, mod(pos.z, .2) - .1);
         	    pt1 = rotateZ(pt1, .6 * smoothstep(2.,3., pos.z));
             	dChain0 = sdTorus(pt1, vec2(.071, .02)); 
             }
             
             float pth2z = floor(pos.z*5. + .5);
-            float pth2 = hash11(pth2z); 
+            float pth2 = hash1(pth2z); 
             vec3 pt2 = vec3(pos.x + .3*sin(pos.z)- pth2 *.02 + 0.02, pos.y-h - pth2 *.03, mod(pos.z + .1, .2) - .1);
             pt2 = rotateZ(pt2, 1.1 * smoothstep(2.,3., pos.z));
             dChain0 = opU(dChain0, sdTorusYZ(pt2, vec2(.071, .02)));          
@@ -242,9 +281,9 @@ vec2 map( in vec3 pos ) {
     vec3 p1 = rotateX( pos + vec3(0,-CLOCK_OFFSET_Y,0), CLOCK_ROT_X );
     p1 = rotateY( p1, CLOCK_ROT_Y );
     
-	float secs = mod( floor(iDate.w),        60.0 );
-	float mins = mod( floor(iDate.w/60.0),   60.0 );
-	float hors = mod( floor(iDate.w/3600.0), 24.0 ) + mins/60.;
+	float secs = mod( floor(TIME),        60.0 );
+	float mins = mod( floor(TIME/60.0),   60.0 );
+	float hors = mod( floor(TIME/3600.0), 24.0 ) + mins/60.;
     
     vec3 ps = rotateY( p1+vec3(0,0,.6), 6.2831*secs/60.0 );
     vec3 pm = rotateY( p1, 6.2831*mins/60.0 );
@@ -296,7 +335,7 @@ vec3 calcNormal( in vec3 pos ) {
 }
 
 vec2 castRay( in vec3 ro, in vec3 rd ) {
-    float tmin = 0.5;
+    float tmin = 0.001;
     float tmax = MAX_T;
     
     // bounding volume
@@ -313,9 +352,9 @@ vec2 castRay( in vec3 ro, in vec3 rd ) {
     vec3 rd1 = rotateX( rd, CLOCK_ROT_X );
     rd1 = rotateY( rd1, CLOCK_ROT_Y );
     
-	float secs = mod( floor(iDate.w),        60.0 );
-	float mins = mod( floor(iDate.w/60.0),   60.0 );
-	float hors = mod( floor(iDate.w/3600.0), 24.0 ) + mins/60.;
+	float secs = mod( floor(TIME),        60.0 );
+	float mins = mod( floor(TIME/60.0),   60.0 );
+	float hors = mod( floor(TIME/3600.0), 24.0 ) + mins/60.;
     
     vec3 ps = rotateY( p1+vec3(0,0,.6), 6.2831*secs/60.0 );
     vec3 rds = rotateY( rd1, 6.2831*secs/60.0 );
@@ -329,11 +368,11 @@ vec2 castRay( in vec3 ro, in vec3 rd ) {
     bool watchIntersect = boxIntserct(p1, rd1, vec3(1.1,.2,1.4));
     bool pencilIntersect = boxIntserct(ro + PENCIL_POS, rd, vec3(3.,.23,.23));
     
-    for( int i=0; i<48; i++ ) {
-	    float precis = 0.00025*t;
+    for( int i=0; i<64; i++ ) {
+	    float precis = 0.00001;
 	    vec2 res = map( ro+rd*t, p1+rd1*t, ps+rds*t, pm+rdm*t, ph+rdh*t, 
                        watchIntersect, pencilIntersect );
-        if( res.x<precis || t>tmax ) break; //return vec2(t, mat);
+        if( abs(res.x)<precis || t>tmax ) break; //return vec2(t, mat);
         t += res.x;
         mat = res.y;
     }
@@ -361,10 +400,10 @@ float castRayGlass( in vec3 ro, in vec3 rd ) {
     if (bb.y > 0.) {
         t = max(bb.x, 0.);
         float tmax = bb.y;
-        for( int i=0; i<24; i++ ) {
-            float precis = 0.00025*t;
+        for( int i=0; i<32; i++ ) {
+            float precis = 0.0001;
             float res = mapGlass( p1+rd1*t );
-            if( res<precis || t>tmax ) break; 
+            if( abs(res)<precis || t>tmax ) break; 
             t += res;
         }
 
@@ -373,42 +412,6 @@ float castRayGlass( in vec3 ro, in vec3 rd ) {
     return t;
 }
 
-
-float calcAO( in vec3 ro, in vec3 rd ) {
-	float occ = 0.0;
-    float sca = 1.0;
-    
-    vec3 p1 = rotateX( ro + vec3(0,-CLOCK_OFFSET_Y,0), CLOCK_ROT_X );
-    p1 = rotateY( p1, CLOCK_ROT_Y );
-    vec3 rd1 = rotateX( rd, CLOCK_ROT_X );
-    rd1 = rotateY( rd1, CLOCK_ROT_Y );
-    
-	float secs = mod( floor(iDate.w),        60.0 );
-	float mins = mod( floor(iDate.w/60.0),   60.0 );
-	float hors = mod( floor(iDate.w/3600.0), 24.0 ) + mins/60.;
-    
-    vec3 ps = rotateY( p1+vec3(0,0,.6), 6.2831*secs/60.0 );
-    vec3 rds = rotateY( rd1, 6.2831*secs/60.0 );
-    
-    vec3 pm = rotateY( p1, 6.2831*mins/60.0 );
-    vec3 rdm = rotateY( rd1, 6.2831*mins/60.0 );
-    
-    vec3 ph = rotateY( p1, 6.2831*hors/12.0 );
-    vec3 rdh = rotateY( rd1, 6.2831*hors/12.0 );
-    
-    bool watchIntersect = true; //boxIntserct(p1, rd1, vec3(1.1,.2,1.4));
-    bool pencilIntersect = true; //boxIntserct(ro + PENCIL_POS, rd, vec3(3.,.23,.23));
-    
-    
-    for( int i=0; i<6; i++ ) {
-        float h = 0.001 + 0.25*float(i)/5.0;
-        float d = map( ro+rd*h, p1+rd1*h, ps+rds*h, pm+rdm*h, ph+rdh*h, 
-                       watchIntersect, pencilIntersect ).x;
-        occ += (h-d)*sca;
-        sca *= 0.95;
-    }
-    return clamp( 1.0 - 1.5*occ, 0.0, 1.0 );    
-}
 
 //
 // Material properties.
@@ -424,14 +427,13 @@ vec4 texNoise( sampler2D sam, in vec3 p, in vec3 n ) {
 
 void getMaterialProperties(
     in vec3 pos, in float mat,
-    inout vec3 normal, inout vec3 albedo, inout float ao, inout float roughness, inout float metallic,
+    inout vec3 normal, inout vec3 albedo, inout float roughness, inout float metallic,
 	sampler2D tex1, sampler2D tex2, sampler2D tex3) {
     
     vec3 pinv = rotateX( pos + vec3(0,-CLOCK_OFFSET_Y,0), CLOCK_ROT_X );
     pinv = rotateY( pinv, CLOCK_ROT_Y );
     
     normal = calcNormal( pos );
-    ao = calcAO(pos, normal);
     metallic = 0.;
     
     vec4 noise = texNoise(tex1, pinv * .5, normal);
@@ -441,7 +443,8 @@ void getMaterialProperties(
     mat -= .5;
     if (mat < MAT_TABLE) {
         albedo = .7 * pow(texture(tex1, rotate(pos.xz * .4 + .25, -.3)).rgb, 2.2*vec3(0.45,0.5,0.5));
-        roughness = 0.95 - albedo.r * .6;
+        roughness = 0.9 - albedo.r * .6;
+        normal = vec3(0,1,0);
     }
     else if( mat < MAT_PENCIL_0 ) {
         vec2 npos = pos.yz + PENCIL_POS.yz;
@@ -453,7 +456,7 @@ void getMaterialProperties(
         	roughness = 0.99;
         } else {
         	albedo = .5*pow(vec3(1.,.8,.15), vec3(2.2));
-        	roughness = .75 - noise.b * .4;
+        	roughness = .85 - noise.b * .4;
         }
         albedo *= noise.g * .75 + .7;
     }
@@ -466,9 +469,8 @@ void getMaterialProperties(
         float r = 1. - abs(2.*fract(30.*pos.x)-1.)*smoothstep(.08,.09,ax)*smoothstep(.21,.2,ax);
 
         r -= 4. * metalnoise;  
-        ao *= .5 + .5 * r;
-	    albedo = mix(vec3(0.5, 0.3, 0.2),vec3(0.560, 0.570, 0.580), ao * ao); // Iron
-   		roughness = 1.-.25*r;
+	    albedo = mix(.5*vec3(0.5, 0.3, 0.2),vec3(0.560, 0.570, 0.580), (.5 + .5 * r) * (.5 + .5 * r)); // Iron
+   		roughness = .8-.5*r;
    		metallic = 1.; 
     }
     else if( mat < MAT_DIAL ) {
@@ -478,30 +480,26 @@ void getMaterialProperties(
     }
     else if( mat < MAT_HAND ) {
         albedo = vec3(0.02);
-        roughness = .65;
+        roughness = .8;
     }
     else if( mat < MAT_METAL_0 ) {
 	    albedo = vec3(1.000, 0.766, 0.336); // Gold
-   		roughness = .6;
+   		roughness = .5;
    		metallic = 1.; 
     } 
     else if( mat < MAT_METAL_1 ) {
 	    albedo = vec3(0.972, 0.960, 0.915); // Silver
-   		roughness = .7 + max(.15 * length(pos.xz)-.3, 0.); // prevent aliasing
+   		roughness = .5 + max(.15 * length(pos.xz)-.3, 0.); // prevent aliasing
    		metallic = 1.; 
     }
     
-    if (mat < MAT_PENCIL_2) {
-        ao = min(ao, smoothstep(.95, 1.5, length(pos.xz)));
-    }
-    
     if (metallic > .5) {   
-        albedo *= 1.-metalnoise;
         roughness += metalnoise*4.;
+        albedo *= max(.2, 1.-roughness * .6);
     }
     
-    ao = clamp(.1+.9*ao, 0., 1.);
-    roughness = clamp(roughness, 0., 1.);
+    roughness = clamp(roughness, 0.01, 1.);
+    albedo = clamp(albedo, vec3(0.01), vec3(1.));
 }
 
 mat3 setCamera( in vec3 ro, in vec3 ta ) {
@@ -514,6 +512,15 @@ mat3 setCamera( in vec3 ro, in vec3 ta ) {
 `;
 
 const buffA = `
+// Old watch (RT). Created by Reinder Nijhoff 2018
+// @reindernijhoff
+//
+// https://www.shadertoy.com/view/MlyyzW
+//
+// In this buffer the albedo of the dial (red channel) and the roughness
+// of the glass (green channel) is pre-calculated.
+//
+
 bool resolutionChanged() {
     return floor(texelFetch(iChannel0, ivec2(0), 0).r) != floor(iResolution.x);
 }
@@ -580,7 +587,7 @@ float roughnessGlass(vec2 uv) {
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {   
     if(resolutionChanged() && iChannelResolution[1].x > 0.  && iChannelResolution[2].x > 0.) {
         if (fragCoord.x < 1.5 && fragCoord.y < 1.5) {
-            fragColor = floor(iResolution.xyxy);
+            fragColor = vec4(floor(iResolution.xyx), mod(iDate.w, 12.*60.*60.));
         } else {
             vec2 uv = (2.0*fragCoord.xy-iResolution.xy)/iResolution.xy;
 
@@ -589,273 +596,246 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     } else {
         fragColor = texelFetch(iChannel0, ivec2(fragCoord), 0);
     }
-    fragColor.a = 1.;
 }
 `;
 
 const buffB = `
-const float PI = 3.14159265359;
+// Old watch (RT). Created by Reinder Nijhoff 2018
+// @reindernijhoff
+//
+// https://www.shadertoy.com/view/MlyyzW
+//
+// A simple path tracer is used to render an old watch. The old watch scene is
+// (almost) the same scene as rendered using image based lighting in my shader "Old
+// watch (IBL)":
+// 
+// https://www.shadertoy.com/view/lscBW4
+//
+// I'm no expert in ray- or path-tracing so there are probably a lot of errors in this code.
+//
 
-// see: http://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf
-float PartialGeometryGGX(float NdotV, float a) {
-    float k = a / 2.0;
+#define PATH_LENGTH 5
 
-    float nominator   = NdotV;
-    float denominator = NdotV * (1.0 - k) + k;
-
-    return nominator / denominator;
-}
-
-float GeometryGGX_Smith(float NdotV, float NdotL, float roughness) {
-    float a = roughness*roughness;
-    float G1 = PartialGeometryGGX(NdotV, a);
-    float G2 = PartialGeometryGGX(NdotL, a);
-    return G1 * G2;
-}
-
-float RadicalInverse_VdC(uint bits) {
-    bits = (bits << 16u) | (bits >> 16u);
-    bits = ((bits & 0x55555555u) << 1u) | ((bits & 0xAAAAAAAAu) >> 1u);
-    bits = ((bits & 0x33333333u) << 2u) | ((bits & 0xCCCCCCCCu) >> 2u);
-    bits = ((bits & 0x0F0F0F0Fu) << 4u) | ((bits & 0xF0F0F0F0u) >> 4u);
-    bits = ((bits & 0x00FF00FFu) << 8u) | ((bits & 0xFF00FF00u) >> 8u);
-    return float(bits) * 2.3283064365386963e-10; // / 0x100000000
-}
-
-vec2 Hammersley(int i, int N) {
-    return vec2(float(i)/float(N), RadicalInverse_VdC(uint(i)));
-} 
-
-vec3 ImportanceSampleGGX(vec2 Xi, float roughness) {
-    float a = roughness*roughness;
-    float phi      = 2.0 * PI * Xi.x;
-    float cosTheta = sqrt((1.0 - Xi.y) / (1.0 + (a*a - 1.0) * Xi.y));
-    float sinTheta = sqrt(1.0 - cosTheta*cosTheta);
-
-    vec3 HTangent;
-    HTangent.x = sinTheta*cos(phi);
-    HTangent.y = sinTheta*sin(phi);
-    HTangent.z = cosTheta;
-
-    return HTangent;
-}
-
-vec2 IntegrateBRDF(float roughness, float NdotV) {
-    vec3 V;
-    V.x = sqrt(1.0 - NdotV*NdotV);
-    V.y = 0.0;
-    V.z = NdotV;
-
-    float A = 0.0;
-    float B = 0.0;
-
-    const int SAMPLE_COUNT = 128;
-
-    vec3 N = vec3(0.0, 0.0, 1.0);
-    vec3 UpVector = abs(N.z) < 0.999 ? vec3(0.0, 0.0, 1.0) : vec3(1.0, 0.0, 0.0);
-    vec3 TangentX = normalize(cross(UpVector, N));
-    vec3 TangentY = cross(N, TangentX);
-
-    for(int i = 0; i < SAMPLE_COUNT; ++i)  {
-        vec2 Xi = Hammersley(i, SAMPLE_COUNT);
-        vec3 HTangent = ImportanceSampleGGX(Xi, roughness);
-        
-        vec3 H = normalize(HTangent.x * TangentX + HTangent.y * TangentY + HTangent.z * N);
-        vec3 L = normalize(2.0 * dot(V, H) * H - V);
-
-        float NdotL = max(L.z, 0.0);
-        float NdotH = max(H.z, 0.0);
-        float VdotH = max(dot(V, H), 0.0);
-
-        if(NdotL > 0.0) {
-            float G = GeometryGGX_Smith(NdotV, NdotL, roughness);
-            float G_Vis = (G * VdotH) / (NdotH * NdotV);
-            float Fc = pow(1.0 - VdotH, 5.0);
-
-            A += (1.0 - Fc) * G_Vis;
-            B += Fc * G_Vis;
-        }
-    }
-    A /= float(SAMPLE_COUNT);
-    B /= float(SAMPLE_COUNT);
-    return vec2(A, B);
-}
-
-bool resolutionChanged() {
-    return floor(texelFetch(iChannel0, ivec2(0), 0).r) != floor(iResolution.x);
-}
-
-void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
-    if(resolutionChanged()) {
-        if (fragCoord.x < 1.5 && fragCoord.y < 1.5) {
-            fragColor = floor(iResolution.xyxy);
-        } else {
-	   		vec2 uv = fragCoord / iResolution.xy;
-    		vec2 integratedBRDF = IntegrateBRDF(uv.y, uv.x);
-   	 		fragColor = vec4(integratedBRDF, 0.0,1.0);
-        }
+vec3 getBGColor( vec3 N ) {
+    if (N.y <= 0.) {
+        return vec3(0.); 
     } else {
-        fragColor = texelFetch(iChannel0, ivec2(fragCoord), 0);
+	    return (.25 + pow(textureLod(iChannel0, N.xy, 0.).rgb, vec3(6.5)) * 8.5) * (N.y) * .3;
     }
 }
-`;
 
-const fragment = `
-#define MAX_LOD 8.
-#define DIFFUSE_LOD 6.75
-#define AA 2
-// #define P_MALIN_AO 
-
-vec3 getSpecularLightColor( vec3 N, float roughness ) {
-    // This is not correct. You need to do a look up in a correctly pre-computed HDR environment map.
-    return pow(textureLod(iChannel0, N.xy, roughness * MAX_LOD).rgb, vec3(4.5)) * 6.5;
+float FresnelSchlickRoughness(float cosTheta, float F0, float roughness) {
+    return F0 + (max((1. - roughness), F0) - F0) * pow(abs(1. - cosTheta), 5.0);
 }
 
-vec3 getDiffuseLightColor( vec3 N ) {
-    // This is not correct. You need to do a look up in a correctly pre-computed HDR environment map.
-    return .25 +pow(textureLod(iChannel0, N.xy, DIFFUSE_LOD).rgb, vec3(3.)) * 1.;
+vec3 cosWeightedRandomHemisphereDirection( const vec3 n, inout float seed ) {
+  	vec2 r = hash2(seed);
+    
+	vec3  uu = normalize(cross(n, abs(n.y) > .5 ? vec3(1.,0.,0.) : vec3(0.,1.,0.)));
+	vec3  vv = cross(uu, n);
+	
+	float ra = sqrt(r.y);
+	float rx = ra*cos(6.2831*r.x); 
+	float ry = ra*sin(6.2831*r.x);
+	float rz = sqrt( abs(1.0-r.y) );
+	vec3  rr = vec3( rx*uu + ry*vv + rz*n );
+    
+    return normalize(rr);
 }
 
-//
-// Modified FrenelSchlick: https://seblagarde.wordpress.com/2011/08/17/hello-world/
-//
-vec3 FresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness) {
-    return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
+vec3 modifyDirectionWithRoughness( const vec3 n, const float roughness, inout float seed ) {
+  	vec2 r = hash2(seed);
+    
+	vec3  uu = normalize(cross(n, abs(n.y) > .5 ? vec3(1.,0.,0.) : vec3(0.,1.,0.)));
+	vec3  vv = cross(uu, n);
+	
+    float a = roughness*roughness;
+    a *= a; a *= a; // I want to have a really shiny watch.
+	float rz = sqrt(abs((1.0-r.y) / clamp(1.+(a - 1.)*r.y,.00001,1.)));
+	float ra = sqrt(abs(1.-rz*rz));
+	float rx = ra*cos(6.2831*r.x); 
+	float ry = ra*sin(6.2831*r.x);
+	vec3  rr = vec3( rx*uu + ry*vv + rz*n );
+    
+    return normalize(rr);
 }
 
-//
-// Image based lighting
-//
-
-vec3 lighting(in vec3 ro, in vec3 pos, in vec3 N, in vec3 albedo, in float ao, in float roughness, in float metallic ) {
-    vec3 V = normalize(ro - pos); 
-    vec3 R = reflect(-V, N);
-    float NdotV = max(0.0, dot(N, V));
-
-    vec3 F0 = vec3(0.04); 
-    F0 = mix(F0, albedo, metallic);
-
-    vec3 F = FresnelSchlickRoughness(NdotV, F0, roughness);
-
-    vec3 kS = F;
-
-    vec3 prefilteredColor = getSpecularLightColor(R, roughness);
-    vec2 envBRDF = texture(iChannel3, vec2(NdotV, roughness)).rg;
-    vec3 specular = prefilteredColor * (F * envBRDF.x + envBRDF.y);
-
-    vec3 kD = vec3(1.0) - kS;
-
-    kD *= 1.0 - metallic;
-
-    vec3 irradiance = getDiffuseLightColor(N);
-
-    vec3 diffuse  = albedo * irradiance;
-
-#ifdef P_MALIN_AO
-    vec3 color = kD * diffuse * ao + specular * calcAO(pos, R);
-#else
-    vec3 color = (kD * diffuse + specular) * ao;
-#endif
-
-    return color;
+vec2 randomInUnitDisk(inout float seed) {
+    vec2 h = hash2(seed) * vec2(1.,6.28318530718);
+    float phi = h.y;
+    float r = sqrt(h.x);
+	return r*vec2(sin(phi),cos(phi));
 }
 
 //
 // main 
 //
 
-vec3 render( const in vec3 ro, const in vec3 rd ) {
-    vec3 col = vec3(0); 
-    vec2 res = castRay( ro, rd );
+vec3 render( in vec3 ro, in vec3 rd, inout float seed ) {
+    vec3 col = vec3(1.); 
+    vec3 firstPos = vec3(100.);
+    bool firstHit = false;
+    
+    for (int i=0; i<PATH_LENGTH; ++i) {    
+    	vec2 res = castRay( ro, rd );
+		float gd = castRayGlass( ro, rd );
+        
+		vec3 gpos = ro + rd * gd;
+		vec3 gN = calcNormalGlass(gpos);
+        
+        if (gd > 0. && (res.x < 0. || gd < res.x) && dot(gN, rd) < 0.) {
+            // Glass material. 
+            // Not correct: I only handle rays that enter the glass and the glass
+            // is modelled as one solid piece, instead as a thin layer. By using a
+            // non-physically plausible refraction index of 1.25, it still looks
+            // good (I think).
+            float F = FresnelSchlickRoughness(max(0., dot(-gN, rd)), (0.08), 0.);
+            if (F < hash1(seed)) {
+                rd = refract(rd, gN, 1./1.25);
+            } else {
+                rd = reflect(rd, gN);
+            }
+            ro = gpos;
+        }
+        else if (res.x > 0.) {
+			vec3 pos = ro + rd * res.x;
+			vec3 N, albedo;
+            float roughness, metallic;
 
-    if (res.x > 0.) {
-        vec3 pos = ro + rd * res.x;
-        vec3 N, albedo;
-        float roughness, metallic, ao;
+			getMaterialProperties(pos, res.y, N, albedo, roughness, metallic, iChannel1, iChannel2, iChannel3);
 
-        getMaterialProperties(pos, res.y, N, albedo, ao, roughness, metallic, iChannel1, iChannel2, iChannel3);
+            float F = FresnelSchlickRoughness(max(0., -dot(N, rd)), 0.04, roughness);
+            
+            ro = pos;
+            if (F > hash1(seed) - metallic) { // Reflections and metals.
+                if (metallic > .5) {
+                    col *= albedo; 
+                }
+				rd = modifyDirectionWithRoughness(reflect(rd,N), roughness, seed);            
+                if (dot(rd, N) <= 0.) {
+                    rd = cosWeightedRandomHemisphereDirection(N, seed);
+                }
+            } else { // Diffuse
+				col *= albedo;
+				rd = cosWeightedRandomHemisphereDirection(N, seed);
+            }
+        } else {
+            col *= getBGColor(rd);
+			col *= max(0.0, min(1.1, 10./dot(firstPos,firstPos)) - .15);
+			return col;
+        }            
+        if (!firstHit) {
+            firstHit = true;
+            firstPos = ro;
+        }
+    }  
+    return vec3(0.);
+}
 
-        col = lighting(ro, pos, N, albedo, ao, roughness, metallic);
-        col *= max(0.0, min(1.1, 10./dot(pos,pos)) - .15);
+void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
+    bool reset = iFrame == 0;
+    ivec2 f = ivec2(fragCoord);
+    vec4 data1 = texelFetch(iChannel3, ivec2(0), 0);
+    vec4 data2 = texelFetch(iChannel2, ivec2(0), 0);
+    
+    vec2 uv = fragCoord/iResolution.xy;
+    vec2 mo = abs(iMouse.xy)/iResolution.xy - .5;
+    if (iMouse.xy == vec2(0)) mo = vec2(.05,.1);
+    
+    if (floor(mo*iResolution.xy*10.) != data1.yz) {
+        reset = true;
     }
+    if (data2.xy != iResolution.xy) {
+        reset = true;
+    }
+    
+    TIME = data2.w;
+    
+    float a = 5.05;
+    vec3 ro = vec3( .25+ 2.*cos(6.0*mo.x+a), 2. + 2. * mo.y, 2.0*sin(6.0*mo.x+a) );
+    vec3 ta = vec3( .25, .5, 0.0 );
+    mat3 ca = setCamera( ro, ta );
 
-    // Glass. 
-    float glass = castRayGlass( ro, rd );
-    if (glass > 0. && (glass < res.x || res.x < 0.)) {
-        vec3 N = calcNormalGlass(ro+rd*glass);
-        vec3 pos = ro + rd * glass;
+    float fpd = data1.x;
+    if(all(equal(f, ivec2(0)))) {
+        // Calculate focus plane and store distance.
+        float nfpd = castRay(ro, normalize(vec3(0.,.2,0.)-ro)).x;
+		fragColor = vec4(nfpd, floor(mo*iResolution.xy*10.), iResolution.x);
+        return;
+    }
+    
+    vec2 p = (-iResolution.xy + 2.0*fragCoord - 1.)/iResolution.y;
+    float seed = float(baseHash(floatBitsToUint(p)))/float(0xffffffffU) + iTime;
 
-        vec3 V = normalize(ro - pos); 
-        vec3 R = reflect(-V, N);
-        float NdotV = max(0.0, dot(N, V));
+    // AA
+	p += 2.*hash2(seed)/iResolution.y;
+    vec3 rd = ca * normalize( vec3(p.xy,1.6) );  
+    
+    // DOF
+    vec3 fp = ro + rd * fpd;
+    ro = ro + ca * vec3(randomInUnitDisk(seed), 0.)*.02;
+    rd = normalize(fp - ro);
+    
+    vec3 col = render(ro, rd, seed);           
+  
+    if (reset) {
+       fragColor = vec4(col, 1.0);
+    } else {
+       fragColor = vec4(col, 1.0) + texelFetch(iChannel3, ivec2(fragCoord), 0);
+    }
+}
+`;
 
-        float roughness = texture(iChannel2, pos.xz*.5 + .5).g;
+const fragment = `
+// Old watch (RT). Created by Reinder Nijhoff 2018
+// Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
+// @reindernijhoff
+//
+// https://www.shadertoy.com/view/MlyyzW
+//
+// A simple path tracer is used to render an old watch. The old watch scene is
+// (almost) the same scene as rendered using image based lighting in my shader "Old
+// watch (IBL)":
+// 
+// https://www.shadertoy.com/view/lscBW4
+//
+// You can find the path tracer in Buffer B. I'm no expert in ray or path tracing so
+// there are probably a lot of errors in this code.
+//
+// Use your mouse to change the camera viewpoint.
+//
 
-        vec3 F = FresnelSchlickRoughness(NdotV, vec3(.08), roughness);
-        vec3 prefilteredColor = getSpecularLightColor(R, roughness);
-        vec2 envBRDF = texture(iChannel3, vec2(NdotV, roughness)).rg;
-        vec3 specular = prefilteredColor * (F * envBRDF.x + envBRDF.y);
-
-        col = col * (1.0 -  (F * envBRDF.x + envBRDF.y) ) + specular;
-    } 
-
+void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
+    vec4 data = texelFetch(iChannel3, ivec2(fragCoord), 0);
+    vec3 col = data.rgb / data.w;
+    
     // gamma correction
     col = max( vec3(0), col - 0.004);
     col = (col*(6.2*col + .5)) / (col*(6.2*col+1.7) + 0.06);
     
-    return col;
-}
-
-void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
-    vec2 uv = fragCoord/iResolution.xy;
-    vec2 mo = iMouse.xy/iResolution.xy - .5;
-    if(iMouse.z <= 0.) {
-        mo = vec2(.2*sin(-iTime*.1+.3)+.045,.1-.2*sin(-iTime*.1+.3));
-    }
-    float a = 5.05;
-    vec3 ro = vec3( .25 + 2.*cos(6.0*mo.x+a), 2. + 2. * mo.y, 2.0*sin(6.0*mo.x+a) );
-    vec3 ta = vec3( .25, .5, .0 );
-    mat3 ca = setCamera( ro, ta );
-
-    vec3 colT = vec3(0);
-    
-    for (int x=0; x<AA; x++) {
-        for(int y=0; y<AA; y++) {
-		    vec2 p = (-iResolution.xy + 2.0*(fragCoord + vec2(x,y)/float(AA) - .5))/iResolution.y;
-   			vec3 rd = ca * normalize( vec3(p.xy,1.6) );  
-            colT += render( ro, rd);           
-        }
-    }
-    
-    colT /= float(AA*AA);
-    
-    fragColor = vec4(colT, 1.0);
-}
-
-void mainVR( out vec4 fragColor, in vec2 fragCoord, in vec3 ro, in vec3 rd ) {
-	MAX_T = 1000.;
-    fragColor = vec4(render(ro * 25. + vec3(0.5,4.,1.5), rd), 1.);
+    // Output to screen
+    fragColor = vec4(col,1.0);
 }
 `;
 
 export default class implements iSub {
   key(): string {
-    return 'lscBW4';
+    return 'MlyyzW';
   }
   name(): string {
-    return 'Old watch (IBL)';
+    return 'Old watch (RT)';
   }
   // sort() {
   //   return 0;
   // }
-  webgl() {
-    return WEBGL_2;
+  common() {
+    return common;
   }
   tags?(): string[] {
     return [];
   }
-  common() {
-    return common;
+  webgl() {
+    return WEBGL_2;
   }
   main(): HTMLCanvasElement {
     return createCanvas();
@@ -872,9 +852,9 @@ export default class implements iSub {
   }
   channels() {
     return [
-      { type: 1, f: buffA, fi: 0 },
+      { type: 1, f: buffA, fi: 0 }, //
       webglUtils.FONT_TEXTURE,
-      webglUtils.TEXTURE5, //
+      webglUtils.TEXTURE2,
       { type: 1, f: buffB, fi: 3 },
     ];
   }

@@ -3,21 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Created by inigo quilez - iq/2013
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-
-// A port of my 2007 demo Kindernoiser: https://www.youtube.com/watch?v=9AX8gNyrSWc (http://www.pouet.net/prod.php?which=32549)
-//
-// Info here:
-//    http://iquilezles.org/www/articles/juliasets3d/juliasets3d.htm
-//
-//
-// Related shaders
-//
-// Julia - Quaternion 1 : https://www.shadertoy.com/view/MsfGRr
-// Julia - Quaternion 2 : https://www.shadertoy.com/view/lsl3W2
-// Julia - Quaternion 3 : https://www.shadertoy.com/view/3tsyzl
-
 // antialias level (1, 2, 3...)
 #define HW_PERFORMANCE 1
 #if HW_PERFORMANCE==1

@@ -3,57 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-/*
-
-    Cellular Tiled Tunnel
-    ---------------------
-    
-    I've always liked the look of a 2nd order Voronoi surface. IQ's Leizex demo is a great
-	prerendered example, and for anyone who can remember, Tomasz Dobrowolski's Suboceanic
-	was cutting edge back in the day.
-
-	Anyway, I've always wanted to get a proper example working in a shader... Yeah, I need
-	bigger dreams. :) Unfortunately, I kind of realized that it wasn't going to be possible 
-	until GPUs become even faster than they already are, so I figured I'd try the next best 
-	thing and come up with a way to emulate the look with something cheap. This is the 
-	result. It's not perfect, but it looks surprisingly similar.
-
-	The regular 2nd order Voronoi algorithm involves a "lot" of operations. In general,
-	27 cell checks - all involving a bunch of vector arithmetic, fract, sin, floor, 
-	comparisons, etc... It's possible to cut down on cell checks, perform a bunch of
-	optimizations, etc, but it's still too much work for a raymarcher.
-
-	The surface here is produced via a repeat 3D tile approach. The look is achieved by 
-	performing 2nd order distance checks on the tiles. I used a highly scientific approach
-	which involved crossing my fingers, doing the distance checks and hoping for the best. :)
-	Amazingly, it produced the result I was looking for.
-
-	I covered the tile construction in other "cell tile" examples, so I'll spare you the 
-	details, but it's pretty simple. The only additions here are the second order distance
-	checks.
-
-	In order to show the surface itself, I've made the example geometric looking - I hope
-	you like brown, or whatever color that is. :) Note that individual cell regions are 
-	colored	differently. I did that to show that it could be done, but I'm not convinced 
-	that it adds to the aesthetics in any meaningful way.
-
-	Anyway, I have a few more interesting examples that I'll put up pretty soon.
-	
-	// For comparison, this example uses the standard 2nd order Voronoi algorithm. For fun,
-	// I dropped the cell tile routine into it and it ran a lot faster.
-	Voronoi - rocks - iq
-	https://www.shadertoy.com/view/MsXGzM
-
-	rgba leizex - Inigo Quilez
-	http://www.pouet.net/prod.php?which=51829
-	https://www.youtube.com/watch?v=eJBGj8ggCXU
-	http://www.iquilezles.org/prods/index.htm
-
-	Tomasz Dobrowolski - Suboceanic
-	http://www.pouet.net/prod.php?which=18343
-
-*/
-
 #define PI 3.14159265358979
 #define FAR 50. // Maximum allowable ray distance.
 
@@ -354,12 +303,6 @@ vec3 calcNormal(in vec3 p) {
 }
 */
 
-// Ambient occlusion, for that self shadowed look. Based on the original by XT95. I love this 
-// function, and in many cases, it gives really, really nice results. For a better version, and 
-// usage, refer to XT95's examples below:
-//
-// Hemispherical SDF AO - https://www.shadertoy.com/view/4sdGWN
-// Alien Cocoons - https://www.shadertoy.com/view/MsdGz2
 float calculateAO( in vec3 p, in vec3 n )
 {
 	float ao = 0.0, l;

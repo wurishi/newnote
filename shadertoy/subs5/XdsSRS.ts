@@ -3,7 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// optimized from https://www.shadertoy.com/view/MdXSzS
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
 	vec2 uv = (fragCoord.xy/iResolution.xy)-.5;
 	float len = length(uv.xy);

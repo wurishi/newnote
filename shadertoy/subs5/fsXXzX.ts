@@ -201,11 +201,6 @@ vec3 hash31(float p) { vec3 p3 = fract(vec3(p) * vec3(.1031, .1030, .0973)); p3 
 vec3 hash32(vec2 p) { vec3 p3 = fract(vec3(p.xyx ) * vec3(.1031, .1030, .0973)); p3 += dot(p3, p3.yxz +33.33); return fract((p3.xxy +p3.yzz )*p3.zyx ); }
 vec3 hash33(vec3 p3) { p3 = fract(p3 * vec3(.1031, .1030, .0973)); p3 += dot(p3, p3.yxz +33.33); return fract((p3.xxy + p3.yxx )*p3.zyx ); }
 
-//###############################################################################
-
-// iq's function munged for vec4, used in city shader...
-// https://www.shadertoy.com/view/XlXcW4 note: source has changed since then...
-
 vec4 hash42_( ivec2 x0 )
 {
 	uint k = 1103515245U;  // GLIB C
@@ -216,18 +211,12 @@ vec4 hash42_( ivec2 x0 )
 	return vec4( x ) * ( 1.0 / float( 0xffffffffU ));
 }
 
-// integer hashes
-// https://www.shadertoy.com/view/4tXyWN iq
-
 float hash1u2_4tXyWN( uvec2 x )
 {
 	uvec2 q = 1103515245U * ( ( x >> 1U ) ^ ( x.yx  ) );
 	uint  n = 1103515245U * ( ( q.x  ) ^ ( q.y >> 3U ) );
 	return float( n ) * ( 1.0 / float( 0xffffffffU ) );
 }
-
-// https://nullprogram.com/blog/2018/07/31/ Chris Wellons
-// https://www.shadertoy.com/view/WttXWX via Fabrice
 
 uint lowbias32(uint x) { x ^= x >> 16; x *= 0x7feb352dU; x ^= x >> 15; x *= 0x846ca68bU; x ^= x >> 16; return x; }
 float hash11u_lowbias32( uint x ) { return float( lowbias32( x ) ) / float( 0xffffffffU ); }
@@ -523,7 +512,6 @@ float sd_bounds_range( vec3 p, vec3 mi, vec3 ma ) { return sd_bounds_half_size( 
 float sd_sphere( vec3 p, vec3 center, float radius ) { return length( p - center ) - radius; }
 float sd_sphere( vec2 p, vec2 center, float radius ) { return length( p - center ) - radius; }
 
-// iq's https://www.shadertoy.com/view/Xds3zN modified for z up
 float sdCylinder( vec3 p, vec2 h )
 {
 	vec2 d = abs( vec2( length( p.xy ),p.z)) - h;

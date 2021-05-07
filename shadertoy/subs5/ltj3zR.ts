@@ -21,11 +21,6 @@ const float fadeOutTime = .01;
 const float fadeInTime  = .2;
 const float whiteTime   = .3; // fade to white
     
-  
-
-
-// Trying to sync by using AND's code from
-// https://www.shadertoy.com/view/4sSSWz
 #define WARMUP_TIME     (2.0)
 
 // Shadertoy's sound is a bit out of sync every time you run it :(
@@ -620,8 +615,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ){
 `;
 
 const sound = `
-// Trying to sync by using AND's code from
-// https://www.shadertoy.com/view/4sSSWz
 #define WARMUP_TIME     (2.0)
 
 const float loopSpeed   = .1;
@@ -636,14 +629,6 @@ const float whiteTime   = .3; // fade to white
 float rand(vec2 co){
   return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
 }
-
-
-
-/*
-	
-	From https://www.shadertoy.com/view/MdfXWX
-
-*/
 
 float n2f(float note)
 {

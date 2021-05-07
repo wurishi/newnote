@@ -3,12 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// https://www.shadertoy.com/view/MdXSzS
-// The Big Bang - just a small explosion somewhere in a massive Galaxy of Universes.
-// Outside of this there's a massive galaxy of 'Galaxy of Universes'... etc etc. :D
-
-// To fake a perspective it takes advantage of the screen being wider than it is tall.
-
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
 	vec2 uv = (fragCoord.xy / iResolution.xy) - .5;

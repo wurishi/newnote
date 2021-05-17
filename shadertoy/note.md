@@ -3683,6 +3683,36 @@ Mss3R8
 
 ![607](assets/607.jpg)
 
+# 608. Geomechanical
+
+MdcXzn
+
+![608](assets/608.jpg)
+
+# 609. Transparent Cube Field
+
+ll2SRy
+
+![609](assets/609.jpg)
+
+# 610. Tribute to Marc-Antoine Mathieu
+
+XlfBR7
+
+![610](assets/610.jpg)
+
+# 611. textured ellipsoids
+
+XsfXW8
+
+![611](assets/611.jpg)
+
+# 612. Kirby Jump
+
+lt2fD3
+
+![612](assets/612.jpg)
 
 
-https://www.shadertoy.com/results?query=&sort=love&from=192&num=12
+
+https://www.shadertoy.com/results?query=&sort=love&from=204&num=12

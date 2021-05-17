@@ -509,21 +509,7 @@ vec3 simplexContour(vec2 p){
     col = mix(col, vec3(0), (1. - smoothstep(0., sf, d4)));
     col = mix(col, vec3(1), (1. - smoothstep(0., sf, d4 + .005)));
   
-  
     
-    // Rough pencil color overlay... The calculations are rough... Very rough, in fact, 
-    // since I'm only using a small overlayed portion of it. Flockaroo does a much, much 
-    // better pencil sketch algorithm here:
-    //
-    // When Voxels Wed Pixels - Flockaroo 
-    // https://www.shadertoy.com/view/MsKfRw
-    //
-    // Anyway, the idea is very simple: Render a layer of noise, stretched out along one 
-    // of the directions, then mix a similar, but rotated, layer on top. Whilst doing this,
-    // compare each layer to it's underlying grey scale value, and take the difference...
-    // I probably could have described it better, but hopefully, the code will make it 
-    // more clear. :)
-    // 
     // Tweaked to suit the brush stroke size.
     vec2 q = oP*1.5;
     // I always forget this bit. Without it, the grey scale value will be above one, 

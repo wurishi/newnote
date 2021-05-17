@@ -3659,9 +3659,29 @@ lsl3W2
 
 ![603](assets/603.jpg)
 
+# 604. when voxels wed pixels
 
+MsKfRw
 
+![604](assets/604.jpg)
 
+# 605. Julia - Distance 2
+
+3llyzl
+
+![605](assets/605.jpg)
+
+# 606. Julia - Distance 1
+
+Mss3R8
+
+![606](assets/606.jpg)
+
+# 607. Julia - Distance 3
+
+4dXGDX
+
+![607](assets/607.jpg)
 
 
 

@@ -3,21 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Created by inigo quilez - iq/2013
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-
-// A cubic Julia set f(z) = z^3 + c, in quaternion space. I used the
-// regular Hubbard-Douady potential based distance estimator 
-// d(z) = 0.5·log|z|·|z|/|dz| for the marcher, orbit traps for
-// coloring, and a compact way to rise a quaterion to the cube power.
-// 
-// More info:
-//   https://iquilezles.org/www/articles/juliasets3d/juliasets3d.htm
-//
-// Related shaders:
-//  Julia - Quaternion 1 : https://www.shadertoy.com/view/MsfGRr
-
-
 vec3 hash3( float n )
 {
     return fract(sin(vec3(n,n+1.0,n+2.0))*vec3(43758.5453123,22578.1459123,19642.3490423));

@@ -3,25 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const common = `
-// Old watch (RT). Created by Reinder Nijhoff 2018
-// @reindernijhoff
-//
-// https://www.shadertoy.com/view/MlyyzW
-//
-// I have moved all ray-march code to this tab, in order to keep the RT-code in Buffer B 
-// more readable. The physically-based properties of the materials are also defined here.
-//
-// The hash functions are copy-paste from "Quality hashes collection WebGL2" by Nimitz:
-// https://www.shadertoy.com/view/Xt3cDn
-//
-// All (signed) distance field (SDF) code is copy-paste from the excellent framework by 
-// Inigo Quilez:
-//
-// https://www.shadertoy.com/view/Xds3zN
-//
-// More info here: http://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
-//
-
 #define MAT_TABLE    1.
 #define MAT_PENCIL_0 2.
 #define MAT_PENCIL_1 3.
@@ -38,11 +19,6 @@ const common = `
 
 float TIME = 11344.;
 #define MAX_T 10.
-
-//
-// Hash functions by Nimitz:
-// https://www.shadertoy.com/view/Xt3cDn
-//
 
 uint baseHash(uvec2 p) {
     p = 1103515245U*((p >> 1U)^(p.yx));
@@ -512,15 +488,6 @@ mat3 setCamera( in vec3 ro, in vec3 ta ) {
 `;
 
 const buffA = `
-// Old watch (RT). Created by Reinder Nijhoff 2018
-// @reindernijhoff
-//
-// https://www.shadertoy.com/view/MlyyzW
-//
-// In this buffer the albedo of the dial (red channel) and the roughness
-// of the glass (green channel) is pre-calculated.
-//
-
 bool resolutionChanged() {
     return floor(texelFetch(iChannel0, ivec2(0), 0).r) != floor(iResolution.x);
 }
@@ -600,20 +567,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
 `;
 
 const buffB = `
-// Old watch (RT). Created by Reinder Nijhoff 2018
-// @reindernijhoff
-//
-// https://www.shadertoy.com/view/MlyyzW
-//
-// A simple path tracer is used to render an old watch. The old watch scene is
-// (almost) the same scene as rendered using image based lighting in my shader "Old
-// watch (IBL)":
-// 
-// https://www.shadertoy.com/view/lscBW4
-//
-// I'm no expert in ray- or path-tracing so there are probably a lot of errors in this code.
-//
-
 #define PATH_LENGTH 5
 
 vec3 getBGColor( vec3 N ) {
@@ -787,24 +740,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
 `;
 
 const fragment = `
-// Old watch (RT). Created by Reinder Nijhoff 2018
-// Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
-// @reindernijhoff
-//
-// https://www.shadertoy.com/view/MlyyzW
-//
-// A simple path tracer is used to render an old watch. The old watch scene is
-// (almost) the same scene as rendered using image based lighting in my shader "Old
-// watch (IBL)":
-// 
-// https://www.shadertoy.com/view/lscBW4
-//
-// You can find the path tracer in Buffer B. I'm no expert in ray or path tracing so
-// there are probably a lot of errors in this code.
-//
-// Use your mouse to change the camera viewpoint.
-//
-
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     vec4 data = texelFetch(iChannel3, ivec2(fragCoord), 0);
     vec3 col = data.rgb / data.w;

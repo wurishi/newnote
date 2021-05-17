@@ -3,27 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const buffA = `
-// Created by inigo quilez - iq/2020
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-
-// The Julia set of f(z) = z³ + c, as rendered for the Youtube
-// video called "Geodes": https://www.shadertoy.com/view/3llyzl
-//
-// I simplified a few things, reduced the number of GI bounces
-// and did some temporal reprojection to keep it more or less
-// real-time while looking similar to the one in the video.
-//
-// Explanations:
-//  https://iquilezles.org/www/articles/distancefractals/distancefractals.htm
-//  https://iquilezles.org/www/articles/orbittraps3d/orbittraps3d.htm
-//
-// Related shaders:
-//
-// Julia - Quaternion 1 : https://www.shadertoy.com/view/MsfGRr
-// Julia - Quaternion 2 : https://www.shadertoy.com/view/lsl3W2
-// Julia - Quaternion 3 : https://www.shadertoy.com/view/3tsyzl
-
-
 // disable TRAPs to see just the set
 #define TRAPS
 
@@ -403,27 +382,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 }`;
 
 const fragment = `
-// Created by inigo quilez - iq/2020
-// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
-
-// The Julia set of f(z) = z³ + c, as rendered for the Youtube
-// video called "Geodes": https://www.youtube.com/watch?v=rQ2bnU4dkso
-//
-// I simplified a few things, reduced the number of GI bounces
-// and did some temporal reprojection to keep it more or less
-// real-time while looking similar to the one in the video.
-//
-// Explanations:
-//  https://iquilezles.org/www/articles/distancefractals/distancefractals.htm
-//  https://iquilezles.org/www/articles/orbittraps3d/orbittraps3d.htm
-//
-// Related shaders:
-//
-// Julia - Quaternion 1 : https://www.shadertoy.com/view/MsfGRr
-// Julia - Quaternion 2 : https://www.shadertoy.com/view/lsl3W2
-// Julia - Quaternion 3 : https://www.shadertoy.com/view/3tsyzl
-
-
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
 	vec2 p = fragCoord / iResolution.xy;

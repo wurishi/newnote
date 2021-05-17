@@ -3,15 +3,6 @@ import { createCanvas, iSub, PRECISION_MEDIUMP, WEBGL_2 } from '../libs';
 import * as webglUtils from '../webgl-utils';
 
 const fragment = `
-// Neptune Racing. December 2014
-// https://www.shadertoy.com/view/XtX3Rr
-
-
-// Uses sphere tracing to accumulate direction normals across the landscape.
-// Materials are calculated after the tracing loop from alphas and distances
-// stored in a stack.
-// Change ScoopRadius for depth of field.
-
 #define PI 3.141596
 vec3 sunLight  = normalize( vec3(  0.35, 0.2,  0.3 ) );
 vec3 moon  = vec3(  45000., 30000.0,  -30000. );

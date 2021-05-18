@@ -18,7 +18,9 @@
     "test": "NODE_ENV=test mocha --compilers coffee:coffee-script --require test/test_helper.js --recursive",
     "transpile": "tsc",
     "js_init": "node lib/jscli/index init test default",
-    "js_g": "node lib/jscli/index generate"
+    "js_g": "node lib/jscli/index generate",
+    "js_create": "node lib/jscli/index create -e name1",
+    "js_cli": "node lib/jscli/index"
   },
   "author": "darkoverlordofdata@gmail.com",
   "license": "MIT",

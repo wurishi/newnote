@@ -1,13 +1,17 @@
 const init = require('./init');
 const generate = require('./generate');
+const create = require('./create');
 
 module.exports = {
   init(namespace, type) {
     init.run(namespace, '-t', type);
   },
   generate() {
-    generate.run()
-  }
+    generate.run();
+  },
+  create(type, name, ...args) {
+    create.run(type, name, ...args);
+  },
 };
 
 const cmd = process.argv[2];
@@ -20,7 +24,10 @@ if (cmd) {
     case 'generate':
       module.exports.generate(...params);
       break;
+    case 'create':
+      module.exports.create(...params);
+      break;
     default:
-      console.log(`未知的命令: ${cmd}`);
+      console.log(`未知的命令: ${cmd}`, process.argv);
   }
 }

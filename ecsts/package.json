@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "liquid.coffee": "^0.1.8",
+    "liquidjs": "^9.25.0",
     "mkdirp": "^0.5.1"
   }
 }

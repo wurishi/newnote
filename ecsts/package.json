@@ -1,0 +1,44 @@
+{
+  "name": "entitas-cli",
+  "version": "0.2.0",
+  "description": "Entitas ECS Command Line Generator",
+  "main": "index.js",
+  "bin": {
+    "entitas": "./bin/entitas"
+  },
+  "config": {},
+  "scripts": {
+    "_vscode_build": "bin/entitas generate && tsc -p ./tsconfig_entitas.json && tsc -p ./tsconfig_example.json",
+    "build": "tsc --outFile build/entitas.js && cat build/entitas.js | java -jar packages/closure-compiler/lib/vendor/compiler.jar --compilation_level WHITESPACE_ONLY --js_output_file build/entitas.min.js",
+    "build_es6": "tsc && cat build/entitas.js | java -jar /home/bruce/Applications/closure-compiler/compiler-latest/closure-compiler-v20160822.jar --compilation_level WHITESPACE_ONLY --js_output_file build/entitas.min.js",
+    "clean": "rm -rf build/*",
+    "doc": "typedoc --out build/web lib/entitas --mode file --theme node_modules/typedoc-dash-theme/bin",
+    "prebuild": "bower-installer && npm run clean -s",
+    "start": "tools/server web",
+    "test": "NODE_ENV=test mocha --compilers coffee:coffee-script --require test/test_helper.js --recursive",
+    "transpile": "tsc"
+  },
+  "author": "darkoverlordofdata@gmail.com",
+  "license": "MIT",
+  "directories": {
+    "lib": "./lib",
+    "example": "./example"
+  },
+  "devDependencies": {
+    "chai": "~1.9.2",
+    "coffee-script": "1.12.4",
+    "gulp": "^3.9.0",
+    "gulp-gh-pages": "^0.5.2",
+    "gulp-shell": "^0.4.2",
+    "gulp-webserver": "^0.9.1",
+    "mkdirp": "^0.5.1",
+    "mocha": "~2.0.1",
+    "morgan": "^1.6.1",
+    "nw": "^0.17.3",
+    "walker": "^1.0.7"
+  },
+  "dependencies": {
+    "liquid.coffee": "^0.1.8",
+    "mkdirp": "^0.5.1"
+  }
+}

@@ -115,6 +115,4 @@ function run(namespace, flag, type) {
   }
 }
 
-run('a', '-t', 'default');
-
 module.exports.run = run;

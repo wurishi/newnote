@@ -16,7 +16,9 @@
     "prebuild": "bower-installer && npm run clean -s",
     "start": "tools/server web",
     "test": "NODE_ENV=test mocha --compilers coffee:coffee-script --require test/test_helper.js --recursive",
-    "transpile": "tsc"
+    "transpile": "tsc",
+    "js_init": "node lib/jscli/index init test default",
+    "js_g": "node lib/jscli/index generate"
   },
   "author": "darkoverlordofdata@gmail.com",
   "license": "MIT",

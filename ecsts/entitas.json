@@ -1,10 +1,10 @@
 {
-  "namespace": "a",
+  "namespace": "test",
   "src": "lib/src",
   "output": {
-    "javascript": "web/src/a/generatedExtensions.js",
+    "javascript": "web/src/test/generatedExtensions.js",
     "typescript": "lib/src/generatedComponents.ts",
-    "declaration": "lib/ext/a.d.ts"
+    "declaration": "lib/ext/test.d.ts"
   },
   "components": {
     "Player": false,

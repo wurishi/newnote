@@ -226,6 +226,14 @@ declare module entitas {
      public y:number;
    }
 }
+declare module test {
+    interface IComponent {
+    }
+    class ViewComponent implements IComponent {
+     public x:number;
+     public y:number;
+   }
+}
 declare module entitas {
     interface IMatcher {
         id: number;

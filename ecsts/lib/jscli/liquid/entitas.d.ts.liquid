@@ -219,6 +219,11 @@ declare module entitas {
     }
     {{ interfaceIComponent }}
 }
+declare module {{ namespace }} {
+    interface IComponent {
+    }
+    {{ interfaceIComponent }}
+}
 declare module entitas {
     interface IMatcher {
         id: number;

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite App</title>
+    <script src="web/src/entitas/utils/UUID.js"></script>
+    <script src="web/src/entitas/utils/ImmutableBag.js"></script>
+    <script src="web/src/entitas/utils/Bag.js"></script>
+    <script src="web/src/entitas/utils/Signal.js"></script>
+    <script src="web/src/entitas/utils/Stopwatch.js"></script>
+    <script src="web/src/entitas/interfaces/IComponent.js"></script>
+    <script src="web/src/entitas/interfaces/IMatcher.js"></script>
+    <script src="web/src/entitas/interfaces/ISystem.js"></script>
+    <script src="web/src/entitas/interfaces/IExecuteSystem.js"></script>
+    <script src="web/src/entitas/interfaces/IInitializeSystem.js"></script>
+    <script src="web/src/entitas/interfaces/IReactiveSystem.js"></script>
+    <script src="web/src/entitas/exceptions/Exception.js"></script>
+    <script src="web/src/entitas/exceptions/EntityAlreadyHasComponentException.js"></script>
+    <script src="web/src/entitas/exceptions/EntityDoesNotHaveComponentException.js"></script>
+    <script src="web/src/entitas/exceptions/EntityIsAlreadyReleasedException.js"></script>
+    <script src="web/src/entitas/exceptions/EntityIsNotDestroyedException.js"></script>
+    <script src="web/src/entitas/exceptions/EntityIsNotEnabledException.js"></script>
+    <script src="web/src/entitas/exceptions/GroupObserverException.js"></script>
+    <script src="web/src/entitas/exceptions/MatcherException.js"></script>
+    <script src="web/src/entitas/exceptions/PoolDoesNotContainEntityException.js"></script>
+    <script src="web/src/entitas/exceptions/SingleEntityException.js"></script>
+    <script src="web/src/entitas/TriggerOnEvent.js"></script>
+    <script src="web/src/entitas/Matcher.js"></script>
+    <script src="web/src/entitas/Entity.js"></script>
+    <script src="web/src/entitas/Group.js"></script>
+    <script src="web/src/entitas/GroupObserver.js"></script>
+    <script src="web/src/entitas/Pool.js"></script>
+    <script src="web/src/entitas/ReactiveSystem.js"></script>
+    <script src="web/src/entitas/Systems.js"></script>
+    <script src="web/src/entitas/viewer/EntityBehavior.js"></script>
+    <script src="web/src/entitas/viewer/PoolObserver.js"></script>
+    <script src="web/src/entitas/viewer/SystemObserver.js"></script>
+    <script src="web/src/entitas/viewer/VisualDebugging.js"></script>
+    <script src="lib/src/generatedComponents.ts"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

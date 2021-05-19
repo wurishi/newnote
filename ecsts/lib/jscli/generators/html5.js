@@ -427,6 +427,7 @@ set${Name}(value: boolean);
     )
   );
   let dts = tpl.render({
+    namespace: config.namespace,
     interfaceIComponent: d0.join('\n'),
     classEntity: d1.join('\n'),
     matcher: d2.join('\n'),

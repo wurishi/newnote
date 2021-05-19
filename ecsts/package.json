@@ -20,7 +20,10 @@
     "js_init": "node lib/jscli/index init test default",
     "js_g": "node lib/jscli/index generate",
     "js_create": "node lib/jscli/index create -e name1",
-    "js_cli": "node lib/jscli/index"
+    "js_cli": "node lib/jscli/index",
+    "dev": "vite",
+    "build_vite": "tsc && vite build",
+    "serve": "vite preview"
   },
   "author": "darkoverlordofdata@gmail.com",
   "license": "MIT",
@@ -39,6 +42,8 @@
     "mocha": "~2.0.1",
     "morgan": "^1.6.1",
     "nw": "^0.17.3",
+    "typescript": "^4.2.4",
+    "vite": "^2.3.3",
     "walker": "^1.0.7"
   },
   "dependencies": {

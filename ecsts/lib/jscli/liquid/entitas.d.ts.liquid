@@ -1,8 +1,4 @@
-
-  /**
-   * Entitas-ECS definitions for test
-   */
-  declare module entitas.utils {
+declare module entitas.utils {
     /**
      * @class UUID
      */
@@ -221,10 +217,7 @@ declare module entitas.utils {
 declare module entitas {
     interface IComponent {
     }
-    class ViewComponent implements IComponent {
-     public x:number;
-     public y:number;
-   }
+    {{ interfaceIComponent }}
 }
 declare module entitas {
     interface IMatcher {
@@ -433,11 +426,7 @@ declare module entitas {
     module Matcher {
     }
     class Matcher implements IAllOfMatcher, IAnyOfMatcher, INoneOfMatcher {
-        /** Matcher Extensions for test */
-
-    static _matcherView;
-    static View: Matcher;
-    
+        {{ matcher }}
         /**
          * Get the matcher id
          * @type {number}
@@ -569,16 +558,7 @@ declare module entitas {
         }
     }
     class Entity {
-      /** Entity Extensions for test */
-
-      static _viewComponentPool;
-      static clearViewComponentPool();
-      view: ViewComponent;
-      hasView: boolean;
-      addView(x:number, y:number);
-      replaceView(x:number, y:number);
-      removeView();
-      
+      {{ classEntity }}
         /**
          * @static
          * @type {number} */
@@ -972,11 +952,7 @@ declare module entitas {
      * The games world.
      */
     class Pool {
-      /** Pool Extensions for test */
-
-        domEntity: Entity;
-        isDom: boolean;
-        
+      {{ pool }}
         /**
          * The total number of components in this pool
          * @type {number}
@@ -1245,5 +1221,3 @@ declare module entitas.viewer {
         static init(pool: Pool): void;
     }
 }
-
-    

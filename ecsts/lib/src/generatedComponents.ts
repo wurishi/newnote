@@ -15,49 +15,15 @@
     import IComponent = entitas.IComponent;
   
      export enum CoreComponentIds {
-       Player,
-       Position,
        View,
-       Velocity,
-       Movable,
-       Destroy,
-       Input,
-       Interactive,
-       Resource,
-       Score,
        TotalComponents
       }
 
-    Entity.initialize(CoreComponentIds.TotalComponents, undefined);
+    Entity.initialize(CoreComponentIds.TotalComponents, {"entities":128,"components":64});
   
-     export class PlayerComponent implements IComponent {
-     }
-     export class PositionComponent implements IComponent {
-       public x:number;
-       public y:number;
-     }
      export class ViewComponent implements IComponent {
-       public sprite:Object;
-     }
-     export class VelocityComponent implements IComponent {
        public x:number;
        public y:number;
-     }
-     export class MovableComponent implements IComponent {
-     }
-     export class DestroyComponent implements IComponent {
-     }
-     export class InputComponent implements IComponent {
-       public x:number;
-       public y:number;
-     }
-     export class InteractiveComponent implements IComponent {
-     }
-     export class ResourceComponent implements IComponent {
-       public name:string;
-     }
-     export class ScoreComponent implements IComponent {
-       public value:number;
      }
 export class Pools {
   static _allPools:Array<Pool>;

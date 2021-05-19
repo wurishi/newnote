@@ -6,42 +6,20 @@
     "typescript": "lib/src/generatedComponents.ts",
     "declaration": "lib/ext/test.d.ts"
   },
+  "alloc": {
+    "entities": 128,
+    "components": 64
+  },
   "components": {
-    "Player": false,
-    "Position": [
-      "x:number",
-      "y:number"
-    ],
     "View": [
-      "sprite:Object"
-    ],
-    "Velocity": [
       "x:number",
       "y:number"
-    ],
-    "Movable": false,
-    "Destroy": false,
-    "Input": [
-      "x:number",
-      "y:number"
-    ],
-    "Interactive": false,
-    "Resource": [
-      "name:string"
-    ],
-    "Score": [
-      "value:number"
     ]
   },
   "systems": {
-    "DestroySystem": true,
-    "ProcessInputSystem": true,
-    "RenderPositionSystem": true,
-    "AddViewSystem": true,
-    "RemoveViewSystem": true,
-    "ScoreSystem": true
+    "DrawSystem": true
   },
   "entities": {
-    "Score": true
+    "Dom": true
   }
 }

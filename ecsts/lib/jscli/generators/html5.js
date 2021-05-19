@@ -91,7 +91,7 @@ function run(...flags) {
 
   // Components Class Declarations
   for (const [Name, properties] of objectEntries(config.components)) {
-    d0.push(`   class ${Name}Component implements IComponent {`);
+    d0.push(`class ${Name}Component implements IComponent {`);
     if (Array.isArray(properties)) {
       for (const p of properties) {
         d0.push(`     public ${p};`);
@@ -375,7 +375,7 @@ set${Name}(value: boolean);
   }
 
   // Pools
-  const tpl = liquid.Template.parse(
+  let tpl = liquid.Template.parse(
     fs.readFileSync(path.join(__dirname, '../liquid/pools-ts.liquid'), 'utf-8')
   );
   ts.push(tpl.render({ dbg: JSON.stringify(dbg) }));
@@ -409,33 +409,38 @@ set${Name}(value: boolean);
       ex[Name].push(`     ${name}(${args.join(', ')}):${type};`);
     }
   }
-  const def = (dts, className, dd) => {
-    const i = dts.indexOf(className) + className.length;
-    dts = dts.substr(0, i) + '\n' + dd.join('\n') + dts.substr(i);
-    return dts;
-  };
+  // const def = (dts, className, dd) => {
+  //   let i = dts.indexOf(className);
+  //   if (i < 0) {
+  //     console.log('未找到: ', className);
+  //     return dts;
+  //   }
+  //   i += className.length;
+  //   dts = dts.substr(0, i) + '\n' + dd.join('\n') + dts.substr(i);
+  //   return dts;
+  // };
 
-  let dts = fs.readFileSync(
-    path.join(__dirname, '../../cli/generators/entitas.d.ts'),
-    'utf-8'
+  tpl = liquid.Template.parse(
+    fs.readFileSync(
+      path.join(__dirname, '../liquid/entitas.d.ts.liquid'),
+      'utf-8'
+    )
   );
-  dts = def(dts, '    interface IComponent {\n    }', d0);
-  dts = def(dts, '    class Entity {', d1);
-  dts = def(
-    dts,
-    '    class Matcher implements IAllOfMatcher, IAnyOfMatcher, INoneOfMatcher {',
-    d2
-  );
-  dts = def(dts, '    class Pool {', d3);
-  for (const [Name, d0] of objectEntries(ex)) {
-    dts = def(dts, `    class #{Name} {`, d0);
-  }
+  let dts = tpl.render({
+    interfaceIComponent: d0.join('\n'),
+    classEntity: d1.join('\n'),
+    matcher: d2.join('\n'),
+    pool: d3.join('\n'),
+  });
+  //   for (const [Name, d0] of objectEntries(ex)) {
+  //     dts = def(dts, `    class #{Name} {`, d0);
+  //   }
   dts = `
-/**
- * Entitas-ECS definitions for ${config.namespace}
- */
-${dts}
-  `;
+  /**
+   * Entitas-ECS definitions for ${config.namespace}
+   */
+  ${dts}
+    `;
 
   fs.mkdirSync(
     path.dirname(path.join(process.cwd(), config.output.declaration)),

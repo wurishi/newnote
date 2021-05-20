@@ -7,10 +7,11 @@
     "sourceMap": true,
     "experimentalDecorators": true,
     "outDir": "web/src/entitas",
-    "types": ["vite/client"],
+    "types": [
+      "vite/client"
+    ],
     "moduleResolution": "node"
   },
-  "include": ["lib/ext/test.d.ts"],
   "files": [
     "lib/entitas/utils/UUID.ts",
     "lib/entitas/utils/ImmutableBag.ts",
@@ -45,6 +46,7 @@
     "lib/entitas/viewer/PoolObserver.ts",
     "lib/entitas/viewer/SystemObserver.ts",
     "lib/entitas/viewer/VisualDebugging.ts",
-    "lib/src/generatedComponents.ts"
+    "lib/src/generatedComponents.ts",
+    "lib/src/systems/ViewDemoSystem.ts"
   ]
 }

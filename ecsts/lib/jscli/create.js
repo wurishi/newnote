@@ -1,4 +1,7 @@
 const fs = require('fs');
+const liquid = require('liquid.coffee');
+const path = require('path');
+const mkdirp = require('mkdirp');
 const config = require(`${process.cwd()}/entitas.json`);
 
 function run(type, name, ...args) {
@@ -40,6 +43,9 @@ function component(name, ...args) {
 function system(name, ...args) {
   config.systems[name] = args.length > 0 ? args : true;
   updateEntitas(config);
+
+  generateSystemTemplate(name, args);
+  updateProject(name);
 }
 
 function extension(name, method, ...args) {
@@ -54,6 +60,42 @@ function updateEntitas(config) {
     `${process.cwd()}/entitas.json`,
     JSON.stringify(config, null, 2)
   );
+}
+
+function generateSystemTemplate(name, interfaces) {
+  interfaces = interfaces || [];
+  const tpl = liquid.Template.parse(
+    fs.readFileSync(
+      path.join(__dirname, '../jscli/liquid/system.template.ts.liquid'),
+      'utf-8'
+    )
+  );
+  const content = tpl.render({
+    namespace: config.namespace,
+    implements:
+      interfaces.length > 0 ? ' implements ' + interfaces.join(', ') : '',
+    interfaces,
+    name,
+  });
+  mkdirp.sync(`${process.cwd()}/${config.src}/systems`);
+  fs.writeFileSync(
+    `${process.cwd()}/${config.src}/systems/${name}.ts`,
+    content
+  );
+}
+
+function updateProject(name) {
+  const tsconfig = JSON.parse(
+    fs.readFileSync(`${process.cwd()}/tsconfig.json`, 'utf8')
+  );
+  tsconfig.files = tsconfig.files || [];
+  if (tsconfig.files.indexOf(`${config.src}/systems/${name}.ts`) < 0) {
+    tsconfig.files.push(`${config.src}/systems/${name}.ts`);
+    fs.writeFileSync(
+      `${process.cwd()}/tsconfig.json`,
+      JSON.stringify(tsconfig, null, 2)
+    );
+  }
 }
 
 module.exports.run = run;

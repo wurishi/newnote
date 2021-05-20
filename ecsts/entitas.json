@@ -1,25 +1,22 @@
 {
-  "namespace": "test",
+  "namespace": "testgame",
   "src": "lib/src",
   "output": {
-    "javascript": "web/src/test/generatedExtensions.js",
+    "javascript": "web/src/testgame/generatedExtensions.js",
     "typescript": "lib/src/generatedComponents.ts",
-    "declaration": "lib/ext/test.d.ts"
+    "declaration": "lib/ext/testgame.d.ts"
   },
   "alloc": {
     "entities": 128,
     "components": 64
   },
-  "components": {
-    "View": [
-      "x:number",
-      "y:number"
+  "components": {},
+  "systems": {
+    "ViewDemoSystem": [
+      "IInitializeSystem",
+      "IEnsureComponents",
+      "ISetPool"
     ]
   },
-  "systems": {
-    "DrawSystem": true
-  },
-  "entities": {
-    "Dom": true
-  }
+  "entities": {}
 }

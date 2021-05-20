@@ -47,6 +47,7 @@
     "walker": "^1.0.7"
   },
   "dependencies": {
+    "jsdom": "^16.5.3",
     "liquid.coffee": "^0.1.8",
     "liquidjs": "^9.25.0",
     "mkdirp": "^0.5.1"

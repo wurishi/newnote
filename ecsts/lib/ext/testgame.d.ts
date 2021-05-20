@@ -1,6 +1,6 @@
 
   /**
-   * Entitas-ECS definitions for test
+   * Entitas-ECS definitions for testgame
    */
   declare module entitas.utils {
     /**
@@ -221,18 +221,20 @@ declare module entitas.utils {
 declare module entitas {
     interface IComponent {
     }
-    class ViewComponent implements IComponent {
-     public x:number;
-     public y:number;
-   }
+        
+    class DebugMessageComponent implements IComponent {
+      public msg:string;
+    }
+    
 }
-declare module test {
+declare module testgame {
     interface IComponent {
     }
-    class ViewComponent implements IComponent {
-     public x:number;
-     public y:number;
-   }
+        
+    class DebugMessageComponent implements IComponent {
+      public msg:string;
+    }
+    
 }
 declare module entitas {
     interface IMatcher {
@@ -441,10 +443,10 @@ declare module entitas {
     module Matcher {
     }
     class Matcher implements IAllOfMatcher, IAnyOfMatcher, INoneOfMatcher {
-        /** Matcher Extensions for test */
+        /** Matcher Extensions for testgame */
 
-    static _matcherView;
-    static View: Matcher;
+    static _matcherDebugMessage;
+    static DebugMessage: Matcher;
     
         /**
          * Get the matcher id
@@ -577,15 +579,15 @@ declare module entitas {
         }
     }
     class Entity {
-      /** Entity Extensions for test */
+      /** Entity Extensions for testgame */
 
-      static _viewComponentPool;
-      static clearViewComponentPool();
-      view: ViewComponent;
-      hasView: boolean;
-      addView(x:number, y:number);
-      replaceView(x:number, y:number);
-      removeView();
+      static _debugMessageComponentPool;
+      static clearDebugMessageComponentPool();
+      debugMessage: DebugMessageComponent;
+      hasDebugMessage: boolean;
+      addDebugMessage(msg:string);
+      replaceDebugMessage(msg:string);
+      removeDebugMessage();
       
         /**
          * @static
@@ -980,10 +982,14 @@ declare module entitas {
      * The games world.
      */
     class Pool {
-      /** Pool Extensions for test */
+      /** Pool Extensions for testgame */
 
-        domEntity: Entity;
-        isDom: boolean;
+        debugMessageEntity: Entity;
+        debugMessage: DebugMessageComponent;
+        hasDebugMessage: boolean;
+        setDebugMessage(msg:string): Entity;
+        replaceDebugMessage(msg:string): Entity;
+        removeDebugMessage(): void;
         
         /**
          * The total number of components in this pool

@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const mkdirp = require('mkdirp');
 const liquid = require('liquid.coffee');
 const config = require(`${process.cwd()}/entitas.json`);
 const { objectEntries } = require('../utils');
@@ -13,12 +14,13 @@ const params = (a, sep = ', ') => {
 };
 
 function run(...flags) {
+  let tpl;
   const dbg = config.debug || false;
   console.log('debug = ', dbg);
 
   const ts = [];
   const js = [];
-  const d0 = [];
+  let d0 = '';
   const d1 = [];
   const d2 = [];
   const d3 = [];
@@ -90,15 +92,20 @@ function run(...flags) {
   }
 
   // Components Class Declarations
+  tpl = liquid.Template.parse(
+    fs.readFileSync(
+      path.join(__dirname, '../liquid/interface-d0.liquid'),
+      'utf-8'
+    )
+  );
+  const components = [];
   for (const [Name, properties] of objectEntries(config.components)) {
-    d0.push(`class ${Name}Component implements IComponent {`);
-    if (Array.isArray(properties)) {
-      for (const p of properties) {
-        d0.push(`     public ${p};`);
-      }
-    }
-    d0.push('   }');
+    components.push({
+      Name,
+      properties: Array.isArray(properties) ? properties : [],
+    });
   }
+  d0 = tpl.render({ components });
 
   // Extend Entity with components
   for (const [Name, properties] of objectEntries(config.components)) {
@@ -375,7 +382,7 @@ set${Name}(value: boolean);
   }
 
   // Pools
-  let tpl = liquid.Template.parse(
+  tpl = liquid.Template.parse(
     fs.readFileSync(path.join(__dirname, '../liquid/pools-ts.liquid'), 'utf-8')
   );
   ts.push(tpl.render({ dbg: JSON.stringify(dbg) }));
@@ -383,19 +390,13 @@ set${Name}(value: boolean);
 
   js.push('})();');
 
-  fs.mkdirSync(
-    path.dirname(path.join(process.cwd(), config.output.typescript)),
-    { recursive: true }
-  );
+  mkdirp(path.dirname(path.join(process.cwd(), config.output.typescript)));
   fs.writeFileSync(
     path.join(process.cwd(), config.output.typescript),
     ts.join('\n')
   );
 
-  fs.mkdirSync(
-    path.dirname(path.join(process.cwd(), config.output.javascript)),
-    { recursive: true }
-  );
+  mkdirp(path.dirname(path.join(process.cwd(), config.output.javascript)));
   fs.writeFileSync(
     path.join(process.cwd(), config.output.javascript),
     js.join('\n')
@@ -428,7 +429,7 @@ set${Name}(value: boolean);
   );
   let dts = tpl.render({
     namespace: config.namespace,
-    interfaceIComponent: d0.join('\n'),
+    interfaceIComponent: d0,
     classEntity: d1.join('\n'),
     matcher: d2.join('\n'),
     pool: d3.join('\n'),
@@ -443,10 +444,7 @@ set${Name}(value: boolean);
   ${dts}
     `;
 
-  fs.mkdirSync(
-    path.dirname(path.join(process.cwd(), config.output.declaration)),
-    { recursive: true }
-  );
+  mkdirp(path.dirname(path.join(process.cwd(), config.output.declaration)));
   fs.writeFileSync(path.join(process.cwd(), config.output.declaration), dts);
 
   // console.log(ts.join('\n'));

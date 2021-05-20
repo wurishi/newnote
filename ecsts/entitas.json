@@ -10,13 +10,22 @@
     "entities": 128,
     "components": 64
   },
-  "components": {},
+  "components": {
+    "DebugMessage": [
+      "msg:string"
+    ]
+  },
   "systems": {
     "ViewDemoSystem": [
       "IInitializeSystem",
       "IEnsureComponents",
       "ISetPool"
+    ],
+    "DebugMessageSystem": [
+      "IReactiveSystem"
     ]
   },
-  "entities": {}
+  "entities": {
+    "DebugMessage": true
+  }
 }

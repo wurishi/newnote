@@ -47,6 +47,6 @@
     "lib/entitas/viewer/SystemObserver.ts",
     "lib/entitas/viewer/VisualDebugging.ts",
     "lib/src/generatedComponents.ts",
-    "lib/src/systems/ViewDemoSystem.ts"
+    "lib/src/systems/DebugMessageSystem.ts"
   ]
 }

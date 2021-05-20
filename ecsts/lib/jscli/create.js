@@ -2,6 +2,7 @@ const fs = require('fs');
 const liquid = require('liquid.coffee');
 const path = require('path');
 const mkdirp = require('mkdirp');
+const { JSDOM } = require('jsdom');
 const config = require(`${process.cwd()}/entitas.json`);
 
 function run(type, name, ...args) {
@@ -96,6 +97,20 @@ function updateProject(name) {
       JSON.stringify(tsconfig, null, 2)
     );
   }
+
+  const idom = new JSDOM(
+    fs.readFileSync(`${process.cwd()}/index.html`, 'utf-8')
+  );
+  if (
+    [...idom.window.document.head.querySelectorAll('script')].findIndex(
+      (el) => el.src == ''
+    ) < 0
+  ) {
+    const snode = idom.window.document.createElement('script');
+    snode.src = `${config.src}/systems/${name}.ts`;
+    idom.window.document.head.appendChild(snode);
+  }
+  fs.writeFileSync(`${process.cwd()}/index.html`, idom.serialize());
 }
 
 module.exports.run = run;

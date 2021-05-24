@@ -21,16 +21,19 @@ function run(...flags) {
   const ts = [];
   const js = [];
   let d0 = '';
-  const d1 = [];
+  const d1 = {
+    c1: [],
+    c2: [],
+  };
   const d2 = [];
   const d3 = [];
   const ex = {}; // or []
 
-  d1.push(`/** Entity Extensions for ${config.namespace} */`);
   d2.push(`/** Matcher Extensions for ${config.namespace} */`);
   d3.push(`/** Pool Extensions for ${config.namespace} */`);
 
   // Header
+  // js need create Entitas Generated Classes
   ts.push(`
   /**
    * Entitas Generated Classes for ${config.namespace}
@@ -138,11 +141,7 @@ function run(...flags) {
         return this;
       };
       `);
-      d1.push(`
-static ${name}Component: ${Name}Component;
-is${Name}: boolean;
-set${Name}(value: boolean);
-      `);
+      d1.c1.push({ name, Name });
     } else {
       const alloc = config.alloc || {};
       const { components = 0 } = alloc;
@@ -229,15 +228,11 @@ set${Name}(value: boolean);
         return this;
       };`);
 
-      d1.push(`
-      static _${name}ComponentPool;
-      static clear${Name}ComponentPool();
-      ${name}: ${Name}Component;
-      has${Name}: boolean;
-      add${Name}(${properties.join(', ')});
-      replace${Name}(${properties.join(', ')});
-      remove${Name}();
-      `);
+      d1.c2.push({
+        name,
+        Name,
+        p: properties.join(', '),
+      });
     }
   }
 
@@ -427,10 +422,13 @@ set${Name}(value: boolean);
       'utf-8'
     )
   );
+  const d1_tpl = liquid.Template.parse(
+    fs.readFileSync(path.join(__dirname, '../liquid/entity-d1.liquid'), 'utf8')
+  );
   let dts = tpl.render({
     namespace: config.namespace,
     interfaceIComponent: d0,
-    classEntity: d1.join('\n'),
+    classEntity: d1_tpl.render({ namespace: config.namespace, ...d1 }),
     matcher: d2.join('\n'),
     pool: d3.join('\n'),
   });

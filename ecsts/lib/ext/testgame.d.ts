@@ -226,6 +226,10 @@ declare module entitas {
       public msg:string;
     }
     
+    class SingleDemoComponent implements IComponent {
+      
+    }
+    
 }
 declare module testgame {
     interface IComponent {
@@ -233,6 +237,10 @@ declare module testgame {
         
     class DebugMessageComponent implements IComponent {
       public msg:string;
+    }
+    
+    class SingleDemoComponent implements IComponent {
+      
     }
     
 }
@@ -448,6 +456,10 @@ declare module entitas {
     static _matcherDebugMessage;
     static DebugMessage: Matcher;
     
+
+    static _matcherSingleDemo;
+    static SingleDemo: Matcher;
+    
         /**
          * Get the matcher id
          * @type {number}
@@ -581,14 +593,19 @@ declare module entitas {
     class Entity {
       /** Entity Extensions for testgame */
 
-      static _debugMessageComponentPool;
-      static clearDebugMessageComponentPool();
-      debugMessage: DebugMessageComponent;
-      hasDebugMessage: boolean;
-      addDebugMessage(msg:string);
-      replaceDebugMessage(msg:string);
-      removeDebugMessage();
-      
+static singleDemo: SingleDemoComponent;
+isSingleDemo: boolean;
+setSingleDemo(value: boolean);
+
+
+static _debugMessageComponentPool;
+static clearDebugMessageComponentPool();
+debugMessage: DebugMessageComponent;
+hasDebugMessage: boolean;
+addDebugMessage(msg:string);
+replaceDebugMessage(msg:string);
+removeDebugMessage();
+
         /**
          * @static
          * @type {number} */

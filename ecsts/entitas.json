@@ -13,7 +13,8 @@
   "components": {
     "DebugMessage": [
       "msg:string"
-    ]
+    ],
+    "SingleDemo": false
   },
   "systems": {
     "ViewDemoSystem": [

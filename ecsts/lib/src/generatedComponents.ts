@@ -16,6 +16,7 @@
   
      export enum CoreComponentIds {
        DebugMessage,
+       SingleDemo,
        TotalComponents
       }
 
@@ -23,6 +24,8 @@
   
      export class DebugMessageComponent implements IComponent {
        public msg:string;
+     }
+     export class SingleDemoComponent implements IComponent {
      }
 export class Pools {
   static _allPools:Array<Pool>;

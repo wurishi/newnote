@@ -452,14 +452,13 @@ declare module entitas {
     }
     class Matcher implements IAllOfMatcher, IAnyOfMatcher, INoneOfMatcher {
         /** Matcher Extensions for testgame */
-
-    static _matcherDebugMessage;
-    static DebugMessage: Matcher;
-    
-
-    static _matcherSingleDemo;
-    static SingleDemo: Matcher;
-    
+        
+        static _matcherDebugMessage;
+        static DebugMessage: Matcher;
+        
+        static _matcherSingleDemo;
+        static SingleDemo: Matcher;
+        
         /**
          * Get the matcher id
          * @type {number}
@@ -591,21 +590,21 @@ declare module entitas {
         }
     }
     class Entity {
-      /** Entity Extensions for testgame */
-
-static singleDemo: SingleDemoComponent;
-isSingleDemo: boolean;
-setSingleDemo(value: boolean);
-
-
-static _debugMessageComponentPool;
-static clearDebugMessageComponentPool();
-debugMessage: DebugMessageComponent;
-hasDebugMessage: boolean;
-addDebugMessage(msg:string);
-replaceDebugMessage(msg:string);
-removeDebugMessage();
-
+        /** Entity Extensions for testgame */
+        
+        static singleDemo: SingleDemoComponent;
+        isSingleDemo: boolean;
+        setSingleDemo(value: boolean);
+        
+        
+        static _debugMessageComponentPool;
+        static clearDebugMessageComponentPool();
+        debugMessage: DebugMessageComponent;
+        hasDebugMessage: boolean;
+        addDebugMessage(msg:string);
+        replaceDebugMessage(msg:string);
+        removeDebugMessage();
+        
         /**
          * @static
          * @type {number} */

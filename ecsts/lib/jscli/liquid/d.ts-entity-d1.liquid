@@ -1,0 +1,15 @@
+  /** Entity Extensions for {{ namespace }} */
+        {% for c in c1 %}
+        static {{ c.name }}: {{ c.Name }}Component;
+        is{{c.Name}}: boolean;
+        set{{c.Name}}(value: boolean);
+        {% endfor %}
+        {% for c in c2 %}
+        static _{{ c.name }}ComponentPool;
+        static clear{{ c.Name }}ComponentPool();
+        {{ c.name }}: {{ c.Name }}Component;
+        has{{ c.Name }}: boolean;
+        add{{ c.Name }}({{ c.p }});
+        replace{{ c.Name }}({{ c.p }});
+        remove{{ c.Name }}();
+        {% endfor %}

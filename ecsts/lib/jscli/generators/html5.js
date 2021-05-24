@@ -29,7 +29,6 @@ function run(...flags) {
   const d3 = [];
   const ex = {}; // or []
 
-  d2.push(`/** Matcher Extensions for ${config.namespace} */`);
   d3.push(`/** Pool Extensions for ${config.namespace} */`);
 
   // Header
@@ -97,7 +96,7 @@ function run(...flags) {
   // Components Class Declarations
   tpl = liquid.Template.parse(
     fs.readFileSync(
-      path.join(__dirname, '../liquid/interface-d0.liquid'),
+      path.join(__dirname, '../liquid/d.ts-interface-d0.liquid'),
       'utf-8'
     )
   );
@@ -253,11 +252,7 @@ function run(...flags) {
       }
     });
     `);
-
-    d2.push(`
-    static _matcher${Name};
-    static ${Name}: Matcher;
-    `);
+    d2.push(Name);
   }
 
   // Pooled Entities
@@ -423,13 +418,16 @@ function run(...flags) {
     )
   );
   const d1_tpl = liquid.Template.parse(
-    fs.readFileSync(path.join(__dirname, '../liquid/entity-d1.liquid'), 'utf8')
+    fs.readFileSync(path.join(__dirname, '../liquid/d.ts-entity-d1.liquid'), 'utf8')
+  );
+  const d2_tpl = liquid.Template.parse(
+    fs.readFileSync(path.join(__dirname, '../liquid/d.ts-matcher-d2.liquid'), 'utf8')
   );
   let dts = tpl.render({
     namespace: config.namespace,
     interfaceIComponent: d0,
     classEntity: d1_tpl.render({ namespace: config.namespace, ...d1 }),
-    matcher: d2.join('\n'),
+    matcher: d2_tpl.render({ namespace: config.namespace, names: d2}),
     pool: d3.join('\n'),
   });
   //   for (const [Name, d0] of objectEntries(ex)) {

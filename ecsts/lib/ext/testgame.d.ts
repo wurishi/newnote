@@ -1,8 +1,7 @@
-
-  /**
-   * Entitas-ECS definitions for testgame
-   */
-  declare module entitas.utils {
+/**
+* Entitas-ECS definitions for testgame
+*/
+declare module entitas.utils {
     /**
      * @class UUID
      */
@@ -998,8 +997,9 @@ declare module entitas {
      * The games world.
      */
     class Pool {
-      /** Pool Extensions for testgame */
-
+        /** Pool Extensions for testgame */
+        
+        
         debugMessageEntity: Entity;
         debugMessage: DebugMessageComponent;
         hasDebugMessage: boolean;
@@ -1275,5 +1275,3 @@ declare module entitas.viewer {
         static init(pool: Pool): void;
     }
 }
-
-    

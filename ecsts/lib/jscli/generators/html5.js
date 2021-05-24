@@ -26,10 +26,11 @@ function run(...flags) {
     c2: [],
   };
   const d2 = [];
-  const d3 = [];
+  const d3 = {
+    e1: [],
+    e2: [],
+  };
   const ex = {}; // or []
-
-  d3.push(`/** Pool Extensions for ${config.namespace} */`);
 
   // Header
   // js need create Entitas Generated Classes
@@ -285,11 +286,7 @@ function run(...flags) {
           }
         });
         `);
-
-        d3.push(`
-        ${name}Entity: Entity;
-        is${Name}: boolean;
-        `);
+        d3.e1.push({ name, Name });
       } else {
         js.push(`
         /** @type {entitas.Entity} */
@@ -358,15 +355,11 @@ function run(...flags) {
           this.destroyEntity(this.${name}Entity);
         };
         `);
-
-        d3.push(`
-        ${name}Entity: Entity;
-        ${name}: ${Name}Component;
-        has${Name}: boolean;
-        set${Name}(${properties.join(', ')}): Entity;
-        replace${Name}(${properties.join(', ')}): Entity;
-        remove${Name}(): void;
-        `);
+        d3.e2.push({
+          name,
+          Name,
+          p: properties.join(', '),
+        });
       }
     }
   }
@@ -418,27 +411,39 @@ function run(...flags) {
     )
   );
   const d1_tpl = liquid.Template.parse(
-    fs.readFileSync(path.join(__dirname, '../liquid/d.ts-entity-d1.liquid'), 'utf8')
+    fs.readFileSync(
+      path.join(__dirname, '../liquid/d.ts-entity-d1.liquid'),
+      'utf8'
+    )
   );
   const d2_tpl = liquid.Template.parse(
-    fs.readFileSync(path.join(__dirname, '../liquid/d.ts-matcher-d2.liquid'), 'utf8')
+    fs.readFileSync(
+      path.join(__dirname, '../liquid/d.ts-matcher-d2.liquid'),
+      'utf8'
+    )
+  );
+  const d3_tpl = liquid.Template.parse(
+    fs.readFileSync(
+      path.join(__dirname, '../liquid/d.ts-pool-d3.liquid'),
+      'utf8'
+    )
   );
   let dts = tpl.render({
     namespace: config.namespace,
     interfaceIComponent: d0,
     classEntity: d1_tpl.render({ namespace: config.namespace, ...d1 }),
-    matcher: d2_tpl.render({ namespace: config.namespace, names: d2}),
-    pool: d3.join('\n'),
+    matcher: d2_tpl.render({ namespace: config.namespace, names: d2 }),
+    pool: d3_tpl.render({ namespace: config.namespace, ...d3 }),
   });
   //   for (const [Name, d0] of objectEntries(ex)) {
   //     dts = def(dts, `    class #{Name} {`, d0);
   //   }
-  dts = `
-  /**
-   * Entitas-ECS definitions for ${config.namespace}
-   */
-  ${dts}
-    `;
+  // dts = `
+  // /**
+  //  * Entitas-ECS definitions for ${config.namespace}
+  //  */
+  // ${dts}
+  //   `;
 
   mkdirp(path.dirname(path.join(process.cwd(), config.output.declaration)));
   fs.writeFileSync(path.join(process.cwd(), config.output.declaration), dts);

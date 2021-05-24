@@ -1,0 +1,13 @@
+  /** Pool Extensions for {{ namespace }} */
+        {% for e in e1 %}
+        {{ e.name }}Entity: Entity;
+        is{{ e.Name }}: boolean;
+        {% endfor %}
+        {% for e in e2 %}
+        {{ e.name }}Entity: Entity;
+        {{ e.name }}: {{ e.Name }}Component;
+        has{{ e.Name }}: boolean;
+        set{{ e.Name }}({{ e.p }}): Entity;
+        replace{{ e.Name }}({{ e.p }}): Entity;
+        remove{{ e.Name }}(): void;
+        {% endfor %}

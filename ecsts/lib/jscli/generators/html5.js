@@ -19,8 +19,9 @@ function run(...flags) {
   console.log('debug = ', dbg);
 
   const ts = [];
-  const generateliquid = {
+  const js = {
     componentNames: [],
+    componentIds: [],
     components: {
       c: [],
       c1: [],
@@ -30,6 +31,7 @@ function run(...flags) {
       e1: [],
       e2: [],
     },
+    enum: [],
   };
   let d0 = '';
   const d1 = {
@@ -62,8 +64,10 @@ function run(...flags) {
     import IComponent = entitas.IComponent;
   `);
 
+  let id = 0;
   for (const Name in config.components) {
-    generateliquid.componentNames.push(Name);
+    js.componentNames.push(Name);
+    js.componentIds.push([Name, id++]);
   }
 
   // Components Enum
@@ -110,7 +114,7 @@ function run(...flags) {
   for (const [Name, properties] of objectEntries(config.components)) {
     const name = Name[0].toLowerCase() + Name.substr(1);
     if (!Array.isArray(properties)) {
-      generateliquid.components.c1.push({
+      js.components.c1.push({
         name,
         Name,
       });
@@ -122,7 +126,7 @@ function run(...flags) {
       for (const p of properties) {
         parr.push(p.split(':'));
       }
-      generateliquid.components.c2.push({
+      js.components.c2.push({
         name,
         Name,
         count: components,
@@ -150,7 +154,7 @@ function run(...flags) {
       const name = Name[0].toLowerCase() + Name.substr(1);
       const properties = config.components[Name];
       if (!Array.isArray(properties)) {
-        generateliquid.entities.e1.push({
+        js.entities.e1.push({
           Name,
           name,
         });
@@ -160,7 +164,7 @@ function run(...flags) {
         for (const p of properties) {
           parr.push(p.split(':'));
         }
-        generateliquid.entities.e2.push({
+        js.entities.e2.push({
           name,
           Name,
           p: parr,
@@ -196,13 +200,11 @@ function run(...flags) {
       'utf8'
     )
   );
-  generateliquid.components.c = generateliquid.components.c1.concat(
-    generateliquid.components.c2
-  );
+  js.components.c = js.components.c1.concat(js.components.c2);
   fs.writeFileSync(
     path.join(process.cwd(), config.output.javascript),
     js_tpl.render({
-      ...generateliquid,
+      ...js,
       namespace: config.namespace,
     })
   );

@@ -1,9 +1,16 @@
 /// <reference path="../lib/ext/testgame.d.ts"/>
-// import { testgame } from '../lib/src/systems/DebugMessageSystem';
+
+import { testgame } from '../lib/src/systems/DebugMessageSystem';
 
 export default function main() {
-  console.log(entitas)
-  console.log(testgame)
+  const _system = new entitas.Systems();
+  _system.add(testgame.DebugMessageSystem);
+
+  setInterval(() => {
+    _system.execute();
+  }, 10);
+  // console.log(entitas)
+  // console.log(testgame)
   // const sys = new entitas.Systems();
   // sys.add(new testgame.DebugMessageSystem());
 

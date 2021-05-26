@@ -109,7 +109,7 @@ var {{ namespace }};
   /** @type {entitas.utils.Bag} */
   Entity._{{ c.name }}ComponentPool = new Bag();
   // Bad Code
-  Entity._{{ c.name }}ComponentPool.__proto__ = Bag.prototype;
+  // Entity._{{ c.name }}ComponentPool.__proto__ = Bag.prototype;
   (function () {
     for (var i = 0; i < {{c.count}}; i++) {
       Entity._{{ c.name }}ComponentPool.add(new {{ c.Name }}Component());
@@ -136,7 +136,7 @@ var {{ namespace }};
    {% endfor %}* @returns {entitas.Entity}
    */
   Entity.prototype.add{{ c.Name }} = function ({{ c.params }}) {
-    var component = Entity._{{ c.name }}ComponentPool.size() > 0 ? Entity._{{ c.name }}ComponentPool.removeList() : new {{ c.Name }}Component();
+    var component = Entity._{{ c.name }}ComponentPool.size() > 0 ? Entity._{{ c.name }}ComponentPool.removeLast() : new {{ c.Name }}Component();
     {% for p in c.p %}component.{{ p[0] }} = {{ p[0] }};
     {% endfor %}this.addComponent(CoreComponentIds.{{ c.Name }}, component);
     return this;
@@ -208,7 +208,7 @@ var {{ namespace }};
   /** @type {entitas.Entity} */
   Object.defineProperty(Pool.prototype, '{{ e.name }}Entity', {
     get: function () {
-      return this.getGroup(Mather.{{ e.Name }}).getSingleEntity();
+      return this.getGroup(Matcher.{{ e.Name }}).getSingleEntity();
     }
   });
   /** @type {{ '{' }}{{namespace}}.{{e.Name}}Component} */

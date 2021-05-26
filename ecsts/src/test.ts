@@ -1,14 +1,21 @@
 /// <reference path="../lib/ext/testgame.d.ts"/>
 
-import { testgame } from '../lib/src/systems/DebugMessageSystem';
+import { DebugMessageSystem } from '../lib/src/systems/DebugMessageSystem';
 
 export default function main() {
   const _system = new entitas.Systems();
-  _system.add(testgame.DebugMessageSystem);
+  // console.log(testgame.Pools.pool.createSystem)
+  // _system.add(
+  //   new entitas.ReactiveSystem(testgame.Pools.pool, new DebugMessageSystem())
+  // );
+  _system.add(testgame.Pools.pool.createSystem(DebugMessageSystem));
+
+  _system.initialize();
 
   setInterval(() => {
     _system.execute();
-  }, 10);
+    _system.clearReactiveSystems();
+  }, 1000);
   // console.log(entitas)
   // console.log(testgame)
   // const sys = new entitas.Systems();

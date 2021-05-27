@@ -28,7 +28,7 @@
 
 参考资料: [ECharts 官网 Examples](https://echarts.apache.org/examples/zh/index.html) _(进行中)_
 
-# echarts 可视化工具
+# echartstool
 
 思路: 类似 echarts example 网站，用一套可视化 UI 代替代码实现编辑功能，并最终提供一个代码输出的功能。react / react hook form / dat.gui (计划中)
 

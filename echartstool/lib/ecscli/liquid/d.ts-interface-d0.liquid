@@ -1,0 +1,5 @@
+    {% for component in components %}
+    class {{ component.Name }}Component implements IComponent {
+      {% for p in component.properties %}public {{ p }};{% endfor %}
+    }
+    {% endfor %}

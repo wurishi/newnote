@@ -1,0 +1,22 @@
+{
+    "namespace": "echartstool",
+    "src": "lib/src",
+    "output": {
+      "javascript": "web/src/echartstool/generatedExtensions.js",
+      "typescript": "lib/src/generatedComponents.ts",
+      "declaration": "lib/ext/echartstool.d.ts"
+    },
+    "alloc": {
+      "entities": 128,
+      "components": 64
+    },
+    "components": {
+
+    },
+    "systems": {
+
+    },
+    "entities": {
+
+    }
+  }

@@ -1,0 +1,5 @@
+/** Matcher Extensions for {{ namespace }} */
+        {% for n in names %}
+        static _matcher{{ n }};
+        static {{ n }}: Matcher;
+        {% endfor %}

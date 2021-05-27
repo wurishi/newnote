@@ -1,0 +1,17 @@
+{
+  "name": "echartstool",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "serve": "vite preview",
+    "ecs": "node lib/ecscli/index"
+  },
+  "devDependencies": {
+    "typescript": "^4.2.3",
+    "vite": "^2.3.4"
+  },
+  "dependencies": {
+    "liquid.coffee": "^0.1.8"
+  }
+}

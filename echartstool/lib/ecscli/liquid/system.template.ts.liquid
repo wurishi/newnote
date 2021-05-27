@@ -1,0 +1,65 @@
+module {{ namespace }} {
+  import Pool = entitas.Pool;
+  import Group = entitas.Group;
+  import Entity = entitas.Entity;
+  import Matcher = entitas.Matcher;
+  import Exception = entitas.Exception;
+  import TriggerOnEvent = entitas.TriggerOnEvent;
+  {% for iface in interfaces %}
+  import {{ iface }} = entitas.{{ iface }};
+  {% endfor %}
+  export class {{ name }}{{ implements }} {
+    {% for iface in interfaces %}
+    {% case iface %}
+    {% when "ISetPool" %}protected pool:Pool;
+    protected group:Group;
+    {% endcase %}
+    {% endfor %}
+    {% for iface in interfaces %}
+    {% case iface %}
+    {% when "ISetPool" %}public setPool(pool:Pool) {
+      this.pool = pool;
+      this.group = pool.getGroup(Matcher.allOf());
+    }
+    {% when "IMultiReactiveSystem" %}public get triggers(): TriggerOnEvent[] {
+      throw new Error('get triggers not implemented.');
+    }
+    public execute(entities: Array<Entity>) {
+      throw new Error('execute not implemented.');
+      for (let i = 0, len = entities.length; i < len; i++) {
+        const e = entities[i];
+      }
+    }
+    {% when "IReactiveSystem" %}public get trigger(): TriggerOnEvent {
+      throw new Error('get trigger not implemented.');
+    }
+    public execute(entities: Array<Entity>) {
+      throw new Error('execute not implemented.');
+      for (let i = 0, len = entities.length; i < len; i++) {
+        const e = entities[i];
+      }
+    }
+    {% when "IExecuteSystem" %}public execute() {
+      throw new Error('execute not implemented.');
+      // when ISetPool
+      // const entities = this.group.getEntities();
+      // for (let i = 0, len = entities.length; i < len; i++) {
+      //   const e = entities[i];
+      // }
+    }
+    {% when "IInitializeSystem" %}public initialize() {
+      throw new Error('initialize not implemented.');
+    }
+    {% when "IEnsureComponents" %}public get ensureComponents(): entitas.IMatcher {
+      throw new Error('get ensureComponents not implemented.');
+    }
+    {% when "IExcludeComponents" %}public get excludeComponents(): entitas.IMatcher {
+      throw new Error('get excludeComponents not implemented.');
+    }
+    {% when "IClearReactiveSystem" %}public get clearAfterExecute(): boolean {
+      throw new Error('clearAfterExecute not implemented.');
+    }
+    {% endcase %}
+    {% endfor %}
+  }
+}

@@ -14,7 +14,7 @@ export default function main() {
 
   setInterval(() => {
     _system.execute();
-    _system.clearReactiveSystems();
+    // _system.clearReactiveSystems();
   }, 1000);
   // console.log(entitas)
   // console.log(testgame)

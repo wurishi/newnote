@@ -29,7 +29,7 @@ var {{ namespace }};
     {% for item in componentIds %}CoreComponentIds[CoreComponentIds['{{ item[0] }}'] = {{ item[1] }}] = '{{ item[0] }}';
     {% endfor %}CoreComponentIds[CoreComponentIds['TotalComponents'] = {{ componentNames.length }}] = 'TotalComponents';
   })(CoreComponentIds = space.CoreComponentIds || (space.CoreComponentIds = {}));
-  Entity.initialize(CoreComponentIds.TotalComponents, {});
+  Entity.initialize(CoreComponentIds.TotalComponents, {{ alloc }});
   {% for Name in componentNames %}
   var {{ Name }}Component = /** @class */ (function () {
     function {{ Name }}Component() {}
@@ -73,7 +73,7 @@ var {{ namespace }};
   var Pool = entitas.Pool;
   var Entity = entitas.Entity;
   var Matcher = entitas.Matcher;
-  var SingleEntityException = entitas.SingleEntityException;
+  var SingleEntityException = entitas.exceptions.SingleEntityException;
 
   {% for Name in componentNames %}var {{ Name }}Component = {{ namespace }}.{{ Name }}Component;
   {% endfor %}

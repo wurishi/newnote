@@ -32,6 +32,7 @@ function run(...flags) {
       e2: [],
     },
     enum: [],
+    alloc: JSON.stringify(config.alloc),
   };
   let d0 = '';
   const d1 = {

@@ -1,5 +1,3 @@
-/// <reference path="../../ext/testgame.d.ts"/>
-
 import Pool = entitas.Pool;
 import Group = entitas.Group;
 import Entity = entitas.Entity;
@@ -22,7 +20,10 @@ export class DebugMessageSystem
   }
 
   initialize() {
-    this.pool.setDebugMessage('Hello World');
+    // this.pool.setDebugMessage('Hello World');
+    for (let i = 0; i < 10; i++) {
+      this.pool.createEntity('H' + i).addDebugMessage('Hello' + i);
+    }
   }
   public get trigger(): TriggerOnEvent {
     return Matcher.DebugMessage.onEntityAdded();
@@ -33,6 +34,11 @@ export class DebugMessageSystem
       if (e.hasDebugMessage) {
         console.log(e.debugMessage.msg);
       }
+      // console.log(e);
+      // this.pool.destroyEntity(e);
+      // e.removeDebugMessage();
     }
+    // this.pool.removeDebugMessage();
+    // this.pool.setDebugMessage('Hello World' + Math.random());
   }
 }

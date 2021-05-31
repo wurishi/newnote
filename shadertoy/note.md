@@ -3713,6 +3713,30 @@ lt2fD3
 
 ![612](assets/612.jpg)
 
+# 613. Rounded Voronoi Borders
+
+ll3GRM
+
+![613](assets/613.jpg)
+
+# 614. [SH16B] WIP: Warp Tunnel
+
+XtdGR7
+
+![614](assets/614.jpg)
+
+# 615. in my crawl space
+
+ttlXRf
+
+![615](assets/615.jpg)
+
+# 616. Wait.. what? CyberTruck!
+
+wdGXzK
+
+![616](assets/616.jpg)
 
 
-https://www.shadertoy.com/results?query=&sort=love&from=204&num=12
+
+https://www.shadertoy.com/results?query=&sort=love&from=216&num=12

@@ -3737,6 +3737,50 @@ wdGXzK
 
 ![616](assets/616.jpg)
 
+# 617. [SH17A] Tiny Clouds
+
+lsBfDz
+
+![617](assets/617.jpg)
+
+# 618. Relentless
+
+lss3WS
+
+![618](assets/618.jpg)
+
+# 619. Reprojection
+
+XdlGzH
+
+![619](assets/619.jpg)
+
+# 620. Outrun The Rain
+
+ltccRl
+
+![620](assets/620.jpg)
+
+# 621. Raymarched Reflections
+
+4dt3zn
+
+![621](assets/621.jpg)
+
+# 622. mpeg artifacts
+
+Md2GDw
+
+![622](assets/622.jpg)
+
+# 623. Rolling hills
+
+Xsf3zX
+
+![623](assets/623.jpg)
 
 
-https://www.shadertoy.com/results?query=&sort=love&from=216&num=12
+
+
+
+https://www.shadertoy.com/results?query=&sort=love&from=228&num=12

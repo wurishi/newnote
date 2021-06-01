@@ -17,4 +17,3 @@ var entitas;
         exceptions.GroupObserverException = GroupObserverException;
     })(exceptions = entitas.exceptions || (entitas.exceptions = {}));
 })(entitas || (entitas = {}));
-//# sourceMappingURL=GroupObserverException.js.map

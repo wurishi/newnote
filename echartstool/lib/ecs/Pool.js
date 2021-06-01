@@ -312,4 +312,3 @@ var entitas;
     Pool.instance = null;
     entitas.Pool = Pool;
 })(entitas || (entitas = {}));
-//# sourceMappingURL=Pool.js.map

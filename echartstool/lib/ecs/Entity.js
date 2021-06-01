@@ -374,4 +374,3 @@ var entitas;
     Entity.size = 0;
     entitas.Entity = Entity;
 })(entitas || (entitas = {}));
-//# sourceMappingURL=Entity.js.map

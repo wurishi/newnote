@@ -42,4 +42,3 @@ var entitas;
         utils.Stopwatch = Stopwatch;
     })(utils = entitas.utils || (entitas.utils = {}));
 })(entitas || (entitas = {}));
-//# sourceMappingURL=Stopwatch.js.map

@@ -115,4 +115,3 @@ var entitas;
     }
     entitas.ReactiveSystem = ReactiveSystem;
 })(entitas || (entitas = {}));
-//# sourceMappingURL=ReactiveSystem.js.map

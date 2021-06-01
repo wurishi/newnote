@@ -18,4 +18,3 @@ var entitas;
         exceptions.EntityDoesNotHaveComponentException = EntityDoesNotHaveComponentException;
     })(exceptions = entitas.exceptions || (entitas.exceptions = {}));
 })(entitas || (entitas = {}));
-//# sourceMappingURL=EntityDoesNotHaveComponentException.js.map

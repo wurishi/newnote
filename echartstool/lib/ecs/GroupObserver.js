@@ -91,4 +91,3 @@ var entitas;
     }
     entitas.GroupObserver = GroupObserver;
 })(entitas || (entitas = {}));
-//# sourceMappingURL=GroupObserver.js.map

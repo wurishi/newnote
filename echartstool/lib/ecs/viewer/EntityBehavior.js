@@ -28,4 +28,3 @@ var entitas;
         viewer.EntityBehavior = EntityBehavior;
     })(viewer = entitas.viewer || (entitas.viewer = {}));
 })(entitas || (entitas = {}));
-//# sourceMappingURL=EntityBehavior.js.map

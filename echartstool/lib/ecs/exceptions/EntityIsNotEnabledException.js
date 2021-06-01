@@ -17,4 +17,3 @@ var entitas;
         exceptions.EntityIsNotEnabledException = EntityIsNotEnabledException;
     })(exceptions = entitas.exceptions || (entitas.exceptions = {}));
 })(entitas || (entitas = {}));
-//# sourceMappingURL=EntityIsNotEnabledException.js.map

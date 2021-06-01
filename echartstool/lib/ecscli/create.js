@@ -67,7 +67,7 @@ function generateSystemTemplate(name, interfaces) {
   interfaces = interfaces || [];
   const tpl = liquid.Template.parse(
     fs.readFileSync(
-      path.join(__dirname, '../jscli/liquid/system.template.ts.liquid'),
+      path.join(__dirname, './liquid/system.template.ts.liquid'),
       'utf-8'
     )
   );
@@ -98,19 +98,19 @@ function updateProject(name) {
     );
   }
 
-  const idom = new JSDOM(
-    fs.readFileSync(`${process.cwd()}/index.html`, 'utf-8')
-  );
-  if (
-    [...idom.window.document.head.querySelectorAll('script')].findIndex(
-      (el) => el.src == ''
-    ) < 0
-  ) {
-    const snode = idom.window.document.createElement('script');
-    snode.src = `${config.src}/systems/${name}.ts`;
-    idom.window.document.head.appendChild(snode);
-  }
-  fs.writeFileSync(`${process.cwd()}/index.html`, idom.serialize());
+  // const idom = new JSDOM(
+  //   fs.readFileSync(`${process.cwd()}/index.html`, 'utf-8')
+  // );
+  // if (
+  //   [...idom.window.document.head.querySelectorAll('script')].findIndex(
+  //     (el) => el.src == ''
+  //   ) < 0
+  // ) {
+  //   const snode = idom.window.document.createElement('script');
+  //   snode.src = `${config.src}/systems/${name}.ts`;
+  //   idom.window.document.head.appendChild(snode);
+  // }
+  // fs.writeFileSync(`${process.cwd()}/index.html`, idom.serialize());
 }
 
 module.exports.run = run;

@@ -1,15 +1,13 @@
   /** Entity Extensions for {{ namespace }} */
-        {% for c in c1 %}
-        static {{ c.name }}: {{ c.Name }}Component;
+        {% for c in c1 %}static {{ c.name }}: {{ c.Name }}Component;
         is{{c.Name}}: boolean;
-        set{{c.Name}}(value: boolean);
+        set{{c.Name}}(value: boolean): Entity;
         {% endfor %}
-        {% for c in c2 %}
-        static _{{ c.name }}ComponentPool;
-        static clear{{ c.Name }}ComponentPool();
+        {% for c in c2 %}static _{{ c.name }}ComponentPool: Bag<{{ c.Name }}Component>;
+        static clear{{ c.Name }}ComponentPool(): void;
         {{ c.name }}: {{ c.Name }}Component;
         has{{ c.Name }}: boolean;
-        add{{ c.Name }}({{ c.p }});
-        replace{{ c.Name }}({{ c.p }});
-        remove{{ c.Name }}();
+        add{{ c.Name }}({{ c.p }}): Entity;
+        replace{{ c.Name }}({{ c.p }}): Entity;
+        remove{{ c.Name }}(): Entity;
         {% endfor %}

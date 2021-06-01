@@ -60,4 +60,3 @@ var entitas;
         utils.Signal = Signal;
     })(utils = entitas.utils || (entitas.utils = {}));
 })(entitas || (entitas = {}));
-//# sourceMappingURL=Signal.js.map

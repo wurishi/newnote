@@ -34,4 +34,3 @@ var entitas;
         viewer.PoolObserver = PoolObserver;
     })(viewer = entitas.viewer || (entitas.viewer = {}));
 })(entitas || (entitas = {}));
-//# sourceMappingURL=PoolObserver.js.map

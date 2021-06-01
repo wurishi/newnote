@@ -18,4 +18,3 @@ var entitas;
         exceptions.EntityAlreadyHasComponentException = EntityAlreadyHasComponentException;
     })(exceptions = entitas.exceptions || (entitas.exceptions = {}));
 })(entitas || (entitas = {}));
-//# sourceMappingURL=EntityAlreadyHasComponentException.js.map

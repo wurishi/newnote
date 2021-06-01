@@ -220,4 +220,3 @@ var entitas;
     }
     entitas.Group = Group;
 })(entitas || (entitas = {}));
-//# sourceMappingURL=Group.js.map

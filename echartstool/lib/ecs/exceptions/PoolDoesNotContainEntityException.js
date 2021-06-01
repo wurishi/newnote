@@ -18,4 +18,3 @@ var entitas;
         exceptions.PoolDoesNotContainEntityException = PoolDoesNotContainEntityException;
     })(exceptions = entitas.exceptions || (entitas.exceptions = {}));
 })(entitas || (entitas = {}));
-//# sourceMappingURL=PoolDoesNotContainEntityException.js.map

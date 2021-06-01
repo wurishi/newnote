@@ -17,4 +17,3 @@ var entitas;
     }
     entitas.Exception = Exception;
 })(entitas || (entitas = {}));
-//# sourceMappingURL=Exception.js.map

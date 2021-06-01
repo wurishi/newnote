@@ -1,5 +1,5 @@
 /**
-* Entitas-ECS definitions for {{ namespace }}
+* Entitas-ECS definitions for echartstool
 */
 declare module entitas.utils {
     /**
@@ -220,17 +220,25 @@ declare module entitas.utils {
 declare module entitas {
     interface IComponent {
     }
-    {{ interfaceIComponent }}
+        
+    class EChartsComponent implements IComponent {
+      public div:HTMLDivElement;public myChart:any;
+    }
+    
 }
-declare module {{ namespace }} {
+declare module echartstool {
     enum CoreComponentIds {
-        {% for n in names %}{{ n }},
-        {% endfor %}TotalComponents
+        ECharts,
+        TotalComponents
     }
 
     interface IComponent {
     }
-    {{ interfaceIComponent }}
+        
+    class EChartsComponent implements IComponent {
+      public div:HTMLDivElement;public myChart:any;
+    }
+    
     /**
      * Pools
      */
@@ -446,7 +454,11 @@ declare module entitas {
     module Matcher {
     }
     class Matcher implements IAllOfMatcher, IAnyOfMatcher, INoneOfMatcher {
-        {{ matcher }}
+        /** Matcher Extensions for echartstool */
+        
+        static _matcherECharts: any;
+        static ECharts: Matcher;
+        
         /**
          * Get the matcher id
          * @type {number}
@@ -579,7 +591,16 @@ declare module entitas {
         }
     }
     class Entity {
-      {{ classEntity }}
+        /** Entity Extensions for echartstool */
+        
+        static _eChartsComponentPool: Bag<EChartsComponent>;
+        static clearEChartsComponentPool(): void;
+        eCharts: EChartsComponent;
+        hasECharts: boolean;
+        addECharts(div:HTMLDivElement, myChart:any): Entity;
+        replaceECharts(div:HTMLDivElement, myChart:any): Entity;
+        removeECharts(): Entity;
+        
         /**
          * @static
          * @type {number} */
@@ -973,7 +994,9 @@ declare module entitas {
      * The games world.
      */
     class Pool {
-      {{ pool }}
+        /** Pool Extensions for echartstool */
+        
+        
         /**
          * The total number of components in this pool
          * @type {number}

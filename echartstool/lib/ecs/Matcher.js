@@ -284,4 +284,3 @@ var entitas;
     Matcher.uniqueId = 0;
     entitas.Matcher = Matcher;
 })(entitas || (entitas = {}));
-//# sourceMappingURL=Matcher.js.map

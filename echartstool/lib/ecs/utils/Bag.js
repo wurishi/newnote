@@ -244,4 +244,3 @@ var entitas;
         utils.Bag = Bag;
     })(utils = entitas.utils || (entitas.utils = {}));
 })(entitas || (entitas = {}));
-//# sourceMappingURL=Bag.js.map

@@ -5,4 +5,3 @@ var entitas;
         "use strict";
     })(utils = entitas.utils || (entitas.utils = {}));
 })(entitas || (entitas = {}));
-//# sourceMappingURL=ImmutableBag.js.map

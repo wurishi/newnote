@@ -12,6 +12,9 @@
     "vite": "^2.3.4"
   },
   "dependencies": {
-    "liquid.coffee": "^0.1.8"
+    "echarts": "^5.1.1",
+    "jsdom": "^16.6.0",
+    "liquid.coffee": "^0.1.8",
+    "mkdirp": "^1.0.4"
   }
 }

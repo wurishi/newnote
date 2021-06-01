@@ -84,4 +84,3 @@ var entitas;
     }
     entitas.Systems = Systems;
 })(entitas || (entitas = {}));
-//# sourceMappingURL=Systems.js.map

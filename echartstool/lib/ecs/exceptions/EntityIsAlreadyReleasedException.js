@@ -16,4 +16,3 @@ var entitas;
         exceptions.EntityIsAlreadyReleasedException = EntityIsAlreadyReleasedException;
     })(exceptions = entitas.exceptions || (entitas.exceptions = {}));
 })(entitas || (entitas = {}));
-//# sourceMappingURL=EntityIsAlreadyReleasedException.js.map

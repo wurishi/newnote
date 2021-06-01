@@ -5,6 +5,40 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite App</title>
+    <script src="lib/ecs/utils/UUID.js"></script>
+    <script src="lib/ecs/utils/ImmutableBag.js"></script>
+    <script src="lib/ecs/utils/Bag.js"></script>
+    <script src="lib/ecs/utils/Signal.js"></script>
+    <script src="lib/ecs/utils/Stopwatch.js"></script>
+    <script src="lib/ecs/interfaces/IComponent.js"></script>
+    <script src="lib/ecs/interfaces/IMatcher.js"></script>
+    <script src="lib/ecs/interfaces/ISystem.js"></script>
+    <script src="lib/ecs/interfaces/IExecuteSystem.js"></script>
+    <script src="lib/ecs/interfaces/IInitializeSystem.js"></script>
+    <script src="lib/ecs/interfaces/IReactiveSystem.js"></script>
+    <script src="lib/ecs/exceptions/Exception.js"></script>
+    <script src="lib/ecs/exceptions/EntityAlreadyHasComponentException.js"></script>
+    <script src="lib/ecs/exceptions/EntityDoesNotHaveComponentException.js"></script>
+    <script src="lib/ecs/exceptions/EntityIsAlreadyReleasedException.js"></script>
+    <script src="lib/ecs/exceptions/EntityIsNotDestroyedException.js"></script>
+    <script src="lib/ecs/exceptions/EntityIsNotEnabledException.js"></script>
+    <script src="lib/ecs/exceptions/GroupObserverException.js"></script>
+    <script src="lib/ecs/exceptions/MatcherException.js"></script>
+    <script src="lib/ecs/exceptions/PoolDoesNotContainEntityException.js"></script>
+    <script src="lib/ecs/exceptions/SingleEntityException.js"></script>
+    <script src="lib/ecs/TriggerOnEvent.js"></script>
+    <script src="lib/ecs/Matcher.js"></script>
+    <script src="lib/ecs/Entity.js"></script>
+    <script src="lib/ecs/Group.js"></script>
+    <script src="lib/ecs/GroupObserver.js"></script>
+    <script src="lib/ecs/Pool.js"></script>
+    <script src="lib/ecs/ReactiveSystem.js"></script>
+    <script src="lib/ecs/Systems.js"></script>
+    <script src="lib/ecs/viewer/EntityBehavior.js"></script>
+    <script src="lib/ecs/viewer/PoolObserver.js"></script>
+    <script src="lib/ecs/viewer/SystemObserver.js"></script>
+    <script src="lib/ecs/viewer/VisualDebugging.js"></script>
+    <script src="web/src/echartstool/generatedExtensions.js"></script>
   </head>
   <body>
     <div id="app"></div>

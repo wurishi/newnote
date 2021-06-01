@@ -17,4 +17,3 @@ var entitas;
         exceptions.EntityIsNotDestroyedException = EntityIsNotDestroyedException;
     })(exceptions = entitas.exceptions || (entitas.exceptions = {}));
 })(entitas || (entitas = {}));
-//# sourceMappingURL=EntityIsNotDestroyedException.js.map

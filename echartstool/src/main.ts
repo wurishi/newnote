@@ -1,8 +1,16 @@
-import './style.css'
+/// <reference path="../lib/ext/echartstool.d.ts"/>
 
-const app = document.querySelector<HTMLDivElement>('#app')!
+import { EChartsSystem } from '../lib/src/systems/EChartsSystem';
 
-app.innerHTML = `
-  <h1>Hello Vite!</h1>
-  <a href="https://vitejs.dev/guide/features.html" target="_blank">Documentation</a>
-`
+(function () {
+  const sys = new entitas.Systems();
+  sys.add(echartstool.Pools.pool.createSystem(EChartsSystem));
+
+  sys.initialize();
+
+  const run = () => {
+    sys.execute();
+    requestAnimationFrame(run);
+  };
+  requestAnimationFrame(run);
+})();

@@ -1,1 +1,0 @@
-{"version":3,"file":"TriggerOnEvent.js","sourceRoot":"","sources":["../../lib/entitas/TriggerOnEvent.ts"],"names":[],"mappings":"AAAA,IAAO,OAAO,CAcb;AAdD,WAAO,OAAO;IACZ,YAAY,CAAA;IAIZ,MAAa,cAAc;QACzB;;;;;WAKG;QACH,YAAmB,OAAgB,EAAS,SAAwB;YAAjD,YAAO,GAAP,OAAO,CAAS;YAAS,cAAS,GAAT,SAAS,CAAe;QAAG,CAAC;KACzE;IARY,sBAAc,iBAQ1B,CAAA;AACH,CAAC,EAdM,OAAO,KAAP,OAAO,QAcb"}

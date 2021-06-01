@@ -17,4 +17,3 @@ var entitas;
         exceptions.MatcherException = MatcherException;
     })(exceptions = entitas.exceptions || (entitas.exceptions = {}));
 })(entitas || (entitas = {}));
-//# sourceMappingURL=MatcherException.js.map

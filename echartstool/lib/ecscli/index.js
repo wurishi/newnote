@@ -1,17 +1,17 @@
 const init = require('./init');
-// const generate = require('./generate');
-// const create = require('./create');
+const generate = require('./generate');
+const create = require('./create');
 
 module.exports = {
   init(namespace, type) {
     init.run(namespace, '-t', type);
   },
-  // generate() {
-  //   generate.run();
-  // },
-  // create(type, name, ...args) {
-  //   create.run(type, name, ...args);
-  // },
+  generate() {
+    generate.run();
+  },
+  create(type, name, ...args) {
+    create.run(type, name, ...args);
+  },
 };
 
 const cmd = process.argv[2];

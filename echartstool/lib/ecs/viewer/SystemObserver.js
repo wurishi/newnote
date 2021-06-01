@@ -33,4 +33,3 @@ var entitas;
         viewer.SystemObserver = SystemObserver;
     })(viewer = entitas.viewer || (entitas.viewer = {}));
 })(entitas || (entitas = {}));
-//# sourceMappingURL=SystemObserver.js.map

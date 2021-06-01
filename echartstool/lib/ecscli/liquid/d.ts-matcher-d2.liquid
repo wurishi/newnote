@@ -1,5 +1,5 @@
 /** Matcher Extensions for {{ namespace }} */
         {% for n in names %}
-        static _matcher{{ n }};
+        static _matcher{{ n }}: any;
         static {{ n }}: Matcher;
         {% endfor %}

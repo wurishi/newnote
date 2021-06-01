@@ -15,4 +15,3 @@ var entitas;
     }
     entitas.TriggerOnEvent = TriggerOnEvent;
 })(entitas || (entitas = {}));
-//# sourceMappingURL=TriggerOnEvent.js.map

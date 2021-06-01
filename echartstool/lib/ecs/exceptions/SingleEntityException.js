@@ -17,4 +17,3 @@ var entitas;
         exceptions.SingleEntityException = SingleEntityException;
     })(exceptions = entitas.exceptions || (entitas.exceptions = {}));
 })(entitas || (entitas = {}));
-//# sourceMappingURL=SingleEntityException.js.map

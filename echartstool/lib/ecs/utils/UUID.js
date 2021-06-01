@@ -48,4 +48,3 @@ var entitas;
         utils.UUID = UUID;
     })(utils = entitas.utils || (entitas.utils = {}));
 })(entitas || (entitas = {}));
-//# sourceMappingURL=UUID.js.map

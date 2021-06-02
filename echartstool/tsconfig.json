@@ -24,6 +24,8 @@
     "lib/src/systems/GUISystem.ts",
     "lib/src/systems/SeriesTypeSystem.ts",
     "lib/src/systems/LineSeriesSystem.ts",
-    "lib/src/systems/DataSystem.ts"
+    "lib/src/systems/DataSystem.ts",
+    "lib/src/systems/BarSeriesSystem.ts",
+    "lib/src/systems/BarSeriesBackgroundStyleSystem.ts"
   ]
 }

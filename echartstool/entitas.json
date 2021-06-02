@@ -31,7 +31,9 @@
     "GUISystem": true,
     "SeriesTypeSystem": true,
     "LineSeriesSystem": true,
-    "DataSystem": true
+    "DataSystem": true,
+    "BarSeriesSystem": true,
+    "BarSeriesBackgroundStyleSystem": true
   },
   "entities": {}
 }

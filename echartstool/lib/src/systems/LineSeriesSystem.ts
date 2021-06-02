@@ -13,7 +13,7 @@ import ISetPool = entitas.ISetPool;
 
 export class LineSeriesSystem implements IReactiveSystem, ISetPool {
   get trigger(): TriggerOnEvent {
-    return Matcher.SeriesType.onEntityAddedOrRemoved();
+    return Matcher.SeriesType.onEntityAdded();
   }
 
   protected pool!: Pool;
@@ -37,7 +37,7 @@ export class LineSeriesSystem implements IReactiveSystem, ISetPool {
       const changeOptions = () => {
         const opt = { ...this.echartsOption.eChartsOption.option };
         for (let i = opt.series.length - 1; i >= 0; i--) {
-          let tmp = { ...opt.series[i] };
+          let tmp = { ...opt.series[i], type: 'line' };
           tmp = { ...tmp, ...obj };
           opt.series[i] = tmp;
         }

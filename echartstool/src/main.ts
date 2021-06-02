@@ -4,12 +4,16 @@ import { EChartsSystem } from '../lib/src/systems/EChartsSystem';
 import { GUISystem } from '../lib/src/systems/GUISystem';
 import { SeriesTypeSystem } from '../lib/src/systems/SeriesTypeSystem';
 import { LineSeriesSystem } from '../lib/src/systems/LineSeriesSystem';
+import { BarSeriesSystem } from '../lib/src/systems/BarSeriesSystem';
+import { BarSeriesBackgroundStyleSystem } from '../lib/src/systems/BarSeriesBackgroundStyleSystem';
 
 const systemList = [
   EChartsSystem, //
   GUISystem,
   SeriesTypeSystem,
   LineSeriesSystem,
+  BarSeriesSystem,
+  BarSeriesBackgroundStyleSystem,
 ];
 
 (function () {

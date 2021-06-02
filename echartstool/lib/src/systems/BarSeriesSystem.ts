@@ -50,6 +50,7 @@ export class BarSeriesSystem implements IReactiveSystem, ISetPool {
 
       obj.showBackground = obj.showBackground || false;
       ui.add(obj, 'showBackground').onChange(changeOptions);
+      entity.seriesType.subFolder.push(ui.addFolder('backgroundStyle'));
 
       obj.selectedMode = obj.selectedMode || false;
       ui.add(obj, 'selectedMode', utils.selectedMode.enum).onChange((v) => {

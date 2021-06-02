@@ -23,7 +23,8 @@
     ],
     "SeriesType": [
       "type:string",
-      "folder:any"
+      "folder:any",
+      "subFolder:any[]"
     ]
   },
   "systems": {
@@ -33,7 +34,8 @@
     "LineSeriesSystem": true,
     "DataSystem": true,
     "BarSeriesSystem": true,
-    "BarSeriesBackgroundStyleSystem": true
+    "BarSeriesBackgroundStyleSystem": true,
+    "PieSeriesSystem": true
   },
   "entities": {}
 }

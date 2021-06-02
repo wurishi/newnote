@@ -66,3 +66,8 @@ export const cursor = {
     'zoom-out',
   ],
 };
+
+export const roseType = {
+  enum: ['false', 'radius', 'area'],
+  fn: stringOrBoolean,
+};

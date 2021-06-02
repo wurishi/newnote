@@ -23,7 +23,7 @@ export class SeriesTypeSystem implements IInitializeSystem, ISetPool {
     this.folder = this.ui.addFolder('图表系列类型(SeriesType)');
     this.entity = this.pool
       .createEntity('SeriesType')
-      .addSeriesType(this.uiObj.seriesType, this.folder);
+      .addSeriesType(this.uiObj.seriesType, this.folder, []);
     this.changeSeriesType(false);
   }
 
@@ -34,12 +34,12 @@ export class SeriesTypeSystem implements IInitializeSystem, ISetPool {
         this.folder = this.ui.addFolder('图表系列类型(SeriesType)');
       }
       this.folder
-        ?.add(this.uiObj, 'seriesType', ['line', 'bar'])
+        ?.add(this.uiObj, 'seriesType', ['line', 'bar', 'pie'])
         .onFinishChange(() => {
           this.changeSeriesType(true);
         });
       if (this.entity) {
-        this.entity.replaceSeriesType(this.uiObj.seriesType, this.folder);
+        this.entity.replaceSeriesType(this.uiObj.seriesType, this.folder, []);
       }
       this.folder?.open();
     }, 0);

@@ -40,7 +40,9 @@ export class BarSeriesBackgroundStyleSystem
   private uiChildren: GUIController[] = [];
 
   execute(entities: Entity[]) {
-    const ui: GUI = this.seriesType.folder;
+    const ui: GUI =
+      this.seriesType.subFolder.find((v) => v.name == 'backgroundStyle') ||
+      this.seriesType.folder;
     let clear = true;
     const obj: any = this._cacheObj;
     const changeOptions = () => {
@@ -144,6 +146,7 @@ export class BarSeriesBackgroundStyleSystem
           );
 
           changeOptions();
+          ui.open();
         }
       }
     }
@@ -152,6 +155,7 @@ export class BarSeriesBackgroundStyleSystem
         this.uiChildren.forEach((u) => ui.remove(u));
         this.uiChildren.length = 0;
         changeOptions();
+        ui.close();
       }
     }
   }

@@ -6,6 +6,7 @@ import { SeriesTypeSystem } from '../lib/src/systems/SeriesTypeSystem';
 import { LineSeriesSystem } from '../lib/src/systems/LineSeriesSystem';
 import { BarSeriesSystem } from '../lib/src/systems/BarSeriesSystem';
 import { BarSeriesBackgroundStyleSystem } from '../lib/src/systems/BarSeriesBackgroundStyleSystem';
+import { PieSeriesSystem } from '../lib/src/systems/PieSeriesSystem';
 
 const systemList = [
   EChartsSystem, //
@@ -14,6 +15,7 @@ const systemList = [
   LineSeriesSystem,
   BarSeriesSystem,
   BarSeriesBackgroundStyleSystem,
+  PieSeriesSystem,
 ];
 
 (function () {

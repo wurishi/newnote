@@ -46,15 +46,6 @@ export class PieSeriesSystem implements IReactiveSystem, ISetPool {
         this.echartsOption.replaceEChartsOption(opt);
       };
 
-      obj.legendHoverLink = obj.legendHoverLink || true;
-      ui.add(obj, 'legendHoverLink').onChange(changeOptions);
-
-      obj.selectedMode = obj.selectedMode || false;
-      ui.add(obj, 'selectedMode', utils.selectedMode.enum).onChange((v) => {
-        obj.selectedMode = utils.selectedMode.fn(v);
-        changeOptions();
-      });
-
       obj.selectedOffset = obj.selectedOffset || 10;
       ui.add(obj, 'selectedOffset', 0, 100).onChange(changeOptions);
 
@@ -81,9 +72,6 @@ export class PieSeriesSystem implements IReactiveSystem, ISetPool {
 
       obj.stillShowZeroSum = obj.stillShowZeroSum || true;
       ui.add(obj, 'stillShowZeroSum').onChange(changeOptions);
-
-      obj.cursor = obj.cursor || 'pointer';
-      ui.add(obj, 'cursor', utils.cursor.enum).onChange(changeOptions);
 
       obj.left = obj.left || '';
       ui.add(obj, 'left').onChange(changeOptions);
@@ -126,9 +114,6 @@ export class PieSeriesSystem implements IReactiveSystem, ISetPool {
           obj.radius[1] = v;
           changeOptions();
         });
-
-      obj.silent = obj.silent || false;
-      ui.add(obj, 'silent').onChange(changeOptions);
 
       changeOptions();
     }

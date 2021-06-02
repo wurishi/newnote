@@ -35,7 +35,9 @@
     "DataSystem": true,
     "BarSeriesSystem": true,
     "BarSeriesBackgroundStyleSystem": true,
-    "PieSeriesSystem": true
+    "PieSeriesSystem": true,
+    "ScatterSeriesSystem": true,
+    "SeriesCommonSystem": true
   },
   "entities": {}
 }

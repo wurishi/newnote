@@ -13,7 +13,7 @@ const params = (a, sep = ', ') => {
   return b.join(sep);
 };
 
-function run(...flags) {
+async function run(...flags) {
   let tpl;
   const dbg = config.debug || false;
   console.log('debug = ', dbg);
@@ -193,7 +193,7 @@ function run(...flags) {
   //   ts.join('\n')
   // );
 
-  mkdirp(path.dirname(path.join(process.cwd(), config.output.javascript)));
+  await mkdirp(path.dirname(path.join(process.cwd(), config.output.javascript)));
 
   const js_tpl = liquid.Template.parse(
     fs.readFileSync(
@@ -202,7 +202,7 @@ function run(...flags) {
     )
   );
   js.components.c = js.components.c1.concat(js.components.c2);
-  mkdirp(path.dirname(path.join(process.cwd(), config.output.javascript)));
+  await mkdirp(path.dirname(path.join(process.cwd(), config.output.javascript)));
   fs.writeFileSync(
     path.join(process.cwd(), config.output.javascript),
     js_tpl.render({
@@ -266,7 +266,7 @@ function run(...flags) {
   //     dts = def(dts, `    class #{Name} {`, d0);
   //   }
 
-  mkdirp(path.dirname(path.join(process.cwd(), config.output.declaration)));
+  await mkdirp(path.dirname(path.join(process.cwd(), config.output.declaration)));
   fs.writeFileSync(path.join(process.cwd(), config.output.declaration), dts);
 }
 

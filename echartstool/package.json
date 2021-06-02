@@ -12,6 +12,8 @@
     "vite": "^2.3.4"
   },
   "dependencies": {
+    "@types/dat.gui": "^0.7.6",
+    "dat.gui": "^0.7.7",
     "echarts": "^5.1.1",
     "jsdom": "^16.6.0",
     "liquid.coffee": "^0.1.8",

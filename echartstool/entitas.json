@@ -2,7 +2,7 @@
   "namespace": "echartstool",
   "src": "lib/src",
   "output": {
-    "javascript": "web/src/echartstool/generatedExtensions.js",
+    "javascript": "lib/echartstool/generatedExtensions.js",
     "typescript": "lib/src/generatedComponents.ts",
     "declaration": "lib/ext/echartstool.d.ts"
   },
@@ -14,10 +14,24 @@
     "ECharts": [
       "div:HTMLDivElement",
       "myChart:any"
+    ],
+    "EChartsOption": [
+      "option:any"
+    ],
+    "DatGUI": [
+      "ui:any"
+    ],
+    "SeriesType": [
+      "type:string",
+      "folder:any"
     ]
   },
   "systems": {
-    "EChartsSystem": true
+    "EChartsSystem": true,
+    "GUISystem": true,
+    "SeriesTypeSystem": true,
+    "LineSeriesSystem": true,
+    "DataSystem": true
   },
   "entities": {}
 }

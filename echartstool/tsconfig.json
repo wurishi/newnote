@@ -2,7 +2,10 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "lib": ["ESNext", "DOM"],
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
     "moduleResolution": "Node",
     "strict": true,
     "sourceMap": true,
@@ -13,6 +16,14 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true
   },
-  "include": ["./src"],
-  "files": ["lib/src/systems/EChartsSystem.ts"]
+  "include": [
+    "./src"
+  ],
+  "files": [
+    "lib/src/systems/EChartsSystem.ts",
+    "lib/src/systems/GUISystem.ts",
+    "lib/src/systems/SeriesTypeSystem.ts",
+    "lib/src/systems/LineSeriesSystem.ts",
+    "lib/src/systems/DataSystem.ts"
+  ]
 }

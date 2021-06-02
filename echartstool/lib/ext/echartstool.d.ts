@@ -225,10 +225,25 @@ declare module entitas {
       public div:HTMLDivElement;public myChart:any;
     }
     
+    class EChartsOptionComponent implements IComponent {
+      public option:any;
+    }
+    
+    class DatGUIComponent implements IComponent {
+      public ui:any;
+    }
+    
+    class SeriesTypeComponent implements IComponent {
+      public type:string;public folder:any;
+    }
+    
 }
 declare module echartstool {
     enum CoreComponentIds {
         ECharts,
+        EChartsOption,
+        DatGUI,
+        SeriesType,
         TotalComponents
     }
 
@@ -237,6 +252,18 @@ declare module echartstool {
         
     class EChartsComponent implements IComponent {
       public div:HTMLDivElement;public myChart:any;
+    }
+    
+    class EChartsOptionComponent implements IComponent {
+      public option:any;
+    }
+    
+    class DatGUIComponent implements IComponent {
+      public ui:any;
+    }
+    
+    class SeriesTypeComponent implements IComponent {
+      public type:string;public folder:any;
     }
     
     /**
@@ -459,6 +486,15 @@ declare module entitas {
         static _matcherECharts: any;
         static ECharts: Matcher;
         
+        static _matcherEChartsOption: any;
+        static EChartsOption: Matcher;
+        
+        static _matcherDatGUI: any;
+        static DatGUI: Matcher;
+        
+        static _matcherSeriesType: any;
+        static SeriesType: Matcher;
+        
         /**
          * Get the matcher id
          * @type {number}
@@ -600,6 +636,27 @@ declare module entitas {
         addECharts(div:HTMLDivElement, myChart:any): Entity;
         replaceECharts(div:HTMLDivElement, myChart:any): Entity;
         removeECharts(): Entity;
+        static _eChartsOptionComponentPool: Bag<EChartsOptionComponent>;
+        static clearEChartsOptionComponentPool(): void;
+        eChartsOption: EChartsOptionComponent;
+        hasEChartsOption: boolean;
+        addEChartsOption(option:any): Entity;
+        replaceEChartsOption(option:any): Entity;
+        removeEChartsOption(): Entity;
+        static _datGUIComponentPool: Bag<DatGUIComponent>;
+        static clearDatGUIComponentPool(): void;
+        datGUI: DatGUIComponent;
+        hasDatGUI: boolean;
+        addDatGUI(ui:any): Entity;
+        replaceDatGUI(ui:any): Entity;
+        removeDatGUI(): Entity;
+        static _seriesTypeComponentPool: Bag<SeriesTypeComponent>;
+        static clearSeriesTypeComponentPool(): void;
+        seriesType: SeriesTypeComponent;
+        hasSeriesType: boolean;
+        addSeriesType(type:string, folder:any): Entity;
+        replaceSeriesType(type:string, folder:any): Entity;
+        removeSeriesType(): Entity;
         
         /**
          * @static

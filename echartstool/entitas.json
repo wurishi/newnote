@@ -37,7 +37,8 @@
     "BarSeriesBackgroundStyleSystem": true,
     "PieSeriesSystem": true,
     "ScatterSeriesSystem": true,
-    "SeriesCommonSystem": true
+    "SeriesCommonSystem": true,
+    "EffectScatterSeriesSystem": true
   },
   "entities": {}
 }

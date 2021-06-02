@@ -9,17 +9,19 @@ import { BarSeriesBackgroundStyleSystem } from '../lib/src/systems/BarSeriesBack
 import { PieSeriesSystem } from '../lib/src/systems/PieSeriesSystem';
 import { ScatterSeriesSystem } from '../lib/src/systems/ScatterSeriesSystem';
 import { SeriesCommonSystem } from '../lib/src/systems/SeriesCommonSystem';
+import { EffectScatterSeriesSystem } from '../lib/src/systems/EffectScatterSeriesSystem';
 
 const systemList = [
   EChartsSystem, //
   GUISystem,
   SeriesTypeSystem,
+  SeriesCommonSystem,
   LineSeriesSystem,
   BarSeriesSystem,
   BarSeriesBackgroundStyleSystem,
   PieSeriesSystem,
   ScatterSeriesSystem,
-  SeriesCommonSystem,
+  EffectScatterSeriesSystem,
 ];
 
 (function () {

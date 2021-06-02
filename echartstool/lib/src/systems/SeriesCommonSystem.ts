@@ -61,7 +61,7 @@ export class SeriesCommonSystem implements IReactiveSystem, ISetPool {
       obj.silent = obj.silent || false;
       ui.add(obj, 'silent').onChange(changeOptions);
 
-      if (['line', 'bar', 'scatter'].indexOf(type) >= 0) {
+      if (['line', 'bar', 'scatter', 'effectScatter'].indexOf(type) >= 0) {
         obj.clip = obj.clip || true;
         ui.add(obj, 'clip').onChange(changeOptions);
       }
@@ -76,7 +76,8 @@ export class SeriesCommonSystem implements IReactiveSystem, ISetPool {
 
       const symbolMap: any = {
         line: ['emptyCircle', []],
-        scatter: ['circle', ['emptyCircle']],
+        scatter: ['circle', []], // 文档中并没有说明emptyCircle是可用的, 但实际上也能用
+        effectScatter: ['circle', []],
       };
       if (symbolMap[type]) {
         obj.symbol = obj.symbol || symbolMap[type][0];

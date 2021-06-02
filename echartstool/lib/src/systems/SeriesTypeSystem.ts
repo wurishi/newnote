@@ -13,7 +13,7 @@ import ISetPool = entitas.ISetPool;
 
 export class SeriesTypeSystem implements IInitializeSystem, ISetPool {
   private uiObj = {
-    seriesType: 'scatter',
+    seriesType: 'effectScatter',
   };
 
   private folder?: GUI;
@@ -34,7 +34,13 @@ export class SeriesTypeSystem implements IInitializeSystem, ISetPool {
         this.folder = this.ui.addFolder('图表系列类型(SeriesType)');
       }
       this.folder
-        ?.add(this.uiObj, 'seriesType', ['line', 'bar', 'pie', 'scatter'])
+        ?.add(this.uiObj, 'seriesType', [
+          'line',
+          'bar',
+          'pie',
+          'scatter',
+          'effectScatter',
+        ])
         .onFinishChange(() => {
           this.changeSeriesType(true);
         });

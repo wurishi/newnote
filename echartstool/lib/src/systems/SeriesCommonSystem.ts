@@ -78,37 +78,44 @@ export class SeriesCommonSystem implements IReactiveSystem, ISetPool {
         line: ['emptyCircle', []],
         scatter: ['circle', []], // 文档中并没有说明emptyCircle是可用的, 但实际上也能用
         effectScatter: ['circle', []],
+        radar: ['circle', []],
       };
       if (symbolMap[type]) {
+        const subUI = ui.addFolder('symbol');
+
         obj.symbol = obj.symbol || symbolMap[type][0];
-        ui.add(obj, 'symbol', utils.getSymbol(symbolMap[type][1]).map).onChange(
-          changeOptions
-        );
+        subUI
+          .add(obj, 'symbol', utils.getSymbol(symbolMap[type][1]).map)
+          .onChange(changeOptions);
 
         obj.symbolSize = obj.symbolSize || 4;
-        ui.add(obj, 'symbolSize', 1, 100, 1).onChange(changeOptions);
+        subUI.add(obj, 'symbolSize', 1, 100, 1).onChange(changeOptions);
 
         obj.symbolRotate = obj.symbolRotate || 0;
-        ui.add(obj, 'symbolRotate', 0, 360, 1).onChange(changeOptions);
+        subUI.add(obj, 'symbolRotate', 0, 360, 1).onChange(changeOptions);
 
         obj.symbolKeepAspect = obj.symbolKeepAspect || true;
-        ui.add(obj, 'symbolKeepAspect')
+        subUI
+          .add(obj, 'symbolKeepAspect')
           .name('symbolKeepAspect (仅symbol为path://生效)')
           .onChange(changeOptions);
 
         obj.symbolOffset = obj.symbolOffset || ['0', '0'];
-        ui.add({ _x_symbolOffset: obj.symbolOffset[0] }, '_x_symbolOffset')
+        subUI
+          .add({ _x_symbolOffset: obj.symbolOffset[0] }, '_x_symbolOffset')
           .name('symbolOffset[0] (50或50%)')
           .onChange((v) => {
             obj.symbolOffset[0] = v;
             changeOptions();
           });
-        ui.add({ _y_symbolOffset: obj.symbolOffset[1] }, '_y_symbolOffset')
+        subUI
+          .add({ _y_symbolOffset: obj.symbolOffset[1] }, '_y_symbolOffset')
           .name('symbolOffset[1]')
           .onChange((v) => {
             obj.symbolOffset[1] = v;
             changeOptions();
           });
+        subUI.open();
       }
 
       if (['bar', 'scatter'].indexOf(type) >= 0) {

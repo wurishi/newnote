@@ -10,6 +10,7 @@ import { PieSeriesSystem } from '../lib/src/systems/PieSeriesSystem';
 import { ScatterSeriesSystem } from '../lib/src/systems/ScatterSeriesSystem';
 import { SeriesCommonSystem } from '../lib/src/systems/SeriesCommonSystem';
 import { EffectScatterSeriesSystem } from '../lib/src/systems/EffectScatterSeriesSystem';
+import { RadarSeriesSystem } from '../lib/src/systems/RadarSeriesSystem';
 
 const systemList = [
   EChartsSystem, //
@@ -22,6 +23,7 @@ const systemList = [
   PieSeriesSystem,
   ScatterSeriesSystem,
   EffectScatterSeriesSystem,
+  RadarSeriesSystem,
 ];
 
 (function () {

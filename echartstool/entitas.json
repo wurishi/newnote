@@ -38,7 +38,8 @@
     "PieSeriesSystem": true,
     "ScatterSeriesSystem": true,
     "SeriesCommonSystem": true,
-    "EffectScatterSeriesSystem": true
+    "EffectScatterSeriesSystem": true,
+    "RadarSeriesSystem": true
   },
   "entities": {}
 }

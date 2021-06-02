@@ -13,7 +13,7 @@ import ISetPool = entitas.ISetPool;
 
 export class SeriesTypeSystem implements IInitializeSystem, ISetPool {
   private uiObj = {
-    seriesType: 'effectScatter',
+    seriesType: 'line',
   };
 
   private folder?: GUI;
@@ -40,6 +40,7 @@ export class SeriesTypeSystem implements IInitializeSystem, ISetPool {
           'pie',
           'scatter',
           'effectScatter',
+          'radar',
         ])
         .onFinishChange(() => {
           this.changeSeriesType(true);

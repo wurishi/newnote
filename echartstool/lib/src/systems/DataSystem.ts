@@ -18,4 +18,5 @@ export class DataSystem {
   // progressive 
   // animation, tooltip
 
+  // radar 的 data 格式不一样
 }

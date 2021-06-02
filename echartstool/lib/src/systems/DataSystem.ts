@@ -14,5 +14,7 @@ export class DataSystem {
   // areaStyle,emphasis,blur,select(selectedMode)
   // dimensions,encode,seriesLayoutBy,datasetIndex,data,
   // markPoint,markLine,markArea,zlevel,Z
-  // coordinateSystem
+  // coordinateSystem,
+  // progressive 
+  // animation, tooltip
 }

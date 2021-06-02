@@ -1,6 +1,7 @@
 /// <reference path="../../ext/echartstool.d.ts"/>
 
 import { GUI } from 'dat.gui';
+import * as utils from '../utils';
 import Pool = entitas.Pool;
 import Group = entitas.Group;
 import Entity = entitas.Entity;
@@ -113,45 +114,7 @@ export class LineSeriesSystem implements IReactiveSystem, ISetPool {
       ui.add(obj, 'legendHoverLink').onChange(changeOptions);
 
       obj.cursor = obj.cursor || 'pointer';
-      arr = [
-        'auto',
-        'default',
-        'none',
-        'context-menu',
-        'help',
-        'pointer',
-        'progress',
-        'wait',
-        'cell',
-        'crosshair',
-        'text',
-        'vertical-text',
-        'alias',
-        'copy',
-        'move',
-        'no-drop',
-        'not-allowed',
-        'grab',
-        'grabbing',
-        'all-scroll',
-        'col-resize',
-        'row-resize',
-        'n-resize',
-        'e-resize',
-        's-resize',
-        'w-resize',
-        'ne-resize',
-        'nw-resize',
-        'se-resize',
-        'sw-resize',
-        'ew-resize',
-        'ns-resize',
-        'nesw-resize',
-        'nwse-resize',
-        'zoom-in',
-        'zoom-out',
-      ];
-      ui.add(obj, 'cursor', arr).onChange(changeOptions);
+      ui.add(obj, 'cursor', utils.cursor.enum).onChange(changeOptions);
 
       obj.connectNulls = obj.connectNulls || false;
       ui.add(obj, 'connectNulls').onChange(changeOptions);
@@ -169,15 +132,10 @@ export class LineSeriesSystem implements IReactiveSystem, ISetPool {
       });
 
       obj.selectedMode = obj.selectedMode || false;
-      ui.add(obj, 'selectedMode', ['false', 'single', 'multiple']).onChange(
-        (v) => {
-          if (v == 'false') {
-            v = false;
-          }
-          obj.selectedMode = v;
-          changeOptions();
-        }
-      );
+      ui.add(obj, 'selectedMode', utils.selectedMode.enum).onChange((v) => {
+        obj.selectedMode = utils.selectedMode.fn(v);
+        changeOptions();
+      });
 
       obj.smooth = obj.smooth || 0;
       ui.add(obj, 'smooth', 0, 1, 0.01).onChange(changeOptions);
@@ -191,19 +149,9 @@ export class LineSeriesSystem implements IReactiveSystem, ISetPool {
         changeOptions();
       });
 
-      obj.sampling = obj.sampling || '';
-      ui.add(obj, 'sampling', [
-        'false',
-        'lttb',
-        'average',
-        'max',
-        'min',
-        'sum',
-      ]).onChange((v) => {
-        if (v == 'false') {
-          v = false;
-        }
-        obj.sampling = v;
+      obj.sampling = obj.sampling || false;
+      ui.add(obj, 'sampling', utils.sampling.enum).onChange((v) => {
+        obj.sampling = utils.sampling.fn(v);
         changeOptions();
       });
 

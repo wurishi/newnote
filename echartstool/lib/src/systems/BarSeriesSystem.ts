@@ -1,5 +1,6 @@
 /// <reference path="../../ext/echartstool.d.ts"/>
 import { GUI } from 'dat.gui';
+import * as utils from '../utils';
 
 import Pool = entitas.Pool;
 import Group = entitas.Group;
@@ -50,7 +51,53 @@ export class BarSeriesSystem implements IReactiveSystem, ISetPool {
       obj.showBackground = obj.showBackground || false;
       ui.add(obj, 'showBackground').onChange(changeOptions);
 
-      // obj.backgroundStyle = obj.backgroundStyle
+      obj.selectedMode = obj.selectedMode || false;
+      ui.add(obj, 'selectedMode', utils.selectedMode.enum).onChange((v) => {
+        obj.selectedMode = utils.selectedMode.fn(v);
+        changeOptions();
+      });
+
+      obj.sampling = obj.sampling || false;
+      ui.add(obj, 'sampling', utils.sampling.enum).onChange((v) => {
+        obj.sampling = utils.sampling.fn(v);
+        changeOptions();
+      });
+
+      obj.cursor = obj.cursor || 'pointer';
+      ui.add(obj, 'cursor', utils.cursor.enum).onChange(changeOptions);
+
+      obj.barWidth = obj.barWidth || '';
+      ui.add(obj, 'barWidth').onChange(changeOptions);
+
+      obj.barMaxWidth = obj.barMaxWidth || '';
+      ui.add(obj, 'barMaxWidth').onChange(changeOptions);
+
+      obj.barMinWidth = obj.barMinWidth || '';
+      ui.add(obj, 'barMinWidth').onChange(changeOptions);
+
+      obj.barMinHeight = obj.barMinHeight || 0;
+      ui.add(obj, 'barMinHeight', 0, 1000).onChange(changeOptions);
+
+      obj.barMinAngle = obj.barMinAngle || 0;
+      ui.add(obj, 'barMinAngle', 0, 360).onChange(changeOptions);
+
+      obj.barGap = obj.barGap || '30%';
+      ui.add(obj, 'barGap').onChange(changeOptions);
+
+      obj.barCategoryGap = obj.barCategoryGap || '20%';
+      ui.add(obj, 'barCategoryGap').onChange(changeOptions);
+
+      obj.large = obj.large || false;
+      ui.add(obj, 'large').onChange(changeOptions);
+
+      obj.largeThreshold = obj.largeThreshold || 400;
+      ui.add(obj, 'largeThreshold', 0, 10000).onFinishChange(changeOptions);
+
+      obj.clip = obj.clip || true;
+      ui.add(obj, 'clip').onChange(changeOptions);
+
+      obj.silent = obj.silent || false;
+      ui.add(obj, 'silent').onChange(changeOptions);
 
       changeOptions();
     }

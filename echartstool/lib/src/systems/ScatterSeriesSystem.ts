@@ -3,6 +3,11 @@
 import { GUI } from 'dat.gui';
 import * as utils from '../utils';
 
+import {
+  BasicSeriesSystem,
+  iBuildSeriesUIParams,
+} from './basic/BasicSeriesSystem';
+
 import Pool = entitas.Pool;
 import Group = entitas.Group;
 import Entity = entitas.Entity;
@@ -13,39 +18,12 @@ import TriggerOnEvent = entitas.TriggerOnEvent;
 import IReactiveSystem = entitas.IReactiveSystem;
 import ISetPool = entitas.ISetPool;
 
-export class ScatterSeriesSystem implements IReactiveSystem, ISetPool {
-  get trigger(): TriggerOnEvent {
-    return Matcher.SeriesType.onEntityAdded();
+export class ScatterSeriesSystem extends BasicSeriesSystem {
+  constructor() {
+    super('scatter');
   }
 
-  protected pool!: Pool;
-  protected echartsOptions!: Group;
-  public setPool(pool: Pool) {
-    this.pool = pool;
-    this.echartsOptions = pool.getGroup(Matcher.allOf(Matcher.EChartsOption));
-  }
-
-  get echartsOption(): Entity {
-    return this.echartsOptions.getEntities()[0];
-  }
-
-  private _cacheObj = {};
-  execute(entities: Entity[]) {
-    const entity = entities.length > 0 ? entities[0] : null;
-    if (entity && entity.seriesType.type === 'scatter') {
-      const ui: GUI = entity.seriesType.folder;
-      const obj: any = this._cacheObj;
-      const changeOptions = () => {
-        const opt = { ...this.echartsOption.eChartsOption.option };
-        for (let i = opt.series.length - 1; i >= 0; i--) {
-          let tmp = { ...opt.series[i], type: 'scatter' };
-          tmp = { ...tmp, ...obj };
-          opt.series[i] = tmp;
-        }
-        this.echartsOption.replaceEChartsOption(opt);
-      };
-
-      changeOptions();
-    }
+  buildSeriesUI(p: iBuildSeriesUIParams) {
+    // const { obj, ui, changeOptions } = p;
   }
 }

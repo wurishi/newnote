@@ -22,6 +22,7 @@
       "ui:any"
     ],
     "SeriesType": [
+      "index:number",
       "type:string",
       "folder:any",
       "subFolder:any[]"

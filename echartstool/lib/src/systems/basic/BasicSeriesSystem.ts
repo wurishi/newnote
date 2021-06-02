@@ -36,10 +36,10 @@ export class BasicSeriesSystem implements IReactiveSystem, ISetPool {
   }
 
   protected type: string;
-  protected _cacheObj: any;
+  protected _cacheObj: any[];
   constructor(type: string) {
     this.type = type;
-    this._cacheObj = {};
+    this._cacheObj = [];
   }
 
   buildSeriesUI(p: iBuildSeriesUIParams): void {
@@ -47,21 +47,22 @@ export class BasicSeriesSystem implements IReactiveSystem, ISetPool {
   }
 
   execute(entities: Entity[]) {
-    const entity = entities.length > 0 ? entities[0] : null;
-    if (entity && entity.seriesType.type === this.type) {
-      const ui: GUI = entity.seriesType.folder;
-      const obj: any = this._cacheObj;
-      const changeOptions = () => {
-        const opt = { ...this.echartsOption.eChartsOption.option };
-        for (let i = opt.series.length - 1; i >= 0; i--) {
-          let tmp = { ...opt.series[i], type: this.type };
+    entities.forEach((entity) => {
+      if (entity.seriesType.type === this.type) {
+        const ui: GUI = entity.seriesType.folder;
+        const index = entity.seriesType.index;
+        this._cacheObj[index] = this._cacheObj[index] || {};
+        const obj: any = this._cacheObj[index];
+        const changeOptions = () => {
+          const opt = { ...this.echartsOption.eChartsOption.option };
+          let tmp = { ...opt.series[index], type: this.type };
           tmp = { ...tmp, ...obj };
-          opt.series[i] = tmp;
-        }
-        this.echartsOption.replaceEChartsOption(opt);
-      };
-      this.buildSeriesUI({ entity, ui, obj, changeOptions });
-      changeOptions();
-    }
+          opt.series[index] = tmp;
+          this.echartsOption.replaceEChartsOption(opt);
+        };
+        this.buildSeriesUI({ entity, ui, obj, changeOptions });
+        changeOptions();
+      }
+    });
   }
 }

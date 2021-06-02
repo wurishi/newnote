@@ -317,13 +317,15 @@ var echartstool;
   });
   /**
    * add
+   * @param {number} index
    * @param {string} type
    * @param {any} folder
    * @param {any[]} subFolder
    * @returns {entitas.Entity}
    */
-  Entity.prototype.addSeriesType = function (type, folder, subFolder) {
+  Entity.prototype.addSeriesType = function (index, type, folder, subFolder) {
     var component = Entity._seriesTypeComponentPool.size() > 0 ? Entity._seriesTypeComponentPool.removeLast() : new SeriesTypeComponent();
+    component.index = index;
     component.type = type;
     component.folder = folder;
     component.subFolder = subFolder;
@@ -332,14 +334,16 @@ var echartstool;
   };
   /**
    * replace
+   * @param {number} index
    * @param {string} type
    * @param {any} folder
    * @param {any[]} subFolder
    * @returns {entitas.Entity}
    */
-  Entity.prototype.replaceSeriesType = function (type, folder, subFolder) {
+  Entity.prototype.replaceSeriesType = function (index, type, folder, subFolder) {
     var previousComponent = this.hasSeriesType ? this.seriesType : null;
     var component = Entity._seriesTypeComponentPool.size() > 0 ? Entity._seriesTypeComponentPool.removeLast() : new SeriesTypeComponent();
+    component.index = index;
     component.type = type;
     component.folder = folder;
     component.subFolder = subFolder;

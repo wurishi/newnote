@@ -1,5 +1,7 @@
 /// <reference path="../lib/ext/echartstool.d.ts"/>
 
+import './style.css';
+
 import { EChartsSystem } from '../lib/src/systems/EChartsSystem';
 import { GUISystem } from '../lib/src/systems/GUISystem';
 import { SeriesTypeSystem } from '../lib/src/systems/SeriesTypeSystem';
@@ -12,6 +14,7 @@ import { SeriesCommonSystem } from '../lib/src/systems/SeriesCommonSystem';
 import { EffectScatterSeriesSystem } from '../lib/src/systems/EffectScatterSeriesSystem';
 import { RadarSeriesSystem } from '../lib/src/systems/RadarSeriesSystem';
 import { DataSystem } from '../lib/src/systems/DataSystem';
+import { LabelSystem } from '../lib/src/systems/LabelSystem';
 
 const systemList = [
   EChartsSystem, //
@@ -26,6 +29,7 @@ const systemList = [
   ScatterSeriesSystem,
   EffectScatterSeriesSystem,
   RadarSeriesSystem,
+  LabelSystem,
 ];
 
 (function () {

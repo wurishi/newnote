@@ -39,9 +39,11 @@ export class BasicSeriesSystem implements IReactiveSystem, ISetPool {
 
   protected type: string;
   protected _cacheObj: any[];
+  protected _delIfOptIsNull: string[];
   constructor(type: string) {
     this.type = type;
     this._cacheObj = [];
+    this._delIfOptIsNull = [];
   }
 
   buildSeriesUI(p: iBuildSeriesUIParams): void {
@@ -58,7 +60,13 @@ export class BasicSeriesSystem implements IReactiveSystem, ISetPool {
         const changeOptions = () => {
           const opt = { ...this.echartsOption.eChartsOption.option };
           let tmp = { ...opt.series[index], type: this.type };
-          tmp = { ...tmp, ...obj };
+          const t = { ...obj };
+          this._delIfOptIsNull.forEach((k) => {
+            if (!t[k]) {
+              delete t[k];
+            }
+          });
+          tmp = { ...tmp, ...t };
           opt.series[index] = tmp;
           this.echartsOption.replaceEChartsOption(opt);
         };

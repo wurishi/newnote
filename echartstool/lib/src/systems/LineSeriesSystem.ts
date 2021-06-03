@@ -24,7 +24,7 @@ export class LineSeriesSystem extends BasicSeriesSystem {
   }
 
   buildSeriesUI(p: iBuildSeriesUIParams) {
-    const { ui, obj, changeOptions } = p;
+    const { ui, obj, changeOptions, entity } = p;
     obj.showSymbol = obj.showSymbol || true;
     ui.add(obj, 'showSymbol')
       .name('showSymbol (false时仅tooltip hover显示)')
@@ -67,5 +67,7 @@ export class LineSeriesSystem extends BasicSeriesSystem {
       obj.smoothMonotone = v;
       changeOptions();
     });
+
+    entity.seriesType.subFolder.push(ui.addFolder('label'));
   }
 }

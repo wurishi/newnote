@@ -39,7 +39,7 @@ export class BarSeriesBackgroundStyleSystem extends BasicSubSeriesSystem {
       .onChange(changeOptions);
 
     obj.borderType = obj.borderType || 'solid';
-    ui.add(obj, 'borderType', ['solid', 'dashed', 'dotted'])
+    ui.add(obj, 'borderType', utils.borderType.enum)
       .name(getName('borderType'))
       .onChange(changeOptions);
 

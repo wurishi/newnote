@@ -31,6 +31,7 @@
     "lib/src/systems/ScatterSeriesSystem.ts",
     "lib/src/systems/SeriesCommonSystem.ts",
     "lib/src/systems/EffectScatterSeriesSystem.ts",
-    "lib/src/systems/RadarSeriesSystem.ts"
+    "lib/src/systems/RadarSeriesSystem.ts",
+    "lib/src/systems/LabelSystem.ts"
   ]
 }

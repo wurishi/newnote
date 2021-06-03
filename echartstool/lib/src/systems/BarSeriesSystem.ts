@@ -49,5 +49,7 @@ export class BarSeriesSystem extends BasicSeriesSystem {
 
     obj.barCategoryGap = obj.barCategoryGap || '20%';
     ui.add(obj, 'barCategoryGap').onChange(changeOptions);
+
+    entity.seriesType.subFolder.push(ui.addFolder('label'));
   }
 }

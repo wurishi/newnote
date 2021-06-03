@@ -26,7 +26,7 @@ export class SeriesCommonSystem implements IReactiveSystem, ISetPool {
   }
 
   get echartsOption(): Entity {
-    return this.echartsOptions.getEntities()[0];
+    return this.echartsOptions.getSingleEntity();
   }
 
   private _cacheObj: any[] = [];

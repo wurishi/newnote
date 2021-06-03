@@ -75,7 +75,7 @@ export class EChartsSystem
         if (e.eChartsOption.option !== this._prevOption) {
           myChart.setOption(e.eChartsOption.option);
           this._prevOption = e.eChartsOption.option;
-          // console.log(this._prevOption);
+          console.log(this._prevOption);
         }
       });
     }

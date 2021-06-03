@@ -76,6 +76,7 @@ export class SeriesTypeSystem implements IInitializeSystem, ISetPool {
   }
 
   get ui(): GUI {
-    return this.guiGroup.getEntities()[0].datGUI.ui;
+    return this.guiGroup.getEntities().find((v) => v.datGUI.index == 0)?.datGUI
+      .ui;
   }
 }

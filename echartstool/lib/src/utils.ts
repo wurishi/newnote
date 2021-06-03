@@ -1,3 +1,5 @@
+import { GUI } from 'dat.gui';
+
 export function rgbToNumber(rgb: number[]) {
   let num = 0;
   num = (rgb[0] << 16) & 0xff0000;
@@ -104,3 +106,116 @@ export function getSymbol(ignore: string[] = []) {
     map,
   };
 }
+
+export function uiListOrColor(
+  ui: GUI,
+  list: string[],
+  callback: Function,
+  useAlpha: boolean = false,
+  name: string = 'color'
+) {
+  list.push('#color');
+  const tmp = {
+    mode: list[0],
+    color: 'rgba(0,0,0,1)',
+    alpha: 1,
+  };
+  const change = () => {
+    let v = tmp.mode;
+    if (v === '#color') {
+      if (useAlpha) {
+        const arr = tmp.color.split(',');
+        arr[arr.length - 1] = tmp.alpha + ')';
+        tmp.color = arr.join(',');
+      }
+      v = tmp.color;
+    }
+    callback(v);
+  };
+  ui.add(tmp, 'mode', list).name(name).onChange(change);
+  ui.addColor(tmp, 'color').name(`${name}=#color`).onChange(change);
+  if (useAlpha) {
+    ui.add(tmp, 'alpha', 0, 1, 0.05)
+      .name(`${name}=#color.alpha`)
+      .onChange(change);
+  }
+}
+
+export function uiArr(
+  ui: GUI,
+  obj: any,
+  key: string,
+  params: any[],
+  callback: Function,
+  arrLen: number = 2
+) {
+  for (let i = 0; i < arrLen; i++) {
+    ui.add({ a: obj[key][i] }, 'a', ...params)
+      .name(`${key}[${i}]`)
+      .onChange((v) => {
+        obj[key][i] = v;
+        callback();
+      });
+  }
+}
+
+export const position = {
+  enum: [
+    'top',
+    'left',
+    'right',
+    'bottom',
+    'inside',
+    'insideLeft',
+    'insideRight',
+    'insideTop',
+    'insideBottom',
+    'insideTopLeft',
+    'insideBottomLeft',
+    'insideTopRight',
+    'insideBottomRight',
+  ],
+};
+
+export const fontStyle = {
+  enum: ['normal', 'italic', 'oblique'],
+};
+
+export const fontWeight = {
+  enum: [
+    'normal',
+    'bold',
+    'bolder',
+    'lighter',
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000,
+  ],
+};
+
+export const align = {
+  enum: ['left', 'center', 'right'],
+};
+
+export const verticalAlign = {
+  enum: ['top', 'middle', 'bottom'],
+};
+
+export const borderType = {
+  enum: ['solid', 'dashed', 'dotted'],
+};
+
+export const overflow = {
+  enum: ['none', 'truncate', 'break', 'breakAll'],
+};
+
+export const lineOverflow = {
+  enum: ['none', 'truncate'],
+};

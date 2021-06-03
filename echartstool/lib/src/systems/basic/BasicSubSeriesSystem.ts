@@ -37,21 +37,31 @@ export class BasicSubSeriesSystem extends BasicSeriesSystem {
   execute() {
     const entities = this.seriesTypeGroup.getEntities();
     entities.forEach((entity) => {
-      if (entity.seriesType.type === this.type) {
-        let ui: GUI =
-          entity.seriesType.subFolder.find((v) => v.name === this.subType) ||
-          entity.seriesType.folder;
+      if (!this.type || entity.seriesType.type === this.type) {
+        const ui: GUI = entity.seriesType.subFolder.find(
+          (v) => v.name === this.subType
+        );
+        if (!ui) {
+          return;
+        }
         const index = entity.seriesType.index;
         this._cacheObj[index] = this._cacheObj[index] || {};
         const obj: any = this._cacheObj[index];
         if (
+          !this.checkKey ||
           this.echartsOption.eChartsOption.option.series[index][this.checkKey]
         ) {
           if (ui.__controllers.length <= 0) {
             const changeOptions = () => {
               const opt = { ...this.echartsOption.eChartsOption.option };
               let tmp = { ...opt.series[index] };
-              tmp = { ...tmp, [this.subType]: obj };
+              const t = { ...obj };
+              this._delIfOptIsNull.forEach((k) => {
+                if (!t[k]) {
+                  delete t[k];
+                }
+              });
+              tmp = { ...tmp, [this.subType]: t };
               opt.series[index] = tmp;
               this.echartsOption.replaceEChartsOption(opt);
             };
@@ -60,10 +70,11 @@ export class BasicSubSeriesSystem extends BasicSeriesSystem {
               entity,
               obj,
               changeOptions,
-              getName: (s) => `${this.subType}.${s}`,
+              // getName: (s) => `${this.subType}.${s}`,
+              getName: (s) => s,
             });
             changeOptions();
-            ui.open();
+            // ui.open();
           }
         } else {
           this.clearSeriesUI(ui, index);

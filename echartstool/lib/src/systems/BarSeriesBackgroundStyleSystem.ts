@@ -26,7 +26,15 @@ export class BarSeriesBackgroundStyleSystem extends BasicSubSeriesSystem {
     const { ui, obj, changeOptions, getName } = p;
 
     obj.color = obj.color || 'rgba(180, 180, 180, 0.2)';
-    ui.addColor(obj, 'color').name(getName('color')).onChange(changeOptions);
+    utils.uiListOrColor(
+      ui,
+      [],
+      (v: any) => {
+        obj.color = v;
+        changeOptions();
+      },
+      true
+    );
 
     obj.borderColor = obj.borderColor || '#000';
     ui.addColor(obj, 'borderColor')

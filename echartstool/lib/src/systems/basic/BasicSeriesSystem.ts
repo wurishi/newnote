@@ -37,10 +37,10 @@ export class BasicSeriesSystem implements IReactiveSystem, ISetPool {
     return this.echartsOptionGroup.getSingleEntity();
   }
 
-  protected type: string;
+  protected type: string[];
   protected _cacheObj: any[];
   protected _delIfOptIsNull: string[];
-  constructor(type: string) {
+  constructor(type: string[]) {
     this.type = type;
     this._cacheObj = [];
     this._delIfOptIsNull = [];
@@ -52,14 +52,15 @@ export class BasicSeriesSystem implements IReactiveSystem, ISetPool {
 
   execute(entities: Entity[]) {
     entities.forEach((entity) => {
-      if (entity.seriesType.type === this.type) {
+      if (this.type.indexOf(entity.seriesType.type) >= 0) {
+        const type = entity.seriesType.type;
         const ui: GUI = entity.seriesType.folder;
         const index = entity.seriesType.index;
         this._cacheObj[index] = this._cacheObj[index] || {};
         const obj: any = this._cacheObj[index];
         const changeOptions = () => {
           const opt = { ...this.echartsOption.eChartsOption.option };
-          let tmp = { ...opt.series[index], type: this.type };
+          let tmp = { ...opt.series[index], type };
           const t = { ...obj };
           this._delIfOptIsNull.forEach((k) => {
             if (!t[k]) {

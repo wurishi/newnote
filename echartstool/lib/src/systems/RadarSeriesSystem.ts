@@ -14,7 +14,7 @@ import TriggerOnEvent = entitas.TriggerOnEvent;
 
 export class RadarSeriesSystem extends BasicSeriesSystem {
   constructor() {
-    super('radar');
+    super(['radar']);
   }
 
   buildSeriesUI(p: iBuildSeriesUIParams) {

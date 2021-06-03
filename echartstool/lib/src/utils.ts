@@ -132,7 +132,10 @@ export function uiListOrColor(
     }
     callback(v);
   };
-  ui.add(tmp, 'mode', list).name(name).onChange(change);
+  if (list.length > 1) {
+    ui.add(tmp, 'mode', list).name(name).onChange(change);
+  }
+
   ui.addColor(tmp, 'color').name(`${name}=#color`).onChange(change);
   if (useAlpha) {
     ui.add(tmp, 'alpha', 0, 1, 0.05)
@@ -177,6 +180,10 @@ export const position = {
   ],
 };
 
+export const pie_position = {
+  enum: ['outside', 'inside', 'inner', 'center'],
+};
+
 export const fontStyle = {
   enum: ['normal', 'italic', 'oblique'],
 };
@@ -218,4 +225,8 @@ export const overflow = {
 
 export const lineOverflow = {
   enum: ['none', 'truncate'],
+};
+
+export const alignTo = {
+  enum: ['none', 'labelLine', 'edge'],
 };

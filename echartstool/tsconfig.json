@@ -32,6 +32,7 @@
     "lib/src/systems/SeriesCommonSystem.ts",
     "lib/src/systems/EffectScatterSeriesSystem.ts",
     "lib/src/systems/RadarSeriesSystem.ts",
-    "lib/src/systems/LabelSystem.ts"
+    "lib/src/systems/LabelSystem.ts",
+    "lib/src/systems/LabelPositionSystem.ts"
   ]
 }

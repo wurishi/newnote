@@ -20,11 +20,11 @@ import ISetPool = entitas.ISetPool;
 
 export class PieSeriesSystem extends BasicSeriesSystem {
   constructor() {
-    super('pie');
+    super(['pie']);
   }
 
   buildSeriesUI(p: iBuildSeriesUIParams) {
-    const { ui, obj, changeOptions } = p;
+    const { ui, obj, changeOptions, entity } = p;
 
     obj.selectedOffset = obj.selectedOffset || 10;
     ui.add(obj, 'selectedOffset', 0, 100).onChange(changeOptions);
@@ -94,5 +94,7 @@ export class PieSeriesSystem extends BasicSeriesSystem {
         obj.radius[1] = v;
         changeOptions();
       });
+
+    entity.seriesType.subFolder.push(ui.addFolder('label'));
   }
 }

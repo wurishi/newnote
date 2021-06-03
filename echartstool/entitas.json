@@ -42,7 +42,8 @@
     "SeriesCommonSystem": true,
     "EffectScatterSeriesSystem": true,
     "RadarSeriesSystem": true,
-    "LabelSystem": true
+    "LabelSystem": true,
+    "LabelPositionSystem": true
   },
   "entities": {}
 }

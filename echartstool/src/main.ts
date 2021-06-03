@@ -15,6 +15,7 @@ import { EffectScatterSeriesSystem } from '../lib/src/systems/EffectScatterSerie
 import { RadarSeriesSystem } from '../lib/src/systems/RadarSeriesSystem';
 import { DataSystem } from '../lib/src/systems/DataSystem';
 import { LabelSystem } from '../lib/src/systems/LabelSystem';
+import { LabelPositionSystem } from '../lib/src/systems/LabelPositionSystem';
 
 const systemList = [
   EChartsSystem, //
@@ -30,6 +31,7 @@ const systemList = [
   EffectScatterSeriesSystem,
   RadarSeriesSystem,
   LabelSystem,
+  LabelPositionSystem,
 ];
 
 (function () {

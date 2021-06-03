@@ -14,40 +14,32 @@ import {
   iSubBuildSeriesUIParams,
 } from './basic/BasicSubSeriesSystem';
 
+// const DEFAULT_CONFIG = {
+//   position: ['inside', utils.position.enum, true],
+//   distance: true,
+// };
+
+// const CONFIG: any = {
+//   line: DEFAULT_CONFIG,
+//   bar: DEFAULT_CONFIG,
+//   pie: {
+//     position: ['outside', utils.pie_position.enum, false],
+//     distance: false,
+//     labelLine: true,
+//   },
+// };
+
 export class LabelSystem extends BasicSubSeriesSystem {
   constructor() {
-    super('', 'label', '');
+    super(['line', 'bar'], 'label', '');
     this._delIfOptIsNull.push('width', 'height');
   }
 
   buildSeriesUI(p: iSubBuildSeriesUIParams) {
-    const { ui, obj, changeOptions, getName } = p;
-    const tmp = {
-      xypos: false,
-      pos: 'inside',
-      posx: '0',
-      posy: '0',
-      defaultColor: true,
-      color: '#fff',
-    };
+    const { ui, obj, changeOptions, getName, entity } = p;
 
     obj.show = obj.show || false;
     ui.add(obj, 'show').name(getName('show')).onChange(changeOptions);
-
-    const changePosition = () => {
-      if (tmp.xypos) {
-        obj.position = [tmp.posx, tmp.posy];
-      } else {
-        obj.position = tmp.pos;
-      }
-      changeOptions();
-    };
-    ui.add(tmp, 'pos', utils.position.enum).onChange(changePosition);
-    ui.add(tmp, 'xypos')
-      .name(getName('自定义Position'))
-      .onChange(changePosition);
-    ui.add(tmp, 'posx').onChange(changePosition);
-    ui.add(tmp, 'posy').onChange(changePosition);
 
     obj.distance = obj.distance || 5;
     ui.add(obj, 'distance', 0, 100, 1).onChange(changeOptions);
@@ -215,5 +207,18 @@ export class LabelSystem extends BasicSubSeriesSystem {
     ui.add(obj, 'lineOverflow', utils.lineOverflow.enum).onChange(
       changeOptions
     );
+
+    // if (config.labelLine) {
+    //   obj.alignTo = obj.alignTo || 'none';
+    //   ui.add(obj, 'alignTo', utils.alignTo.enum).onChange(changeOptions);
+
+    //   obj.edgeDistance = obj.edgeDistance || '25%';
+    //   ui.add(obj, 'edgeDistance').onChange(changeOptions);
+
+    //   obj.bleedMargin = obj.bleedMargin || 10;
+    //   ui.add(obj, 'bleedMargin', 0, 100, 1).onChange(changeOptions);
+
+    //   obj.distanceToLabelLine = obj.distanceToLabelLine ||
+    // }
   }
 }

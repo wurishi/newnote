@@ -20,7 +20,7 @@ import ISetPool = entitas.ISetPool;
 
 export class LineSeriesSystem extends BasicSeriesSystem {
   constructor() {
-    super('line');
+    super(['line']);
   }
 
   buildSeriesUI(p: iBuildSeriesUIParams) {

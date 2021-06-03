@@ -18,7 +18,7 @@ export interface iSubBuildSeriesUIParams extends iBuildSeriesUIParams {
 export class BasicSubSeriesSystem extends BasicSeriesSystem {
   protected subType: string;
   protected checkKey: string;
-  constructor(type: string, subType: string, checkKey: string) {
+  constructor(type: string[], subType: string, checkKey: string) {
     super(type);
     this.subType = subType;
     this.checkKey = checkKey;
@@ -37,14 +37,18 @@ export class BasicSubSeriesSystem extends BasicSeriesSystem {
   execute() {
     const entities = this.seriesTypeGroup.getEntities();
     entities.forEach((entity) => {
-      if (!this.type || entity.seriesType.type === this.type) {
+      if (
+        this.type.length <= 0 ||
+        this.type.indexOf(entity.seriesType.type) >= 0
+      ) {
         const ui: GUI = entity.seriesType.subFolder.find(
           (v) => v.name === this.subType
         );
+        const index = entity.seriesType.index;
         if (!ui) {
+          this.deleteOptions(index);
           return;
         }
-        const index = entity.seriesType.index;
         this._cacheObj[index] = this._cacheObj[index] || {};
         const obj: any = this._cacheObj[index];
         if (
@@ -88,15 +92,21 @@ export class BasicSubSeriesSystem extends BasicSeriesSystem {
   }
 
   clearSeriesUI(ui: GUI, index: number) {
+    this.deleteOptions(index);
     if (ui.__controllers.length > 0) {
-      const opt = { ...this.echartsOption.eChartsOption.option };
-      let tmp = { ...opt.series[index] };
-      delete tmp[this.subType];
-      opt.series[index] = tmp;
-      this.echartsOption.replaceEChartsOption(opt);
       for (let i = ui.__controllers.length - 1; i >= 0; i--) {
         ui.remove(ui.__controllers[i]);
       }
+    }
+  }
+
+  deleteOptions(index: number) {
+    const opt = { ...this.echartsOption.eChartsOption.option };
+    let tmp = { ...opt.series[index] };
+    if (tmp[this.subType]) {
+      delete tmp[this.subType];
+      opt.series[index] = tmp;
+      this.echartsOption.replaceEChartsOption(opt);
     }
   }
 }

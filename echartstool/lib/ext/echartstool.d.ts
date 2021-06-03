@@ -234,7 +234,7 @@ declare module entitas {
     }
     
     class SeriesTypeComponent implements IComponent {
-      public type:string;public folder:any;
+      public index:number;public type:string;public folder:any;public subFolder:any[];
     }
     
 }
@@ -263,7 +263,7 @@ declare module echartstool {
     }
     
     class SeriesTypeComponent implements IComponent {
-      public type:string;public folder:any;
+      public index:number;public type:string;public folder:any;public subFolder:any[];
     }
     
     /**
@@ -654,8 +654,8 @@ declare module entitas {
         static clearSeriesTypeComponentPool(): void;
         seriesType: SeriesTypeComponent;
         hasSeriesType: boolean;
-        addSeriesType(type:string, folder:any): Entity;
-        replaceSeriesType(type:string, folder:any): Entity;
+        addSeriesType(index:number, type:string, folder:any, subFolder:any[]): Entity;
+        replaceSeriesType(index:number, type:string, folder:any, subFolder:any[]): Entity;
         removeSeriesType(): Entity;
         
         /**

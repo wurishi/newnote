@@ -4,12 +4,26 @@ import { EChartsSystem } from '../lib/src/systems/EChartsSystem';
 import { GUISystem } from '../lib/src/systems/GUISystem';
 import { SeriesTypeSystem } from '../lib/src/systems/SeriesTypeSystem';
 import { LineSeriesSystem } from '../lib/src/systems/LineSeriesSystem';
+import { BarSeriesSystem } from '../lib/src/systems/BarSeriesSystem';
+import { BarSeriesBackgroundStyleSystem } from '../lib/src/systems/BarSeriesBackgroundStyleSystem';
+import { PieSeriesSystem } from '../lib/src/systems/PieSeriesSystem';
+import { ScatterSeriesSystem } from '../lib/src/systems/ScatterSeriesSystem';
+import { SeriesCommonSystem } from '../lib/src/systems/SeriesCommonSystem';
+import { EffectScatterSeriesSystem } from '../lib/src/systems/EffectScatterSeriesSystem';
+import { RadarSeriesSystem } from '../lib/src/systems/RadarSeriesSystem';
 
 const systemList = [
   EChartsSystem, //
   GUISystem,
   SeriesTypeSystem,
+  SeriesCommonSystem,
   LineSeriesSystem,
+  BarSeriesSystem,
+  BarSeriesBackgroundStyleSystem,
+  PieSeriesSystem,
+  ScatterSeriesSystem,
+  EffectScatterSeriesSystem,
+  RadarSeriesSystem,
 ];
 
 (function () {

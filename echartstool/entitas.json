@@ -22,8 +22,10 @@
       "ui:any"
     ],
     "SeriesType": [
+      "index:number",
       "type:string",
-      "folder:any"
+      "folder:any",
+      "subFolder:any[]"
     ]
   },
   "systems": {
@@ -31,7 +33,14 @@
     "GUISystem": true,
     "SeriesTypeSystem": true,
     "LineSeriesSystem": true,
-    "DataSystem": true
+    "DataSystem": true,
+    "BarSeriesSystem": true,
+    "BarSeriesBackgroundStyleSystem": true,
+    "PieSeriesSystem": true,
+    "ScatterSeriesSystem": true,
+    "SeriesCommonSystem": true,
+    "EffectScatterSeriesSystem": true,
+    "RadarSeriesSystem": true
   },
   "entities": {}
 }

@@ -24,6 +24,13 @@
     "lib/src/systems/GUISystem.ts",
     "lib/src/systems/SeriesTypeSystem.ts",
     "lib/src/systems/LineSeriesSystem.ts",
-    "lib/src/systems/DataSystem.ts"
+    "lib/src/systems/DataSystem.ts",
+    "lib/src/systems/BarSeriesSystem.ts",
+    "lib/src/systems/BarSeriesBackgroundStyleSystem.ts",
+    "lib/src/systems/PieSeriesSystem.ts",
+    "lib/src/systems/ScatterSeriesSystem.ts",
+    "lib/src/systems/SeriesCommonSystem.ts",
+    "lib/src/systems/EffectScatterSeriesSystem.ts",
+    "lib/src/systems/RadarSeriesSystem.ts"
   ]
 }

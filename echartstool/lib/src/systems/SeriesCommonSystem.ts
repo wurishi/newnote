@@ -29,20 +29,19 @@ export class SeriesCommonSystem implements IReactiveSystem, ISetPool {
     return this.echartsOptions.getEntities()[0];
   }
 
-  private _cacheObj = {};
+  private _cacheObj: any[] = [];
   execute(entities: Entity[]) {
-    const entity = entities.length > 0 ? entities[0] : null;
-    if (entity) {
+    entities.forEach((entity) => {
       const ui: GUI = entity.seriesType.folder;
       const type = entity.seriesType.type;
-      const obj: any = this._cacheObj;
+      const index = entity.seriesType.index;
+      this._cacheObj[index] = this._cacheObj[index] || {};
+      const obj: any = this._cacheObj[index];
       const changeOptions = () => {
         const opt = { ...this.echartsOption.eChartsOption.option };
-        for (let i = opt.series.length - 1; i >= 0; i--) {
-          let tmp = { ...opt.series[i] };
-          tmp = { ...tmp, ...obj };
-          opt.series[i] = tmp;
-        }
+        let tmp = { ...opt.series[index] };
+        tmp = { ...tmp, ...obj };
+        opt.series[index] = tmp;
         this.echartsOption.replaceEChartsOption(opt);
       };
 
@@ -127,6 +126,6 @@ export class SeriesCommonSystem implements IReactiveSystem, ISetPool {
       }
 
       changeOptions();
-    }
+    });
   }
 }

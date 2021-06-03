@@ -12,65 +12,42 @@ import TriggerOnEvent = entitas.TriggerOnEvent;
 import IReactiveSystem = entitas.IReactiveSystem;
 import ISetPool = entitas.ISetPool;
 
-export class BarSeriesSystem implements IReactiveSystem, ISetPool {
-  get trigger(): TriggerOnEvent {
-    return Matcher.SeriesType.onEntityAdded();
+import {
+  BasicSeriesSystem,
+  iBuildSeriesUIParams,
+} from './basic/BasicSeriesSystem';
+
+export class BarSeriesSystem extends BasicSeriesSystem {
+  constructor() {
+    super('bar');
   }
 
-  protected pool!: Pool;
-  protected echartsOptions!: Group;
-  public setPool(pool: Pool) {
-    this.pool = pool;
-    this.echartsOptions = pool.getGroup(Matcher.allOf(Matcher.EChartsOption));
-  }
+  buildSeriesUI(p: iBuildSeriesUIParams) {
+    const { ui, obj, changeOptions, entity } = p;
 
-  get echartsOption(): Entity {
-    return this.echartsOptions.getEntities()[0];
-  }
+    obj.showBackground = obj.showBackground || false;
+    ui.add(obj, 'showBackground').onChange(changeOptions);
+    entity.seriesType.subFolder.push(ui.addFolder('backgroundStyle'));
 
-  private _cacheObj = {};
+    obj.barWidth = obj.barWidth || '';
+    ui.add(obj, 'barWidth').onChange(changeOptions);
 
-  execute(entities: Entity[]) {
-    const entity = entities.length > 0 ? entities[0] : null;
-    if (entity && entity.seriesType.type === 'bar') {
-      const ui: GUI = entity.seriesType.folder;
-      const obj: any = this._cacheObj;
-      const changeOptions = () => {
-        const opt = { ...this.echartsOption.eChartsOption.option };
-        for (let i = opt.series.length - 1; i >= 0; i--) {
-          let tmp = { ...opt.series[i], type: 'bar' };
-          tmp = { ...tmp, ...obj };
-          opt.series[i] = tmp;
-        }
-        this.echartsOption.replaceEChartsOption(opt);
-      };
+    obj.barMaxWidth = obj.barMaxWidth || '';
+    ui.add(obj, 'barMaxWidth').onChange(changeOptions);
 
-      obj.showBackground = obj.showBackground || false;
-      ui.add(obj, 'showBackground').onChange(changeOptions);
-      entity.seriesType.subFolder.push(ui.addFolder('backgroundStyle'));
+    obj.barMinWidth = obj.barMinWidth || '';
+    ui.add(obj, 'barMinWidth').onChange(changeOptions);
 
-      obj.barWidth = obj.barWidth || '';
-      ui.add(obj, 'barWidth').onChange(changeOptions);
+    obj.barMinHeight = obj.barMinHeight || 0;
+    ui.add(obj, 'barMinHeight', 0, 1000).onChange(changeOptions);
 
-      obj.barMaxWidth = obj.barMaxWidth || '';
-      ui.add(obj, 'barMaxWidth').onChange(changeOptions);
+    obj.barMinAngle = obj.barMinAngle || 0;
+    ui.add(obj, 'barMinAngle', 0, 360).onChange(changeOptions);
 
-      obj.barMinWidth = obj.barMinWidth || '';
-      ui.add(obj, 'barMinWidth').onChange(changeOptions);
+    obj.barGap = obj.barGap || '30%';
+    ui.add(obj, 'barGap').onChange(changeOptions);
 
-      obj.barMinHeight = obj.barMinHeight || 0;
-      ui.add(obj, 'barMinHeight', 0, 1000).onChange(changeOptions);
-
-      obj.barMinAngle = obj.barMinAngle || 0;
-      ui.add(obj, 'barMinAngle', 0, 360).onChange(changeOptions);
-
-      obj.barGap = obj.barGap || '30%';
-      ui.add(obj, 'barGap').onChange(changeOptions);
-
-      obj.barCategoryGap = obj.barCategoryGap || '20%';
-      ui.add(obj, 'barCategoryGap').onChange(changeOptions);
-
-      changeOptions();
-    }
+    obj.barCategoryGap = obj.barCategoryGap || '20%';
+    ui.add(obj, 'barCategoryGap').onChange(changeOptions);
   }
 }

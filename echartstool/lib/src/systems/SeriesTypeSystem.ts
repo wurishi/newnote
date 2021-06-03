@@ -52,6 +52,9 @@ export class SeriesTypeSystem implements IInitializeSystem, ISetPool {
               for (let j = folder.__controllers.length - 1; j >= 1; j--) {
                 folder.remove(folder.__controllers[j]);
               }
+              Object.keys(folder.__folders).forEach((k) => {
+                folder.removeFolder(folder.__folders[k]);
+              });
               entity.replaceSeriesType(i, v, folder, []);
             }, 0);
           });

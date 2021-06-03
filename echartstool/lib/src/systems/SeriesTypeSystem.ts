@@ -23,11 +23,6 @@ export class SeriesTypeSystem implements IInitializeSystem, ISetPool {
         this.initSeries();
       });
     this.initSeries();
-    // this.folder = this.ui.addFolder('图表系列类型(SeriesType)');
-    // this.entity = this.pool
-    //   .createEntity('SeriesType')
-    //   .addSeriesType(this.uiObj.seriesType, this.folder, []);
-    // this.changeSeriesType(false);
   }
 
   private entities: Entity[] = [];
@@ -37,9 +32,10 @@ export class SeriesTypeSystem implements IInitializeSystem, ISetPool {
     for (let i = 0; i < count; i++) {
       let entity = this.entities[i];
       if (!entity) {
+        const defaultType = 'line';
         const folder = this.ui.addFolder('图表系列(series)-' + i);
         folder
-          .add({ seriesType: '' }, 'seriesType', [
+          .add({ seriesType: defaultType }, 'seriesType', [
             'line',
             'bar',
             'pie',
@@ -60,7 +56,7 @@ export class SeriesTypeSystem implements IInitializeSystem, ISetPool {
           });
         entity = this.pool
           .createEntity('SeriesType' + i)
-          .addSeriesType(i, '', folder, []);
+          .addSeriesType(i, defaultType, folder, []);
       }
       this.entities[i] = entity;
     }

@@ -60,16 +60,7 @@ export class EChartsSystem
       yAxis: {
         type: 'value',
       },
-      series: [
-        {
-          data: [150, 230, 224, 218, 135, 147, 260],
-          type: 'line',
-        },
-        {
-          data: [50, 30, 24, 18, 35, 47, 60],
-          type: 'line',
-        },
-      ],
+      series: [],
     });
   }
 

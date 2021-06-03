@@ -11,9 +11,11 @@ import { ScatterSeriesSystem } from '../lib/src/systems/ScatterSeriesSystem';
 import { SeriesCommonSystem } from '../lib/src/systems/SeriesCommonSystem';
 import { EffectScatterSeriesSystem } from '../lib/src/systems/EffectScatterSeriesSystem';
 import { RadarSeriesSystem } from '../lib/src/systems/RadarSeriesSystem';
+import { DataSystem } from '../lib/src/systems/DataSystem';
 
 const systemList = [
   EChartsSystem, //
+  DataSystem,
   GUISystem,
   SeriesTypeSystem,
   SeriesCommonSystem,

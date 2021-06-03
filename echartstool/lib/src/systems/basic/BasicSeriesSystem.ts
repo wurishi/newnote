@@ -25,14 +25,16 @@ export class BasicSeriesSystem implements IReactiveSystem, ISetPool {
   }
 
   protected pool!: Pool;
-  protected echartsOptions!: Group;
+  protected echartsOptionGroup!: Group;
   public setPool(pool: Pool) {
     this.pool = pool;
-    this.echartsOptions = pool.getGroup(Matcher.allOf(Matcher.EChartsOption));
+    this.echartsOptionGroup = pool.getGroup(
+      Matcher.allOf(Matcher.EChartsOption)
+    );
   }
 
   get echartsOption(): Entity {
-    return this.echartsOptions.getEntities()[0];
+    return this.echartsOptionGroup.getSingleEntity();
   }
 
   protected type: string;

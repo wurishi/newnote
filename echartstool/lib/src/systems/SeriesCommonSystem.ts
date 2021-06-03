@@ -125,6 +125,12 @@ export class SeriesCommonSystem implements IReactiveSystem, ISetPool {
         ui.add(obj, 'largeThreshold', 0, 10000).onFinishChange(changeOptions);
       }
 
+      obj.zlevel = obj.zlevel || 0;
+      ui.add(obj, 'zlevel', 0, 100, 1).onChange(changeOptions);
+
+      obj.z = obj.z || 2;
+      ui.add(obj, 'z', -100, 100, 1).onChange(changeOptions);
+
       changeOptions();
     });
   }

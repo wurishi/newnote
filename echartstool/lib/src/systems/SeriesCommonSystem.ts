@@ -26,6 +26,7 @@ export class SeriesCommonSystem implements IReactiveSystem, ISetPool {
   }
 
   get echartsOption(): Entity {
+<<<<<<< HEAD
     return this.echartsOptions.getEntities()[0];
   }
 
@@ -43,6 +44,24 @@ export class SeriesCommonSystem implements IReactiveSystem, ISetPool {
           tmp = { ...tmp, ...obj };
           opt.series[i] = tmp;
         }
+=======
+    return this.echartsOptions.getSingleEntity();
+  }
+
+  private _cacheObj: any[] = [];
+  execute(entities: Entity[]) {
+    entities.forEach((entity) => {
+      const ui: GUI = entity.seriesType.folder;
+      const type = entity.seriesType.type;
+      const index = entity.seriesType.index;
+      this._cacheObj[index] = this._cacheObj[index] || {};
+      const obj: any = this._cacheObj[index];
+      const changeOptions = () => {
+        const opt = { ...this.echartsOption.eChartsOption.option };
+        let tmp = { ...opt.series[index] };
+        tmp = { ...tmp, ...obj };
+        opt.series[index] = tmp;
+>>>>>>> 20210604
         this.echartsOption.replaceEChartsOption(opt);
       };
 
@@ -126,7 +145,18 @@ export class SeriesCommonSystem implements IReactiveSystem, ISetPool {
         ui.add(obj, 'largeThreshold', 0, 10000).onFinishChange(changeOptions);
       }
 
+<<<<<<< HEAD
       changeOptions();
     }
+=======
+      obj.zlevel = obj.zlevel || 0;
+      ui.add(obj, 'zlevel', 0, 100, 1).onChange(changeOptions);
+
+      obj.z = obj.z || 2;
+      ui.add(obj, 'z', -100, 100, 1).onChange(changeOptions);
+
+      changeOptions();
+    });
+>>>>>>> 20210604
   }
 }

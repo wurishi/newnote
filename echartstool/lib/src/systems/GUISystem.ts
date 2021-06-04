@@ -19,15 +19,41 @@ export class GUISystem implements IInitializeSystem, ISetPool {
   }
 
   initialize() {
+    this.initSeriesUI();
+    this.initDataUI();
+  }
+
+  initSeriesUI() {
     const ui = new GUI();
     const uiDiv = document.createElement('div');
+    uiDiv.className = 'gui';
     uiDiv.style.position = 'fixed';
     uiDiv.style.right = '0';
     uiDiv.style.top = '0';
+    uiDiv.style.height = window.innerHeight * 0.8 + 'px';
+    uiDiv.style.overflowY = 'scroll';
+    uiDiv.style.paddingBottom = '100px';
     uiDiv.appendChild(ui.domElement);
     document.getElementById('app')?.appendChild(uiDiv);
     ui.open();
 
-    this.pool.createEntity('gui').addDatGUI(ui);
+    this.pool.createEntity('gui').addDatGUI(ui, 0);
+  }
+
+  initDataUI() {
+    const ui = new GUI();
+    const uiDiv = document.createElement('div');
+    uiDiv.className = 'gui';
+    uiDiv.style.position = 'fixed';
+    uiDiv.style.left = '0';
+    uiDiv.style.top = '0';
+    uiDiv.style.height = window.innerHeight * 0.8 + 'px';
+    uiDiv.style.overflowY = 'scroll';
+    uiDiv.style.paddingBottom = '100px';
+    uiDiv.appendChild(ui.domElement);
+    document.getElementById('app')?.appendChild(uiDiv);
+    ui.open();
+
+    this.pool.createEntity('gui').addDatGUI(ui, 1);
   }
 }

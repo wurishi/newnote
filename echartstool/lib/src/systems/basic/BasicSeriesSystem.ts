@@ -25,6 +25,7 @@ export class BasicSeriesSystem implements IReactiveSystem, ISetPool {
   }
 
   protected pool!: Pool;
+<<<<<<< HEAD
   protected echartsOptions!: Group;
   public setPool(pool: Pool) {
     this.pool = pool;
@@ -40,6 +41,27 @@ export class BasicSeriesSystem implements IReactiveSystem, ISetPool {
   constructor(type: string) {
     this.type = type;
     this._cacheObj = [];
+=======
+  protected echartsOptionGroup!: Group;
+  public setPool(pool: Pool) {
+    this.pool = pool;
+    this.echartsOptionGroup = pool.getGroup(
+      Matcher.allOf(Matcher.EChartsOption)
+    );
+  }
+
+  get echartsOption(): Entity {
+    return this.echartsOptionGroup.getSingleEntity();
+  }
+
+  protected type: string[];
+  protected _cacheObj: any[];
+  protected _delIfOptIsNull: string[];
+  constructor(type: string[]) {
+    this.type = type;
+    this._cacheObj = [];
+    this._delIfOptIsNull = [];
+>>>>>>> 20210604
   }
 
   buildSeriesUI(p: iBuildSeriesUIParams): void {
@@ -48,15 +70,31 @@ export class BasicSeriesSystem implements IReactiveSystem, ISetPool {
 
   execute(entities: Entity[]) {
     entities.forEach((entity) => {
+<<<<<<< HEAD
       if (entity.seriesType.type === this.type) {
+=======
+      if (this.type.indexOf(entity.seriesType.type) >= 0) {
+        const type = entity.seriesType.type;
+>>>>>>> 20210604
         const ui: GUI = entity.seriesType.folder;
         const index = entity.seriesType.index;
         this._cacheObj[index] = this._cacheObj[index] || {};
         const obj: any = this._cacheObj[index];
         const changeOptions = () => {
           const opt = { ...this.echartsOption.eChartsOption.option };
+<<<<<<< HEAD
           let tmp = { ...opt.series[index], type: this.type };
           tmp = { ...tmp, ...obj };
+=======
+          let tmp = { ...opt.series[index], type };
+          const t = { ...obj };
+          this._delIfOptIsNull.forEach((k) => {
+            if (!t[k]) {
+              delete t[k];
+            }
+          });
+          tmp = { ...tmp, ...t };
+>>>>>>> 20210604
           opt.series[index] = tmp;
           this.echartsOption.replaceEChartsOption(opt);
         };

@@ -23,11 +23,14 @@ export class SeriesTypeSystem implements IInitializeSystem, ISetPool {
         this.initSeries();
       });
     this.initSeries();
+<<<<<<< HEAD
     // this.folder = this.ui.addFolder('图表系列类型(SeriesType)');
     // this.entity = this.pool
     //   .createEntity('SeriesType')
     //   .addSeriesType(this.uiObj.seriesType, this.folder, []);
     // this.changeSeriesType(false);
+=======
+>>>>>>> 20210604
   }
 
   private entities: Entity[] = [];
@@ -37,9 +40,16 @@ export class SeriesTypeSystem implements IInitializeSystem, ISetPool {
     for (let i = 0; i < count; i++) {
       let entity = this.entities[i];
       if (!entity) {
+<<<<<<< HEAD
         const folder = this.ui.addFolder('图表系列(series)-' + i);
         folder
           .add({ seriesType: '' }, 'seriesType', [
+=======
+        const defaultType = 'line';
+        const folder = this.ui.addFolder('图表系列(series)-' + i);
+        folder
+          .add({ seriesType: defaultType }, 'seriesType', [
+>>>>>>> 20210604
             'line',
             'bar',
             'pie',
@@ -52,12 +62,22 @@ export class SeriesTypeSystem implements IInitializeSystem, ISetPool {
               for (let j = folder.__controllers.length - 1; j >= 1; j--) {
                 folder.remove(folder.__controllers[j]);
               }
+<<<<<<< HEAD
+=======
+              Object.keys(folder.__folders).forEach((k) => {
+                folder.removeFolder(folder.__folders[k]);
+              });
+>>>>>>> 20210604
               entity.replaceSeriesType(i, v, folder, []);
             }, 0);
           });
         entity = this.pool
           .createEntity('SeriesType' + i)
+<<<<<<< HEAD
           .addSeriesType(i, '', folder, []);
+=======
+          .addSeriesType(i, defaultType, folder, []);
+>>>>>>> 20210604
       }
       this.entities[i] = entity;
     }
@@ -77,6 +97,7 @@ export class SeriesTypeSystem implements IInitializeSystem, ISetPool {
   }
 
   get ui(): GUI {
-    return this.guiGroup.getEntities()[0].datGUI.ui;
+    return this.guiGroup.getEntities().find((v) => v.datGUI.index == 0)?.datGUI
+      .ui;
   }
 }

@@ -19,7 +19,8 @@
       "option:any"
     ],
     "DatGUI": [
-      "ui:any"
+      "ui:any",
+      "index:number"
     ],
     "SeriesType": [
       "index:number",
@@ -40,7 +41,13 @@
     "ScatterSeriesSystem": true,
     "SeriesCommonSystem": true,
     "EffectScatterSeriesSystem": true,
+<<<<<<< HEAD
     "RadarSeriesSystem": true
+=======
+    "RadarSeriesSystem": true,
+    "LabelSystem": true,
+    "LabelPositionSystem": true
+>>>>>>> 20210604
   },
   "entities": {}
 }

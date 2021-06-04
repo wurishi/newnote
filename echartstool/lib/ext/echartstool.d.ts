@@ -230,7 +230,7 @@ declare module entitas {
     }
     
     class DatGUIComponent implements IComponent {
-      public ui:any;
+      public ui:any;public index:number;
     }
     
     class SeriesTypeComponent implements IComponent {
@@ -259,7 +259,7 @@ declare module echartstool {
     }
     
     class DatGUIComponent implements IComponent {
-      public ui:any;
+      public ui:any;public index:number;
     }
     
     class SeriesTypeComponent implements IComponent {
@@ -647,8 +647,8 @@ declare module entitas {
         static clearDatGUIComponentPool(): void;
         datGUI: DatGUIComponent;
         hasDatGUI: boolean;
-        addDatGUI(ui:any): Entity;
-        replaceDatGUI(ui:any): Entity;
+        addDatGUI(ui:any, index:number): Entity;
+        replaceDatGUI(ui:any, index:number): Entity;
         removeDatGUI(): Entity;
         static _seriesTypeComponentPool: Bag<SeriesTypeComponent>;
         static clearSeriesTypeComponentPool(): void;

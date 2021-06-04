@@ -257,23 +257,27 @@ var echartstool;
   /**
    * add
    * @param {any} ui
+   * @param {number} index
    * @returns {entitas.Entity}
    */
-  Entity.prototype.addDatGUI = function (ui) {
+  Entity.prototype.addDatGUI = function (ui, index) {
     var component = Entity._datGUIComponentPool.size() > 0 ? Entity._datGUIComponentPool.removeLast() : new DatGUIComponent();
     component.ui = ui;
+    component.index = index;
     this.addComponent(CoreComponentIds.DatGUI, component);
     return this;
   };
   /**
    * replace
    * @param {any} ui
+   * @param {number} index
    * @returns {entitas.Entity}
    */
-  Entity.prototype.replaceDatGUI = function (ui) {
+  Entity.prototype.replaceDatGUI = function (ui, index) {
     var previousComponent = this.hasDatGUI ? this.datGUI : null;
     var component = Entity._datGUIComponentPool.size() > 0 ? Entity._datGUIComponentPool.removeLast() : new DatGUIComponent();
     component.ui = ui;
+    component.index = index;
     this.replaceComponent(CoreComponentIds.DatGUI, component);
     if (previousComponent != null) {
       Entity._datGUIComponentPool.add(previousComponent);

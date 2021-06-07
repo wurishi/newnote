@@ -12,7 +12,7 @@ import ISetPool = entitas.ISetPool;
 
 export class DataSystem implements IReactiveSystem, ISetPool {
   // 注意
-  // series中的stack,label,endLabel,labelLine,labelLayout,itemStyle,lineStyle
+  // series中的stack,endLabel,labelLine,labelLayout,itemStyle,lineStyle
   // areaStyle,emphasis,blur,select
   // dimensions,encode,seriesLayoutBy,datasetIndex,data,
   // markPoint,markLine,markArea
@@ -43,7 +43,7 @@ export class DataSystem implements IReactiveSystem, ISetPool {
       if (v.hasSeriesType) {
         if (!opt.series[v.seriesType.index]) {
           opt.series[v.seriesType.index] = {
-            data: [1, 2, 3, 4, 5, 6, 7].map((v) =>
+            data: [1, 2, 3, 4, 5, 6, 7].map(() =>
               Math.floor(Math.random() * 100 + 100)
             ),
           };

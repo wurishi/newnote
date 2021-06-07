@@ -1,8 +1,5 @@
-<<<<<<< HEAD
-=======
 import { GUI } from 'dat.gui';
 
->>>>>>> 20210604
 export function rgbToNumber(rgb: number[]) {
   let num = 0;
   num = (rgb[0] << 16) & 0xff0000;
@@ -109,8 +106,6 @@ export function getSymbol(ignore: string[] = []) {
     map,
   };
 }
-<<<<<<< HEAD
-=======
 
 export function uiListOrColor(
   ui: GUI,
@@ -235,4 +230,3 @@ export const lineOverflow = {
 export const alignTo = {
   enum: ['none', 'labelLine', 'edge'],
 };
->>>>>>> 20210604

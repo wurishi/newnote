@@ -13,12 +13,9 @@ import { ScatterSeriesSystem } from '../lib/src/systems/ScatterSeriesSystem';
 import { SeriesCommonSystem } from '../lib/src/systems/SeriesCommonSystem';
 import { EffectScatterSeriesSystem } from '../lib/src/systems/EffectScatterSeriesSystem';
 import { RadarSeriesSystem } from '../lib/src/systems/RadarSeriesSystem';
-<<<<<<< HEAD
-=======
 import { DataSystem } from '../lib/src/systems/DataSystem';
 import { LabelSystem } from '../lib/src/systems/LabelSystem';
 import { LabelPositionSystem } from '../lib/src/systems/LabelPositionSystem';
->>>>>>> 20210604
 
 const systemList = [
   EChartsSystem, //
@@ -33,11 +30,8 @@ const systemList = [
   ScatterSeriesSystem,
   EffectScatterSeriesSystem,
   RadarSeriesSystem,
-<<<<<<< HEAD
-=======
   LabelSystem,
   LabelPositionSystem,
->>>>>>> 20210604
 ];
 
 (function () {

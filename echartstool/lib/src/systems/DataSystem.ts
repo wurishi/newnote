@@ -15,15 +15,6 @@ export class DataSystem implements IReactiveSystem, ISetPool {
   // series中的stack,label,endLabel,labelLine,labelLayout,itemStyle,lineStyle
   // areaStyle,emphasis,blur,select
   // dimensions,encode,seriesLayoutBy,datasetIndex,data,
-<<<<<<< HEAD
-  // markPoint,markLine,markArea,zlevel,Z
-  // coordinateSystem,
-  // progressive 
-  // animation, tooltip
-
-  // radar 的 data 格式不一样
-}
-=======
   // markPoint,markLine,markArea
   // coordinateSystem,
   // progressive
@@ -64,4 +55,3 @@ export class DataSystem implements IReactiveSystem, ISetPool {
     this.echartsOption.replaceEChartsOption(opt);
   }
 }
->>>>>>> 20210604

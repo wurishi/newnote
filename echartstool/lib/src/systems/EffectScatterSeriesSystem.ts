@@ -17,11 +17,7 @@ import {
 
 export class EffectScatterSeriesSystem extends BasicSeriesSystem {
   constructor() {
-<<<<<<< HEAD
-    super('effectScatter');
-=======
     super(['effectScatter']);
->>>>>>> 20210604
   }
 
   buildSeriesUI(p: iBuildSeriesUIParams) {

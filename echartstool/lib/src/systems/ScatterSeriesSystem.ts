@@ -20,11 +20,7 @@ import ISetPool = entitas.ISetPool;
 
 export class ScatterSeriesSystem extends BasicSeriesSystem {
   constructor() {
-<<<<<<< HEAD
-    super('scatter');
-=======
     super(['scatter']);
->>>>>>> 20210604
   }
 
   buildSeriesUI(p: iBuildSeriesUIParams) {

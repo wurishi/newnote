@@ -21,12 +21,14 @@ export class EffectScatterSeriesSystem extends BasicSeriesSystem {
   }
 
   buildSeriesUI(p: iBuildSeriesUIParams) {
-    const { obj, ui, changeOptions } = p;
+    const { obj, ui, changeOptions, entity } = p;
 
     obj.effectType = obj.effectType || 'ripple';
     ui.add(obj, 'effectType', ['ripple']).onChange(changeOptions);
 
     obj.showEffectOn = obj.showEffectOn || 'render';
     ui.add(obj, 'showEffectOn', ['render', 'emphasis']).onChange(changeOptions);
+
+    entity.seriesType.subFolder.push(ui.addFolder('label'));
   }
 }

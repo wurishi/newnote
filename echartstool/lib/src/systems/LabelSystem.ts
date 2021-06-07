@@ -14,24 +14,14 @@ import {
   iSubBuildSeriesUIParams,
 } from './basic/BasicSubSeriesSystem';
 
-// const DEFAULT_CONFIG = {
-//   position: ['inside', utils.position.enum, true],
-//   distance: true,
-// };
-
-// const CONFIG: any = {
-//   line: DEFAULT_CONFIG,
-//   bar: DEFAULT_CONFIG,
-//   pie: {
-//     position: ['outside', utils.pie_position.enum, false],
-//     distance: false,
-//     labelLine: true,
-//   },
-// };
-
 export class LabelSystem extends BasicSubSeriesSystem {
   constructor() {
-    super(['line', 'bar', 'pie'], 'label', '', true);
+    super(
+      ['line', 'bar', 'pie', 'scatter', 'effectScatter'],
+      'label',
+      '',
+      true
+    );
     this._delIfOptIsNull.push('width', 'height');
   }
 

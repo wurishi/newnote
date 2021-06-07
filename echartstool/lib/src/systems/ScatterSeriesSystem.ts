@@ -24,6 +24,8 @@ export class ScatterSeriesSystem extends BasicSeriesSystem {
   }
 
   buildSeriesUI(p: iBuildSeriesUIParams) {
-    // const { obj, ui, changeOptions } = p;
+    const { obj, ui, changeOptions, entity } = p;
+
+    entity.seriesType.subFolder.push(ui.addFolder('label'));
   }
 }

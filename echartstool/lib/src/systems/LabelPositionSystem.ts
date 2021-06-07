@@ -16,7 +16,7 @@ import {
 
 export class LabelPositionSystem extends BasicSubSeriesSystem {
   constructor() {
-    super(['line', 'bar'], 'label', '');
+    super(['line', 'bar', 'scatter', 'effectScatter'], 'label', '');
   }
 
   buildSeriesUI(p: iSubBuildSeriesUIParams) {

@@ -41,13 +41,10 @@
     "ScatterSeriesSystem": true,
     "SeriesCommonSystem": true,
     "EffectScatterSeriesSystem": true,
-<<<<<<< HEAD
-    "RadarSeriesSystem": true
-=======
     "RadarSeriesSystem": true,
     "LabelSystem": true,
-    "LabelPositionSystem": true
->>>>>>> 20210604
+    "LabelPositionSystem": true,
+    "PiePositionSystem": true
   },
   "entities": {}
 }

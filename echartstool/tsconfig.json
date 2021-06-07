@@ -33,6 +33,7 @@
     "lib/src/systems/EffectScatterSeriesSystem.ts",
     "lib/src/systems/RadarSeriesSystem.ts",
     "lib/src/systems/LabelSystem.ts",
-    "lib/src/systems/LabelPositionSystem.ts"
+    "lib/src/systems/LabelPositionSystem.ts",
+    "lib/src/systems/PiePositionSystem.ts"
   ]
 }

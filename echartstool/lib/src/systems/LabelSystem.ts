@@ -31,7 +31,7 @@ import {
 
 export class LabelSystem extends BasicSubSeriesSystem {
   constructor() {
-    super(['line', 'bar'], 'label', '');
+    super(['line', 'bar', 'pie'], 'label', '', true);
     this._delIfOptIsNull.push('width', 'height');
   }
 
@@ -40,9 +40,6 @@ export class LabelSystem extends BasicSubSeriesSystem {
 
     obj.show = obj.show || false;
     ui.add(obj, 'show').name(getName('show')).onChange(changeOptions);
-
-    obj.distance = obj.distance || 5;
-    ui.add(obj, 'distance', 0, 100, 1).onChange(changeOptions);
 
     obj.rotate = obj.rotate || 0;
     ui.add(obj, 'rotate', -90, 90, 1).onChange(changeOptions);
@@ -207,18 +204,5 @@ export class LabelSystem extends BasicSubSeriesSystem {
     ui.add(obj, 'lineOverflow', utils.lineOverflow.enum).onChange(
       changeOptions
     );
-
-    // if (config.labelLine) {
-    //   obj.alignTo = obj.alignTo || 'none';
-    //   ui.add(obj, 'alignTo', utils.alignTo.enum).onChange(changeOptions);
-
-    //   obj.edgeDistance = obj.edgeDistance || '25%';
-    //   ui.add(obj, 'edgeDistance').onChange(changeOptions);
-
-    //   obj.bleedMargin = obj.bleedMargin || 10;
-    //   ui.add(obj, 'bleedMargin', 0, 100, 1).onChange(changeOptions);
-
-    //   obj.distanceToLabelLine = obj.distanceToLabelLine ||
-    // }
   }
 }

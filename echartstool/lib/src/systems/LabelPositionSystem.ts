@@ -20,8 +20,11 @@ export class LabelPositionSystem extends BasicSubSeriesSystem {
   }
 
   buildSeriesUI(p: iSubBuildSeriesUIParams) {
-    // TODO: 因为BasicSubSeriesSystem判断造成无法进行
     const { ui, obj, changeOptions, getName, entity } = p;
+
+    obj.distance = obj.distance || 5;
+    ui.add(obj, 'distance', 0, 100, 1).onChange(changeOptions);
+
     const tmp = {
       xypos: false,
       pos: 'inside',

@@ -34,6 +34,7 @@
     "lib/src/systems/RadarSeriesSystem.ts",
     "lib/src/systems/LabelSystem.ts",
     "lib/src/systems/LabelPositionSystem.ts",
-    "lib/src/systems/PiePositionSystem.ts"
+    "lib/src/systems/PiePositionSystem.ts",
+    "lib/src/systems/TitleSystem.ts"
   ]
 }

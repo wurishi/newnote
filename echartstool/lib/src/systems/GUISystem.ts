@@ -45,7 +45,7 @@ export class GUISystem implements IInitializeSystem, ISetPool {
     const uiDiv = document.createElement('div');
     uiDiv.className = 'gui';
     uiDiv.style.position = 'fixed';
-    uiDiv.style.left = '0';
+    uiDiv.style.left = '10%';
     uiDiv.style.top = '0';
     uiDiv.style.height = window.innerHeight * 0.8 + 'px';
     uiDiv.style.overflowY = 'scroll';

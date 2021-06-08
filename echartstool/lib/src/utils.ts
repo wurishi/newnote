@@ -112,12 +112,13 @@ export function uiListOrColor(
   list: string[],
   callback: Function,
   useAlpha: boolean = false,
-  name: string = 'color'
+  name: string = 'color',
+  defaultColor: string = 'rgba(0,0,0,1)'
 ) {
   list.push('#color');
   const tmp = {
     mode: list[0],
-    color: 'rgba(0,0,0,1)',
+    color: defaultColor,
     alpha: 1,
   };
   const change = () => {
@@ -229,4 +230,16 @@ export const lineOverflow = {
 
 export const alignTo = {
   enum: ['none', 'labelLine', 'edge'],
+};
+
+export const target = {
+  enum: ['blank', 'self'],
+};
+
+export const textAlign = {
+  enum: ['auto', 'left', 'right', 'center'],
+};
+
+export const textVerticalAlign = {
+  enum: ['auto', 'top', 'bottom', 'middle'],
 };

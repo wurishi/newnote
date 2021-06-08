@@ -17,6 +17,7 @@ import { DataSystem } from '../lib/src/systems/DataSystem';
 import { LabelSystem } from '../lib/src/systems/LabelSystem';
 import { LabelPositionSystem } from '../lib/src/systems/LabelPositionSystem';
 import { PiePositionSystem } from '../lib/src/systems/PiePositionSystem';
+import { TitleSystem } from '../lib/src/systems/TitleSystem';
 
 const systemList = [
   EChartsSystem, //
@@ -34,6 +35,7 @@ const systemList = [
   LabelSystem,
   LabelPositionSystem,
   PiePositionSystem,
+  TitleSystem,
 ];
 
 (function () {

@@ -3779,7 +3779,17 @@ Xsf3zX
 
 ![623](assets/623.jpg)
 
+# 624. Ray Marching: Part 1
 
+llt3R4
+
+![624](assets/624.png)
+
+# 625. Torus_Thingy_8
+
+lt2fDz
+
+![625](assets/625.jpg)
 
 
 

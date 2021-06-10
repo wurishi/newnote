@@ -48,6 +48,11 @@ export class SeriesCommonSystem implements IReactiveSystem, ISetPool {
       obj.legendHoverLink = obj.legendHoverLink || true;
       ui.add(obj, 'legendHoverLink').onChange(changeOptions);
 
+      if (['line', 'bar'].indexOf(type) >= 0) {
+        obj.stack = obj.stack || '';
+        ui.add(obj, 'stack').onChange(changeOptions);
+      }
+
       obj.cursor = obj.cursor || 'pointer';
       ui.add(obj, 'cursor', utils.cursor.enum).onChange(changeOptions);
 

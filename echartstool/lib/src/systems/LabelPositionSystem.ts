@@ -15,12 +15,18 @@ import {
 } from './basic/BasicSubSeriesSystem';
 
 export class LabelPositionSystem extends BasicSubSeriesSystem {
-  constructor() {
-    super(['line', 'bar', 'scatter', 'effectScatter'], 'label', '');
+  constructor(
+    type: string[] = ['line', 'bar', 'scatter', 'effectScatter'],
+    subType: string = 'label',
+    checkKey: string = '',
+    delOption: boolean = false
+  ) {
+    super(type, subType, checkKey);
   }
 
   buildSeriesUI(p: iSubBuildSeriesUIParams) {
-    const { ui, obj, changeOptions, getName, entity } = p;
+    const { ui, obj, createChangeOptions, getName, entity } = p;
+    const changeOptions = createChangeOptions('show');
 
     obj.distance = obj.distance || 5;
     ui.add(obj, 'distance', 0, 100, 1).onChange(changeOptions);

@@ -12,7 +12,7 @@ import ISetPool = entitas.ISetPool;
 
 export class DataSystem implements IReactiveSystem, ISetPool {
   // 注意
-  // series中的stack,endLabel,labelLine,labelLayout,itemStyle,lineStyle
+  // endLabel,labelLayout,itemStyle,lineStyle
   // areaStyle,emphasis,blur,select
   // dimensions,encode,seriesLayoutBy,datasetIndex,data,
   // markPoint,markLine,markArea

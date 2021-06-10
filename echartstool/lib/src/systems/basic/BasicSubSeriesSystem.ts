@@ -13,7 +13,10 @@ import TriggerOnEvent = entitas.TriggerOnEvent;
 
 export interface iSubBuildSeriesUIParams extends iBuildSeriesUIParams {
   getName: (s: string) => string;
+  createChangeOptions: (key: string) => () => void;
 }
+
+export type iBuildSeriesUIReturn = (() => void) | void;
 
 export class BasicSubSeriesSystem extends BasicSeriesSystem {
   protected subType: string;
@@ -73,6 +76,11 @@ export class BasicSubSeriesSystem extends BasicSeriesSystem {
                 this.uiChildren[index].push(t);
                 return t;
               },
+              addFolder: (name: string) => {
+                const f = ui.addFolder(name);
+                this.uiChildren[index].push(f);
+                return f;
+              },
             };
             const changeOptions = () => {
               const opt = { ...this.echartsOption.eChartsOption.option };
@@ -83,41 +91,75 @@ export class BasicSubSeriesSystem extends BasicSeriesSystem {
                   delete t[k];
                 }
               });
-              tmp = { ...tmp, [this.subType]: t };
+              tmp = { ...tmp, [this.subType]: { ...tmp[this.subType], ...t } };
               opt.series[index] = tmp;
               this.echartsOption.replaceEChartsOption(opt);
             };
 
-            this.buildSeriesUI({
+            const createChangeOptions = (key: string) => () => {
+              if (obj[key]) {
+                changeOptions();
+              } else {
+                const opt = { ...this.echartsOption.eChartsOption.option };
+                let tmp = { ...opt.series[index] };
+                let clearFlag = true;
+                if (!obj.hasOwnProperty(key)) {
+                  clearFlag = tmp[this.subType][key] ? false : true;
+                }
+                if (clearFlag) {
+                  tmp[this.subType] = { [key]: false };
+                  opt.series[index] = tmp;
+                  this.echartsOption.replaceEChartsOption(opt);
+                } else {
+                  changeOptions();
+                }
+              }
+            };
+
+            const fn = this.buildSeriesUI({
               ui: proxy,
               entity,
               obj,
               changeOptions,
               // getName: (s) => `${this.subType}.${s}`,
               getName: (s) => s,
+              createChangeOptions,
             });
-            changeOptions();
-            console.log('build');
+            fn ? fn() : changeOptions();
+            // console.log('build');
             // ui.open();
           }
         } else {
           this.clearSeriesUI(ui, index);
         }
       } else {
-        // this.clearSeriesUI(ui, index);
+        this.clearSeriesUI(ui, index);
       }
     });
   }
 
-  buildSeriesUI(p: iSubBuildSeriesUIParams) {
+  buildSeriesUI(p: iSubBuildSeriesUIParams): iBuildSeriesUIReturn {
     super.buildSeriesUI(p);
   }
 
   onlyClearUI(ui: GUI, index: number) {
     const arr = this.uiChildren[index] || [];
-    arr.forEach((item: any, i: number) => {
+    this.uiRemoveChildren(ui, arr);
+  }
+
+  uiRemoveChildren(ui: GUI, arr: any[]) {
+    if (!ui) {
+      return;
+    }
+    arr.forEach((item: any, i) => {
       if (i > 0) {
-        ui.remove(item);
+        if (ui.__controllers.indexOf(item) >= 0) {
+          ui.remove(item);
+        } else if (ui.__folders[item.name]) {
+          if (item.domElement.parentElement === ui.domElement) {
+            ui.removeFolder(item);
+          }
+        }
       }
     });
   }
@@ -140,13 +182,7 @@ export class BasicSubSeriesSystem extends BasicSeriesSystem {
       }
     }
     if (flag) {
-      arr.forEach((item: any, i: number) => {
-        if (i > 0) {
-          if (ui.__controllers.indexOf(item) >= 0) {
-            ui.remove(item);
-          }
-        }
-      });
+      this.uiRemoveChildren(ui, arr);
       this.uiChildren[index] = [type];
     }
   }
@@ -154,11 +190,6 @@ export class BasicSubSeriesSystem extends BasicSeriesSystem {
   clearSeriesUI(ui: GUI, index: number) {
     this.deleteOptions(index);
     this.onlyClearUI(ui, index);
-    // if (ui.__controllers.length > 0) {
-    //   for (let i = ui.__controllers.length - 1; i >= 0; i--) {
-    //     ui.remove(ui.__controllers[i]);
-    //   }
-    // }
   }
 
   deleteOptions(index: number) {

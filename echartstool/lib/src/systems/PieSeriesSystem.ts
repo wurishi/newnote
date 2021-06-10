@@ -96,5 +96,6 @@ export class PieSeriesSystem extends BasicSeriesSystem {
       });
 
     entity.seriesType.subFolder.push(ui.addFolder('label'));
+    entity.seriesType.subFolder.push(ui.addFolder('labelLine'));
   }
 }

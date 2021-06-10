@@ -27,5 +27,6 @@ export class ScatterSeriesSystem extends BasicSeriesSystem {
     const { obj, ui, changeOptions, entity } = p;
 
     entity.seriesType.subFolder.push(ui.addFolder('label'));
+    entity.seriesType.subFolder.push(ui.addFolder('labelLine'));
   }
 }

@@ -51,5 +51,6 @@ export class BarSeriesSystem extends BasicSeriesSystem {
     ui.add(obj, 'barCategoryGap').onChange(changeOptions);
 
     entity.seriesType.subFolder.push(ui.addFolder('label'));
+    entity.seriesType.subFolder.push(ui.addFolder('labelLine'));
   }
 }

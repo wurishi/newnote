@@ -15,18 +15,19 @@ import {
 } from './basic/BasicSubSeriesSystem';
 
 export class LabelSystem extends BasicSubSeriesSystem {
-  constructor() {
-    super(
-      ['line', 'bar', 'pie', 'scatter', 'effectScatter'],
-      'label',
-      '',
-      true
-    );
+  constructor(
+    type: string[] = ['line', 'bar', 'pie', 'scatter', 'effectScatter'],
+    subType: string = 'label',
+    checkKey: string = '',
+    delOption: boolean = true
+  ) {
+    super(type, subType, checkKey, delOption);
     this._delIfOptIsNull.push('width', 'height');
   }
 
   buildSeriesUI(p: iSubBuildSeriesUIParams) {
-    const { ui, obj, changeOptions, getName, entity } = p;
+    const { ui, obj, createChangeOptions, getName, entity } = p;
+    const changeOptions = createChangeOptions('show');
 
     obj.show = obj.show || false;
     ui.add(obj, 'show').name(getName('show')).onChange(changeOptions);
@@ -52,7 +53,7 @@ export class LabelSystem extends BasicSubSeriesSystem {
     );
 
     obj.fontStyle = obj.fontStyle || 'normal';
-    ui.add(obj, 'fontStyle', utils.fontStyle).onChange(changeOptions);
+    ui.add(obj, 'fontStyle', utils.fontStyle.enum).onChange(changeOptions);
 
     obj.fontWeight = obj.fontWeight || 'normal';
     ui.add(obj, 'fontWeight', utils.fontWeight.enum).onChange(changeOptions);
@@ -194,5 +195,7 @@ export class LabelSystem extends BasicSubSeriesSystem {
     ui.add(obj, 'lineOverflow', utils.lineOverflow.enum).onChange(
       changeOptions
     );
+
+    return changeOptions;
   }
 }

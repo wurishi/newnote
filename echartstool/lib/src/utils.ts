@@ -143,6 +143,29 @@ export function uiListOrColor(
       .name(`${name}=#color.alpha`)
       .onChange(change);
   }
+
+  // {
+  //   type: 'linear',
+  //   x:0, y:0, x2:0, y2:1,
+  //   colorStops: [
+  //     {offset:0, color: 'red'},
+  //     {offset:1, color: 'blue'},
+  //   ],
+  //   global: false
+  // }
+  // {
+  //   type: 'radial',
+  //   x:0.5, y:0.5, r:0.5,
+  //   colorStops: [
+  //     {offset:0, color: 'red'},
+  //     {offset:1, color: 'blue'},
+  //   ],
+  //   global: false
+  // }
+  // {
+  //   image: imageDom, // HTMLImageElement, HTMLCanvasElement
+  //   repeat: 'repeat' // 'repeat', 'repeat-x', 'repeat-y', 'no-repeat'
+  // }
 }
 
 export function uiArr(
@@ -243,3 +266,81 @@ export const textAlign = {
 export const textVerticalAlign = {
   enum: ['auto', 'top', 'bottom', 'middle'],
 };
+
+export const cap = {
+  enum: ['butt', 'round', 'square'],
+};
+
+export const join = {
+  enum: ['bevel', 'round', 'miter'],
+};
+
+export function batchLineStyle(
+  ui: GUI,
+  params: any,
+  obj: any,
+  changeOptions: () => void
+) {
+  const keys = Object.keys(params);
+  keys.forEach((key) => {
+    const defaultV = params[key];
+    switch (key) {
+      case 'color':
+      case 'shadowColor':
+        {
+          uiListOrColor(
+            ui,
+            [],
+            (v: any) => {
+              obj[key] = v;
+              changeOptions();
+            },
+            true,
+            key,
+            defaultV
+          );
+        }
+        break;
+      case 'width':
+      case 'dashOffset':
+      case 'miterLimit':
+      case 'shadowBlur':
+        {
+          obj[key] = obj[key] || defaultV;
+          ui.add(obj, key, 0, 50, 1).onChange(changeOptions);
+        }
+        break;
+      case 'shadowOffsetX':
+      case 'shadowOffsetY':
+        {
+          obj[key] = obj[key] || defaultV;
+          ui.add(obj, key, -100, 100, 1).onChange(changeOptions);
+        }
+        break;
+      case 'opacity':
+        {
+          obj[key] = obj[key] || defaultV;
+          ui.add(obj, key, 0, 1, 0.1).onChange(changeOptions);
+        }
+        break;
+      case 'type':
+        {
+          obj.type = obj.type || defaultV;
+          ui.add(obj, 'type', borderType.enum).onChange(changeOptions);
+        }
+        break;
+      case 'cap':
+        {
+          obj.cap = obj.cap || defaultV;
+          ui.add(obj, 'cap', cap.enum).onChange(changeOptions);
+        }
+        break;
+      case 'join':
+        {
+          obj.join = obj.join || defaultV;
+          ui.add(obj, 'join', join.enum).onChange(changeOptions);
+        }
+        break;
+    }
+  });
+}

@@ -44,8 +44,11 @@
     "RadarSeriesSystem": true,
     "LabelSystem": true,
     "LabelPositionSystem": true,
-    "PiePositionSystem": true,
-    "TitleSystem": true
+    "PieLabelPositionSystem": true,
+    "TitleSystem": true,
+    "LabelLineSystem": true,
+    "PieLabelLineSystem": true,
+    "EndLabelSystem": true
   },
   "entities": {}
 }

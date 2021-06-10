@@ -14,13 +14,14 @@ import {
 
 import * as utils from '../utils';
 
-export class PiePositionSystem extends BasicSubSeriesSystem {
+export class PieLabelPositionSystem extends BasicSubSeriesSystem {
   constructor() {
     super(['pie'], 'label', '');
   }
 
   buildSeriesUI(p: iSubBuildSeriesUIParams) {
-    const { ui, obj, changeOptions } = p;
+    const { ui, obj, createChangeOptions } = p;
+    const changeOptions = createChangeOptions('show');
 
     obj.position = obj.position || 'outside';
     ui.add(obj, 'position', utils.pie_position.enum).onChange(changeOptions);

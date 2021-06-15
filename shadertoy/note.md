@@ -3863,7 +3863,23 @@ WttBD8
 
 ![637](assets/637.jpg)
 
+# 638. Bunch o' random shapes
 
+NtSGDR
+
+![638](assets/638.jpg)
+
+# 639. oushinnyo's first shader
+
+ft2GDz
+
+![639](assets/639.jpg)
+
+# 640. Class 5 Homework BRDF (gerrit)
+
+Ntj3Wz
+
+![640](assets/640.jpg)
 
 
 

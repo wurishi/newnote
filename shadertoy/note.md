@@ -3821,6 +3821,52 @@ tlV3zy
 
 ![630](assets/630.jpg)
 
+# 631. Oskar Stålberg every-other-pixel
+
+3slcWN
+
+![631](assets/631.jpg)
+
+# 632. Simple Cartoon via YUV2RGB
+
+MslfWj
+
+![632](assets/632.jpg)
+
+# 633. toon-ish shader
+
+4djBDt
+
+![633](assets/633.jpg)
+
+# 634. Kuwahara Filtering
+
+MsXSz4
+
+![634](assets/634.jpg)
+
+# 635. Colorful smoke noise
+
+wlSyDd
+
+![635](assets/635.jpg)
+
+# 636. cartoon motionblur
+
+3sB3zd
+
+![636](assets/636.jpg)
+
+# 637. Toon Shader
+
+WttBD8
+
+![637](assets/637.jpg)
+
+
+
+
+
 
 
 https://www.shadertoy.com/results?query=&sort=love&from=228&num=12

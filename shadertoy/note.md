@@ -3881,8 +3881,70 @@ Ntj3Wz
 
 ![640](assets/640.jpg)
 
+# 641. smol hash
+
+fljGWz
+
+![641](assets/641.jpg)
+
+# 642. Value Noise in 147 chars
+
+Nt2GDR
+
+![642](assets/642.jpg)
+
+# 643. Mountain rivers
+
+flj3WR
+
+![643](assets/643.jpg)
+
+# 644. Day 43
+
+wt3XR4
+
+![644](assets/644.jpg)
+
+# 645. Day 74
+
+3tGSR3
+
+![645](assets/645.jpg)
+
+# 646. Not Day 79
+
+tlySDV
+
+![646](assets/646.jpg)
+
+# 647. Day 84
+
+Wssczn
+
+![647](assets/647.jpg)
+
+# 648. Day 30 - Xargantian Polyjupe
+
+tlG3RV
+
+![648](assets/648.jpg)
+
+# 649. Day 59
+
+3ldSWf
+
+![649](assets/649.jpg)
+
+# 650. Day 99
+
+tdfyRl
+
+![650](assets/650.jpg)
+
 
 
 
 
 https://www.shadertoy.com/results?query=&sort=love&from=228&num=12
+
+https://www.shadertoy.com/user/jeyko/sort=popular&from=8&num=8

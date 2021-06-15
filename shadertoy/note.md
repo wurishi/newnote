@@ -3791,6 +3791,36 @@ lt2fDz
 
 ![625](assets/625.jpg)
 
+# 626. DoF, CA, OL, Camera demo, Enjoy!
+
+7tB3Dz
+
+![626](assets/626.jpg)
+
+# 627. 2d tentacles
+
+slS3WR
+
+![627](assets/627.jpg)
+
+# 628. Toon Cloud
+
+4t23RR
+
+![628](assets/628.jpg)
+
+# 629. toon video shader
+
+XdB3zV
+
+![629](assets/629.jpg)
+
+# 630. Snaliens
+
+tlV3zy
+
+![630](assets/630.jpg)
+
 
 
 https://www.shadertoy.com/results?query=&sort=love&from=228&num=12

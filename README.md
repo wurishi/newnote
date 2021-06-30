@@ -80,7 +80,11 @@ leetcode
 
 # nginx
 
-参考资料: [nginx.conf](http://www.ha97.com/5194.html)
+参考资料: [nginx.conf](http://www.ha97.com/5194.html) **(完成)**
+
+# opengl
+
+参考资料: [NeHe OpenGL教程](http://www.ieee.org.cn/dispbbs.asp?boardID=61&ID=54065) **(完成)**
 
 # p5js
 

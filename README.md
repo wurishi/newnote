@@ -146,6 +146,10 @@ Rust
 
 [Magenta](https://magenta.tensorflow.org/get-started/)
 
+# thebookofshaders
+
+参考资料: [The Book of Shaders](https://thebookofshaders.com/)
+
 # thinkinfp
 
 参考资料: [Think in FP](https://blog.jerry-hong.com/series/fp/) (05/?? 暂停)

@@ -2121,3 +2121,198 @@ int newFunction(in vec4 aVec4, // 只读
                inout int aInt) // 读写
 ```
 
+## 7. Shapes (形状)
+
+终于! 我们一直学习的技能就等着这一刻! 你已经学习过 GLSL 的大部分基础, 类型和函数. 你一遍又一遍的练习你的造型方程. 是时候把他们整合起来了. 你就是为了这个挑战而来的! 在这一章里, 你会学习到如何以一种并行处理方式来画简单的图形.
+
+### 7.1 长方形
+
+想象我们有张数学课上使用的方格纸, 而我们的作业是画一个正方形. 纸的大小是 10x10 而正方形应该是 8x8. 你会怎么做?
+
+你是不是会涂满除了第一行第一列和最后一行和最后一列的所有格点?
+
+这和着色器有什么关系? 方格纸上的每个小方形格点就是一个线程 (一个像素). 每个格点有它的位置, 就想棋盘上的坐标一样. 在之前的章节我们将 x 和 y 映射到 rgb 通道, 并且我们学习了如何将二维边界被限制在 0和1 之间. 我们如何用这些来画一个中心点位于屏幕中心的正方形?
+
+我们从空间角度来判别的 if 语句伪代码开始. 这个原理和我们思考方格纸的策略异曲同工.
+
+```
+if((X GREATER THAN 1) AND (Y GREATER THAN 1))
+	paint white
+else
+	paint black
+```
+
+现在我们有个更好的主意让这个想法实现, 来试试把 if 语句换成 step(), 并用 0到1 代替 10x10 的范围.
+
+```glsl
+uniform vec2 u_resolution;
+
+void main() {
+    vec2 st = gl_FragCoord.xy / u_resolution.xy;
+    vec3 color = vec3(0.0);
+    
+    float left = step(0.1, st.x);
+    float bottom = step(0.1, st.y);
+    
+    color = vec3(left * bottom);
+    
+    gl_FragColor = vec4(color, 1.0);
+}
+```
+
+`step()`函数会让每一个小于 0.1 的像素变成黑色 (`vec3(0.0)`) 并将其余的变成白色 (`vec3(1.0)`). left 乘 bottom 效果相当于逻辑 AND —— 当 x y 都为 1.0 时乘积才能是 1.0. 这样做的效果就是画了两条黑线, 一个在画布的底边另一个在左边.
+
+在这个代码例子中, 我们重复每个像素的结构 (左边和底边). 我们可以把原来的一个值换成两个值直接给 `step()`来精减代码.
+
+```glsl
+vec2 borders = step(vec2(0.1), st);
+float pct = borders.x * borders.y;
+```
+
+目前为止, 我们只画了长方形的两条边 (左边和底). 再来把另外两条边画上.
+
+```glsl
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+
+void main() {
+    vec2 st = gl_FragCoord.xy / u_resolution.xy;
+    vec3 color = vec3(0.0);
+    
+    // left-bottom
+    vec2 lb = step(vec2(0.1), st);
+    float pct = lb.x * lb.y;
+    
+    // right-top
+    vec2 rt = step(vec2(0.1), 1.0 - st);
+    pct *= rt.x * rt.y;
+    
+    gl_FragColor = vec4(color, 1.0);
+}
+```
+
+是不是很有趣? 这种都是关于运用 `step()`函数, 逻辑运算和转置坐标的结合.
+
+再进行下一个环节之前, 挑战下下面的练习:
+
+- 改变长方形的比例和大小.
+- 用 `smoothstep()`函数代替 `step()`函数, 试试在相同的代码下会有什么不同. 注意通过改变取值, 你不仅可以得到模糊边界也可以有漂亮的顺滑边界.
+- 应用 `floor()`做个另外的案例.
+- 挑个你最喜欢的做成函数, 这样未来你可以调用它, 并且让它灵活高效.
+- 写一个只画长方形四边的函数.
+- 想一下如何在一个画板上移动并放置不同的长方形? 如果你做出来了, 试着像 [Piet Mondrian](http://en.wikipedia.org/wiki/Piet_Mondrian) 一样创作以长方形和色彩的图画.
+
+### 7.2 圆
+
+在笛卡尔坐标系下, 用方格纸画画正方形和长方形是很容易的. 但是画圆就需要另一种方式了, 尤其我们需要一个对"每个像素"的算法. 一种解决办法是用 `step()`函数将重新映射的空间坐标来画圆.
+
+如何实现? 让我们重新回顾一下数学课上的方格纸: 我们把圆规展开到半径的长度, 把一个针脚戳在圆的圆心上, 旋转着把圆的边界留下来.
+
+将这个过程翻译给 shader 意味着纸上的每个方形格点都会隐含着问每个像素 (线程)是否在圆的区域之内. 我们通过计算像素到中心的距离来实现这个判断.
+
+有几种方法来计算距离. 最简单的是用 `distance()`函数, 这个函数其实内部调用 `length()`函数, 计算不同两点的距离 (在此例中是像素坐标和画布中心的距离). `length()`函数内部只不过是用平方根(`sqrt()`)计算斜边的方程.
+$$
+c = \sqrt{a^2+b^2}
+$$
+你可以使用 `distance(), length() 或 sqrt()`计算到屏幕中心的距离. 下面的代码包含着三个函数, 毫无悬念的他们返回相同的结果.
+
+```glsl
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+
+void main() {
+    vec2 st = gl_FragCoord.xy / u_resolution;
+    float pct = 0.0;
+    
+    // a. 使用 distance
+    pct = distance(st, vec2(0.5));
+    
+    // b. 使用 length
+    vec2 toCenter = vec2(0.5) - st;
+    pct = length(toCenter);
+    
+    // c. 使用 sqrt
+    vec2 tc = vec2(0.5) - st;
+    pct = sqrt(tc.x * tc.x + tc.y * tc.y);
+    
+    vec3 color = vec3(pct);
+    gl_FragColor = vec4(color, 1.0);
+}
+```
+
+上回我们把到中心的距离映射为颜色亮度. 离中心越近的越暗. 注意映射值不宜过高, 因为从中心 (`vec2(0.5, 0.5)`)到最远距离才刚刚超过0.5一点. 仔细考察这个映射:
+
+- 你能从中推断出什么?
+- 我们怎么用这个方法来画圆?
+- 试试有没有其他方法来实现这样画布内圆形渐变的效果.
+
+### 7.3 距离场
+
+我们也可以从另外的角度思考上面的例子: 把它当做海拔地图(等高线图) —— 越黑的地方意味着海拔越高. 想象下, 你就在圆锥的顶端, 那么这里的渐变就和圆锥的等高线图有些相似. 到圆锥的水平距离是一个常数 0.5. 这个距离值在每个方向上都是相等的. 通过选择从哪里截取这个圆锥, 你就会得到或大或小的圆纹面.
+
+其实我们是通过"空间距离"来重新解释什么是图形. 这种技巧被称之为"距离场", 从字体轮廓到 3D图形被广泛应用.
+
+来小试下牛刀:
+
+- 用 `step()`函数把所有大于 0.5的像素点变成白色, 并把小于的变成黑色.
+
+- 反转前景色和背景色.
+
+- 调戏下 `smoothstep()`函数, 用不同的值来试着做出一个边界顺滑的圆.
+
+- 一旦遇到令你满意的应用, 把他写成一个函数, 这样将来就可以调用了.
+
+- 给这个圆来些缤纷的颜色吧!
+
+- 再加点动画? 一闪一闪亮晶晶? 或者是砰砰跳动的心脏?
+
+- 让它动起来? 能不能移动它并且在同一个屏幕上放置多个圆?
+
+- 如果你结合函数来混合不同的距离场, 会发生什么呢?
+
+  ```glsl
+  pct = distance(st, vec2(0.4)) + distance(st, vec2(0.6));
+  pct = distance(st, vec2(0.4)) * distance(st, vec2(0.6));
+  pct = min(distance(st, vec2(0.4)), distance(st, vec2(0.6)));
+  pct = max(distance(st, vec2(0.4)), distance(st, vec2(0.6)));
+  pct = pow(distance(st, vec2(0.4)), distance(st, vec2(0.6)));
+  ```
+
+- 用这种技巧制作三个元素, 如果它们是运动的, 那就再好不过啦!
+
+**添加自己的工具箱**
+
+就计算效率而言, `sqrt()`函数, 以及所有依赖它的运算, 都耗时耗力. `dot()`点乘是另外一种用来高效计算圆形距离场的方式.
+
+```glsl
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+
+float circle(in vec2 _st, in float _radius) {
+    vec2 dist = _st - vec2(0.5);
+    return 1.0 - smoothstep(_radius - (_radius * 0.01), _radius + (_radius*0.01), dot(dist, dist) * 4.0);
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy / u_resolution.xy;
+    vec3 color = vec3(circle(st, 0.9));
+    
+    gl_FragColor = vec4(color, 1.0);
+}
+```
+

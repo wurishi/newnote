@@ -2024,3 +2024,100 @@ void main() {
 
 ### 6.3 HSB
 
+我们不能脱离色彩空间来谈论颜色. 正如你所知, 除了 rgb 值, 有其他不同的方法去描述定义颜色.
+
+HSB 代表色相, 饱和度和亮度 (或称为值). 这更符合直觉也更有利于组织颜色. 稍微花些时间阅读下面的 `rgb2hsv()`和 `hsv2rgb()`函数.
+
+将 x坐标(位置)映射到 Hue值并将 y 坐标映射到明度, 我们就得到了五彩的可见光光谱. 这样的色彩空间分布实现起来非常方便, 比起 RGB, 用 HSB 来拾取颜色也更直观.
+
+```glsl
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform float u_time;
+
+vec3 rgb2hsb(in vec3 c) {
+    vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+    vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
+    vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+    
+    float d = q.x - min(q.w, q.y);
+    float e = 1.0e-10;
+    return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+}
+
+vec3 hsb2rgb(in vec3 c) {
+    vec3 rgb = clamp(abs(mod(c.x * 6.0 + vec3(0.0, 4.0, 2.0), 6.0) - 3.0) - 1.0, 0.0, 1.0);
+    rgb = rgb * rgb * (3.0 - 2.0 * rgb);
+    return c.z * mix(vec3(1.0), rgb, c.y);
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy / u_resolution;
+    vec3 color = vec3(0.0);
+    
+    // map x (0.0 - 1.0) to the hue (0.0 - 1.0)
+    // map y (0.0 - 1.0) to the brightness
+    color = hsb2rgb(vec3(st.x, 1.0, st.y));
+    gl_FragColor = vec4(color, 1.0);
+}
+```
+
+### 6.4 极坐标下的 HSB
+
+HSB 原本是在极坐标下产生的 (以半径和角度定义) 而并非在笛卡尔坐标系 (基于 xy 定义)下. 将 HSB 映射到极坐标我们需要取得角度和到像素屏中点的距离. 由此我们运用 `length`函数和 `atan(y, x)`函数 (在 GLSL 中通常用 `atan(y, x)`).
+
+当用到矢量和三角学函数时, vec2, vec3 和 vec4 被当做向量对待, 即使有时候它们代表颜色. 我们开始把颜色和向量同等的对待, 事实上你会慢慢发现这种理念的灵活性有着相当强大的用途.
+
+注意: 如果你想了解, 除 `length()`以外的诸多几何函数, 例如: `distance(), dot(), cross(), normalize(), faceforward(), reflect()`. GLSL 也有与向量相关的函数: `lessThan(), lessThanEqual(), greaterThan(), greaterThanEqual(), equal(), notEqual()`.
+
+```glsl
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+#define TWO_PI 6.28318530718
+    
+uniform vec2 u_resolution;
+uniform float u_time;
+
+vec3 hsb2rgb(in vec3 c) {
+    vec3 rgb = clamp(abs(mod(c.x * 6.0 + vec3(0.0, 4.0, 2.0), 6.0) - 3.0) - 1.0, 0.0, 1.0);
+    rgb = rgb * rgb * (3.0 - 2.0 * rgb);
+    return c.z * mix(vec3(1.0), rgb, c.y);
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy / u_resolution;
+    vec3 color = vec3(0.0);
+    
+    vec2 toCenter = vec2(0.5) - st;
+    float angle = atan(toCenter.y, toCenter.x);
+    float radius = length(toCenter) * 2.0;
+    
+    color = hsb2rgb(vec3((angle / TWO_PI) + 0.5, radius, 1.0));
+    
+    gl_FragColor = vec4(color, 1.0);
+}
+```
+
+一旦我们得到角度和长度, 我们需要单位化这些值: 0.0 到 1.0. 
+
+来挑战下面的练习:
+
+- 把极坐标映射的例子改成选择色轮, 就像"正忙"的鼠标图标.
+- 把造型函数整合进来, 来让 HSB 到 RGB 的转换中强调某些特定值并且弱化其他的.
+- 如果你仔细观察用来拾色的色轮, 你会发现它用一种根据 RYB 色彩空间的色谱. 例如, 红色的对面应该是绿色, 但在我们的例子里是青色. 你能找到一种修复的方式来让它看起来和下图一样么? (提示: 这是用塑形函数的好机会!)
+
+**注意函数和变量**
+
+在进入下一章之前让我们停下脚步回顾下. 复习下之前例子的函数. 你会注意到变量类型之前有个限定符 `in`, 在这个 `qualifier`(限定符)例子中它特指这个变量是只读的. 在之后的例子中我们会看到可以定义一个 `out` 或者 `inout` 变量. 最后这个 `inout` 在概念上类似于参照输入一个变量, 这意味着我们有可能修改一个传入的变量.
+
+```glsl
+int newFunction(in vec4 aVec4, // 只读
+               out vec3 aVec3, // 只写
+               inout int aInt) // 读写
+```
+

@@ -3,7 +3,13 @@ import { Route, Link, Switch } from 'react-router-dom';
 import Home from './home';
 import Page from './page';
 import Hehe from 'pages/hehe.jsx';
-import TS from 'pages/ts.tsx';
+import asyncComponent from './asyncComponent';
+// import TS from 'pages/ts.tsx';
+// const TS = import(/*webpackChunkName: 'ts' */ 'pages/ts.tsx');
+// console.log(TS);
+const TS = asyncComponent(() =>
+  import(/*webpackChunkName: 'ts' */ 'pages/ts.tsx')
+);
 
 export default () => (
   <div>

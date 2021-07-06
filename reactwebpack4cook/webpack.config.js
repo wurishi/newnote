@@ -45,7 +45,7 @@ module.exports = webpack({
           {
             loader: 'sass-loader',
             options: {
-              implementation: require('dart-sass'),
+              implementation: require('sass'),
             },
           },
         ],

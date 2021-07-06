@@ -611,3 +611,1708 @@ GLSL 还有一些独特的原生插值函数可以被硬件加速.
 这两个基础的三角形函数是构造圆的极佳工具. 很重要的一点是你需要知道他们是如何运转的, 还有如何把它们结合起来. 简单来说, 当我们给出一个角度 (这里采用弧度制), 它就会返回半径为1的圆上一个点的 x 坐标(cos) 和 y 坐标(sin). 正因为 sin 和 cos 返回的是规范化的值 (即值域在 -1 和 1 之间), 且如此流畅, 这就使得它成为一个极其强大的工具.
 
 ![sincos](assets/sincos.gif)
+
+尽管描述三角函数和圆的关系是一件蛮困难的事情, 上图动画很棒地做到了这点, 视觉化展现了它们之间的关系.
+
+```glsl
+y = sin(x); // 平滑地在 y 轴 +1 和 -1 之间变化
+y = sin(x + u_time); // sin 曲线随着时间在 x 轴动了起来
+y = sin(x * PI); // sin 曲线每两个整数循环一次
+y = sin(x * u_time); // 循环变得越来越频繁, 当 u_time 非常大时, 图像将难以辨认
+y = sin(x) + 1.; // 曲线向上整体移动了
+y = sin(x) * 2.; // 曲线增大了两倍
+y = abs(sin(x)); // 弹力球的轨迹
+y = fract(sin(x)); // 只取小数部分
+y = ceil(sin(x)); // 向正无穷取整, 使得 sin 曲线变成只有 1 和 -1 的电子波
+y = floor(sin(x)); // 向负无穷取整, 使得 sin 曲线变成只有 1 和 -1 的电子波
+```
+
+### 5.4 其他有用的函数
+
+```glsl
+y = mod(x, 0.5); // 返回 x 对 0.5 取模的值
+y = fract(x); // 仅返回小数部分
+y = ceil(x); // 向正无穷取整
+y = floor(x); // 向负无穷取整
+y = sign(x); // 提取 x 的正负号
+y = abs(x); // 返回 x 的绝对值
+y = clamp(x, 0.0, 1.0); // 把 x 的值限制在 0.0 到 1.0 之间
+y = min(0.0, x); // 返回 x 和 0.0 中的较小值
+y = max(0.0, x); // 返回 x 和 0.0 中的较大值
+```
+
+### 5.5 造型函数进阶
+
+[Golan Levin](http://www.flong.com/) 写过关于更加复杂的造型函数的文档, 非常有帮助. 把它们引入 GLSL 是非常明智的选择, 这将是你的代码的广阔的素材库.
+
+- [多项式造型函数](http://www.flong.com/archive/texts/code/shapers_poly/) (Polynomial Shaping Functions)
+- [指数造型函数](http://www.flong.com/archive/texts/code/shapers_exp/) (Exponential Shaping Functions)
+- [圆与椭圆的造型函数](http://www.flong.com/archive/texts/code/shapers_circ/) (Circular & Elliptical Shaping Functions)
+- [贝塞尔和其他参数化造型函数](http://www.flong.com/archive/texts/code/shapers_bez/) (Bezier and Other Parametric Shaping Functions)
+
+就像厨师自主选择辣椒和各种原料, 数字艺术家和创意编程者往往钟情于使用他们自己的造型函数.
+
+[Iñigo Quiles](http://www.iquilezles.org/) 收集了一套[有用的函数](https://www.iquilezles.org/www/articles/functions/functions.htm).
+
+- Almost Identity 1
+
+  ```glsl
+  float almostIdentity(float x, float m, float n) {
+      if(x > m) return x;
+      float a = 2.0 * n - m;
+      float b = 2.0 * m - 3.0 * n;
+      float t = x / m;
+      return (a * t + b) * t * t + n;
+  }
+  // y = almostIdentity(st.x, 1.0, 0.0);
+  ```
+
+- Almost Identity 2
+
+  ```glsl
+  float almostIdentity(float x, float n) {
+      return sqrt(x * x + n);
+  }
+  // y = almostIdentity(st.x, 0.01);
+  ```
+
+- Almost Unit Identity
+
+  ```glsl
+  float almostUnitIdentity(float x) {
+      return x * x * (2.0 - x);
+  }
+  // y = almostUnitIdentity(st.x);
+  ```
+
+- Smoothstep Integral
+
+  ```glsl
+  float integralSmoothstep(float x, float T) {
+      if(x > T) return x - T / 2.0;
+      return x * x * x * (1.0 - x * 0.5 / T) / T / T;
+  }
+  // y = integralSmoothstep(st.x, 0.5);
+  ```
+
+- Exponential Impulse
+
+  ```glsl
+  float impulse(float x, float k) {
+      float h = k * x;
+      return h * exp(1.0 - h);
+  }
+  // y = impulse(st.x, 12.0);
+  ```
+
+- Polynomial Impulse
+
+  ```glsl
+  float quaImpulse(float k, float x) {
+      return 2.0 * sqrt(k) * x / (1.0 + k * x * x);
+  }
+  // y = quaImpulse(st.x, 0.5);
+  
+  float polyImpulse(float k, float n, float x) {
+      return (n / (n - 1.0)) * pow((n - 1.0) * k, 1.0 / n) * x / (1.0 + k * pow(x, n));
+  }
+  // y = polyImpulse(1.0, 3.14, st.x);
+  ```
+
+- Sustained Impulse
+
+  ```glsl
+  float expSustainedImpulse(float x, float f, float k) {
+      float s = max(x - f, 0.0);
+      return min(x * x / (f * f), 1.0 + (2.0 / f) * s * exp(-k * s));
+  }
+  // y = expSustainedImpulse(st.x, 1.0, 0.0);
+  ```
+
+- Cubic Pulse
+
+  ```glsl
+  float cubicPulse(float c, float w, float x) {
+      x = abs(x - c);
+      if(x > w) return 0.0;
+      x /= w;
+      return 1.0 - x * x * (3.0 - 2.0 * x);
+  }
+  // y = cubicPulse(0.5, 0.2, st.x);
+  ```
+
+- Exponential Step
+
+  ```glsl
+  float expStep(float x, float k, float n) {
+      return exp(-k * pow(x, n));
+  }
+  // y = expStep(st.x, 10.0, 1.0);
+  ```
+
+- Gain
+
+  ```glsl
+  float gain(float x, float k) {
+      float a = 0.5 * pow(2.0 * ((x < 0.5) ? x : 1.0 - x), k);
+      return (x < 0.5) ? a : 1.0 - a;
+  }
+  // y = gain(st.x, 2.0);
+  ```
+
+- Parabola
+
+  ```glsl
+  float parabola(float x, float k) {
+      return pow(4.0 * x * (1.0 - x), k);
+  }
+  // y = parabola(st.x, 1.0);
+  ```
+
+- Power Curve
+
+  ```glsl
+  float pcurve(float x, float a, float b) {
+      float k = pow(a + b, a + b) / (pow(a, a) * pow(b, b));
+      return k * pow(x, a) * pow(1.0 - x, b);
+  }
+  // y = pcurve(st.x, 3.0, 1.0);
+  ```
+
+- Sinc curve
+
+  ```glsl
+  float sinc(float x, float k) {
+      float a = PI * (k * x - 1.0);
+      return sin(a) / a;
+  }
+  // y = sinc(st.x, 10.0);
+  ```
+
+### 5.6 练习
+
+![5.6](assets/5.6.jpg)
+
+来看看 [Kynd](http://www.kynd.info/log/) 帮大家制作的公式表. 看他如何结合各种函数及它们的属性, 始终控制值的范围在 0.0 到 1.0.
+
+```glsl
+float curve(float x) {
+    return 1.0 - pow(abs(x), 0.5);
+    return 1.0 - pow(abs(x), 1.0);
+    return 1.0 - pow(abs(x), 1.5);
+    return 1.0 - pow(abs(x), 2.0);
+    return 1.0 - pow(abs(x), 2.5);
+    return 1.0 - pow(abs(x), 3.0);
+    return 1.0 - pow(abs(x), 3.5);
+    //
+    return pow(cos(PI * x / 2.0), 0.5);
+    return pow(cos(PI * x / 2.0), 1.0);
+    return pow(cos(PI * x / 2.0), 1.5);
+    return pow(cos(PI * x / 2.0), 2.0);
+    return pow(cos(PI * x / 2.0), 2.5);
+    return pow(cos(PI * x / 2.0), 3.0);
+    //
+    return 1.0 - pow(abs(sin(PI * x / 2.0)), 0.5);
+    return 1.0 - pow(abs(sin(PI * x / 2.0)), 1.0);
+    return 1.0 - pow(abs(sin(PI * x / 2.0)), 1.5);
+    return 1.0 - pow(abs(sin(PI * x / 2.0)), 2.0);
+    return 1.0 - pow(abs(sin(PI * x / 2.0)), 2.5);
+    return 1.0 - pow(abs(sin(PI * x / 2.0)), 3.0);
+    //
+    return pow(min(cos(PI * x / 2.0), 1.0 - abs(x)), 0.5);
+    return pow(min(cos(PI * x / 2.0), 1.0 - abs(x)), 1.0);
+    return pow(min(cos(PI * x / 2.0), 1.0 - abs(x)), 1.5);
+    return pow(min(cos(PI * x / 2.0), 1.0 - abs(x)), 2.0);
+    return pow(min(cos(PI * x / 2.0), 1.0 - abs(x)), 2.5);
+    return pow(min(cos(PI * x / 2.0), 1.0 - abs(x)), 3.0);
+    //
+    return 1.0 - pow(max(0.0, abs(x) * 2.0 - 1.0), 0.5);
+    return 1.0 - pow(max(0.0, abs(x) * 2.0 - 1.0), 1.0);
+    return 1.0 - pow(max(0.0, abs(x) * 2.0 - 1.0), 1.5);
+    return 1.0 - pow(max(0.0, abs(x) * 2.0 - 1.0), 2.0);
+    return 1.0 - pow(max(0.0, abs(x) * 2.0 - 1.0), 2.5);
+    return 1.0 - pow(max(0.0, abs(x) * 2.0 - 1.0), 3.0);
+}
+
+float y = fn(1.0 - (st.x * 2.0));
+```
+
+**填充你的工具箱**
+
+这里有一些工具可以帮你更轻松地可视化这些函数.
+
+- Grapher: 如果你是 MacOS 系统, 用 spotlight 搜 grapher 就会看到这个超级方便的工具了.
+- [GraphToy](https://graphtoy.com/): 仍然是 [Iñigo Quilez](http://www.iquilezles.org/) 为大家做的工具, 用于在 WebGL 中可视化 GLSL 函数.
+- [Shadershop](http://tobyschachman.com/Shadershop/): 这个超级棒的工具是 [Toy Schachman](http://tobyschachman.com/) 的作品. 它会以一种极其视觉化和直观的方式教你如何建造复杂的函数.
+
+## 6. Colors (颜色)
+
+我们目前为止还未涉及到 GLSL 的向量类型. 在我们深入向量之前, 学习更多关于变量和色彩主题是一个了解向量类型的好方法.
+
+若你熟悉面向对象的编程范式 (或者说编程思维模式), 你一定注意到我们以一种类 C 的 struct 的方式访问向量数据的内部分量.
+
+```glsl
+vec3 red = vec3(1.0, 0.0, 0.0);
+red.x = 1.0;
+red.y = 0.0;
+red.z = 0.0;
+```
+
+以 x, y, z 定义颜色是不是有些奇怪? 正因如此, 我们有其他方法访问这些变量 —— 以不同的名字. `.x, .y, .z`也可以被写作 `.r, .g, .b` 和 `.s, .t, .p`. (`.s, .t, .p`通常被用做后面章节提到的贴图空间坐标). 你也可以通过使用索引位置 [0], [1] 和 [2] 来访问向量.
+
+```glsl
+vec4 vector;
+vector[0] = vector.r = vector.x = vector.s;
+vector[1] = vector.g = vector.y = vector.t;
+vector[2] = vector.b = vector.z = vector.p;
+vector[3] = vector.a = vector.w = vector.q;
+```
+
+这些指向向量内部变量的不同方式是设计用来帮助你写出干净代码的术语. 着色语言所包含的灵活性为你互换地思考颜色和坐标位置.
+
+GLSL 中向量类型的另一大特点是可以用你需要的任意顺序简单地投射和混合(变量)值. 这种能力被称为: 鸡尾酒.
+
+```glsl
+vec3 yellow, magenta, green;
+
+yellow.rg = vec2(1.0); // red 和 green 为 1.0
+yellow[2] = 0.0; // blue 为 0.0
+
+magenta = yellow.rbg; // 注意 blue 和 green 互换了
+
+green.rgb = yellow.bgb;
+```
+
+### 6.1 混合颜色
+
+现在你了解到如何定义颜色, 是时候将先前所学的整合一下了! 在 GLSL 中, 有个十分有用的函数: `mix()`, 这个函数让你以百分比混合两个值. 百分比的取值范围是 0 到 1.
+
+```glsl
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform float u_time;
+
+vec3 colorA = vec3(0.149, 0.141, 0.912);
+vec3 colorB = vec3(1.000, 0.833, 0.224);
+
+void main() {
+    vec3 color = vec3(0.0);
+    
+    float pct = abs(sin(u_time));
+    
+    color = mix(colorA, colorB, pct);
+    
+    gl_FragColor = vec4(color, 1.0);
+}
+```
+
+Robert Penner 开发了一系列流行的计算机动画塑形函数, 被称为[缓动函数](https://easings.net/cn).
+
+![6.1](assets/6.1.png)
+
+- easeInSine:
+
+  ```css
+  .ani {
+      /* CSS */
+      transition: transform 0.6s cubic-bezier(0.12, 0, 0.39, 0);
+      /* 渐变 */ 
+      background: linear-gradient(to bottom, #1473e6, cubic-bezier(0.12, 0, 0.39, 0), #247b5e);
+  }
+  ```
+
+  ```glsl
+  float easeInSine(float x) {
+      return 1.0 - cos((x * PI) / 2.0);
+  }
+  ```
+
+- easeOutSine:
+
+  ```css
+  .ani {
+      /* CSS */
+      transition: transform 0.6s cubic-bezier(0.61, 1, 0.88, 1);
+      /* 渐变 */
+      background: linear-gradient(to bottom, #1473e6, cubic-bezier(0.61, 1, 0.88, 1), #247b5e);
+  }
+  ```
+
+  ```glsl
+  float easeOutSine(float x) {
+      return sin((x * PI) / 2.0);
+  }
+  ```
+
+- easeInOutSine:
+
+  ```css
+  .ani {
+      /* CSS */
+      transition: transform 0.6s cubic-bezier(0.37, 0, 0.63, 1);
+      /* 渐变 */
+      background: linear-gradient(to bottom, #1473e6, cubic-bezier(0.37, 0, 0.63, 1), #247b5e);
+  }
+  ```
+
+  ```glsl
+  float easeInOutSine(float x) {
+      return -(cos(PI * x) - 1.0) / 2.0;
+  }
+  ```
+
+- easeInQuad:
+
+  ```css
+  .ani {
+      /* CSS */
+      transition: transform 0.6s cubic-bezier(0.11, 0, 0.5, 0);
+      /* 渐变 */
+      background: linear-gradient(to bottom, #1473e6, cubic-bezier(0.11, 0, 0.5, 0), #247b5e);
+  }
+  ```
+
+  ```glsl
+  float easeInQuad(float x) {
+      return x * x;
+  }
+  ```
+
+- easeOutQuad:
+
+  ```css
+  .ani {
+      /* CSS */
+      transition: transform 0.6s cubic-bezier(0.5, 1, 0.89, 1);
+      /* 渐变 */
+      background: linear-gradient(to bottom, #1473e6, cubic-bezier(0.5, 1, 0.89, 1), #247b5e);
+  }
+  ```
+
+  ```glsl
+  float easeOutQuad(float x) {
+      return 1.0 - (1.0 - x) * (1.0 - x);
+  }
+  ```
+
+- easeInOutQuad:
+
+  ```css
+  .ani {
+      /* CSS */
+      transition: transform 0.6s cubic-bezier(0.45, 0, 0.55, 1);
+      /* 渐变 */
+      background: linear-gradient(to bottom, #1473e6, cubic-bezier(0.45, 0, 0.55, 1), #247b5e);
+  }
+  ```
+
+  ```glsl
+  float easeInOutQuad(float x) {
+      return x < 0.5 ? 2.0 * x * x : 1.0 - pow(-2.0 * x + 2.0, 2.0) / 2.0;
+  }
+  ```
+
+- easeInCubic:
+
+  ```css
+  .ani {
+      /* CSS */
+      transition: transform 0.6s cubic-bezier(0.32, 0, 0.67, 0);
+      /* 渐变 */
+      background: linear-gradient(to bottom, #1473e6, cubic-bezier(0.32, 0, 0.67, 0), #247b5e);
+  }
+  ```
+
+  ```glsl
+  float easeInCubic(float x) {
+      return x * x * x;
+  }
+  ```
+
+- easeOutCubic:
+
+  ```css
+  .ani {
+      /* CSS */
+      transition: transform 0.6s cubic-bezier(0.33, 1, 0.68, 1);
+      /* 渐变 */
+      background: linear-gradient(to bottom, #1473e6, cubic-bezier(0.33, 1, 0.68, 1), #247b5e);
+  }
+  ```
+
+  ```glsl
+  float easeOutCubic(float x) {
+      return 1.0 - pow(1.0 - x, 3.0);
+  }
+  ```
+
+- easeInOutCubic:
+
+  ```css
+  .ani {
+      /* CSS */
+      transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+      /* 渐变 */
+      background: linear-gradient(to bottom, #1473e6, cubic-bezier(0.65, 0, 0.35, 1), #247b5e);
+  }
+  ```
+
+  ```glsl
+  float easeInOutCubic(float x) {
+      return x < 0.5 ? 4.0 * x * x * x : 1.0 - pow(-2.0 * x + 2.0, 3.0) / 2.0;
+  }
+  ```
+
+- easeInQuart:
+
+  ```css
+  .ani {
+      /* CSS */
+      transition: transform 0.6s cubic-bezier(0.5, 0, 0.75, 0);
+      /* 渐变 */
+      background: linear-gradient(to bottom, #1473e6, cubic-bezier(0.5, 0, 0.75, 0), #247b5e);
+  }
+  ```
+
+  ```glsl
+  float easeInQuart(float x) {
+      return x * x * x * x;
+  }
+  ```
+
+- easeOutQuart:
+
+  ```css
+  .ani {
+      /* CSS */
+      transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+      /* 渐变 */
+      background: linear-gradient(to bottom, #1473e6, cubic-bezier(0.25, 1, 0.5, 1), #247b5e);
+  }
+  ```
+
+  ```glsl
+  float easeOutQuart(float x) {
+      return 1.0 - pow(1.0 - x, 4.0);
+  }
+  ```
+
+- easeInOutQuart:
+
+  ```css
+  .ani {
+      /* CSS */
+      transition: transform 0.6s cubic-bezier(0.76, 0, 0.24, 1);
+      /* 渐变 */
+      background: linear-gradient(to bottom, #1473e6, cubic-bezier(0.76, 0, 0.24, 1), #247b5e);
+  }
+  ```
+
+  ```glsl
+  float easeInOutQuart(float x) {
+      return x < 0.5 ? 8.0 * x * x * x * x : 1.0 - pow(-2.0 * x + 2.0, 4.0) / 2.0;
+  }
+  ```
+
+- easeInQuint:
+
+  ```css
+  {
+      /* CSS */
+      transition: transform 0.6s cubic-bezier(0.64, 0, 0.78, 0);
+      /* 渐变 */
+      background: linear-gradient(to bottom, #1473e6, cubic-bezier(0.64, 0, 0.78, 0), #247b5e);
+  }
+  ```
+
+  ```glsl
+  float easeInQuint(float x) {
+      return x * x * x * x * x;
+  }
+  ```
+
+- easeOutQuint:
+
+  ```css
+  {
+      /* CSS */
+      transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+      /* 渐变 */
+      background: linear-gradient(to bottom, #1473e6, cubic-bezier(0.22, 1, 0.36, 1), #247b5e);
+  }
+  ```
+
+  ```glsl
+  float easeOutQuint(float x) {
+      return 1.0 - pow(1.0 - x, 5.0);
+  }
+  ```
+
+- easeInOutQuint:
+
+  ```css
+  {
+      /* CSS */
+      transition: transform 0.6s cubic-bezier(0.83, 0, 0.17, 1);
+      /* 渐变 */
+      background: linear-gradient(to bottom, #1473e6, cubic-bezier(0.83, 0, 0.17, 1), #247b5e);
+  }
+  ```
+
+  ```glsl
+  float easeInOutQuint(float x) {
+      return x < 0.5 ? 16.0 * x * x * x * x * x : 1.0 - pow(-2.0 * x + 2.0, 5.0) / 2.0;
+  }
+  ```
+
+- easeInExpo:
+
+  ```css
+  {
+      /* CSS */
+      transition: transform 0.6s cubic-bezier(0.7, 0, 0.84, 0);
+      /* 渐变 */
+      background: linear-gradient(to bottom, #1473e6, cubic-bezier(0.7, 0, 0.84, 0), #247b5e);
+  }
+  ```
+
+  ```glsl
+  float easeInExpo(float x) {
+      return x == 0.0 ? 0.0 : pow(2.0, 10.0 * x - 10.0);
+  }
+  ```
+
+- easeOutExpo:
+
+  ```css
+  {
+      /* CSS */
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      /* 渐变 */
+      background: linear-gradient(to bottom, #1473e6, cubic-bezier(0.16, 1, 0.3, 1), #247b5e);
+  }
+  ```
+
+  ```glsl
+  float easeOutExpo(float x) {
+      return x == 1.0 ? 1.0 : 1.0 - pow(2.0, -10.0 * x);
+  }
+  ```
+
+- easeInOutExpo:
+
+  ```css
+  {
+      /* CSS */
+      transition: transform 0.6s cubic-bezier(0.87, 0, 0.13, 1);
+      /* 渐变 */
+      background: linear-gradient(to bottom, #1473e6, cubic-bezier(0.87, 0, 0.13, 1), #247b5e);
+  }
+  ```
+
+  ```glsl
+  float easeInOutExpo(float x) {
+      return x == 0.0 ? 0.0 : x == 1.0 ? 1.0 : x < 0.5 ? pow(2.0, 20.0 * x - 10.0) / 2.0 : (2.0 - pow(2.0, -20.0 * x + 10.0)) / 2.0;
+  }
+  ```
+
+- easeInCirc:
+
+  ```css
+  {
+      /* CSS */
+      transition: transform 0.6s cubic-bezier(0.55, 0, 1, 0.45);
+      /* 渐变 */
+      background: linear-gradient(to bottom, #1473e6, cubic-bezier(0.55, 0, 1, 0.45), #247b5e);
+  }
+  ```
+
+  ```glsl
+  float easeInCirc(float x) {
+      return 1.0 - sqrt(1.0 - pow(x, 2.0));
+  }
+  ```
+
+- easeOutCirc:
+
+  ```css
+  {
+      /* CSS */
+      transition: transform 0.6s cubic-bezier(0, 0.55, 0.45, 1);
+      /* 渐变 */
+      background: linear-gradient(to bottom, #1473e6, cubic-bezier(0, 0.55, 0.45, 1), #247b5e);
+  }
+  ```
+
+  ```glsl
+  float easeOutCirc(float x) {
+      return sqrt(1.0 - pow(x - 1.0, 2.0));
+  }
+  ```
+
+- easeInOutCirc:
+
+  ```css
+  {
+      /* CSS */
+      transition: transform 0.6s cubic-bezier(0.85, 0, 0.15, 1);
+      /* 渐变 */
+      background: linear-gradient(to bottom, #1473e6, cubic-bezier(0.85, 0, 0.15, 1), #247b5e);
+  }
+  ```
+
+  ```glsl
+  float easeInOutCirc(float x) {
+      return x < 0.5 ? (1.0 - sqrt(1.0 - pow(2.0 * x, 2.0))) / 2.0 : (sqrt(1.0 - pow(-2.0 * x + 2.0, 2.0)) + 1.0) / 2.0;
+  }
+  ```
+
+- easeInBack:
+
+  ```css
+  {
+      /* CSS */
+      transition: transform 0.6s cubic-bezier(0.36, 0, 0.66, -0.56);
+      /* 渐变 */
+      background: linear-gradient(to bottom, #1473e6, cubic-bezier(0.36, 0, 0.66, -0.56), #247b5e);
+  }
+  ```
+
+  ```glsl
+  float easeInBack(float x) {
+      const float c1 = 1.70158;
+      const float c3 = c1 + 1.0;
+      return c3 * x * x * x - c1 * x * x;
+  }
+  ```
+
+- easeOutBack:
+
+  ```css
+  {
+      /* CSS */
+      transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      /* 渐变 */
+      background: linear-gradient(to bottom, #1473e6, cubic-bezier(0.34, 1.56, 0.64, 1), #247b5e);
+  }
+  ```
+
+  ```glsl
+  float easeOutBack(float x) {
+      const float c1 = 1.70158;
+      const float c3 = c1 + 1.0;
+      return 1.0 + c3 * pow(x - 1.0, 3.0) + c1 * pow(x - 1.0, 2.0);
+  }
+  ```
+
+- easeInOutBack:
+
+  ```css
+  {
+      /* CSS */
+      transition: transform 0.6s cubic-bezier(0.68, -0.6, 0.32, 1.6);
+      /* 渐变 */
+      background: linear-gradient(to bottom, #1473e6, cubic-bezier(0.68, -0.6, 0.32, 1.6), #247b5e);
+  }
+  ```
+
+  ```glsl
+  float easeInOutBack(float x) {
+      const float c1 = 1.70158;
+      const float c2 = c1 * 1.525;
+      return x < 0.5 ? (pow(2.0 * x, 2.0) * ((c2 + 1.0) * 2.0 * x - c2)) / 2.0 : (pow(2.0 * x - 2.0, 2.0) * ((c2 + 1.0) * (x * 2.0 - 2.0) + c2) + 2.0) / 2.0;
+  }
+  ```
+
+- easeInElastic:
+
+  ```css
+  @keyframes easeInElastic {
+      0% { transform: translateX(0%); }
+      4% { transform: translateX(-0.04%); }
+      8% { transform: translateX(-0.16%); }
+      14% { transform: translateX(-0.17%); }
+      18% { transform: translateX(0.04%); }
+      26% { transform: translateX(0.58%); }
+      28% { transform: translateX(0.55%); }
+      40% { transform: translateX(-1.56%); }
+      42% { transform: translateX(-1.64%); }
+      56% { transform: translateX(4.63%); }
+      58% { transform: translateX(4.4%); }
+      72% { transform: translateX(-13.12%); }
+      86% { transform: translateX(37.06%); }
+      100% { transform: translateX(-100%); }
+  }
+  @keyframes opacity-easeInElastic {
+      0% { opacity: 1; }
+      4% { opacity: 1; }
+      8% { opacity: 1; }
+      14% { opacity: 1; }
+      18% { opacity: 1; }
+      26% { opacity: 1.01; }
+      28% { opacity: 1.01; }
+      40% { opacity: 0.98; }
+      42% { opacity: 0.98; }
+      56% { opacity: 1.05; }
+      58% { opacity: 1.05; }
+      72% { opacity: 0.87; }
+      86% { opacity: 1.37; }
+      100% { opacity: 0; }
+  }
+  ```
+
+  ```glsl
+  float easeInElastic(float x) {
+      const float c4 = (2.0 * PI) / 3.0;
+      return x == 0.0 ? 0.0 : x == 1.0 ? 1.0 : -pow(2.0, 10.0 * x - 10.0) * sin((x * 10.0 - 10.75) * c4);
+  }
+  ```
+
+- easeOutElastic:
+
+  ```css
+  @keyframes easeOutElastic {
+  	0% {
+  		transform: translateX(0%);
+  	}
+  
+  	16% {
+  		transform: translateX(-132.27%);
+  	}
+  
+  	28% {
+  		transform: translateX(-86.88%);
+  	}
+  
+  	44% {
+  		transform: translateX(-104.63%);
+  	}
+  
+  	59% {
+  		transform: translateX(-98.36%);
+  	}
+  
+  	73% {
+  		transform: translateX(-100.58%);
+  	}
+  
+  	88% {
+  		transform: translateX(-99.8%);
+  	}
+  
+  	100% {
+  		transform: translateX(-100%);
+  	}
+  
+  }
+  
+  @keyframes opacity-easeOutElastic {
+  	0% {
+  		opacity: 1;
+  	}
+  
+  	16% {
+  		opacity: -0.32;
+  	}
+  
+  	28% {
+  		opacity: 0.13;
+  	}
+  
+  	44% {
+  		opacity: -0.05;
+  	}
+  
+  	59% {
+  		opacity: 0.02;
+  	}
+  
+  	73% {
+  		opacity: -0.01;
+  	}
+  
+  	88% {
+  		opacity: 0;
+  	}
+  
+  	100% {
+  		opacity: 0;
+  	}
+  
+  }
+  ```
+
+  ```glsl
+  float easeOutElastic(float x) {
+      const float c4 = (2.0 * PI) / 3.0;
+      return x == 0.0 ? 0.0 : x == 1.0 ? 1.0 : pow(2.0, -10.0 * x) * sin((x * 10.0 - 0.75) * c4) + 1.0;
+  }
+  ```
+
+- easeInOutElastic:
+
+  ```css
+  @keyframes easeInOutElastic {
+  	0% {
+  		transform: translateX(0%);
+  	}
+  
+  	4% {
+  		transform: translateX(-0.08%);
+  	}
+  
+  	8% {
+  		transform: translateX(-0.1%);
+  	}
+  
+  	18% {
+  		transform: translateX(0.52%);
+  	}
+  
+  	20% {
+  		transform: translateX(0.39%);
+  	}
+  
+  	28% {
+  		transform: translateX(-2.35%);
+  	}
+  
+  	30% {
+  		transform: translateX(-2.39%);
+  	}
+  
+  	38% {
+  		transform: translateX(9.27%);
+  	}
+  
+  	40% {
+  		transform: translateX(11.75%);
+  	}
+  
+  	60% {
+  		transform: translateX(-111.75%);
+  	}
+  
+  	62% {
+  		transform: translateX(-109.27%);
+  	}
+  
+  	70% {
+  		transform: translateX(-97.61%);
+  	}
+  
+  	72% {
+  		transform: translateX(-97.65%);
+  	}
+  
+  	80% {
+  		transform: translateX(-100.39%);
+  	}
+  
+  	82% {
+  		transform: translateX(-100.52%);
+  	}
+  
+  	90% {
+  		transform: translateX(-99.97%);
+  	}
+  
+  	92% {
+  		transform: translateX(-99.9%);
+  	}
+  
+  	100% {
+  		transform: translateX(-100%);
+  	}
+  
+  }
+  
+  @keyframes opacity-easeInOutElastic {
+  	0% {
+  		opacity: 1;
+  	}
+  
+  	4% {
+  		opacity: 1;
+  	}
+  
+  	8% {
+  		opacity: 1;
+  	}
+  
+  	18% {
+  		opacity: 1.01;
+  	}
+  
+  	20% {
+  		opacity: 1;
+  	}
+  
+  	28% {
+  		opacity: 0.98;
+  	}
+  
+  	30% {
+  		opacity: 0.98;
+  	}
+  
+  	38% {
+  		opacity: 1.09;
+  	}
+  
+  	40% {
+  		opacity: 1.12;
+  	}
+  
+  	60% {
+  		opacity: -0.12;
+  	}
+  
+  	62% {
+  		opacity: -0.09;
+  	}
+  
+  	70% {
+  		opacity: 0.02;
+  	}
+  
+  	72% {
+  		opacity: 0.02;
+  	}
+  
+  	80% {
+  		opacity: 0;
+  	}
+  
+  	82% {
+  		opacity: -0.01;
+  	}
+  
+  	90% {
+  		opacity: 0;
+  	}
+  
+  	92% {
+  		opacity: 0;
+  	}
+  
+  	100% {
+  		opacity: 0;
+  	}
+  
+  }
+  ```
+
+  ```glsl
+  float easeInOutElastic(float x) {
+      const float c5 = (2.0 * PI) / 4.5;
+      return x == 0.0 ? 0.0 : x == 1.0 ? 1.0 : x < 0.5 ? -(pow(2.0, 20.0 * x - 10.0) * sin((20.0 * x - 11.125) * c5)) / 2.0 : (pow(2.0, -20.0 * x + 10.0) * sin((20.0 * x - 11.125) * c5)) / 2.0 + 1.0;
+  }
+  ```
+
+- easeInBounce:
+
+  ```css
+  @keyframes easeInBounce {
+  	0% {
+  		transform: translateX(0%);
+  	}
+  
+  	4% {
+  		transform: translateX(-1.54%);
+  	}
+  
+  	8% {
+  		transform: translateX(-0.66%);
+  	}
+  
+  	18% {
+  		transform: translateX(-6.25%);
+  	}
+  
+  	26% {
+  		transform: translateX(-1.63%);
+  	}
+  
+  	46% {
+  		transform: translateX(-24.98%);
+  	}
+  
+  	64% {
+  		transform: translateX(-1.99%);
+  	}
+  
+  	76% {
+  		transform: translateX(-56.44%);
+  	}
+  
+  	88% {
+  		transform: translateX(-89.11%);
+  	}
+  
+  	100% {
+  		transform: translateX(-100%);
+  	}
+  
+  }
+  
+  @keyframes opacity-easeInBounce {
+  	0% {
+  		opacity: 1;
+  	}
+  
+  	4% {
+  		opacity: 0.98;
+  	}
+  
+  	8% {
+  		opacity: 0.99;
+  	}
+  
+  	18% {
+  		opacity: 0.94;
+  	}
+  
+  	26% {
+  		opacity: 0.98;
+  	}
+  
+  	46% {
+  		opacity: 0.75;
+  	}
+  
+  	64% {
+  		opacity: 0.98;
+  	}
+  
+  	76% {
+  		opacity: 0.44;
+  	}
+  
+  	88% {
+  		opacity: 0.11;
+  	}
+  
+  	100% {
+  		opacity: 0;
+  	}
+  
+  }
+  ```
+
+  ```glsl
+  float easeInBounce(float x) {
+      return 1.0 - easeOutBounce(1.0 - x);
+  }
+  ```
+
+- easeOutBounce:
+
+  ```css
+  @keyframes easeOutBounce {
+  	0% {
+  		transform: translateX(0%);
+  	}
+  
+  	12% {
+  		transform: translateX(-10.89%);
+  	}
+  
+  	24% {
+  		transform: translateX(-43.56%);
+  	}
+  
+  	36% {
+  		transform: translateX(-98.01%);
+  	}
+  
+  	54% {
+  		transform: translateX(-75.02%);
+  	}
+  
+  	74% {
+  		transform: translateX(-98.37%);
+  	}
+  
+  	82% {
+  		transform: translateX(-93.75%);
+  	}
+  
+  	92% {
+  		transform: translateX(-99.34%);
+  	}
+  
+  	96% {
+  		transform: translateX(-98.46%);
+  	}
+  
+  	100% {
+  		transform: translateX(-100%);
+  	}
+  
+  }
+  
+  @keyframes opacity-easeOutBounce {
+  	0% {
+  		opacity: 1;
+  	}
+  
+  	12% {
+  		opacity: 0.89;
+  	}
+  
+  	24% {
+  		opacity: 0.56;
+  	}
+  
+  	36% {
+  		opacity: 0.02;
+  	}
+  
+  	54% {
+  		opacity: 0.25;
+  	}
+  
+  	74% {
+  		opacity: 0.02;
+  	}
+  
+  	82% {
+  		opacity: 0.06;
+  	}
+  
+  	92% {
+  		opacity: 0.01;
+  	}
+  
+  	96% {
+  		opacity: 0.02;
+  	}
+  
+  	100% {
+  		opacity: 0;
+  	}
+  
+  }
+  ```
+
+  ```glsl
+  float easeOutBounce(float x) {
+      const float n1 = 7.5625;
+      const float d1 = 2.75;
+      
+      if(x < 1.0 / d1) {
+          return n1 * x * x;
+      } else if(x < 2.0 / d1) {
+          return n1 * (x -= 1.5 / d1) * x + 0.75;
+      } else if(x < 2.5 / d1) {
+          return n1 * (x -= 2.25 / d1) * x + 0.9375;
+      } else {
+          return n1 * (x -= 2.625 / d1) * x + 0.984375;
+      }
+  }
+  ```
+
+- easeInOutBounce:
+
+  ```css
+  @keyframes easeInOutBounce {
+  	0% {
+  		transform: translateX(0%);
+  	}
+  
+  	2% {
+  		transform: translateX(-0.77%);
+  	}
+  
+  	4% {
+  		transform: translateX(-0.33%);
+  	}
+  
+  	10% {
+  		transform: translateX(-3%);
+  	}
+  
+  	14% {
+  		transform: translateX(-0.98%);
+  	}
+  
+  	22% {
+  		transform: translateX(-12.42%);
+  	}
+  
+  	32% {
+  		transform: translateX(-1%);
+  	}
+  
+  	42% {
+  		transform: translateX(-40.32%);
+  	}
+  
+  	50% {
+  		transform: translateX(-50%);
+  	}
+  
+  	58% {
+  		transform: translateX(-59.68%);
+  	}
+  
+  	68% {
+  		transform: translateX(-99.01%);
+  	}
+  
+  	78% {
+  		transform: translateX(-87.58%);
+  	}
+  
+  	86% {
+  		transform: translateX(-99.02%);
+  	}
+  
+  	90% {
+  		transform: translateX(-97%);
+  	}
+  
+  	96% {
+  		transform: translateX(-99.67%);
+  	}
+  
+  	98% {
+  		transform: translateX(-99.23%);
+  	}
+  
+  	100% {
+  		transform: translateX(-100%);
+  	}
+  
+  }
+  
+  @keyframes opacity-easeInOutBounce {
+  	0% {
+  		opacity: 1;
+  	}
+  
+  	2% {
+  		opacity: 0.99;
+  	}
+  
+  	4% {
+  		opacity: 1;
+  	}
+  
+  	10% {
+  		opacity: 0.97;
+  	}
+  
+  	14% {
+  		opacity: 0.99;
+  	}
+  
+  	22% {
+  		opacity: 0.88;
+  	}
+  
+  	32% {
+  		opacity: 0.99;
+  	}
+  
+  	42% {
+  		opacity: 0.6;
+  	}
+  
+  	50% {
+  		opacity: 0.5;
+  	}
+  
+  	58% {
+  		opacity: 0.4;
+  	}
+  
+  	68% {
+  		opacity: 0.01;
+  	}
+  
+  	78% {
+  		opacity: 0.12;
+  	}
+  
+  	86% {
+  		opacity: 0.01;
+  	}
+  
+  	90% {
+  		opacity: 0.03;
+  	}
+  
+  	96% {
+  		opacity: 0;
+  	}
+  
+  	98% {
+  		opacity: 0.01;
+  	}
+  
+  	100% {
+  		opacity: 0;
+  	}
+  
+  }
+  ```
+
+  ```glsl
+  float easeInOutBounce(float x) {
+      return x < 0.5 ? (1.0 - easeOutBounce(1.0 - 2.0 * x)) / 2.0 : (1.0 + easeOutBounce(2.0 * x - 1.0)) / 2.0;
+  }
+  ```
+
+### 6.2 玩玩渐变
+
+`mix()`函数有更多的用处. 我们可以输入两个互相匹配的变量类型而不仅仅是单独的 `float`变量, 在我们这个例子中用的是 `vec3`. 这样我们便获得了混合颜色单独通道 `.r, .g, .b`的能力.
+
+```glsl
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+#define PI 3.14159265359
+    
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+
+vec3 colorA = vec3(0.149, 0.141, 0.912);
+vec3 colorB = vec3(1.000, 0.833, 0.224);
+
+float plot(vec2 st, float pct) {
+    return smoothstep(pct - 0.01, pct, st.y) - smoothstep(pct, pct + 0.01, st.y);
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy / u_resolution.xy;
+    vec3 color = vec3(0.0);
+    
+    vec3 pct = vec3(st.x);
+    
+    // pct.r = smoothstep(0.0, 1.0, st.x);
+    // pct.g = sin(st.x * PI);
+    // pct.b = pow(st.x, 0.5);
+    
+    color = mix(colorA, colorB, pct);
+    
+    color = mix(color, vec3(1.0, 0.0, 0.0), plot(st, pct.r));
+    color = mix(color, vec3(0.0, 1.0, 0.0), plot(st, pct.g));
+    color = mix(color, vec3(0.0, 0.0, 1.0), plot(st, pct.b));
+    
+    gl_FragColor = vec4(color, 1.0);
+}
+```
+
+试试下列挑战:
+
+- 创建一个渐变来代表 William Turner 的落日.
+
+  ![turner](assets/turner.jpg)
+
+- 用 u_time 做一个日出和日落的动画.
+
+- 能用我们所学的做一道彩虹吗?
+
+- 用 step() 函数做一个五彩的旗子.
+
+### 6.3 HSB
+
+我们不能脱离色彩空间来谈论颜色. 正如你所知, 除了 rgb 值, 有其他不同的方法去描述定义颜色.
+
+HSB 代表色相, 饱和度和亮度 (或称为值). 这更符合直觉也更有利于组织颜色. 稍微花些时间阅读下面的 `rgb2hsv()`和 `hsv2rgb()`函数.
+
+将 x坐标(位置)映射到 Hue值并将 y 坐标映射到明度, 我们就得到了五彩的可见光光谱. 这样的色彩空间分布实现起来非常方便, 比起 RGB, 用 HSB 来拾取颜色也更直观.
+
+```glsl
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform float u_time;
+
+vec3 rgb2hsb(in vec3 c) {
+    vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+    vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
+    vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+    
+    float d = q.x - min(q.w, q.y);
+    float e = 1.0e-10;
+    return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+}
+
+vec3 hsb2rgb(in vec3 c) {
+    vec3 rgb = clamp(abs(mod(c.x * 6.0 + vec3(0.0, 4.0, 2.0), 6.0) - 3.0) - 1.0, 0.0, 1.0);
+    rgb = rgb * rgb * (3.0 - 2.0 * rgb);
+    return c.z * mix(vec3(1.0), rgb, c.y);
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy / u_resolution;
+    vec3 color = vec3(0.0);
+    
+    // map x (0.0 - 1.0) to the hue (0.0 - 1.0)
+    // map y (0.0 - 1.0) to the brightness
+    color = hsb2rgb(vec3(st.x, 1.0, st.y));
+    gl_FragColor = vec4(color, 1.0);
+}
+```
+
+### 6.4 极坐标下的 HSB
+
+HSB 原本是在极坐标下产生的 (以半径和角度定义) 而并非在笛卡尔坐标系 (基于 xy 定义)下. 将 HSB 映射到极坐标我们需要取得角度和到像素屏中点的距离. 由此我们运用 `length`函数和 `atan(y, x)`函数 (在 GLSL 中通常用 `atan(y, x)`).
+
+当用到矢量和三角学函数时, vec2, vec3 和 vec4 被当做向量对待, 即使有时候它们代表颜色. 我们开始把颜色和向量同等的对待, 事实上你会慢慢发现这种理念的灵活性有着相当强大的用途.
+
+注意: 如果你想了解, 除 `length()`以外的诸多几何函数, 例如: `distance(), dot(), cross(), normalize(), faceforward(), reflect()`. GLSL 也有与向量相关的函数: `lessThan(), lessThanEqual(), greaterThan(), greaterThanEqual(), equal(), notEqual()`.
+
+```glsl
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+#define TWO_PI 6.28318530718
+    
+uniform vec2 u_resolution;
+uniform float u_time;
+
+vec3 hsb2rgb(in vec3 c) {
+    vec3 rgb = clamp(abs(mod(c.x * 6.0 + vec3(0.0, 4.0, 2.0), 6.0) - 3.0) - 1.0, 0.0, 1.0);
+    rgb = rgb * rgb * (3.0 - 2.0 * rgb);
+    return c.z * mix(vec3(1.0), rgb, c.y);
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy / u_resolution;
+    vec3 color = vec3(0.0);
+    
+    vec2 toCenter = vec2(0.5) - st;
+    float angle = atan(toCenter.y, toCenter.x);
+    float radius = length(toCenter) * 2.0;
+    
+    color = hsb2rgb(vec3((angle / TWO_PI) + 0.5, radius, 1.0));
+    
+    gl_FragColor = vec4(color, 1.0);
+}
+```
+
+一旦我们得到角度和长度, 我们需要单位化这些值: 0.0 到 1.0. 
+
+来挑战下面的练习:
+
+- 把极坐标映射的例子改成选择色轮, 就像"正忙"的鼠标图标.
+- 把造型函数整合进来, 来让 HSB 到 RGB 的转换中强调某些特定值并且弱化其他的.
+- 如果你仔细观察用来拾色的色轮, 你会发现它用一种根据 RYB 色彩空间的色谱. 例如, 红色的对面应该是绿色, 但在我们的例子里是青色. 你能找到一种修复的方式来让它看起来和下图一样么? (提示: 这是用塑形函数的好机会!)
+
+**注意函数和变量**
+
+在进入下一章之前让我们停下脚步回顾下. 复习下之前例子的函数. 你会注意到变量类型之前有个限定符 `in`, 在这个 `qualifier`(限定符)例子中它特指这个变量是只读的. 在之后的例子中我们会看到可以定义一个 `out` 或者 `inout` 变量. 最后这个 `inout` 在概念上类似于参照输入一个变量, 这意味着我们有可能修改一个传入的变量.
+
+```glsl
+int newFunction(in vec4 aVec4, // 只读
+               out vec3 aVec3, // 只写
+               inout int aInt) // 读写
+```
+
+## 7. Shapes (形状)
+
+终于! 我们一直学习的技能就等着这一刻! 你已经学习过 GLSL 的大部分基础, 类型和函数. 你一遍又一遍的练习你的造型方程. 是时候把他们整合起来了. 你就是为了这个挑战而来的! 在这一章里, 你会学习到如何以一种并行处理方式来画简单的图形.
+
+### 7.1 长方形
+
+想象我们有张数学课上使用的方格纸, 而我们的作业是画一个正方形. 纸的大小是 10x10 而正方形应该是 8x8. 你会怎么做?
+
+你是不是会涂满除了第一行第一列和最后一行和最后一列的所有格点?
+
+这和着色器有什么关系? 方格纸上的每个小方形格点就是一个线程 (一个像素). 每个格点有它的位置, 就想棋盘上的坐标一样. 在之前的章节我们将 x 和 y 映射到 rgb 通道, 并且我们学习了如何将二维边界被限制在 0和1 之间. 我们如何用这些来画一个中心点位于屏幕中心的正方形?
+
+我们从空间角度来判别的 if 语句伪代码开始. 这个原理和我们思考方格纸的策略异曲同工.
+
+```
+if((X GREATER THAN 1) AND (Y GREATER THAN 1))
+	paint white
+else
+	paint black
+```
+
+现在我们有个更好的主意让这个想法实现, 来试试把 if 语句换成 step(), 并用 0到1 代替 10x10 的范围.
+
+```glsl
+uniform vec2 u_resolution;
+
+void main() {
+    vec2 st = gl_FragCoord.xy / u_resolution.xy;
+    vec3 color = vec3(0.0);
+    
+    float left = step(0.1, st.x);
+    float bottom = step(0.1, st.y);
+    
+    color = vec3(left * bottom);
+    
+    gl_FragColor = vec4(color, 1.0);
+}
+```
+
+`step()`函数会让每一个小于 0.1 的像素变成黑色 (`vec3(0.0)`) 并将其余的变成白色 (`vec3(1.0)`). left 乘 bottom 效果相当于逻辑 AND —— 当 x y 都为 1.0 时乘积才能是 1.0. 这样做的效果就是画了两条黑线, 一个在画布的底边另一个在左边.
+
+在这个代码例子中, 我们重复每个像素的结构 (左边和底边). 我们可以把原来的一个值换成两个值直接给 `step()`来精减代码.
+
+```glsl
+vec2 borders = step(vec2(0.1), st);
+float pct = borders.x * borders.y;
+```
+
+目前为止, 我们只画了长方形的两条边 (左边和底). 再来把另外两条边画上.
+
+```glsl
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+
+void main() {
+    vec2 st = gl_FragCoord.xy / u_resolution.xy;
+    vec3 color = vec3(0.0);
+    
+    // left-bottom
+    vec2 lb = step(vec2(0.1), st);
+    float pct = lb.x * lb.y;
+    
+    // right-top
+    vec2 rt = step(vec2(0.1), 1.0 - st);
+    pct *= rt.x * rt.y;
+    
+    gl_FragColor = vec4(color, 1.0);
+}
+```
+
+是不是很有趣? 这种都是关于运用 `step()`函数, 逻辑运算和转置坐标的结合.
+
+再进行下一个环节之前, 挑战下下面的练习:
+
+- 改变长方形的比例和大小.
+- 用 `smoothstep()`函数代替 `step()`函数, 试试在相同的代码下会有什么不同. 注意通过改变取值, 你不仅可以得到模糊边界也可以有漂亮的顺滑边界.
+- 应用 `floor()`做个另外的案例.
+- 挑个你最喜欢的做成函数, 这样未来你可以调用它, 并且让它灵活高效.
+- 写一个只画长方形四边的函数.
+- 想一下如何在一个画板上移动并放置不同的长方形? 如果你做出来了, 试着像 [Piet Mondrian](http://en.wikipedia.org/wiki/Piet_Mondrian) 一样创作以长方形和色彩的图画.
+
+### 7.2 圆
+
+在笛卡尔坐标系下, 用方格纸画画正方形和长方形是很容易的. 但是画圆就需要另一种方式了, 尤其我们需要一个对"每个像素"的算法. 一种解决办法是用 `step()`函数将重新映射的空间坐标来画圆.
+
+如何实现? 让我们重新回顾一下数学课上的方格纸: 我们把圆规展开到半径的长度, 把一个针脚戳在圆的圆心上, 旋转着把圆的边界留下来.
+
+将这个过程翻译给 shader 意味着纸上的每个方形格点都会隐含着问每个像素 (线程)是否在圆的区域之内. 我们通过计算像素到中心的距离来实现这个判断.
+
+有几种方法来计算距离. 最简单的是用 `distance()`函数, 这个函数其实内部调用 `length()`函数, 计算不同两点的距离 (在此例中是像素坐标和画布中心的距离). `length()`函数内部只不过是用平方根(`sqrt()`)计算斜边的方程.
+$$
+c = \sqrt{a^2+b^2}
+$$
+你可以使用 `distance(), length() 或 sqrt()`计算到屏幕中心的距离. 下面的代码包含着三个函数, 毫无悬念的他们返回相同的结果.
+
+```glsl
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+
+void main() {
+    vec2 st = gl_FragCoord.xy / u_resolution;
+    float pct = 0.0;
+    
+    // a. 使用 distance
+    pct = distance(st, vec2(0.5));
+    
+    // b. 使用 length
+    vec2 toCenter = vec2(0.5) - st;
+    pct = length(toCenter);
+    
+    // c. 使用 sqrt
+    vec2 tc = vec2(0.5) - st;
+    pct = sqrt(tc.x * tc.x + tc.y * tc.y);
+    
+    vec3 color = vec3(pct);
+    gl_FragColor = vec4(color, 1.0);
+}
+```
+
+上回我们把到中心的距离映射为颜色亮度. 离中心越近的越暗. 注意映射值不宜过高, 因为从中心 (`vec2(0.5, 0.5)`)到最远距离才刚刚超过0.5一点. 仔细考察这个映射:
+
+- 你能从中推断出什么?
+- 我们怎么用这个方法来画圆?
+- 试试有没有其他方法来实现这样画布内圆形渐变的效果.
+
+### 7.3 距离场
+
+我们也可以从另外的角度思考上面的例子: 把它当做海拔地图(等高线图) —— 越黑的地方意味着海拔越高. 想象下, 你就在圆锥的顶端, 那么这里的渐变就和圆锥的等高线图有些相似. 到圆锥的水平距离是一个常数 0.5. 这个距离值在每个方向上都是相等的. 通过选择从哪里截取这个圆锥, 你就会得到或大或小的圆纹面.
+
+其实我们是通过"空间距离"来重新解释什么是图形. 这种技巧被称之为"距离场", 从字体轮廓到 3D图形被广泛应用.
+
+来小试下牛刀:
+
+- 用 `step()`函数把所有大于 0.5的像素点变成白色, 并把小于的变成黑色.
+
+- 反转前景色和背景色.
+
+- 调戏下 `smoothstep()`函数, 用不同的值来试着做出一个边界顺滑的圆.
+
+- 一旦遇到令你满意的应用, 把他写成一个函数, 这样将来就可以调用了.
+
+- 给这个圆来些缤纷的颜色吧!
+
+- 再加点动画? 一闪一闪亮晶晶? 或者是砰砰跳动的心脏?
+
+- 让它动起来? 能不能移动它并且在同一个屏幕上放置多个圆?
+
+- 如果你结合函数来混合不同的距离场, 会发生什么呢?
+
+  ```glsl
+  pct = distance(st, vec2(0.4)) + distance(st, vec2(0.6));
+  pct = distance(st, vec2(0.4)) * distance(st, vec2(0.6));
+  pct = min(distance(st, vec2(0.4)), distance(st, vec2(0.6)));
+  pct = max(distance(st, vec2(0.4)), distance(st, vec2(0.6)));
+  pct = pow(distance(st, vec2(0.4)), distance(st, vec2(0.6)));
+  ```
+
+- 用这种技巧制作三个元素, 如果它们是运动的, 那就再好不过啦!
+
+**添加自己的工具箱**
+
+就计算效率而言, `sqrt()`函数, 以及所有依赖它的运算, 都耗时耗力. `dot()`点乘是另外一种用来高效计算圆形距离场的方式.
+
+```glsl
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+
+float circle(in vec2 _st, in float _radius) {
+    vec2 dist = _st - vec2(0.5);
+    return 1.0 - smoothstep(_radius - (_radius * 0.01), _radius + (_radius*0.01), dot(dist, dist) * 4.0);
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy / u_resolution.xy;
+    vec3 color = vec3(circle(st, 0.9));
+    
+    gl_FragColor = vec4(color, 1.0);
+}
+```
+

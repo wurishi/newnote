@@ -1,7 +1,13 @@
-import React from "react";
+import React, { useState } from 'react';
 
 export default function TS() {
-  const str = "aaaa";
+  const str = 'aaaa';
 
-  return <div>{str}</div>;
+  const [count, setCount] = useState(0);
+
+  return (
+    <div onClick={() => setCount((prev) => prev + 1)}>
+      {str} click{count}
+    </div>
+  );
 }

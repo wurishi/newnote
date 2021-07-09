@@ -4,7 +4,9 @@ export default function asyncComponent(
   loadComponent: () => Promise<any>,
   displayName: string = 'AsyncComponent'
 ) {
-  const HOC = class AsyncComponent extends React.Component {
+  return class AsyncComponent extends React.Component {
+    static displayName = displayName;
+
     state = {
       Component: null,
     };
@@ -21,7 +23,7 @@ export default function asyncComponent(
         .then((module) => module.default)
         .then((Component) => this.setState({ Component }))
         .catch((err) => {
-          console.error('无法加载', err);
+          console.error('动态组件无法加载', err);
           throw err;
         });
     }
@@ -31,5 +33,4 @@ export default function asyncComponent(
       return Component ? <Component {...this.props} /> : null;
     }
   };
-  return HOC;
 }

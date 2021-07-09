@@ -7,8 +7,9 @@ import asyncComponent from './asyncComponent';
 // import TS from 'pages/ts.tsx';
 // const TS = import(/*webpackChunkName: 'ts' */ 'pages/ts.tsx');
 // console.log(TS);
-const TS = asyncComponent(() =>
-  import(/*webpackChunkName: 'ts' */ 'pages/ts.tsx')
+const TS = asyncComponent(
+  () => import(/*webpackChunkName: 'ts' */ 'pages/ts.tsx'),
+  'ttaabb'
 );
 
 export default () => (

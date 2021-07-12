@@ -7,10 +7,10 @@ import asyncComponent from './asyncComponent';
 // import TS from 'pages/ts.tsx';
 // const TS = import(/*webpackChunkName: 'ts' */ 'pages/ts.tsx');
 // console.log(TS);
-const TS = asyncComponent(
-  () => import(/*webpackChunkName: 'ts' */ 'pages/ts.tsx'),
-  'ttaabb'
-);
+// const TS = asyncComponent(
+//   () => import(/*webpackChunkName: 'ts' */ 'pages/ts.tsx'),
+//   'ttaabb'
+// );
 
 export default () => (
   <div>
@@ -28,7 +28,7 @@ export default () => (
         <Route path="/" exact component={Home} />
         <Route path="/count" exact component={Page} />
         <Route path="/hehe" exact component={Hehe} />
-        <Route path="/ts" exact component={TS} />
+        {/* <Route path="/ts" exact component={TS} /> */}
       </Switch>
     </main>
   </div>

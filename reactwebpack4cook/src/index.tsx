@@ -3,7 +3,9 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { AppContainer } from 'react-hot-loader';
 import Router from './router';
-import './style.scss';
+import './style.less';
+import 'antd/dist/antd.less';
+import { ConfigProvider } from 'antd';
 
 function renderWithHotReload(Router) {
   ReactDOM.render(

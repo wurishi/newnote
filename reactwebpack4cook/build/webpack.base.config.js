@@ -35,12 +35,26 @@ module.exports = {
         ],
       },
       {
-        test: /\.(sc|sa|c)ss$/,
+        test: /\.(le|c)ss$/,
         use: [
           MiniCssExtractPlugin.loader,
           'css-loader', // 编译css
           'postcss-loader', // 使用 postcss 为 css 加上浏览器前缀
-          'sass-loader', // 编译scss
+          {
+            loader: 'less-loader', // 编译less,
+            options: {
+              javascriptEnabled: true,
+            },
+          },
+        ],
+      },
+      {
+        test: /\.(sa|sc)ss$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader', // 编译css
+          'postcss-loader', // 使用 postcss 为 css 加上浏览器前缀
+          'sass-loader',
         ],
       },
       {

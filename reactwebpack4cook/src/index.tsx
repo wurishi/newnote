@@ -5,7 +5,6 @@ import { AppContainer } from 'react-hot-loader';
 // import Router from './router';
 import { routers } from './routes';
 import './style.less';
-import 'antd/dist/antd.less';
 import { ConfigProvider } from 'antd';
 import ZHCN from 'antd/lib/locale/zh_CN';
 

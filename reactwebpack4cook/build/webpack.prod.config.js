@@ -44,6 +44,9 @@ module.exports = merge(commonConfig, {
     //     path.resolve(__dirname, '..', 'src/*.js'),
     //     path.resolve(__dirname, '..', 'src/**/*.jsx'),
     //   ]),
+    //   purifyOptions: {
+    //     whitelist: ['*ant*'], // 部分覆盖a等的样式仍然会被shaking掉
+    //   },
     // }),
     new MiniCssExtractPlugin({
       filename: '[name]_[contenthash].css',

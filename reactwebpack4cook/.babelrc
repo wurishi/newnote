@@ -4,5 +4,9 @@
     "@babel/preset-react",
     "@babel/preset-typescript"
   ],
-  "plugins": ["@babel/plugin-transform-runtime", "react-hot-loader/babel"]
+  "plugins": [
+    ["import", { "libraryName": "antd", "style": true }],
+    "@babel/plugin-transform-runtime",
+    "react-hot-loader/babel"
+  ]
 }

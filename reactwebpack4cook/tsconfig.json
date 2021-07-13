@@ -8,7 +8,8 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "rootDir": ".",
-    "outDir": ".out"
+    "outDir": ".out",
+    "module": "esnext"
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist", "*.js"]

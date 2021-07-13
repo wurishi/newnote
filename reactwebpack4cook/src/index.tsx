@@ -1,33 +1,55 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { AppContainer } from 'react-hot-loader';
-import Router from './router';
+// import Router from './router';
+import { routers } from './routes';
 import './style.less';
 import 'antd/dist/antd.less';
 import { ConfigProvider } from 'antd';
 import ZHCN from 'antd/lib/locale/zh_CN';
 
-function renderWithHotReload(Router) {
+function renderRoute(routers: any[]) {
+  return (
+    <Suspense fallback={<div>loading...</div>}>
+      <Switch>
+        {routers.map((router, index) => {
+          const { scomponent, component, children, layout, ...rest } = router;
+          if (children) {
+            const SComponent = scomponent;
+            return (
+              <Route key={index} {...rest}>
+                <SComponent>{renderRoute(children)}</SComponent>
+              </Route>
+            );
+          }
+          return (
+            <Route key={index} exact {...rest} component={lazy(component)} />
+          );
+        })}
+      </Switch>
+    </Suspense>
+  );
+}
+
+function renderWithHotReload(routers) {
   ReactDOM.render(
     <AppContainer>
       <ConfigProvider locale={ZHCN}>
-        <BrowserRouter>
-          <Router />
-        </BrowserRouter>
+        <BrowserRouter>{renderRoute(routers)}</BrowserRouter>
       </ConfigProvider>
     </AppContainer>,
     document.getElementById('app')
   );
 }
 
-renderWithHotReload(Router);
+renderWithHotReload(routers);
 
 const hotModule = (module as any).hot;
 if (hotModule) {
   hotModule.accept('./router.js', () => {
-    const Router = require('./router.js').default;
-    renderWithHotReload(Router);
+    const { routers } = require('./routes');
+    renderWithHotReload(routers);
   });
 }
 

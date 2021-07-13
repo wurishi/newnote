@@ -5,5 +5,6 @@ import S from './style.module.less';
 import S2 from './style.less';
 
 export default function hehe() {
+  console.log('heheheheheh');
   return <div className="less2">{ok('Paul')}123</div>;
 }

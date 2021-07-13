@@ -6,13 +6,16 @@ import Router from './router';
 import './style.less';
 import 'antd/dist/antd.less';
 import { ConfigProvider } from 'antd';
+import ZHCN from 'antd/lib/locale/zh_CN';
 
 function renderWithHotReload(Router) {
   ReactDOM.render(
     <AppContainer>
-      <BrowserRouter>
-        <Router />
-      </BrowserRouter>
+      <ConfigProvider locale={ZHCN}>
+        <BrowserRouter>
+          <Router />
+        </BrowserRouter>
+      </ConfigProvider>
     </AppContainer>,
     document.getElementById('app')
   );
@@ -28,7 +31,7 @@ if (hotModule) {
   });
 }
 
-if ('serviceWorkder' in navigator) {
+if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker
       .register('/service-worker.js')

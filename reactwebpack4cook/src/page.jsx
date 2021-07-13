@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import t from './t.json';
 
 // export default function () {
 //   const [count, setCount] = useState(0);
@@ -22,8 +23,9 @@ export default class Page extends React.Component {
     return (
       <div>
         <div>{this.state.count}</div>
+        <div className="next"> {t.child}</div>
         <button onClick={() => this.setState({ count: this.state.count + 1 })}>
-          点我a
+          点我
         </button>
       </div>
     );

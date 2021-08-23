@@ -838,6 +838,35 @@ webgl/materials/webgl_materials_cubemap_balls_reflection
 
 ![webgl_materials_cubemap_balls_reflection](assets/webgl_materials_cubemap_balls_reflection.jpg)
 
+# webgl_materials_cubemap_dynamic
+
+![webgl_materials_cubemap_dynamic](assets\webgl_materials_cubemap_dynamic.jpg)
+
+# webgl_materials_cubemap_refraction
+
+![webgl_materials_cubemap_refraction](assets\webgl_materials_cubemap_refraction.jpg)
+
+# webgl_materials_cubemap_mipmaps
+
+![webgl_materials_cubemap_mipmaps](assets\webgl_materials_cubemap_mipmaps.jpg)
+
+# webgl_materials_curvature
+
+![webgl_materials_curvature](assets\webgl_materials_curvature.jpg)
+
+# webgl_materials_displacementmap
+
+![webgl_materials_displacementmap](assets\webgl_materials_displacementmap.jpg)
+
+
+
+```bash
+# 首次运行先生成 dll
+npx webpack --config webpack.dll.config.js
+# 开启 webpack 测试服务器
+npx webpack-dev-server
+```
+
 # brunch 运行的项目:
 
 ```bash

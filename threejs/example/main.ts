@@ -96,6 +96,11 @@ export class Main {
     }
   }
 
+  protected defaultScene(color = 0xa0a0a0) {
+    this.scene = new THREE.Scene();
+    this.scene.background = new THREE.Color(color);
+  }
+
   protected initCamera(
     fov = 45,
     near = 1,

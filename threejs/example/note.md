@@ -858,6 +858,22 @@ webgl/materials/webgl_materials_cubemap_balls_reflection
 
 ![webgl_materials_displacementmap](assets\webgl_materials_displacementmap.jpg)
 
+# webgl_materials_envmaps(未开始)
+
+未开始
+
+# webgl_panorama_cube
+
+![webgl_panorama_cube](assets\webgl_panorama_cube.jpg)
+
+# webgl_panorama_equirectangular
+
+![webgl_panorama_equirectangular](assets\webgl_panorama_equirectangular.jpg)
+
+可以通过拖入图片改变场景.
+
+
+
 
 
 ```bash

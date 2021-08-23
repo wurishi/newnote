@@ -288,7 +288,7 @@ console.log(a === b); // false
 
 在上面代码中, 对变量 `a` 的操作, 实际上是返回了一个新的对象, 原本的变量 `a` 是完全不受影响的, 这就是 immutable data!
 
-当然使用 immutable.js 不能是缺点的, 因为首先有学习成本, 另外多数其他第三方 JS 包都只接受原生类型, 所以往往需要在原生类型和 immutable.js 类型中来回转换.
+当然使用 immutable.js 不是没有缺点的, 因为首先有学习成本, 另外多数其他第三方 JS 包都只接受原生类型, 所以往往需要在原生类型和 immutable.js 类型中来回转换.
 
 如果不使用 immutable.js 那如何确保数据是 immutable 的呢? 答案就是只使用 immutable 的方式来操作数据.
 
@@ -524,7 +524,7 @@ function filterTaskArray(taskArray, {filterComplete = false, filterUserId = unde
 }
 ```
 
-写到这里就会发现, 这里的抽象是非常糟糕的, 除了 `filterTaskArray` 整体实现上非常复杂之外, 过滤的条件也几乎有无限种可能, 每当有新的过滤条件就必须修改一次 `filterTaskArray`, 便维护成本变得非常高, 而且当条件越多时 API 也会显得越复杂, 对于使用这个 function 的人来说, 也很难使用.
+写到这里就会发现, 这里的抽象是非常糟糕的, 除了 `filterTaskArray` 整体实现上非常复杂之外, 过滤的条件也几乎有无限种可能, 每当有新的过滤条件就必须修改一次 `filterTaskArray`, 使维护成本变得非常高, 而且当条件越多时 API 也会显得越复杂, 对于使用这个 function 的人来说, 也很难使用.
 
 ### 抽象最小化
 

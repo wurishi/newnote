@@ -3020,11 +3020,11 @@ void main() {
 
 目前我们学习了如何区分奇数行 / 列或偶数行 / 列. 类似的我们可以用这个技巧根据位置来设计元素. 考虑到 [Truchet Tiles](https://en.wikipedia.org/wiki/Truchet_tiles) 的例子, 即一个单一设计元素可以以四种不同的方式呈现:
 
-![9.3.truchet](assets\9.3.truchet-00.png)
+![9.3.truchet](assets/9.3.truchet-00.png)
 
 通过改变对角瓷砖的图案, 便可能组成无限种复杂设计的可能.
 
-![9.3.truchet-01](assets\9.3.truchet-01.png)
+![9.3.truchet-01](assets/9.3.truchet-01.png)
 
 仔细观察下面代码中的 `rotateTilePattern()`函数, 它把坐标空间细分成四个单元并赋予每一个旋转值.
 

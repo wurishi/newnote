@@ -27,7 +27,7 @@ npx webpack-dev-server
 
 # GLSL - API
 
-| Syntax                         粗体为方法名(占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符占位符) | Description                                                  |
+| Syntax                                                       | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | genType **pow**(genType x, genType y)                        | x的y次方. **如果x小于0, 结果为 undefined. 如果x=0且y<=0, 结果也是 undefined.** |
 | genType **dFdx**(genType p)                                  | 偏导数. GPU 会同时跑片元着色器的多个实例, 但并不是一个像素一个像素去执行的. 而是会组织在2x2的一组pixels块中并行执行. 偏导数就是通过像素块中变量的差值(变化率)而计算出来的. dFdx 表示的是像素块中右边像素的值减去左边像素的值 |
@@ -3945,67 +3945,67 @@ tdfyRl
 
 4djfWt
 
-![651](assets\651.jpg)
+![651](assets/651.jpg)
 
 # 652. Rhodium Fractalscape
 
 ltKGzc
 
-![652](assets\652.jpg)
+![652](assets/652.jpg)
 
 # 653. Molten rock
 
 MdBXDV
 
-![653](assets\653.jpg)
+![653](assets/653.jpg)
 
 # 654. Tunnel Beauty
 
 Mt3GW2
 
-![654](assets\654.jpg)
+![654](assets/654.jpg)
 
 # 655. Fantasy scene
 
 ldXSzr
 
-![655](assets\655.jpg)
+![655](assets/655.jpg)
 
 # 656. Pegasus Galaxy
 
 lty3Rt
 
-![656](assets\656.jpg)
+![656](assets/656.jpg)
 
 # 657. Ethereal
 
 ltB3DG
 
-![657](assets\657.jpg)
+![657](assets/657.jpg)
 
 # 658. Columns and Lights
 
 lsf3zr
 
-![658](assets\658.jpg)
+![658](assets/658.jpg)
 
 # 659. Awesome star
 
 4lfSzS
 
-![659](assets\659.jpg)
+![659](assets/659.jpg)
 
 # 660. Fractal Tiling
 
 Ml2GWy
 
-![660](assets\660.jpg)
+![660](assets/660.jpg)
 
 # 661. Apollian with a twist
 
 Wl3fzM
 
-![661](assets\661.jpg)
+![661](assets/661.jpg)
 
 
 

@@ -840,23 +840,23 @@ webgl/materials/webgl_materials_cubemap_balls_reflection
 
 # webgl_materials_cubemap_dynamic
 
-![webgl_materials_cubemap_dynamic](assets\webgl_materials_cubemap_dynamic.jpg)
+![webgl_materials_cubemap_dynamic](assets/webgl_materials_cubemap_dynamic.jpg)
 
 # webgl_materials_cubemap_refraction
 
-![webgl_materials_cubemap_refraction](assets\webgl_materials_cubemap_refraction.jpg)
+![webgl_materials_cubemap_refraction](assets/webgl_materials_cubemap_refraction.jpg)
 
 # webgl_materials_cubemap_mipmaps
 
-![webgl_materials_cubemap_mipmaps](assets\webgl_materials_cubemap_mipmaps.jpg)
+![webgl_materials_cubemap_mipmaps](assets/webgl_materials_cubemap_mipmaps.jpg)
 
 # webgl_materials_curvature
 
-![webgl_materials_curvature](assets\webgl_materials_curvature.jpg)
+![webgl_materials_curvature](assets/webgl_materials_curvature.jpg)
 
 # webgl_materials_displacementmap
 
-![webgl_materials_displacementmap](assets\webgl_materials_displacementmap.jpg)
+![webgl_materials_displacementmap](assets/webgl_materials_displacementmap.jpg)
 
 # webgl_materials_envmaps(未开始)
 
@@ -864,11 +864,11 @@ webgl/materials/webgl_materials_cubemap_balls_reflection
 
 # webgl_panorama_cube
 
-![webgl_panorama_cube](assets\webgl_panorama_cube.jpg)
+![webgl_panorama_cube](assets/webgl_panorama_cube.jpg)
 
 # webgl_panorama_equirectangular
 
-![webgl_panorama_equirectangular](assets\webgl_panorama_equirectangular.jpg)
+![webgl_panorama_equirectangular](assets/webgl_panorama_equirectangular.jpg)
 
 可以通过拖入图片改变场景.
 

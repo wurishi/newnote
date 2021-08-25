@@ -7,19 +7,19 @@
 const bigBrickSize = 5;
 const smallBrickSize = 2;
 const canFillGap = (smallQuantity, bigQuantity, totalGap) => {
-  const maxBigRequired = Math.floor(totalGap / bigBrickSize);
-  if (maxBigRequired > bigQuantity) {
-    return false;
-  }
-  const smallRequired = Math.floor(
-    (totalGap - maxBigRequired * bigBrickSize) / smallBrickSize
-  );
-  if (smallRequired > smallQuantity) {
-    return false;
-  }
-  return (
-    totalGap === maxBigRequired * bigBrickSize + smallRequired * smallBrickSize
-  );
+    let maxBigRequired = Math.min(Math.floor(totalGap / bigBrickSize), bigQuantity);
+    if ((maxBigRequired % 2 !==0) && (totalGap % 2 === 0)) {
+        maxBigRequired--;
+    }
+
+    const smallRequired = Math.floor(
+        (totalGap - maxBigRequired * bigBrickSize) / smallBrickSize
+    );
+
+    return (
+        smallRequired <= smallQuantity &&
+        (totalGap === maxBigRequired * bigBrickSize + smallRequired * smallBrickSize)
+    );
 };
 
 test("canFillGap fills the gap", () => {
@@ -96,7 +96,6 @@ test("sortList sorts number like elements", () => {
   expect(sortList([5, [3, 2], 4, 1])).toEqual([1, [2, 3], 4, 5]);
   expect(sortList([5, [7, 2], [2, 5], 1])).toEqual([1, [2, 5], [2, 7], 5]);
 });
-
 ```
 
 ```scss
@@ -105,7 +104,7 @@ test("sortList sorts number like elements", () => {
  * 1/2 Draw a ladder(not stairs).
  */
  .ladder {
-   li {
+   li {二ff
      width: 30px;
      border: 1px solid black;
       &:first-child {

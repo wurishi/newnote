@@ -2290,7 +2290,7 @@ void main() {
 
 - 用这种技巧制作三个元素, 如果它们是运动的, 那就再好不过啦!
 
-**添加自己的工具箱**
+#### a. 添加自己的工具箱 (使用 `dot`代替 `sqrt`)
 
 就计算效率而言, `sqrt()`函数, 以及所有依赖它的运算, 都耗时耗力. `dot()`点乘是另外一种用来高效计算圆形距离场的方式.
 
@@ -2315,4 +2315,155 @@ void main() {
     gl_FragColor = vec4(color, 1.0);
 }
 ```
+
+#### b. 距离场的特点
+
+距离场几乎可以用来画任何东西. 显示, 图形越复杂, 方程也越复杂. 但是一旦你找到某个特定图形的公式, 就很容易添加图形或应用像是过渡边界的效果. 正因如此, 距离场经常用于字体渲染, 例如 [Mapbox GL Labels](https://blog.mapbox.com/drawing-text-with-signed-distance-fields-in-mapbox-gl-b0933af6f817), [Matt DesLauriers](https://twitter.com/mattdesl) [Material Design Fonts](http://mattdesl.svbtle.com/material-design-on-the-gpu) 和 [as is describe on Chapter 7 of iPhone 3D Programming, O’Reilly](http://chimera.labs.oreilly.com/books/1234000001814/ch07.html#ch07_id36000921).
+
+看看下面的代码:
+
+```glsl
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+
+void main() {
+    vec2 st = gl_FragCoord.xy / u_resolution.xy;
+    st.x *= u_resolution.x / u_resuolution.y;
+    vec3 color = vec3(0.0);
+    float d = 0.0;
+    // 把坐标系移到中心并把它映射到-1到1之间
+    st = st * 2. - 1.;
+    // 距离场方程, 我们计算点(.3,.3)或 vec3(.3) 到所有四象限的距离 (这就是 abs() 在起作用)
+    d = length(abs(st) - .3);
+
+    // d = length(min(abs(st) - .3, 0.)); // 取消这行注释, 会把四个点的距离用 min() 函数合并到 0, 从而产生了一个有趣的图案(十字).
+
+    // d = length(max(abs(st) - .3, 0.)); // 取消这行注释, 这次使用 max() 函数, 从而产生了一个圆角矩形. 注意距离场的环形是如何离中心越远越光滑的.
+    // 用 fract 函数来呈现这个距离场产生的图案.
+    gl_FragColor = vec4(vec3(fract(d * 10.0)), 1.0);
+    
+    // 距离场的其他作用:
+    // gl_FragColor = vec4(vec3(step(.3, d)), 1.0);
+    // gl_FragColor = vec4(vec3(step(.3, d) * step(d, .4)), 1.0);
+    // gl_FragColor = vec4(vec3(smoothstep(.3, .4, d) * smoothstep(.6, .5, d)), 1.0);
+}
+```
+
+#### c. 极坐标下的图形
+
+在关于颜色的章节我们通过如下的方程把每个像素的半径和角度笛卡尔坐标映射到极坐标.
+
+```glsl
+vec2 pos = vec2(0.5) - st;
+float r = length(pos) * 2.0;
+float a = atan(pos.y, pos.x);
+```
+
+我们用了部分方程在这章的开头来画圆, 即用 `length()`计算到中心的距离. 现在我们可以用极坐标来画圆.
+
+极坐标这种方式虽然有所限制但却十分简单.
+
+```glsl
+y = cos(x * 3.);
+y = abs(cos(x * 3.));
+y = abs(cos(x * 2.5)) * 0.5 + 0.3;
+y = abs(cos(x * 12.) * sin(x * 3.)) * .8 + .1;
+y = smoothstep(-.5, 1., cos(x * 10.)) * .2 + .5;
+```
+
+```glsl
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+
+void main() {
+    vec2 st = gl_FragCoord.xy / u_resolution.xy;
+    vec3 color = vec3(0.0);
+    
+    vec2 pos = vec2(0.5) - st;
+    
+    float r = length(pos) * 2.0;
+    float a = atan(pos.y, pos.x); // + u_time
+    
+    float f = cos(a * 3.);
+    // f = abs(cos(a * 3.));
+    // f = abs(cos(a * 2.5)) * .5 + .3;
+    // f = abs(cos(a * 12.) * sin(a * 3.)) * .8 + .1;
+    // f = smoothstep(-.5, 1., cos(a * 10.)) * 0.2 + 0.5;
+    
+    color = vec3(1. - smoothstep(f, f + 0.02, r));
+    
+    gl_FragColor = vec4(color, 1.0);
+}
+```
+
+试着:
+
+- 让这些图形动起来.
+- 结合不同的造型函数来雕刻图形, 制作诸如花, 雪花和齿轮.
+- 用我们在造型函数章节的 `plot()`函数画等高线.
+
+#### d. 整合的魅力
+
+到目前为止, 我们知道如何用 `atan()`函数来根据角度调整半径以获得不同的图形, 以及如何用 `atan()`结合所有和距离场有关的技巧得到可能的效果.
+
+看下下面来自 [Andrew Baldwin](https://twitter.com/baldand) 的例子. 这里的技巧是用极坐标的方式通过定义多边形的边数来构建一个距离场.
+
+```glsl
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+#define PI 3.14159265359
+#define TWO_PI 6.28318530718
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+
+void main() {
+    vec2 st = gl_FragCoord.xy / u_resolution.xy;
+    st.x *= u_resolution.x / u_resolution.y;
+    vec3 color = vec3(0.0);
+    float d = 0.0;
+    
+    // 把坐标系移到中心并把它映射到-1到1之间
+    st = st * 2. - 1.;
+    
+    int N = 3;
+    
+    float a = atan(st.x, st.y) + PI;
+    float r = TWO_PI / float(N);
+    
+    d = cos(floor(.5 + a / r) * r - a) * length(st);
+    
+    color = vec3(1.0 - smoothstep(.4, .41, d));
+    // color = vec3(d);
+    
+    gl_FragColor = vec4(color, 1.0);
+}
+```
+
+试着:
+
+- 改造一个输入位置, 指定图形(形状)的顶点数来返回一个距离场(的值)
+- 结合使用 `min()`和 `max()`函数混合距离场.
+- 用距离场画个自己感兴趣的 logo.
+
+可以继续在 [PixelSpirit Deck](https://patriciogonzalezvivo.github.io/PixelSpiritDeck/) 上学习卡片组的形状.
+
+## 8. 矩阵
+
+2D Matrices 二维矩阵
+
+### 8.1 平移
 

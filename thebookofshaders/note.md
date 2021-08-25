@@ -2788,3 +2788,401 @@ void main() {
 ```
 
 在如你所见, 我们用对向量乘以矩阵的方式对待色彩. 用这种方式, 我们 "移动" 这些值.
+
+## 9. 图案
+
+因为着色器按一个个像素执行, 那么无论你重复一个图形多少次, 计算的数量仍然是个常数.
+
+本章中我们将综合我们目前所学的并应用在画布上. 和前几章一样, 我们的策略依然基于乘以空间坐标(0 到 1 之间), 这样我们的画在 0 到 1 之间的图形就会重复地形成网格.
+
+<!--网格提供一种基于人的直觉发明事物的框架, 并且可以颠覆. 自然的混沌肌理提供一种对比和秩序的迹象. 从早期罗马浴场里的陶瓷图案到几何镶嵌, 人们那时候就习惯用网格来点缀他们的生活.--> [*10 PRINT*, Mit Press, (2013)](http://10print.org/)
+
+首先让我们记住 `fract()`函数. 它返回一个数的分数部分, 本质上是除 1 的余数(`mod(x, 1.0)`). 换句话说, `fract()`返回小数点后的数. 我们单位化的坐标系变量 `st`已经是 0.0 到 1.0 之间的了.所以像下面这么做并没有必要:
+
+```glsl
+void main() {
+    vec2 st = gl_FragCoord.xy / u_resolution;
+    vec3 color = vec3(0.0);
+    st = fract(st);
+    color = vec3(st, 0.0);
+    gl_FragColor = vec4(color, 1.0);
+}
+```
+
+但如果我们放大单位化坐标系, 比如说3倍. 我们会得到三组 0 到 1 的线性插值的数列: 第一组在 0-1 之间, 第二组在 1-2 之间以及第三组在 2-3 之间的浮点数.
+
+```glsl
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform float u_time;
+
+float circle(in vec2 _st, in float _radius) {
+    vec2 l = _st - vec2(0.5);
+    return 1. - smoothstep(_radius - (_radius * 0.01), _radius + (_radius * 0.01), dot(l, l) * 4.0);
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy / u_resolution.xy;
+    vec3 color = vec3(0.0);
+    
+    st *= 3.0; // 放大3倍
+    st = fract(st);
+    
+    color = vec3(st, 0.0);
+    // color = vec3(circle(st, 0.5));
+    
+    gl_FragColor = vec4(color, 1.0);
+}
+```
+
+试试下面的练习来深入理解:
+
+- 把空间乘以不同的数. 试试用浮点数, 还有分别给 x 和 y 不同的系数.
+- 把这个平铺技巧做成一个可以反复使用的函数.
+- 把画布分成 3行 3列. 指出如何定义行和列的线程的, 并用这种方式改变显示着的图形. 试着做一个井字棋.
+
+### 9.1 在图案内部应用矩阵
+
+鉴于每个细分或者说单元都是我们正在使用的单位化坐标系的小单元, 我们可以对每个内部空间施以矩阵变换来平移, 旋转和缩放.
+
+```glsl
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform float u_time;
+
+#define PI 3.14159265358979323846
+ 
+vec2 rotate2D(vec2 _st, float _angle) {
+    _st -= 0.5;
+    _st = mat2(cos(_angle), -sin(_angle), sin(_angle), cos(_angle)) * _st;
+    _st += 0.5;
+    return _st;
+}
+
+vec2 tile(vec2 _st, float _zoom) {
+    _st *= _zoom;
+    return fract(_st);
+}
+
+float box(vec2 _st, vec2 _size, float _smoothEdges) {
+    _size = vec2(0.5) - _size * 0.5;
+    vec2 aa = vec2(_smoothEdges * 0.5);
+    vec2 uv = smoothstep(_size, _size + aa, _st);
+    uv *= smoothstep(_size, _size + aa, vec2(1.0) - _st);
+    return uv.x * uv.y;
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy / u_resolution.xy;
+    vec3 color = vec3(0.0);
+    
+    st = tile(st, 4.);
+    
+    st = rotate2D(st, PI * 0.25);
+    
+    color = vec3(box(st, vec2(0.7), 0.01));
+    
+    gl_FragColor = vec4(color, 1.0);
+}
+```
+
+试一下:
+
+- 想想怎么让这些图案有趣的动起来. 考虑颜色, 形状, 运动的变换. 做三种动画.
+- 通过组合不同的形状重新创造更复杂的图案.
+- 结合多层图案来制作你自己的 [Scottish Tartan Patterns](https://www.google.com/search?q=scottish+patterns+fabric&tbm=isch&tbo=u&source=univ&sa=X&ei=Y1aFVfmfD9P-yQTLuYCIDA&ved=0CB4QsAQ&biw=1399&bih=799#tbm=isch&q=Scottish+Tartans+Patterns).
+
+### 9.2 偏移图案
+
+假如我们想要模仿砖墙. 砖墙是不是一半的砖在 x 方向上偏移了一半砖的长度, 每隔一行偏移一次.
+
+第一步我们需要知道某行的线程是奇数还是偶数, 我们可以通过奇偶来决定是否要在 x 方向上偏移那一行.
+
+要判断是奇数行还是偶数行, 我们要用到 2.0 的 `mod()`. 然后再根据是否大于 1.0 来判断.
+
+```glsl
+y = mod(x, 2.0);
+// 可以用一个三元运算来检查
+y = mod(x, 2.0) < 1.0 ? 0. : 1.;
+// 也可以用 step() 函数做相同的操作
+y = step(1.0, mod(x, 2.0));
+// 任何时候都可以安全地假设内置函数总比非内置的函数快.
+```
+
+```glsl
+// Author @patriciogv ( patriciogonzalezvivo.com ) - 2015
+
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform float u_time;
+
+vec2 brickTile(vec2 _st, float _zoom) {
+    _st *= _zoom;
+    // 奇数行偏移
+    _st.x += step(1., mod(_st.y, 2.0)) * 0.5;
+    return fract(_st);
+}
+
+float box(vec2 _st, vec2 _size) {
+    _size = vec2(0.5) - _size * 0.5;
+    vec2 uv = smoothstep(_size, _size + vec2(1e-4), _st);
+    uv *= smoothstep(_size, _size + vec2(1e-4), vec2(1.0) - _st);
+    return uv.x * uv.y;
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy / u_resolution.xy;
+    vec3 color = vec3(0.0);
+    
+    // Modern metric brick of 215mm x 102.5mm x 65mm
+    // http://www.jaharrison.me.uk/Brickwork/Sizes.html
+    // st /= vec2(2.15, 0.65) / 1.5;
+    
+    st = brickTile(st, 5.0);
+    
+    color = vec3(box(st, vec2(0.9)));
+    
+    // color = vec3(st, 0.0);
+    
+    gl_FragColor = vec4(color, 1.0);
+}
+```
+
+试一下:
+
+- 试着根据时间变化对偏移量做动画.
+
+- 另做一个动画, 让偶数行向左移, 奇数行向右移动.
+
+- 能不能根据列重复这样的效果?
+
+- 试着结合x, y 轴的偏移来得到以下效果
+
+  ```glsl
+  // Author @patriciogv - 2015 - patricio.io
+  
+  #ifdef GL_ES
+  precision mediump float;
+  #endif
+  
+  const float PI = 3.1415926535897932384626433832795;
+  
+  uniform vec2 u_resolution;
+  uniform vec2 u_mouse;
+  uniform float u_time;
+  
+  vec2 movingTiles(vec2 _st, float _zoom, float _speed){
+      _st *= _zoom;
+      float time = u_time*_speed;
+      if( fract(time)>0.5 ){
+          if (fract( _st.y * 0.5) > 0.5){
+              _st.x += fract(time)*2.0;
+          } else {
+              _st.x -= fract(time)*2.0;
+          }
+      } else {
+          if (fract( _st.x * 0.5) > 0.5){
+              _st.y += fract(time)*2.0;
+          } else {
+              _st.y -= fract(time)*2.0;
+          }
+      }
+      return fract(_st);
+  }
+  
+  float circle(vec2 _st, float _radius){
+      vec2 pos = vec2(0.5)-_st;
+      return smoothstep(1.0-_radius,1.0-_radius+_radius*0.2,1.-dot(pos,pos)*3.14);
+  }
+  
+  void main() {
+      vec2 st = gl_FragCoord.xy/u_resolution.xy;
+      st.x *= u_resolution.x/u_resolution.y;
+  
+      st = movingTiles(st,10.,0.5);
+  
+      vec3 color = vec3( 1.0-circle(st, 0.3 ) );
+  
+      gl_FragColor = vec4(color,1.0);
+  }
+  ```
+
+### 9.3 Truchet 瓷砖
+
+目前我们学习了如何区分奇数行 / 列或偶数行 / 列. 类似的我们可以用这个技巧根据位置来设计元素. 考虑到 [Truchet Tiles](https://en.wikipedia.org/wiki/Truchet_tiles) 的例子, 即一个单一设计元素可以以四种不同的方式呈现:
+
+![9.3.truchet](assets\9.3.truchet-00.png)
+
+通过改变对角瓷砖的图案, 便可能组成无限种复杂设计的可能.
+
+![9.3.truchet-01](assets\9.3.truchet-01.png)
+
+仔细观察下面代码中的 `rotateTilePattern()`函数, 它把坐标空间细分成四个单元并赋予每一个旋转值.
+
+```glsl
+// Author @patriciogv ( patriciogonzalezvivo.com ) - 2015
+
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+#define PI 3.14159265358979323846
+
+uniform vec2 u_resolution;
+uniform float u_time;
+
+vec2 rotate2D(vec2 _st, float _angle) {
+    _st -= 0.5;
+    _st = mat2(cos(_angle), -sin(_angle), sin(_angle), cos(_angle)) * _st;
+    _st += 0.5;
+    return _st;
+}
+
+vec2 tile(vec2 _st, float _zoom) {
+    _st *= _zoom;
+    return fract(_st);
+}
+
+vec2 rotateTilePattern(vec2 _st) {
+    // 每格tile再分成2x2
+    _st *= 2.0; 
+    
+    float index = 0.0;
+    index += step(1., mod(_st.x, 2.0));
+    index += step(1., mod(_st.y, 2.0)) * 2.0;
+    
+    //     |
+    //  2  |  3
+    //     |
+    //------------
+    //     |
+    //  0  |  1
+    //     |
+    
+    _st = fract(_st);
+    if(index == 1.0) {
+        _st = rotate2D(_st, PI * 0.5);
+    } else if(index == 2.0) {
+        _st = rotate2D(_st, PI * -0.5);
+    } else if(index == 3.0) {
+        _st = rotate2D(_st, PI);
+    }
+    return _st;
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy / u_resolution.xy;
+    
+    st = tile(st, 3.0);
+    st = rotateTilePattern(st);
+    
+    // st = tile(st, 2.0);
+    // st = rotate2D(st, -PI * u_time * 0.25);
+    // st = rotateTilePattern(st * 2.);
+    // st = rotate2D(st, PI * u_time * 0.25);
+    
+    gl_FragColor = vec4(vec3(step(st.x, st.y)), 1.0);
+}
+```
+
+- 取消注释尝试创建新的设计.
+- 把黑白三角形变成其他元素, 例如: 半圆, 旋转的方形或直线.
+- 编写根据元素自身位置旋转的图形代码.
+- 创作一个根据其他位置改变其他属性的图案.
+
+易经卦
+
+```glsl
+// Author @patriciogv ( patriciogonzalezvivo.com ) - 2015
+// Title: IChing series
+
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+#define PI 3.14159265359
+#define TWO_PI 6.28318530718
+
+uniform vec2 u_resolution;
+uniform float u_time;
+
+float shape(vec2 st, float N){
+    st = st*2.-1.;
+    float a = atan(st.x,st.y)+PI;
+    float r = TWO_PI/N;
+    return abs(cos(floor(.5+a/r)*r-a)*length(st));
+}
+
+float box(vec2 st, vec2 size){
+    return shape(st*size,4.);
+}
+
+float rect(vec2 _st, vec2 _size){
+    _size = vec2(0.5)-_size*0.5;
+    vec2 uv = smoothstep(_size,_size+vec2(1e-4),_st);
+    uv *= smoothstep(_size,_size+vec2(1e-4),vec2(1.0)-_st);
+    return uv.x*uv.y;
+}
+
+float hex(vec2 st, float a, float b, float c, float d, float e, float f){
+    st = st*vec2(2.,6.);
+
+    vec2 fpos = fract(st);
+    vec2 ipos = floor(st);
+
+    if (ipos.x == 1.0) fpos.x = 1.-fpos.x;
+    if (ipos.y < 1.0){
+        return mix(box(fpos, vec2(0.84,1.)),box(fpos-vec2(0.03,0.),vec2(1.)),a);
+    } else if (ipos.y < 2.0){
+        return mix(box(fpos, vec2(0.84,1.)),box(fpos-vec2(0.03,0.),vec2(1.)),b);
+    } else if (ipos.y < 3.0){
+        return mix(box(fpos, vec2(0.84,1.)),box(fpos-vec2(0.03,0.),vec2(1.)),c);
+    } else if (ipos.y < 4.0){
+        return mix(box(fpos, vec2(0.84,1.)),box(fpos-vec2(0.03,0.),vec2(1.)),d);
+    } else if (ipos.y < 5.0){
+        return mix(box(fpos, vec2(0.84,1.)),box(fpos-vec2(0.03,0.),vec2(1.)),e);
+    } else if (ipos.y < 6.0){
+        return mix(box(fpos, vec2(0.84,1.)),box(fpos-vec2(0.03,0.),vec2(1.)),f);
+    }
+    return 0.0;
+}
+
+float hex(vec2 st, float N){
+    float b[6];
+    float remain = floor(mod(N,64.));
+    for(int i = 0; i < 6; i++){
+        b[i] = 0.0;
+        b[i] = step(1.0,mod(remain,2.));
+        remain = ceil(remain/2.);
+    }
+    return hex(st,b[0],b[1],b[2],b[3],b[4],b[5]);
+}
+
+void main(){
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+    st.y *= u_resolution.y/u_resolution.x;
+
+    st *= 10.0;
+    vec2 fpos = fract(st);
+    vec2 ipos = floor(st);
+
+    float t = u_time*5.0;
+    float df = 1.0;
+    df = hex(fpos,ipos.x+ipos.y+t)+(1.0-rect(fpos,vec2(0.7)));
+
+    gl_FragColor = vec4(mix(vec3(0.),vec3(1.),step(0.7,df)),1.0);
+}
+```
+
+### 9.4 制定自己的规则
+
+制作程序图案是种寻找最小可重复元素的古老练习. 我们作为长时间使用网格和图案来装饰织物, 地面和物品的镶边的物种. 从古希腊的弯曲图案, 到中国的窗栅设计, 重复和变化的愉悦吸引我们的想象. 花些时间浏览 [decorative](https://archive.org/stream/traditionalmetho00chririch#page/130/mode/2up) [patterns](https://www.pinterest.com/patriciogonzv/paterns/) 并看看在漫长的历史里, 艺术家和设计师是如何寻找在秩序的预测性和由混沌与衍变产生的惊奇之间的边界的. 从阿拉伯几何图案, 到斑斓的非洲编制艺术, 这里有一整个图案的宇宙要学习.

@@ -95,3 +95,243 @@ PIXI.loader
 ```
 
 另外 `loader`也允许使用 JSON 文件.
+
+# 6. 显示精灵 (sprite)
+
+在加载一个图像之后, 可以用它来创建一个精灵, 你需要用 `stage.addChild`方法把它放到 Pixi 的舞台上去, 像这样:
+
+```js
+app.stage.addChild(cat);
+```
+
+记住, 舞台是用来包裹你所有精灵的主要容器.
+
+**重点: 你不应该看见任何没被加入舞台的精灵**
+
+这里是显示一个图像, 创建一个精灵, 显示在 Pixi 舞台上所需要的所有代码:
+
+```tsx
+const app = new PIXI.Application({
+  width: 256,
+  height: 256,
+  antialias: true,
+  transparent: false,
+  resolution: 1,
+});
+
+document.body.appendChild(app.view);
+
+PIXI.loader.add('./cat.png').load(setup);
+
+function setup() {
+  const cat = new PIXI.Sprite(PIXI.loader.resources['./cat.png'].texture);
+
+  app.stage.addChild(cat);
+}
+```
+
+如果你想把一个精灵从舞台上挪走, 就可以使用 `removeChild`方法:
+
+```js
+app.stage.removeChild(anySprite);
+```
+
+但是通常, 我们都把精灵的 `visible`属性设置成 `false`来让精灵简单的隐藏.
+
+```js
+anySprite.visible = false;
+```
+
+## 6.1 使用别名
+
+你可以对你使用频繁的 Pixi 对象和方法设置一些简略的可读性更加的别名. 举个例子, 你想给所有的 Pixi 对象增加 `PIXI` 前缀么?
+
+```js
+const TextureCache = PIXI.utils.TextureCache;
+
+// 现在就可以像这样使用别名了:
+const texture = TextureCache['images/cat.png'];
+```
+
+使用别名给写出简洁的代码提供了额外的好处: 它帮助你缓存了 Pixi 的常用 API. 如果 Pixi 的 API 在将来的版本里改变了(没准真的会变). 你将只需要在一个地方更新这些对象和方法, 而不是所有的实例里.
+
+来看看怎么将所有的 Pixi 对象和方法改成别名之后, 来重写加载和显示图像的代码.
+
+```js
+// 别名
+const Application = PIXI.Application,
+      loader = PIXI.loader,
+      resources = PIXI.loader.resources,
+      Sprite = PIXI.Sprite;
+
+// 创建 Pixi App
+const app = new Application({
+    width: 256,
+    height: 256,
+    antialias: true,
+    transparent: false,
+    resolution: 1,
+});
+
+// 添加到场景
+document.body.appendChild(app.view);
+
+// 加载 cat.png
+loader.add('./cat.png').load(setup);
+
+// 加载成功
+function setup() {
+    // 创建 cat 精灵
+    const cat = new Sprite(resources['./cat.png'].texture);
+
+    // 将 cat 添加到场景
+    app.stage.addChild(cat);
+}
+```
+
+## 6.2 一些关于加载的其他知识
+
+### a. 使用普通的 javaScript Img 对象或 canvas 创建一个精灵
+
+为了优化效率我们常常选择从预加载的纹理缓存中创建精灵. 但是如果因为某些原因你需要从 JavaScript 的 `Image`对象中创建, 你可以使用 Pixi 的 `BaseTexture`和 `Texture`类:
+
+```js
+const base = new PIXI.BaseTexture(anyImageObject),
+      texture = new PIXI.Texture(base),
+      sprite = new PIXI.Sprite(texture);
+```
+
+你可以使用 `BaseTexture.fromCanvas`从任何已经存在的 canvas 标签中创建纹理:
+
+```js
+const base = new PIXI.BaseTexture.fromCanvas(anyCanvasElement);
+```
+
+如果你想改变已经显示的精灵的纹理, 使用 `texture`属性, 可以设置任何 `Texture`对象:
+
+```js
+anySprite.texture = PIXI.utils.TextureCache['anyTexture.png'];
+```
+
+### b. 给已经加载的文件设定一个名字
+
+你可以给任何你加载的源文件分配一个独一无二的别名. 你只需要在 `add`方法中第一个参数位置传进去这个别名就行了.
+
+```js
+PIXI.loader
+	.add('catImage', 'images/cat.png') // 重命名为 catImage
+	.load(setup);
+// 这个操作将在 loader.resource 中创建一个叫做 catImage 对象, 意味着你可以创建一个引用了 catImage 对象的精灵
+const cat = new PIXI.Sprite(PIXI.loader.resources.catImage.texture);
+```
+
+然而, 建议永远别用这个操作! 因为你不得不记住你所有加载文件的别名, 而且必须确信你只用了它们一次. 使用路径命名, 将事情变的更简单和更少错误.
+
+### c. 监视加载进程
+
+Pixi 的加载器有一个特殊的 `progress`事件, 它将会调用一个可以定制的函数, 这个函数将在每次文件加载时调用. `progress`事件将会被  `loader`的 `on`方法调用, 像是这样:
+
+```js
+PIXI.loader.on('progress', loadProgressHandler);
+```
+
+这里展示了怎么将 `on`方法注入加载链中, 并且每当文件加载时调用一个用户自定义的名叫 `loadProgressHandler`函数.
+
+```js
+PIXI.loader
+	.add([
+    'images/one.png',
+    'images/two.png',
+    'images/three.png'
+])
+	.on('progress', loadProgressHandler)
+	.load(setup);
+
+function loadProgressHandler() {
+    console.log('loading');
+}
+
+function setup() {
+    console.log('setup');
+}
+```
+
+每一个文件加载, progress 事件调用 `loadProgressHandler`函数在控制台输出 'loading'. 当三个文件都加载完毕, `setup`方法将会运行, 下面是控制台的输出:
+
+```
+loading
+loading
+loading
+setup
+```
+
+这就不错了, 不过还能变的更好. 你可以知道哪个文件被加载了以及有百分之多少的文件被加载了. 你可以在 `loadProgressHandler`增加 `loader`参数和 `resource`参数实现这个功能, 像这样:
+
+```js
+function loadProgressHandler(loader, resource) {
+    // 你可以使用 resource.url 变量来找到现在已经被加载的文件.(如果你想找到你定义的别名, 使用 resource.name 参数)
+    console.log('loading: ' + resource.url);
+    // 你可以使用 loader.progress 来找到现在有百分之多少的文件被加载了.
+    console.log('progress: ' + loader.progress + '%');
+}
+// 还有一些额外的 resource 对象属性
+// resource.error 会告诉你有哪些加载时候的错误
+// resource.data 将会给你文件的原始二进制数据
+```
+
+### d. 一些关于 Pixi 的加载器的其他知识
+
+Pixi 的加载器有很多可以设置的功能:
+
+`add`方法有四个基础参数:
+
+```js
+add(name, url, optionObject, callbackFunction);
+```
+
+| 名称                | 类型                         | 描述                                                         |
+| ------------------- | ---------------------------- | ------------------------------------------------------------ |
+| name                | string                       | 加载源文件的别名, 如果没有设置, `url`就会放在这.             |
+| url                 | string                       | 源文件的地址, 是加载器 `baseUrl`的相对地址.                  |
+| options             | object                       | 加载设置.                                                    |
+| options.crossOrigin | boolean                      | 源文件请求跨域不? 默认是自动设定的.                          |
+| options.loadType    | `Resource.LOAD_TYPE`         | 源文件是怎么加载进来的? 默认是 `Resource.LOAD_TYPE.XHR`      |
+| options.xhrType     | `Resource.XHR_RESPONSE_TYPE` | 用 XHR 的时候怎么处理数据? 默认是 `Resource.XHR_RESPONSE_TYPE.DEFAULT` |
+| callbackFunction    | function                     | 当这个特定的资源加载完后, 这个函数将会被执行                 |
+
+只有 `url`必填.
+
+```js
+// 正常语法
+.add('key', 'http://...', function() {});
+.add('http://...', function() {});
+.add('http://...');
+// 对象语法
+.add({
+    name: 'key',
+    url: 'http://...'
+}, function() {});
+.add({
+    url: 'http://...'
+}, function() {});
+.add({
+    name: 'key2',
+    url: 'http://...',
+    onComplete: function() {}
+});
+.add({
+    url: 'https://...',
+    onComplete: function() {},
+    crossOrigin: true
+});
+// 传一个数组, 即可以使用对象, 也可以使用链式加载
+.add([
+    {name: 'key', url: 'http://...', onComplete: function() {}},
+    {url: 'http://...', onComplete: function() {}},
+    'http://...'
+]);
+```
+
+**注意: 如果你需要重新加载一批文件, 调用加载器的 `reset`方法: `PIXI.loader.reset();`**
+
+Pixi 的加载器还有许多其他的高级特性, 包括可以让你加载和解析所有类型的二进制文件的选项.

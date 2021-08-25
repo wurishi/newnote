@@ -2467,3 +2467,324 @@ void main() {
 
 ### 8.1 平移
 
+之前的章节我们学习了如何制作一些图形, 而如何移动它们的技巧则是借助移动它们自身的参考坐标系. 我们只需要给 st 变量加上一个包含每个片段的位置的向量, 就可以移动整个坐标系了.
+
+```glsl
+// Author @patriciogv ( patriciogonzalezvivo.com ) - 2015
+
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform float u_time;
+
+float box(in vec2 _st, in vec2 _size) {
+    _size = vec2(0.5) - _size * 0.5;
+    vec2 uv = smoothstep(_size, _size + vec2(0.001), _st);
+    uv *= smoothstep(_size, _size + vec2(0.001), vec2(1.0) - _st);
+    return uv.x * uv.y;
+}
+
+float cross(in vec2 _st, float _size) {
+    return box(_st, vec2(_size, _size / 4.)) + box(_st, vec2(_size / 4., _size));
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy / u_resolution.xy;
+    vec3 color = vec3(0.0);
+    
+    vec2 translate = vec2(cos(u_time), sin(u_time));
+    st += translate * 0.35;
+    
+    // 显示极坐标下的背景颜色
+    // color = vec3(st.x, st.y, 0.0);
+    
+    color += vec3(cross(st, 0.25));
+    
+    gl_FragColor = vec4(color, 1.0);
+}
+```
+
+试一下:
+
+- 结合 `u_time`和造型函数来移动十字, 并试着让它有趣一点. 找一个你觉得你感兴趣的某种运动形式, 让这个十字也这样运动. 真实世界中的一些现象或许会对你有所启发 - 可以是波的运动, 摆动, 弹球, 汽车的加速运动, 一辆自行车的刹车等.
+
+### 8.2 旋转
+
+要移动物体, 我们同样需要移动整个空间(坐标)系统. 为此我们将使用一个矩阵. 矩阵是一个通过行和列定义的一组数. 用矩阵乘以一个向量是用一组精确的规则定义的, 这样做是为了以一组特定的方式来改变向量的值.
+$$
+\begin{bmatrix}
+a & b \\
+c & d
+\end{bmatrix} \cdot \begin{bmatrix}
+x \\
+y
+\end{bmatrix} = \begin{bmatrix}
+ax + by \\
+cx + dy
+\end{bmatrix}
+$$
+
+$$
+\begin{bmatrix}
+a & b & c \\
+d & e & f \\
+0 & 0 & 1
+\end{bmatrix} \cdot \begin{bmatrix}
+x \\
+y \\
+1
+\end{bmatrix} = \begin{bmatrix}
+ax + by + c \\
+dx + ey + f \\
+1
+\end{bmatrix}
+$$
+
+$$
+\begin{bmatrix}
+a & b & c \\
+d & e & f \\
+g & h & i
+\end{bmatrix} \cdot \begin{bmatrix}
+x \\
+y \\
+z
+\end{bmatrix} = \begin{bmatrix}
+ax + by + cz \\
+dx + ey + fz \\
+gx + hy + iz
+\end{bmatrix}
+$$
+
+$$
+\begin{bmatrix}
+a & b & c & d \\
+e & f & g & h \\
+i & j & k & l \\
+0 & 0 & 0 & 1
+\end{bmatrix} \cdot \begin{bmatrix}
+x \\
+y \\
+z \\
+1
+\end{bmatrix} = \begin{bmatrix}
+ax + by + cz + d \\
+ex + fy + gz + h \\
+ix + jy + kz + l \\
+1
+\end{bmatrix}
+$$
+
+GLSL 本身支持 2维, 3维和 4维方阵 (矩阵): `mat2(2x2), mat3(3x3) 和 mat4(4x4)`. GLSL 同样支持矩阵相乘和特殊矩阵函数.
+
+基于矩阵的特性, 我们便有可能构造一个矩阵来产生特定的作用. 比如我们可以用一个矩阵来平移一个向量:
+$$
+\begin{bmatrix}
+1 & 0 & t_x \\
+0 & 1 & t_y \\
+0 & 0 & 1
+\end{bmatrix} \cdot \begin{bmatrix}
+x \\
+y \\
+1
+\end{bmatrix} = \begin{bmatrix}
+x + t_x \\
+y + t_y \\
+1
+\end{bmatrix}
+$$
+更有趣的是, 我们可以用矩阵来旋转坐标系统
+$$
+\begin{bmatrix}
+cos\empty & -sin\empty & 0 \\
+sin\empty & cos\empty & 0 \\
+0 & 0 & 1
+\end{bmatrix} \cdot \begin{bmatrix}
+x \\
+y \\
+1
+\end{bmatrix} = \begin{bmatrix}
+x.cos\empty - y.sin\empty \\
+x.sin\empty + y.cos\empty \\
+1
+\end{bmatrix}
+$$
+看下下面构成2维旋转的矩阵的代码. 这个函数根据上面的公式, 将二维向量绕 vec2(0.0) 点旋转.
+
+```glsl
+mat2 rotate2d(float _angle) {
+    return mat2(cos(_angle), -sin(_angle), sin(_angle), cos(_angle));
+}
+```
+
+根据以往我们画形状的方式, 这并不是我们想要的. 我们的十字是画在画布中心的, 对应于点 `vec2(0.5)`. 所以, 再旋转坐标空间之间, 我们需要先把图形移到中心点, 坐标 `vec2(0.0)`, 再旋转坐标空间, 最后在移动回原点.
+
+```glsl
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+#define PI 3.14159265359
+    
+uniform vec2 u_resolution;
+uniform float u_time;
+
+mat2 rotate2d(float _angle) {
+    return mat2(cos(_angle), -sin(_angle), sin(_angle), cos(_angle));
+}
+
+float box(in vec2 _st, in vec2 _size) {
+    _size = vec2(0.5) - _size * 0.5;
+    vec2 uv = smoothstep(_size, _size + vec2(0.001), _st);
+    uv *= smoothstep(_size, _size + vec2(0.001), vec2(1.0) - _st);
+    return uv.x * uv.y;
+}
+
+float cross(in vec2 _st, float _size) {
+    return box(_st, vec2(_size, _size / 4.)) + box(_st, vec2(_size / 4., _size));
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy / u_resolution.xy;
+    vec3 color = vec3(0.0);
+    
+    // 移动到 vec2(0.0)
+    st -= vec2(0.5);
+    // 旋转
+    st = rotate2d(sin(u_time) * PI) * st;
+    // 移动回原始位置
+    st += vec2(0.5);
+    
+    // 显示极坐标下的背景色
+    // color = vec3(st.x, st.y, 0.0);
+    
+    color += vec3(cross(st, 0.4));
+    
+    gl_FragColor = vec4(color, 1.0);
+}
+```
+
+试一下:
+
+- 取消 `color = vec3(st.x, st.y, 0.0);`, 看看会发生什么.
+- 将旋转之前的平移注释掉, 观察结果.
+- 用旋转改进在平移练习中模拟的动画.
+
+### 8.3 缩放
+
+我们看到了如何用矩阵平移和旋转物体. (或者更准确的说, 如何通过变换坐标系统来旋转和移动物体.) . 接下来通过矩阵来缩放物体的大小.
+$$
+\begin{bmatrix}
+S_x & 0 & 0 \\
+0 & S_y & 0 \\
+0 & 0 & S_z
+\end{bmatrix} \cdot \begin{bmatrix}
+x \\
+y \\
+z
+\end{bmatrix} = \begin{bmatrix}
+S_x \cdot x \\
+S_y \cdot y \\
+S_z \cdot z
+\end{bmatrix}
+$$
+根据上面的公式, 我们知道如何构造一个2D缩放矩阵:
+
+```glsl
+mat2 scale(vec2 _scale) {
+    return mat2(_scale.x, 0.0, 0.0, _scale.y);
+}
+```
+
+```glsl
+// Author @patriciogv ( patriciogonzalezvivo.com ) - 201
+
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+#define PI 3.14159265359
+    
+uniform vec2 u_resolution;
+uniform float u_time;
+
+mat2 scale(vec2 _scale) {
+    return mat2(_scale.x, 0.0, 0.0, _scale.y);
+}
+
+float box(in vec2 _st, in vec2 _size) {
+    _size = vec2(0.5) - _size * 0.5;
+    vec2 uv = smoothstep(_size, _size + vec2(0.001), _st);
+    uv *= smoothstep(_size, _size + vec2(0.001), vec2(1.0) - _st);
+    return uv.x * uv.y;
+}
+
+float cross(in vec2 _st, float _size) {
+    return box(_st, vec2(_size, _size / 4.)) + box(_st, vec2(_size / 4., _size));
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy / u_resolution.xy;
+    vec3 color = vec3(0.0);
+    
+    st -= vec2(0.5);
+    st = scale(vec2(sin(u_time) + 1.0)) * st;
+    st += vec2(0.5);
+    
+    // 显示极坐标下的背景色
+    // color = vec3(st.x, st.y, 0.0);
+    
+    color += vec3(cross(st, 0.2));
+    
+    gl_FragColor = vec4(color, 1.0);
+}
+```
+
+试一下:
+
+- 取消极坐标背景色的代码注释, 来观察空间坐标是如何被缩放的.
+- 注释掉缩放前后的平移, 看看会发生什么.
+- 试着结合旋转矩阵和缩放矩阵. 注意他们的先后顺序. 先乘以一个矩阵, 再乘以向量.
+- 现在你知道如何画不同的图形, 知道如何移动, 旋转和缩放它们了, 是时候用这些来创作了. 设计一个 [fake UI or HUD (heads up display)](https://www.pinterest.com/patriciogonzv/huds/). 参考 [Ndel](https://www.shadertoy.com/user/ndel) 在 ShaderToy 上的例子.
+
+### 8.4 矩阵的其他应用: YUV 颜色
+
+[YUV](http://en.wikipedia.org/wiki/YUV) 是个用来模拟照片和视频的编码的色彩空间. 这个色彩空间考虑人类的感知, 减少色度的带宽.
+
+下面的代码展现一种利用 GLSL 中的矩阵操作来切换颜色模式的有趣可能.
+
+```glsl
+// Author @patriciogv - 2015
+// http://patriciogonzalezvivo.com
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform float u_time;
+
+// YUV to RGB matrix
+mat3 yuv2rgb = mat3(1.0, 0.0, 1.13983,
+                   1.0, -0.39465, -0.58060,
+                   1.0, 2.03211, 0.0);
+// RGB to YUV matrix
+mat3 rgb2yuv = mat3(0.2126, 0.7152, 0.0722,
+                   -0.09991, -0.33609, 0.43600,
+                   0.615, -0.5586, -0.05639);
+
+void main() {
+    vec2 st = gl_FragCoord.xy / u_resolution.xy;
+    vec3 color = vec3(0.0);
+    
+    st -= 0.5; // -0.5 to 0.5
+    st *= 2.0; // -1.0 to 1.0
+    
+    color = yuv2rgb * vec3(0.5, st.x, st.y);
+    
+    gl_FragColor = vec4(color, 1.0);
+}
+```
+
+在如你所见, 我们用对向量乘以矩阵的方式对待色彩. 用这种方式, 我们 "移动" 这些值.

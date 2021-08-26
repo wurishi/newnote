@@ -106,7 +106,7 @@ leetcode
 
 [Examples](https://pixijs.io/examples)
 
-[LearningPixi](https://github.com/Zainking/learningPixi) *(进行中 10/25)*
+[LearningPixi](https://github.com/Zainking/learningPixi) *(进行中 11/25)*
 
 # reactconcurrent
 

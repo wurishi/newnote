@@ -4007,12 +4007,64 @@ Wl3fzM
 
 ![661](assets/661.jpg)
 
+# 662. Sculpture III
+
+XtjSDK
+
+![662](assets/662.jpg)
+
+# 663. Descent 3D
+
+wdfGW4
+
+![663](assets/663.jpg)
+
+# 664. Dual 3D Truchet Tiles
+
+4l2cD3
+
+![664](assets/664.jpg)
+
+# 665. More spheres
+
+lsX3DH
+
+![665](assets/665.jpg)
+
+# 666. Bubble rings
+
+WdB3Dw
+
+![666](assets/666.jpg)
+
+# 667. Abandoned base
+
+XsSSRW
+
+![667](assets/667.jpg)
+
+# 668. Ring Twister
+
+Xt23z3
+
+![668](assets/668.jpg)
+
+# 669. marble
+
+XsSGDh
+
+![669](assets/669.jpg)
+
+# 670. glyphspinner
+
+XsVcDy
+
+![670](assets/670.jpg)
 
 
 
 
 
-
-https://www.shadertoy.com/results?query=&sort=love&from=240&num=12
+https://www.shadertoy.com/results?query=&sort=love&from=252&num=12
 
 https://www.shadertoy.com/user/jeyko/sort=popular&from=8&num=8

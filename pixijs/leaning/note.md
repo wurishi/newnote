@@ -335,3 +335,124 @@ add(name, url, optionObject, callbackFunction);
 **注意: 如果你需要重新加载一批文件, 调用加载器的 `reset`方法: `PIXI.loader.reset();`**
 
 Pixi 的加载器还有许多其他的高级特性, 包括可以让你加载和解析所有类型的二进制文件的选项.
+
+# 7. 精灵的位置
+
+现在你知道了怎么创建和显示一个精灵, 让我们学习如何定位他们的位置和改变他们的大小. 在最早的示例里, 精灵被放在了舞台的左上角. 它的 `x y`坐标都是 0. 你可以通过改变它的 `x,y`坐标的值来改变他们的位置.
+
+```js
+function setup() {
+    const cat = new Sprite(resources['./cat.png'].texture);
+    
+    cat.x = 96;
+    cat.y = 96;
+    // 你也可以一句话设置精灵的 x y
+    // sprite.position.set(x, y);
+    
+    app.stage.addChild(cat);
+}
+```
+
+# 8. 大小和比例
+
+能够通过精灵的 `width`和 `height`属性来改变它的大小.
+
+```js
+cat.width = 80;
+cat.height = 120;
+```
+
+精灵都有 `scale.x`和 `scale.y`属性, 它们可以成比例的改变精灵的宽高.
+
+```js
+// 大小变成一半
+cat.scale.x = 0.5;
+cat.scale.y = 0.5;
+```
+
+scale 的值是从 0 到 1 之间的数字, 代表了它对于原来精灵大小的百分比. 1 意味着 100% (原来的大小), 所以 0.5 意味着 50% (一半大小).
+
+```js
+// 增大1倍
+cat.scale.x = 2;
+cat.scale.y = 2;
+```
+
+Pixi 可以用一行代码缩放你的精灵.
+
+```js
+cat.scale.set(0.5, 0.5);
+```
+
+# 9. 角度
+
+你可以通过对一个精灵的 `rotation`设定一个角度来旋转它.
+
+```js
+cat.rotation = 0.5;
+```
+
+但是旋转是针对于哪一个点发生的呢? 之前已经了解了, 精灵的左上角代表它的位置, 这个点被称之为锚点. 所以默认情况下是根据精灵的左上角作为旋转中心进行旋转的.
+
+如何改变锚点呢? 通过改变精灵的 `anchor`属性的 `x,y` 值来实现.
+
+```js
+cat.anchor.x = 0.5;
+cat.anchor.y = 0.5;
+```
+
+`anchor.x`和 `anchor.y`的值都是从 0 到1, 代表了整个纹理的高度或宽度的百分比. 设置它们都为 0.5, 锚点就处在了图像中心.
+
+和 position 和 scale 属性一样, 锚点也可以在一行内设置.
+
+```js
+cat.anchor.set(x, y);
+```
+
+精灵也提供了和 `anchor`差不多的 `pivot`属性来设置精灵的原点. 如果你改变了它的值之后旋转精灵, 它将会围绕着你设置的原点来旋转.
+
+```js
+cat.pivot.set(32, 32);
+// 假设精灵图是64x64像素, 这样设置它将绕着它的中心点旋转
+```
+
+所以 `anchor`和 `pivot`的不同之处在哪里呢? `anchor`改变精灵纹理的图像原点, 用 0 到 1 的数据来填充. `pivot`则改变精灵的原点, 用像素的值来填充.
+
+# 10. 从雪碧图中创建精灵
+
+你现在已经知道了怎么从一个单文件内加载图像. 但实际应用中更经常使用的是雪碧图(也被称为精灵图). Pixi 封装了一些方便的方式来处理这种情况. 所谓雪碧图就是用一个单文件包含了多个图片的文件, 类似下面这样:
+
+![sprite](sprite.png)
+
+整个雪碧图是 192x192 像素宽高, 但每一个单图像只占有一个 32x32 的网格. 把所有图像存储在一个雪碧图上是一个非常有效率和工程化的手段, Pixi 为此做出了优化. 可以从一个雪碧图中用一个矩形区域捕获一个子图像. 这个矩形拥有和你想提取的子图像一样的大小和位置.
+
+下面是一个从精灵图中获取"火箭"这个子图像的例子:
+
+```js
+function setup() {
+  const texture = TextureCache['./tileset.png'];
+
+  const rectangle = new Rectangle(32 * 3, 32 * 2, 32, 32);
+
+  texture.frame = rectangle;
+
+  const rocket = new Sprite(texture);
+
+  rocket.position.set(32, 32);
+
+  app.stage.addChild(rocket);
+}
+```
+
+它是如何工作的呢?
+
+Pixi 内置了一个通用的 `Rectangle`对象 (`Pixi.Rectangle`), 它是一个用于定义矩形形状的通用对象. 它需要一些参数, 前两个参数定义了 `x,y`轴坐标位置, 后两个参数定义了矩形的 `width`和 `height`.
+
+```js
+const rectangle = new PIXI.Rectangle(x, y, width, height);
+```
+
+这个矩形对象仅仅是一个数据对象, 如何使用它完全取决于你. 在我们的例子中它用来定义子图像在雪碧图中的位置和大小. Pixi 的 `Texture`有一个叫做 `frame`的属性, 它可以被设置为 `Rectangle`对象. `frame`将纹理映射到 `Rectangle`指定的维度.
+
+因为从一个雪碧图中创建精灵的纹理是一个很频繁的操作, 后面会介绍在 Pixi 中更加合适的方式来处理这件事情.
+

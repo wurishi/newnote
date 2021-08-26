@@ -106,7 +106,7 @@ leetcode
 
 [Examples](https://pixijs.io/examples)
 
-[LearningPixi](https://github.com/Zainking/learningPixi) *(进行中 6/25)*
+[LearningPixi](https://github.com/Zainking/learningPixi) *(进行中 10/25)*
 
 # reactconcurrent
 
@@ -118,7 +118,7 @@ concurrent 实验
 
 # reactwebpack4cook
 
-参考资料: [React-webpack4-cook](https://juejin.im/post/6844903862898262024?utm_source=gold_browser_extension#heading-32)
+参考资料: [React-webpack4-cook](https://juejin.im/post/6844903862898262024?utm_source=gold_browser_extension#heading-32) **(完成)**
 
 # reduxsaga
 

@@ -785,3 +785,159 @@ const superFastSprites = new ParticleContainer(maxSize, properties, batchSize, a
 
 注意: **UV mapping** 是一个 3D 图表展示术语, 它指纹理(图片)准备映射到三维表面的 `x, y`坐标. `U`是 `x轴`, `V`是 `y轴`. WebGL 使用 `x, y, z`来进行三维空间定位. 所以 `U, V`被选为表示 2D 图片纹理的 `x, y`.
 
+# 19. 用 Pixi 绘制几何图形
+
+使用图片纹理是制作精灵最有效的方式之一, 但是 Pixi 也提供了自己低级的绘画工具. 你可以使用它们来创建矩形, 线段, 复杂的多边形以及文本. 并且它们使用和 [Canvas Drawing API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial) 几乎一致的 api, 所以如果你熟悉 canvas 的话, 那么几乎没有什么新东西需要学习. 当然另一个巨大的优势在于, 不同于 canvas 的绘画 api, 你使用 Pixi 绘制的图形是通过 WebGL 在 GPU 上渲染的. Pixi 能够让你获得所未触碰到的性能.
+
+## 19.1 矩形
+
+所有的形状初始化都是先创造一个 Pixi 的 `Graphics (PIXI.Graphics)`类的实例开始的.
+
+```js
+const rectangle = new Graphics();
+```
+
+调用 `beginFill`和一个16进制的颜色值来设置矩形的填充颜色.
+
+```js
+rectangle.beginFill(0x66CCFF);
+```
+
+如果你想要给图形设置一个轮廓, 使用 `lineStyle`方法.
+
+```js
+rectangle.lineStyle(4, 0xFF3300, 1);
+// 4像素宽, alpha 为 1 的红色轮廓
+```
+
+调用 `dragRect`方法来画一个矩形.
+
+```js
+rectangle.drawRect(x, y, width, height);
+```
+
+调用 `endFill`结束绘制.
+
+```js
+rectangle.endFill();
+```
+
+它看起来就像 Canvas 的绘画 api 一样.
+
+```js
+const rectangle = new Graphics();
+rectangle.lineStyle(4, 0xff3300, 1);
+rectangle.beginFill(0x66ccff);
+rectangle.drawRect(0, 0, 64, 64);
+rectangle.endFill();
+
+rectangle.x = 170;
+rectangle.y = 170;
+
+app.stage.addChild(rectangle);
+```
+
+## 19.2 圆形
+
+调用 `drawCircle`方法来创造一个圆.
+
+```js
+drawCircle(x, y, radius);
+```
+
+不同于矩形和精灵, 一个圆形的 `x, y`坐标也是它自身的圆点.
+
+```js
+const circle = new Graphics();
+circle.beginFill(0x9966ff);
+circle.drawCircle(0, 0, 32);
+circle.endFill();
+circle.x = 64;
+circle.y = 130;
+app.stage.addChild(circle);
+```
+
+## 19.3 椭圆
+
+`drawEllipse`是一个卓越的 Canvas 绘画 api, Pixi 也能够让你调用 `drawEllipse`来绘制椭圆.
+
+```js
+drawEllipse(x, y, width, height);
+```
+
+`x, y`坐标位置决定了椭圆的左上角 (想象椭圆被一个不可见的矩形边界盒包围着, 盒的左上角代表了椭圆 `x, y`的锚点位置).
+
+```js
+const ellipse = new Graphics();
+ellipse.beginFill(0xffff00);
+ellipse.drawEllipse(0, 0, 50, 20);
+ellipse.endFill();
+ellipse.x = 180;
+ellipse.y = 130;
+app.stage.addChild(ellipse);
+```
+
+## 19.4 圆角矩形
+
+Pixi 同样允许你调用 `drawRoundedRect`方法来创建圆角矩形. 
+
+```js
+drawRoundedRect(x, y, width, height, cornerRadius);
+```
+
+最后一个参数 `cornerRadius`单位为像素, 代表矩形的圆角应该有多圆.
+
+```js
+const roundBox = new Graphics();
+roundBox.lineStyle(4, 0x99ccff, 1);
+roundBox.beginFill(0xff9933);
+roundBox.drawRoundedRect(0, 0, 84, 36, 10);
+roundBox.endFill();
+roundBox.x = 48;
+roundBox.y = 190;
+app.stage.addChild(roundBox);
+```
+
+## 19.5 线段
+
+你可以调用 `moveTo`和 `lineTo`方法来画线段的起点和终点, 并配合 `lineStyle`改变线段的样式.
+
+```js
+const line = new Graphics();
+line.lineStyle(4, 0xffffff, 1);
+line.moveTo(0, 0);
+line.lineTo(80, 50);
+line.x = 32;
+line.y = 32;
+app.stage.addChild(line);
+```
+
+## 19.6 多边形
+
+你可以使用 `drawPolygon`方法来将线段连接起来并且填充颜色来创造复杂图形. `drawPolygon`的参数是一个路径数组, 数组中的每个值决定图形每个点位置的 `x, y`坐标.
+
+```js
+const path = [
+    point1X, point1Y,
+    point2X, point2Y,
+    point3X, point3Y
+];
+graphicsObject.drawPolygon(path);
+```
+
+`drawPolygon`会将上面三个点连接起来创造图形.
+
+```js
+const triangle = new Graphics();
+triangle.beginFill(0x66FF33);
+triangle.drawPolygon([
+    -32, 64, //
+    32, 64, //
+    0, 0
+]);
+triangle.endFill();
+triangle.x = 180;
+triangle.y = 22;
+app.stage.addChild(triangle);
+```
+

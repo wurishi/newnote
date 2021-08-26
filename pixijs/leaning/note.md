@@ -468,3 +468,63 @@ Pixi 兼容著名软件 [Texture Packer](https://www.codeandweb.com/texturepacke
 
 注意: 如果你在每个图像的周围留了两个像素的出血, 你必须时时刻刻注意 Pixi 显示时"丢了一个像素"的情况. 尝试着去改变纹理的缩放模式来重新计算它(`texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;`). 这往往发生于你的 GPU 浮点运算凑整失败的时候.
 
+# 12. 加载纹理贴图集
+
+可以使用 Pixi 的 `loader`来加载纹理贴图集. 如果是用 Texture Packer 生成的 JSON, `loader`会自动读取数据, 并对每一个帧创建纹理. 
+
+```js
+loader.add('./treasureHunter.json').load(setup);
+```
+
+当纹理贴图集加载成功后, `setup`将会执行. 并且现在每一个图像的帧都被加载进 Pixi 的纹理缓存之中了. 你可以使用 Texture Packer 中定义的它们的名字来取用每一个纹理.
+
+# 13. 从已经加载的纹理贴图集中创建精灵
+
+通常 Pixi 有三种方式从已经加载的纹理贴图集中创建精灵:
+
+1. 使用 `TextureCache`:
+
+   ```js
+   const texture = TextureCache['frameId.png'],
+         sprite = new Sprite(texture);
+   ```
+
+2. 使用 `loader.resources`:
+
+   ```js
+   const sprite = new Sprite(resources['treasureHunter.json'].textures['frameId.png']);
+   ```
+
+3. 创建一个 `id`别名:
+
+   ```js
+   const id = PIXI.loader.resources['treasureHunter.json'].textures;
+   const sprite = new Sprite(id['frameId.png']);
+   ```
+
+```js
+let dungeon, explorer, treasure, id;
+function setup() {
+    // 1. 使用 TextureCache
+    const dungeonTexture = TextureCache['dungeon.png'];
+    dungeon = new Sprite(dungeonTexture);
+    app.stage.addChild(dungeon);
+
+    // 2. 使用 loader.resources
+    explorer = new Sprite(
+        resources['./treasureHunter.json'].textures['explorer.png']
+    );
+    explorer.x = 68;
+    explorer.y = app.stage.height / 2 - explorer.height / 2;
+    app.stage.addChild(explorer);
+
+    // 3. 使用 id 别名
+    id = resources['./treasureHunter.json'].textures;
+    treasure = new Sprite(id['treasure.png']);
+
+    treasure.x = app.stage.width - treasure.width - 48;
+    treasure.y = app.stage.height / 2 - treasure.height / 2;
+    app.stage.addChild(treasure);
+}
+```
+

@@ -941,3 +941,70 @@ triangle.y = 22;
 app.stage.addChild(triangle);
 ```
 
+# 20. 显示文本
+
+使用一个 `Text (PIXI.Text)`对象在舞台上展示文本.
+
+```js
+const message = new Text('Hello Pixi!');
+app.stage.addChild(message);
+```
+
+这将会在画布上展示文本 'Hello, Pixi!'. Pixi 的文本对象继承自 `Sprite`类, 所以它包含了所有相同的属性, 像 `x, y, width, height, alpha, rotation`. 你可以像处理其他精灵一样在舞台上定位或调整文本.
+
+如果你想要更绚丽的文字, 使用 Pixi 的 `TextStyle`函数来自定义文字效果.
+
+```js
+const style = new TextStyle({
+    fontFamily: 'Arial',
+    fontSize: 36,
+    fill: 'white',
+    stroke: '#ff3300',
+    strokeThickness: 4,
+    dropShadow: true,
+    dropShadowColor: '#000000',
+    dropShadowBlur: 4,
+    dropShadowAngle: Math.PI / 6,
+    dropShadowDistance: 6,
+});
+```
+
+添加 `style`对象作为 `Text`构造函数的第二个参数来应用样式到文本上.
+
+```js
+const message = new PIXI.Text('Hello Pixi!', style);
+```
+
+如果你想要在创建文本对象之后改变它的内容, 使用 `text`属性.
+
+```js
+message.text = 'Text changed!';
+```
+
+如果想要重新定义样式属性, 使用 `style`属性.
+
+```js
+message.style = {fill: 'black', font: '16px PetMe64'};
+```
+
+Pixi 通过调用 Canvas 绘画 api 将文本渲染成不可见或临时的 canvas 元素来创建文本对象. 它之后会将画布转化为 WebGL 纹理, 所以可以被映射到精灵上. 这就是为什么文本的颜色需要被包裹成字符串: 那是 canvas 绘画 api 的颜色值. 与任何 canvas 颜色值一样, 你可以使用 "red" 或 "green" 等常用颜色的单词, 或使用 "rgba", "hlsa"或十六进制值.
+
+Pixi 也能包裹长段文本. 设置文本的 `wordWrap`样式属性为 `true`, 然后设置 `wordWrapWidth`到一行文字应该到的最大像素. 调用 `align`属性来设置多行文本的对齐方式.
+
+```js
+message.style = {wordWrap: true, wordWrapWidth: 100, align: 'center'};
+```
+
+注意: `align`不会影响单行文本.
+
+如果想要使用自定义的字体文件, 使用 CSS 的 `@font-face`规则来链接字体文件到 Pixi 应用运行的 HTML 页面.
+
+```css
+@font-face {
+    font-family: "fontFamilyName";
+    src: url("fonts/fontFile.ttf");
+}
+```
+
+Pixi 也支持位图字体. 你可以使用 Pixi 的加载器来加载 XML 位图文件, 就像你加载 JSON 或图片文件一样.
+

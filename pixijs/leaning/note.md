@@ -576,6 +576,89 @@ cat.vy = 0;
 接下来, 在游戏循环中, 更新 `vx, vy`为你想让精灵移动的速度值. 然后把这些值赋给精灵的 `x, y`属性.
 
 ```js
+let cat;
+function setup() {
+  cat = new Sprite(TextureCache['./cat.png']);
+  cat.y = 96;
+  cat.vx = 0;
+  cat.vy = 0;
+  app.stage.addChild(cat);
 
+  app.ticker.add((delta) => gameLoop(delta));
+}
+
+function gameLoop(delta) {
+  // 设置速度
+  cat.vx = 1;
+  cat.vy = 1;
+
+  cat.x += cat.vx;
+  cat.y += cat.vy;
+}
+```
+
+# 16. 游戏状态
+
+一种代码风格:
+
+```js
+let cat, state;
+
+function setup() {
+    cat = new Sprite(resources['./cat.png'].texture);
+    cat.y = 96;
+    cat.vx = 0;
+    cat.vy = 0;
+    app.stage.addChild(cat);
+    
+    state = play;
+    
+    app.ticker.add(delta => gameLoop(delta));
+}
+
+function gameLoop(delta) {
+    state(delta);
+}
+
+function play(delta) {
+    cat.vx = 1;
+    cat.x += cat.vx;
+}
+```
+
+# 17. 键盘响应
+
+只需要再做一点微小的工作, 你就可以建立一个通过键盘控制精灵移动的简单系统.
+
+```js
+function keyboard(keyCode) {
+  const key = {
+    code: keyCode,
+    isDown: false,
+    isUp: true,
+    press: () => {},
+    release: () => {},
+    downHandler: (event) => {
+      if (event.keyCode === key.code) {
+        if (key.isUp && key.press) key.press();
+        key.isDown = true;
+        key.isUp = false;
+      }
+      event.preventDefault();
+    },
+    upHandler: (event) => {
+      if (event.keyCode === key.code) {
+        if (key.isDown && key.release) key.release();
+        key.isDown = false;
+        key.isUp = true;
+      }
+      event.preventDefault();
+    },
+  };
+
+  window.addEventListener('keydown', key.downHandler, false);
+  window.addEventListener('keyup', key.upHandler, false);
+  return key;
+}
 ```
 

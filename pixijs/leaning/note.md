@@ -662,3 +662,126 @@ function keyboard(keyCode) {
 }
 ```
 
+# 18. 给精灵分组
+
+分组让你能够在场景中像一个单一单元一样管理相似的多个精灵图. Pixi 有一个对象叫 `Container`, 它可以帮你做这些工作.
+
+```js
+// 假设有三个精灵已经创建好了分别为 cat, hedgehog, tiger
+// 创建一个 animals 容器
+const animals = new Container();
+// 用 addChild 把精灵图添加到分组中
+animals.addChild(cat);
+animals.addChild(hedgehog);
+animals.addChild(tiger);
+// 最后把分组添加到舞台中
+app.stage.addChild(animals);
+// stage 也是一个 Container, 它是Pixi的根容器
+```
+
+现在你可以像对待单一单元一样对待 `animals`分组. 你可以把 `Container`当作是一个特殊类型的但不包含任何纹理的精灵.
+
+如果你需要获取 `animals`包含的所有子精灵, 你可以用它的 `children`数组获取.
+
+```js
+console.log(animals.children);
+// Array [Object, Object, Object]
+```
+
+因为 `animals`分组跟其他精灵一样, 你可以改变它的 `x, y`的值, `alpha, scale`和其他精灵的属性. 所有你改变的父容器的属性值, 都会改变它的子精灵的相应属性. 所以如果你设置分组的 `x, y`的位置. 所有的子精灵都会相对于分组的左上角重新定位.
+
+分组也有它自己的尺寸, 它是以包含的精灵所占的区域计算出来的.
+
+如果你喜欢, 你可以在一个 `Container`里嵌套许多其他的 `Container`, 如果你需要, 完全可以创建一个更深的层次. 然而, 一个 `DisplayObject`(像 `Sprite`或 `Container`)只能一次属于一个父级. 如果你用 `addChild`让一个精灵成为其他精灵的孩子. Pixi 会自动先移除它当前的父级.
+
+## 18.1 局部位置和全局位置
+
+当你往一个 `Container`添加一个精灵时, 它的 `x, y`的位置是相对于分组的左上角的. 这是精灵的局部位置.
+
+精灵图还有全局位置, 全局位置是舞台左上角到精灵锚点(通常是精灵的左上角)的距离. 你可以通过 `toGlobal`方法找到精灵图的全局位置.
+
+```js
+parentSprite.toGlobal(childSprite.position);
+```
+
+```js
+// 假设 cat 的局部位置为 {x: 16, y: 16}
+console.log(animals.toGlobal(cat.position));
+// 假设 animals 的位置为 {x: 64, y: 64}
+// 那么输出结果为: {x: 80, y: 80, ....}
+```
+
+如果你想知道一个精灵的全局位置, 但是不知道精灵的父容器怎么办? 每个精灵图都有一个属性 `parent`能告诉你精灵的父级是什么.
+
+```js
+// 即使不知道 cat 的当前父级是谁, 也能正确获取全局位置
+cat.parent.toGlobal(cat.position);
+```
+
+还有一种方式能够计算出全局位置, 而且它实际上是最好的方式, `getGlobalPosition`:
+
+```js
+tiger.getGlobalPosition().x;
+tiger.getGlobalPosition().y;
+```
+
+`getGlobalPosition`是高精度的, 当精灵的局部位置改变的同时, 它会返回给你精确的全局位置, 这便于开发精确的碰撞检测游戏.
+
+如果你想转换全局位置为局部位置怎么办? 你可以用 `toLocal`方法.
+
+```js
+sprite.toLocal(sprite.position, anyOtherSprite);
+```
+
+用 `toLocal`找到一个精灵和其他任何一个精灵之间的距离.
+
+```js
+tiger.toLocal(tiger.position, hedgehog).x;
+```
+
+## 18.2 使用 ParticleContainer 分组精灵
+
+Pixi 有一个额外的, 高性能的方式去分组精灵的方法称作: `ParticleContainer (PIXI.particles.ParticleContainer)`. 任何在 `ParticleContainer`里的精灵都会比在一个普通的 `Container`的渲染速度快 2 到 5 倍. 这是用于提升游戏性能的一个很棒的方法.
+
+```js
+const superFastSprites = new PIXI.particles.ParticleContainer();
+```
+
+然后用 `addChild`去往里面添加精灵, 就像往普通的 `Container`添加一样.
+
+如果你决定用 `ParticleContainer`你必须做出一些妥协. 
+
+- 在 `ParticleContainer`里的精灵图只有一小部分基本属性: `x, y, width, height, scale, pivot, alpha, visible`.
+- 包含的精灵不能再继续嵌套自己的孩子精灵.
+- 不能用 Pixi 的先进的视觉效果像过滤器和混合模式.
+- 每个 `ParticleContainer`只能用一个纹理 (如果想让精灵有不同的表现方式将不得不更换雪碧图)
+
+为什么在 `ParticleContainer`的精灵图这么快呢? 因为精灵的位置是直接在 GPU 上计算的. Pixi 开发团队正在努力让尽可能多的雪碧图在 GPU 上处理.
+
+当你创建一个 `ParticleContainer`, 有四个参数可以传递, `size, properties, batchSize, autoResize`.
+
+```js
+const superFastSprites = new ParticleContainer(maxSize, properties, batchSize, autoResize);
+```
+
+参数:
+
+- `maxSize`: 默认为 1500. 如果你需要包裹更多的精灵, 就需要设置最高的数字.
+
+- `properties`: 是一个拥有五个布尔值的对象. 默认只有 `position`为 `true`, 其他 `scale, rotation, uvs, alpha` 都为 `false`.
+
+  ```js
+  // 如果想要改变子精灵的其他四个属性, 你需要这样
+  new ParticleContainer(size, {
+      rotation: true,
+      alphaAndtint: true,
+      scale: true,
+      uvs: true
+  });
+  // 如果不需要这些属性, 保持它们为 false 以实现更好的性能.
+  ```
+
+  `uvs`是什么呢? 只有当它们在动画时需要改变它们纹理子图像的时候你需要设置它为 `true`(改变的纹理仍然需要在同一张雪碧图上).
+
+注意: **UV mapping** 是一个 3D 图表展示术语, 它指纹理(图片)准备映射到三维表面的 `x, y`坐标. `U`是 `x轴`, `V`是 `y轴`. WebGL 使用 `x, y, z`来进行三维空间定位. 所以 `U, V`被选为表示 2D 图片纹理的 `x, y`.
+

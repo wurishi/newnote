@@ -1008,3 +1008,5 @@ message.style = {wordWrap: true, wordWrapWidth: 100, align: 'center'};
 
 Pixi 也支持位图字体. 你可以使用 Pixi 的加载器来加载 XML 位图文件, 就像你加载 JSON 或图片文件一样.
 
+# 21. 碰撞检测
+

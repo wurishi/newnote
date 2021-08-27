@@ -4061,6 +4061,70 @@ XsVcDy
 
 ![670](assets/670.jpg)
 
+# 671. Rounded Voxels
+
+4djGWR
+
+![671](assets/671.jpg)
+
+# 672. Desert Passage
+
+XtyGzc
+
+![672](assets/672.jpg)
+
+# 673. Miracle Snowflakes
+
+Xsd3zf
+
+![673](assets/673.jpg)
+
+# 674. [4k] Sync Cord - Revision 2020
+
+Ws2cDD
+
+![674](assets/674.jpg)
+
+# 675. E1M1 - Hangar
+
+lsSXzD
+
+![675](assets/675.jpg)
+
+# 676. quadtree 3
+
+lljSDy
+
+![676](assets/676.jpg)
+
+# 677. Hexagone
+
+wsl3WB
+
+![677](assets/677.jpg)
+
+# 678. Bacterium
+
+MdBSDt
+
+![678](assets/678.jpg)
+
+# 679. Cloudy Shapes
+
+WdXGRj
+
+![679](assets/679.jpg)
+
+# 680. Angels
+
+lssGRM
+
+![680](assets/680.jpg)
+
+
+
+
+
 
 
 

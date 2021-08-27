@@ -1010,3 +1010,47 @@ Pixi 也支持位图字体. 你可以使用 Pixi 的加载器来加载 XML 位�
 
 # 21. 碰撞检测
 
+现在你知道了如果制造种类繁多的图形对象, 但是你能用他们做什么? 一个有趣的事情是利用它制作一个简单的 **碰撞检测系统**. 你可以用一个叫做 `hitTestRectangle`的自定义的函数来检测两个矩形精灵是否接触.
+
+## 21.1 碰撞检测函数
+
+```typescript
+function hitTestRectangle(r1: PIXI.Container, r2: PIXI.Container) {
+    let hit: boolean,
+        combinedHalfWidths: number,
+        combinedHalfHeights: number,
+        vx: number,
+        vy: number;
+
+    hit = false;
+
+    const centerX_1 = r1.x + r1.width / 2;
+    const centerY_1 = r1.y + r1.height / 2;
+    const centerX_2 = r2.x + r2.width / 2;
+    const centerY_2 = r2.y + r2.height / 2;
+
+    const halfWidth_1 = r1.width / 2;
+    const halfHeight_1 = r1.height / 2;
+    const halfWidth_2 = r2.width / 2;
+    const halfHeight_2 = r2.height / 2;
+
+    vx = centerX_1 - centerX_2;
+    vy = centerY_1 - centerY_2;
+
+    combinedHalfWidths = halfWidth_1 + halfWidth_2;
+    combinedHalfHeights = halfHeight_1 + halfHeight_2;
+
+    if (Math.abs(vx) < combinedHalfWidths) {
+        if (Math.abs(vy) < combinedHalfHeights) {
+            hit = true;
+        } else {
+            hit = false;
+        }
+    } else {
+        hit = false;
+    }
+
+    return hit;
+}
+```
+

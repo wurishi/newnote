@@ -86,3 +86,7 @@ const sprite = new PIXI.Sprite(texture);
 ## Texture Swap
 
 ![textureswap](assets/textureswap.jpg)
+
+## Animated Sprite - Explosion
+
+![asexplosion](assets/asexplosion.jpg)

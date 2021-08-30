@@ -1054,3 +1054,329 @@ function hitTestRectangle(r1: PIXI.Container, r2: PIXI.Container) {
 }
 ```
 
+# 22. 实例: 宝物猎人
+
+代码结构:
+
+```typescript
+function setup() {}
+
+function gameLoop(delta: number) {}
+
+function play(delta: number) {}
+
+function end() {}
+```
+
+## 22.1 用 setup 函数初始化游戏
+
+一旦纹理图集被加载进来后, `setup`函数就会执行. 它只会执行一次, 可以为游戏执行一次安装任务. 这是一个用来创建和初始化对象, 精灵, 游戏场景, 填充数据数组或解析加载 JSON 游戏数据的好地方.
+
+```typescript
+let state;
+function setup() {
+  // 创建 gameScene
+  // 创建 door
+  // 创建 player
+  // 创建 treasure
+  // 创建 enemies
+  // 创建 health bar
+  
+  // 创建 gameOverScene
+  // 当游戏结束时显示文本信息
+  // 用键盘控制 player
+
+  state = play;
+
+  app.ticker.add((delta) => gameLoop(delta));
+}
+```
+
+最后两行代码 `state = play;`和 `gameLoop()`可能是最重要的. 运行 `gameLoop`会引发 `play`一直被循环调用. 在看它如何工作之前, 让我们看看 `setup`函数里的代码都做了什么.
+
+### a. 创建游戏场景
+
+`setup`函数创建了两个被称为 `gameScene`和 `gameOverScene`的 `Container`分组. 它们都被添加到舞台上.
+
+```js
+// 创建 gameScene
+gameScene = new Container();
+app.stage.addChild(gameScene);
+// ...
+// 创建 gameOverScene
+gameOverScene = new Container();
+app.stage.addChild(gameOverScene);
+```
+
+所有的游戏主要部分的精灵都被添加到 `gameScene`分组. 游戏结束的文字在游戏结束后显示, 应当被添加到 `gameOverScene`分组.
+
+尽管是在 `setup`函数中添加的, 但是 `gameOverScene`不应在游戏一开始的时候显示, 所以它的 `visible`属性被初始化为 `false`.
+
+```js
+gameOverScene.visible = false;
+```
+
+在后面会看到, 为了在游戏结束之后显示文字, 当游戏结束 `gameOverScene`的 `visible`属性会被设置为 `true`.
+
+### b. 创建地牢, 门, 猎人和宝箱
+
+玩家, 出口, 宝箱和地牢背景图都是从纹理图集制作而来的精灵. 它们都被当做 `gameScene`的孩子添加进来.
+
+```js
+id = resources['./treasureHunter.json'].textures;
+
+dungeon = new Sprite(id['dungeon.png']);
+gameScene.addChild(dungeon);
+// 创建 door
+door = new Sprite(id['door.png']);
+door.position.set(32, 0);
+gameScene.addChild(door);
+// 创建 player
+explorer = new Sprite(id['explorer.png']) as any;
+explorer.x = 68;
+explorer.y = gameScene.height / 2 - explorer.height / 2;
+explorer.vx = 0;
+explorer.vy = 0;
+gameScene.addChild(explorer);
+// 创建 treasure
+treasure = new Sprite(id['treasure.png']);
+treasure.x = gameScene.width - treasure.width - 48;
+treasure.y = gameScene.height / 2 - treasure.height / 2;
+gameScene.addChild(treasure);
+```
+
+把它们都放在 `gameScene`分组会使我们在游戏结束的时候去隐藏 `gameScene`和显示 `gameOverScene`操作起来更简单.
+
+### c. 创建泡泡怪
+
+六个泡泡怪是被循环创建的. 每一个泡泡怪都被赋予了一个随机的初始位置和速度. 每个泡泡怪的垂直速度都被交替的乘以 1 或者 -1, 这就是每个怪物和相邻的下一个怪物运动方向都是相反的原因, 每个被创建的怪物都被放进了一个名为 `blobs`的数组.
+
+```js
+let numberOfBlobs = 6,
+    spacing = 48,
+    xOffset = 150,
+    speed = 2,
+    direction = 1;
+blobs = [];
+
+for (let i = 0; i < numberOfBlobs; i++) {
+    const blob = new Sprite(id['blob.png']);
+    const x = spacing * i + xOffset;
+    const y = randomInt(0, app.stage.height - blob.height);
+    blob.x = x;
+    blob.y = y;
+    (blob as any).vy = speed * direction;
+    direction *= -1;
+    blobs.push(blob as any);
+    gameScene.addChild(blob);
+}
+```
+
+### d. 创建血条
+
+当猎人碰到其中一个敌人时, 场景右上角的血条宽度会减少. 这个血条是如何被制作的? 它就是两个相同的位置的重叠的矩形: 一个黑色的矩形在下面, 红色的在上面. 它们被分组成了一个单独的 `healthBar`分组. `healthBar`然后被添加到 `gameScene`并在舞台上被定位.
+
+```js
+healthBar = new PIXI.Container() as any;
+healthBar.position.set(app.stage.width - 170, 4);
+gameScene.addChild(healthBar);
+
+const innerBar = new Graphics();
+innerBar.beginFill(0x000000);
+innerBar.drawRect(0, 0, 128, 8);
+innerBar.endFill();
+healthBar.addChild(innerBar);
+
+const outerBar = new Graphics();
+outerBar.beginFill(0xff3300);
+outerBar.drawRect(0, 0, 128, 8);
+outerBar.endFill();
+healthBar.addChild(outerBar);
+
+healthBar.outer = outerBar;
+```
+
+你会看到 `healthBar`添加了一个名为 `outer`的属性. 它仅仅是引用了 `outerBar`(红色的矩形)以便于过会能够被很方便的获取. 这意味着如果你想控制红色 `outerBar`的宽度, 你可以像这样顺畅的写如下代码:
+
+```js
+healthBar.outer.width = 30;
+```
+
+### e. 创建提示文本
+
+当游戏结束的时候, "You won!" 或者 "You lost!"的文字会显示出来. 这是使用文本纹理制作并添加到了 `gameOverScene`. 因为 `gameOverScene`的 `visible`属性设为了 `false`, 当游戏开始的时候, 你看不到这些文字.
+
+```js
+const style = new TextStyle({
+    fontFamily: 'Futura',
+    fontSize: 64,
+    fill: 'white',
+});
+message = new PIXI.Text('The End!', style);
+message.x = 120;
+message.y = app.stage.height / 2 - 32;
+gameOverScene.addChild(message);
+```
+
+## 22.2 开始游戏
+
+所有的让精灵移动的游戏逻辑代码都在 `play`函数里. 这是一个被循环执行的函数.
+
+```js
+function play(delta: number) {
+    // 移动猎人
+    // 移动泡泡怪们
+    // 碰撞检测泡泡怪和猎人
+    // 碰撞检测猎人和宝箱
+    // 碰撞检测宝箱和门
+    // 判断游戏是否成功或失败
+    // 当游戏结果时将 state 设置为 end
+}
+```
+
+## 22.3 移动猎人
+
+猎人是被键盘控制的, 和之前的键盘控制章节的代码很相似. 在 `play`函数里, `keyboard`对象修改猎人的速度, 这个速度和猎人的位置相加.
+
+```js
+explorer.x += explorer.vx;
+explorer.y += explorer.vy;
+```
+
+### a. 限制移动范围
+
+猎人的运动是需要被包裹在地牢的墙体之内的, 通过一个名为 `contain`的自定义函数来实现.
+
+```js
+contain(explorer, {x: 28, y: 10, width: 488, height: 480});
+```
+
+`contain`接收两个参数. 第一个是你想控制的精灵, 第二个是包含了 `x, y, width, height`属性的任意一个对象. 在这个例子中, 控制对象定义了一个区域, 它稍微比舞台小一点, 与地牢的尺寸一样.
+
+函数检查了精灵是否跨越了控制对象的边界. 如果超出, 代码会把精灵继续放在那个边界上. 函数同时也会返回一个值可能为 `'top', 'right', 'bottom', 'left'`的 `collision`变量, 取决于精灵碰到了哪一个边界. (如果没有碰到任何边界, `collision`将返回 `undefined`)
+
+```js
+function contain(
+sprite: PIXI.Sprite,
+ container: { x: number; y: number; width: number; height: number }
+): string {
+    let collision: string = undefined;
+
+    // left
+    if (sprite.x < container.x) {
+        sprite.x = container.x;
+        collision = 'left';
+    }
+
+    // top
+    if (sprite.y < container.y) {
+        sprite.y = container.y;
+        collision = 'top';
+    }
+
+    // right
+    if (sprite.x + sprite.width > container.width) {
+        sprite.x = container.width - sprite.width;
+        collision = 'right';
+    }
+
+    // bottom
+    if (sprite.y + sprite.height > container.height) {
+        sprite.y = container.height - sprite.height;
+        collision = 'bottom';
+    }
+
+    return collision;
+}
+```
+
+你会在接下来看到返回值 `collision`在代码里是如何让怪物在地牢的顶部和底部之间来回反弹的.
+
+## 22.4 移动泡泡怪们
+
+`play`函数也能够移动怪物, 保持它们在地牢的墙体之内, 并检测每个怪物是否和玩家发生了碰撞. 如果一只怪物撞到了地牢的顶部或底部的墙, 它就会被设置为反向运动.
+
+```js
+blobs.forEach((blob) => {
+    blob.y += blob.vy;
+
+    const blobHitsWall = contain(blob, {
+        x: 28,
+        y: 10,
+        width: 488,
+        height: 480,
+    });
+    if (blobHitsWall === 'top' || blobHitsWall === 'bottom') {
+        blob.vy *= -1;
+    }
+    if (hitTestRectangle(explorer, blob)) {
+        explorerHit = true;
+    }
+});
+```
+
+可以看到, `contain`函数的返回值 `blobHitsWall`被用来让怪物在墙体之间来回反弹.
+
+`blobHitsWall`通常应该是 `undefined`. 但是如果怪物碰到了顶部的墙, `blobHitsWall`将会变成 `"top"`. 如果碰到底部的墙, `blobHitsWall`会变为 `"bottom"`. 如果它们其中任何一种情况为 `true`, 你就可以通过给怪物的速度取反来让它反向运动. 把怪物的 `vy`乘以 -1 就会反转它的运动方向.
+
+## 22.5 碰撞检测
+
+在上面的循环代里用了 `hitTestRectangle`来指明是否有敌人碰到了猎人.
+
+```js
+if (hitTestRectangle(explorer, blob)) {
+    explorerHit = true;
+}
+```
+
+如果 `hitTestRectangle`返回 `true`, 意味着发生了一次碰撞, 名为 `explorerHit`的变量被设置为了 `true`. 如果 `explorerHit`为 `true`, `play`函数让猎人变为半透明, 然后把 `health`条减少 1 像素的宽度.
+
+```js
+if (explorerHit) {
+    explorer.alpha = 0.5;
+    healthBar.outer.width -= 1;
+} else {
+    explorer.alpha = 1;
+}
+```
+
+`play`函数也要检测宝箱和猎人之间的碰撞. 如果发生了一次碰撞, `treasure`会被设置为探险者的位置, 再做一点偏移. 看起来像是猎人携带着宝藏一样.
+
+```js
+if (hitTestRectangle(explorer, treasure)) {
+    treasure.x = explorer.x + 8;
+    treasure.y = explorer.y + 8;
+}
+```
+
+## 22.6 处理到达出口和结束游戏
+
+游戏结束有两种方式: 如果你携带宝箱到达出口你将赢得游戏, 或者你的血用完你就死了.
+
+想要获胜, 宝箱只需碰到出口就行了. 如果碰到了出口, 游戏的 `state`会被设置为 `end`, `message`文字会显示 "You won!".
+
+```js
+if (hitTestRectangle(treasure, door)) {
+    state = end;
+    message.text = 'You won!';
+}
+```
+
+如果你的血用完, 你将输掉游戏. 游戏的 `state`也会被设置为 `end`, `message`文字会显示 "You Lost!"
+
+```js
+if (healthBar.outer.width < 0) {
+    state = end;
+    message.text = 'You lost!';
+}
+```
+
+`state`设定的初始值为 `play`, 在 `gameLoop`中会循环执行 `state`. 所以通过设置 `state`为 `end`, 我们告诉代码我们想循环执行另一个名为 `end`的函数了. 在大一点的游戏中你可能会为每一个游戏等级设置 `tileScene`状态和状态集, 像 `levelOne, levelTwo, levelThree`.
+
+```js
+function end() {
+    gameScene.visible = false;
+    gameOverScene.visible = true;
+}
+```
+

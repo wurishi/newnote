@@ -1,6 +1,6 @@
 import Stats from 'stats.js';
 
-(function () {
+export default (function () {
   const app = new PIXI.Application({ transparent: true });
   document.body.appendChild(app.view);
 
@@ -61,4 +61,4 @@ import Stats from 'stats.js';
     alienContainer.scale.y = Math.sin(count);
     alienContainer.rotation += 0.01;
   });
-})();
+});

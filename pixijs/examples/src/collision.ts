@@ -1,6 +1,6 @@
 import Stats from 'stats.js';
 
-(function () {
+export default (function () {
   interface Square extends PIXI.Sprite {
     acceleration: PIXI.Point;
     mass: number;
@@ -151,4 +151,4 @@ import Stats from 'stats.js';
 
     app.stage.addChild(redSquare, greenSquare);
   });
-})();
+});

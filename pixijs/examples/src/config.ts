@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   'DEMOS-BASIC': {
     sort: 1,
     children: [

@@ -1,6 +1,6 @@
 import Stats from 'stats.js';
 
-(function () {
+export default (function () {
   class Reel {
     container: PIXI.Container;
     symbols: PIXI.Sprite[];
@@ -182,7 +182,7 @@ import Stats from 'stats.js';
       tweening.splice(tweening.indexOf(r), 1);
     });
   });
-})();
+});
 
 interface TWEEN {
   object: any;

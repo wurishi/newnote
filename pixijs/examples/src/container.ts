@@ -1,4 +1,4 @@
-(function () {
+export default (function () {
   const app = new PIXI.Application({
     width: 800,
     height: 600,
@@ -29,4 +29,4 @@
   container.pivot.y = container.height / 2;
 
   app.ticker.add((delta) => (container.rotation -= 0.01 * delta));
-})();
+});

@@ -1,4 +1,4 @@
-(function () {
+export default (function () {
   const app = new PIXI.Application({
     transparent: true,
   });
@@ -14,4 +14,4 @@
   app.stage.addChild(bunny);
 
   app.ticker.add(() => (bunny.rotation += 0.1));
-})();
+});

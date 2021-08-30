@@ -1,6 +1,6 @@
 import Stats from 'stats.js';
 
-(function () {
+export default (function () {
   const stats = new Stats();
   document.body.appendChild(stats.dom);
 
@@ -404,4 +404,4 @@ import Stats from 'stats.js';
       cb(delta);
     });
   });
-})();
+});

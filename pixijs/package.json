@@ -18,8 +18,10 @@
     "webpack-cli": "^3.3.12"
   },
   "dependencies": {
+    "@types/dat.gui": "^0.7.7",
     "@types/pixi.js": "^4.8.9",
     "@types/stats.js": "^0.17.0",
+    "dat.gui": "^0.7.7",
     "pixi.js": "^5.3.3",
     "stats.js": "^0.17.0"
   }

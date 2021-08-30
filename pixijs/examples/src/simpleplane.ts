@@ -1,6 +1,6 @@
 import Stats from 'stats.js';
 
-(function () {
+export default (function () {
   const app = new PIXI.Application({
     backgroundColor: 0x1099bb,
   });
@@ -31,4 +31,4 @@ import Stats from 'stats.js';
       buffer.update();
     });
   });
-})();
+});

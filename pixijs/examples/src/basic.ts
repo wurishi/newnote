@@ -1,4 +1,4 @@
-(function () {
+export default (function () {
   const app = new PIXI.Application({
     backgroundColor: 0x1099bb,
   });
@@ -16,4 +16,4 @@
   app.ticker.add((delta) => {
     bunny.rotation += 0.1 * delta;
   });
-})();
+});

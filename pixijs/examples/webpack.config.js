@@ -3,9 +3,8 @@ const HP = require('html-webpack-plugin');
 const path = require('path');
 const fs = require('fs');
 
-const configList = [];
-
 const { options } = webpack({
+  entry: path.join(__dirname, 'src', 'index.ts'),
   module: {
     rules: [
       {
@@ -24,7 +23,7 @@ const { options } = webpack({
   ],
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist') + '/[name]',
+    // path: path.resolve(__dirname, 'dist') + '/[name]',
   },
   externals: ['pixi.js'],
   devServer: {
@@ -35,74 +34,4 @@ const { options } = webpack({
   mode: 'production',
 });
 
-const links = [];
-
-fs.readdirSync(path.join(__dirname, 'src')).forEach((file) => {
-  if (file.endsWith('.ts')) {
-    const lastIndex = file.lastIndexOf('.ts');
-    // entry[file.substr(0, lastIndex)] = path.join(__dirname, file);
-    const name = file.substr(0, lastIndex);
-    configList.push({
-      ...options, //
-      entry: path.join(__dirname, 'src', file),
-      output: {
-        filename: 'bundle.js',
-        path: path.resolve(__dirname, 'dist', name),
-      },
-    });
-    links.push(`./${name}/index.html`);
-  }
-});
-// console.log(entry);
-const menuConfig = require('./config');
-const m = Object.keys(menuConfig)
-  .map((key) => {
-    return {
-      label: key,
-      sort: menuConfig[key].sort,
-      children: menuConfig[key].children,
-    };
-  })
-  .sort((a, b) => a.sort - b.sort);
-const htmlContent = m
-  .map((item) => {
-    const c = item.children
-      .map((a) => {
-        const link = links.find((t) => t.indexOf(a) >= 0);
-        return `<a href="${link}">${a}(${link ? '已完成' : '未找到'})</a>`;
-      })
-      .join('<br />');
-    return `
-  <h1>${item.label}</h1>
-  ${c}
-  <hr />
-  `;
-  })
-  .join('');
-
-fs.writeFile(
-  path.join(__dirname, 'dist', 'index.html'),
-  `
-<html></html>
-<body>${htmlContent}</body>
-`,
-  () => {}
-);
-
-// fs.writeFile(
-//   path.join(__dirname, 'dist', 'index.html'),
-//   `
-// <html></html>
-// <body>${links
-//     .map((link) => {
-//       // return '<a href="' + link + '" >' + link + '</a>';
-//       return `<a href="${link}">${link}</a>`;
-//     })
-//     .join('<br />')}</body>
-// `,
-//   () => {}
-// );
-
-// console.log(configList);
-
-module.exports = configList;
+module.exports = options;

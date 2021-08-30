@@ -1,6 +1,6 @@
 import Stats from 'stats.js';
 
-(function () {
+export default (function () {
   interface STAR {
     sprite: PIXI.Sprite;
     x: number;
@@ -80,4 +80,4 @@ import Stats from 'stats.js';
       star.sprite.rotation = Math.atan2(dyCenter, dxCenter) + Math.PI / 2;
     }
   });
-})();
+});

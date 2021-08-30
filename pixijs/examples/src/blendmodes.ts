@@ -1,6 +1,6 @@
 import Stats from 'stats.js';
 
-(function () {
+export default (function () {
   class Dude extends PIXI.Sprite {
     direction: number;
     turningSpeed: number;
@@ -67,4 +67,4 @@ import Stats from 'stats.js';
       }
     });
   });
-})();
+});

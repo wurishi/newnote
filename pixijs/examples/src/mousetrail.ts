@@ -1,6 +1,6 @@
 import Stats from 'stats.js';
 
-(function () {
+export default (function () {
   const stats = new Stats();
   document.body.appendChild(stats.dom);
 
@@ -46,7 +46,7 @@ import Stats from 'stats.js';
       p.y = iy;
     }
   });
-})();
+});
 
 function cubicInterpolation(array: number[], t: number, tangentFactor = 1) {
   const k = Math.floor(t);

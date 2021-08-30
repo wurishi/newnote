@@ -1,4 +1,4 @@
-(function () {
+export default (function () {
   const app = new PIXI.Application({
     backgroundColor: 0x111111,
   });
@@ -60,4 +60,4 @@
   screenshotText.y = Math.round(screenshotText.height / 2);
 
   app.stage.addChild(screenshotText, bunnyContainer);
-})();
+});

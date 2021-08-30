@@ -1380,3 +1380,37 @@ function end() {
 }
 ```
 
+# 23. 一些关于精灵的其他知识
+
+目前为止你已经学会了如何使用相当多的有用的精灵的属性, 像 `x, y visible, rotation`, 它们让你能够很大程度上控制精灵的位置和外观. 但是 Pixi 精灵也有其他很多有用的属性可以使用. [这是一个完整的列表](http://pixijs.download/release/docs/PIXI.Sprite.html)
+
+Pixi 的类继承体系是怎么工作的呢? Pixi 的精灵遵循以下原型链构建了一个继承模型:
+
+```js
+DisplayObject > Container > Sprite
+```
+
+继承意味着在继承链后面的类可以使用之前的类的属性和方法. 最基础的类是 `DisplayObject`. 任何只要是 `DisplayObject`都可以被渲染在舞台上. `Container`是继承链的下一个类, 它被允许作为其他 `DisplayObject`的容器. 继承链的第三个类是 `Sprite`. 这个类被用来创建游戏的大部分对象.
+
+# 24. 展望未来
+
+Pixi 能做很多事情, 但是不能做全部的事情. 如果你想用 Pixi 开始制作游戏或者复杂的交互型应用, 你可能会需要一些有用的库:
+
+- [Bump](https://github.com/kittykatattack/bump): 一个为了游戏准备的完整的 2D 碰撞函数集.
+- [Tink](https://github.com/kittykatattack/tink): 拖放, 按钮, 一个通用的指针和其他有用的交互工具集.
+- [Charm](https://github.com/kittykatattack/charm): 给 Pixi 精灵准备的简单易用的缓动动画效果.
+- [Dust](https://github.com/kittykatattack/dust): 创建像爆炸, 火焰和魔法等粒子效果.
+- [Sprite Utilities](https://github.com/kittykatattack/spriteUtilities): 创建和使用 Pixi 精灵的一个更容易和更直观的做法, 包括添加状态机和动画播放器. 让 Pixi 的工作变得更有趣.
+- [Sound.js](https://github.com/kittykatattack/sound.js): 一个加载, 控制和生成声音和音乐效果的微型库. 包含了一切你需要添加到游戏的声音.
+- [Smoothie](https://github.com/kittykatattack/smoothie): 使用真正的时间增量插值实现的超平滑精灵动画. 它也允许为你的游戏和应用指定 fps(帧率), 并且把你的精灵图循环渲染完全从你的应用逻辑循环中分离出去.
+
+## 24.1 Hexi
+
+如果你想使用全部的这些功能库, 但又不想给自己整一堆麻烦. 可以使用 [Hexi](https://github.com/kittykatattack/hexi) : 一个创建游戏和交互应用的完整开发环境.
+
+它把最新版本的 Pixi (最新的稳定的一个)和这些库(还有更多)打包在了一起, 为了可以通过一种简单而且有趣的方式去创建游戏. Hexi 也允许你直接获取 `PIXI`对象, 所以你可以直接写底层的 Pixi 代码, 然后任意的选择你需要的 Hexi 额外的方便的功能.
+
+## 24.2 BabylonJS
+
+Pixi 可以很好地完成 2D 交互式媒体, 但是对于 3D 去无能为力. 当你准备踏进 3D 领域, 这个最有潜力的领域的时候, 不妨使用这个为 WEB 游戏开发者准备的用起来非常简单的 3D 库: [BabylonJS](https://www.babylonjs.com/).
+

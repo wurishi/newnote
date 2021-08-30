@@ -82,3 +82,7 @@ const sprite = new PIXI.Sprite(texture);
 ## Basic
 
 ![basic](assets/basic.jpg)
+
+## Texture Swap
+
+![textureswap](assets/textureswap.jpg)

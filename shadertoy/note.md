@@ -4121,6 +4121,65 @@ lssGRM
 
 ![680](assets/680.jpg)
 
+# 681. Topologica
+
+4djXzz
+
+![681](assets/681.jpg)
+
+# 682. sphere intersect pub
+
+XsfBRH
+
+![682](assets/682.jpg)
+
+# 683. Winding Menger Tunnel
+
+4scXzn
+
+![683](assets/683.jpg)
+
+# 684. Ray Marching Experiment n°35
+
+4t2SWW
+
+![684](assets/684.jpg)
+
+# 685. The Cave
+
+MsX3RH
+
+![685](assets/685.jpg)
+
+# 686. Crossy Penguin [MIGJRV]
+
+4dKXDG
+
+![686](assets/686.jpg)
+
+# 687. Distorted TV
+
+ldXGW4
+
+![687](assets/687.jpg)
+
+# 688. Full Scene Radial Blur
+
+XsKGRW
+
+![688](assets/688.jpg)
+
+# 689. Filtering procedurals
+
+MdjGR1
+
+![689](assets/689.jpg)
+
+# 690. Stockholms Ström
+
+4dd3Rl
+
+![690](assets/690.jpg)
 
 
 
@@ -4129,6 +4188,7 @@ lssGRM
 
 
 
-https://www.shadertoy.com/results?query=&sort=love&from=252&num=12
+
+https://www.shadertoy.com/results?query=&sort=love&from=288&num=12
 
 https://www.shadertoy.com/user/jeyko/sort=popular&from=8&num=8

@@ -90,3 +90,7 @@ const sprite = new PIXI.Sprite(texture);
 ## Animated Sprite - Explosion
 
 ![asexplosion](assets/asexplosion.jpg)
+
+## Animated Sprite - Jet
+
+![asjet](assets/asjet.jpg)

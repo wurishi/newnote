@@ -54,17 +54,54 @@ fs.readdirSync(path.join(__dirname, 'src')).forEach((file) => {
   }
 });
 // console.log(entry);
+const menuConfig = require('./config');
+const m = Object.keys(menuConfig)
+  .map((key) => {
+    return {
+      label: key,
+      sort: menuConfig[key].sort,
+      children: menuConfig[key].children,
+    };
+  })
+  .sort((a, b) => a.sort - b.sort);
+const htmlContent = m
+  .map((item) => {
+    const c = item.children
+      .map((a) => {
+        const link = links.find((t) => t.indexOf(a) >= 0);
+        return `<a href="${link}">${a}(${link ? '已完成' : '未找到'})</a>`;
+      })
+      .join('<br />');
+    return `
+  <h1>${item.label}</h1>
+  ${c}
+  <hr />
+  `;
+  })
+  .join('');
 
 fs.writeFile(
   path.join(__dirname, 'dist', 'index.html'),
   `
 <html></html>
-<body>${links
-    .map((link) => '<a href="' + link + '" >' + link + '</a>')
-    .join('<br />')}</body>
+<body>${htmlContent}</body>
 `,
   () => {}
 );
+
+// fs.writeFile(
+//   path.join(__dirname, 'dist', 'index.html'),
+//   `
+// <html></html>
+// <body>${links
+//     .map((link) => {
+//       // return '<a href="' + link + '" >' + link + '</a>';
+//       return `<a href="${link}">${link}</a>`;
+//     })
+//     .join('<br />')}</body>
+// `,
+//   () => {}
+// );
 
 // console.log(configList);
 

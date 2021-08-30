@@ -76,3 +76,9 @@ const sprite = new PIXI.Sprite(texture);
 ## Spinners
 
 ![spinners](assets/spinners.jpg)
+
+# SPRITE
+
+## Basic
+
+![basic](assets/basic.jpg)

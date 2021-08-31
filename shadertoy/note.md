@@ -4181,9 +4181,11 @@ MdjGR1
 
 ![690](assets/690.jpg)
 
+# 691. Cable nest
 
+ftXXWX
 
-
+![691](assets/691.jpg)
 
 
 

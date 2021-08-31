@@ -4217,6 +4217,12 @@ ltBXRc
 
 ![696](assets/696.jpg)
 
+# 697. Echeveria II
+
+WtGXWm
+
+![697](assets/697.jpg)
+
 
 
 

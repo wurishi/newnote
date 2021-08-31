@@ -43,4 +43,12 @@ export default {
       'webfont',
     ],
   },
+  GRAPHICS: {
+    sort: 5,
+    children: [
+      'simple', //
+      'advanced',
+      'dynamic',
+    ],
+  },
 };

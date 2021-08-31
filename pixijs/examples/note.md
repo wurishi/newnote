@@ -120,3 +120,15 @@ const sprite = new PIXI.Sprite(texture);
 ## Webfont
 
 ![webfont](assets/webfont.jpg)
+
+# GRAPHICS
+
+## Simple
+
+![simple](assets/simple.png)
+
+## Advanced
+
+
+
+## Dynamic

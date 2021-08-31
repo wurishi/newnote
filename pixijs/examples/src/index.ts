@@ -18,7 +18,7 @@ const gui = new GUI();
 m.forEach((tmp) => {
   const folder = gui.addFolder(tmp.label);
   tmp.children.forEach((n: string) => {
-    const link = keys.find((key: string) => key.indexOf(n) >= 0);
+    const link = keys.find((key: string) => key.indexOf(n + '.ts') >= 0);
     const p: any = {};
     if (link) {
       p[n] = () => {
@@ -28,6 +28,7 @@ m.forEach((tmp) => {
       };
     } else {
       p[n] = () => {
+        alert(n + '尚未实现');
         removePIXI();
       };
     }

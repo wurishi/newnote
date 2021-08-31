@@ -35,4 +35,12 @@ export default {
       'video',
     ],
   },
+  TEXT: {
+    sort: 4,
+    children: [
+      'text', //
+      'bitmaptext',
+      'webfont',
+    ],
+  },
 };

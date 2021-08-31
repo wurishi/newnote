@@ -94,3 +94,15 @@ const sprite = new PIXI.Sprite(texture);
 ## Animated Sprite - Jet
 
 ![asjet](assets/asjet.jpg)
+
+## Animated Sprite Speed
+
+![asspeed](assets/asspeed.jpg)
+
+## Tiling Sprite
+
+![tilingsprite](assets/tilingsprite.jpg)
+
+## Video
+
+![video](assets/video.jpg)

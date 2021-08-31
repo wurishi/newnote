@@ -61,4 +61,12 @@ export default {
       'customhitarea',
     ],
   },
+  MASKS: {
+    sort: 7,
+    children: [
+      'graphics', //
+      'masksprite',
+      'filter',
+    ],
+  },
 };

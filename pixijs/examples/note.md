@@ -157,5 +157,15 @@ const sprite = new PIXI.Sprite(texture);
 
 # MASKS
 
+## Graphics
+
+![graphics](assets/graphics.jpg)
+
+## Sprite
+
+
+
+## Filter
+
 
 

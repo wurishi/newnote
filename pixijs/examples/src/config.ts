@@ -51,4 +51,14 @@ export default {
       'dynamic',
     ],
   },
+  INTERACTION: {
+    sort: 6,
+    children: [
+      'click', //
+      'interactivity',
+      'dragging',
+      'custommouseicon',
+      'customhitarea',
+    ],
+  },
 };

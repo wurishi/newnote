@@ -135,5 +135,27 @@ const sprite = new PIXI.Sprite(texture);
 
 ![dynamic](assets/dynamic.png)
 
+# INTERACTION
 
+## Click
+
+![click](assets/click.jpg)
+
+## Interactivity
+
+
+
+## Dragging
+
+
+
+## Custom mouse icon
+
+
+
+## Custom Hitarea
+
+
+
+# MASKS
 

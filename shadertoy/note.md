@@ -4187,6 +4187,18 @@ ftXXWX
 
 ![691](assets/691.jpg)
 
+# 692. Mist by Ohno! - part2
+
+wdBGWD
+
+![692](assets/692.jpg)
+
+
+
+
+
+
+
 
 
 

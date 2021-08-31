@@ -4223,6 +4223,12 @@ WtGXWm
 
 ![697](assets/697.jpg)
 
+# 698. Isometric City 2.5D
+
+MljXzz
+
+![698](assets/698.jpg)
+
 
 
 

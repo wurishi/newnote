@@ -143,19 +143,19 @@ const sprite = new PIXI.Sprite(texture);
 
 ## Interactivity
 
-
+![interactivity](assets/interactivity.jpg)
 
 ## Dragging
 
-
+![dragging](assets/dragging.png)
 
 ## Custom mouse icon
 
-
-
 ## Custom Hitarea
 
-
+![customhitarea](assets/customhitarea.jpg)
 
 # MASKS
+
+
 

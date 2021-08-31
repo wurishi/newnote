@@ -69,4 +69,13 @@ export default {
       'filter',
     ],
   },
+  'FILTERS-BASIC': {
+    sort: 8,
+    children: [
+      'blur', //
+      'colormatrix',
+      'dmcrawlies',
+      'dmflag',
+    ],
+  },
 };

@@ -169,3 +169,23 @@ const sprite = new PIXI.Sprite(texture);
 
 ![filter](assets/filter.jpg)
 
+# FILTERS-BASIC
+
+## Blur
+
+![blur](assets/blur.jpg)
+
+## Color Matrix
+
+
+
+## Displacement Map - Crawlies
+
+
+
+## Displacement Map - Flag
+
+
+
+# FILTERS-ADVANCED
+

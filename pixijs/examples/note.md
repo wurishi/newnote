@@ -163,7 +163,7 @@ const sprite = new PIXI.Sprite(texture);
 
 ## Sprite
 
-
+![masksprite](assets/masksprite.jpg)
 
 ## Filter
 

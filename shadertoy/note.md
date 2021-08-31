@@ -4193,7 +4193,17 @@ wdBGWD
 
 ![692](assets/692.jpg)
 
+# 693. Blueprint of the Architekt
 
+4tySDW
+
+![693](assets/693.jpg)
+
+# 694. [SIG15] Oblivion
+
+XtfXDN
+
+![694](assets/694.jpg)
 
 
 

@@ -15,7 +15,7 @@ const context = (require as any).context('./', false, /.ts$/);
 const keys = context.keys();
 
 const gui = new GUI();
-m.forEach((tmp) => {
+m.forEach((tmp, idx) => {
   const folder = gui.addFolder(tmp.label);
   tmp.children.forEach((n: string) => {
     const link = keys.find((key: string) => key.indexOf(n + '.ts') >= 0);
@@ -34,7 +34,7 @@ m.forEach((tmp) => {
     }
     folder.add(p, n);
   });
-  // folder.open();
+  idx === m.length - 1 && folder.open();
 });
 
 function removePIXI() {

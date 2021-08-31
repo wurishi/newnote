@@ -129,6 +129,11 @@ const sprite = new PIXI.Sprite(texture);
 
 ## Advanced
 
-
+![advanced](assets/advanced.jpg)
 
 ## Dynamic
+
+![dynamic](assets/dynamic.png)
+
+
+

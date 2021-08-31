@@ -4211,6 +4211,12 @@ XtfXDN
 
 ![695](assets/695.jpg)
 
+# 696. Shiny Circle
+
+ltBXRc
+
+![696](assets/696.jpg)
+
 
 
 

@@ -116,3 +116,7 @@ const sprite = new PIXI.Sprite(texture);
 ## Bitmap Text
 
 ![bitmaptext](assets/bitmaptext.jpg)
+
+## Webfont
+
+![webfont](assets/webfont.jpg)

@@ -4241,6 +4241,11 @@ llcSz8
 
 ![700](assets/700.jpg)
 
+# 701. Shiny sphere lights
+
+ltjGDd
+
+![701](assets/701.jpg)
 
 
 
@@ -4250,7 +4255,6 @@ llcSz8
 
 
 
-
-https://www.shadertoy.com/results?query=&sort=love&from=288&num=12
+https://www.shadertoy.com/results?query=&sort=love&from=312&num=12
 
 https://www.shadertoy.com/user/jeyko/sort=popular&from=8&num=8

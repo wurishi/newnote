@@ -106,3 +106,13 @@ const sprite = new PIXI.Sprite(texture);
 ## Video
 
 ![video](assets/video.jpg)
+
+# TEXT
+
+## Text
+
+![text](assets/text.jpg)
+
+## Bitmap Text
+
+![bitmaptext](assets/bitmaptext.jpg)

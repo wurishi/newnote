@@ -167,5 +167,5 @@ const sprite = new PIXI.Sprite(texture);
 
 ## Filter
 
-
+![filter](assets/filter.jpg)
 

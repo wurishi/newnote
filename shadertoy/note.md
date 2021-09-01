@@ -4247,6 +4247,59 @@ ltjGDd
 
 ![701](assets/701.jpg)
 
+# 702. Terminator
+
+MdSXzG
+
+![702](assets/702.jpg)
+
+# 703. Tiny Planet Clouds
+
+ldyXRw
+
+![703](assets/703.jpg)
+
+# 704. Sky001
+
+XsVGz3
+
+![704](assets/704.jpg)
+
+# 705. rosace 3c
+
+Ms3SzB
+
+![705](assets/705.png)
+
+# 706. Puffy
+
+ltdyDl
+
+![706](assets/706.jpg)
+
+# 707. [SH18] BabyToy
+
+lldyWn
+
+![707](assets/707.jpg)
+
+# 708. Rainbow Laser Beam
+
+XtBXW3
+
+![708](assets/708.jpg)
+
+# 709. The road to Hell
+
+Mds3Rn
+
+![709](assets/709.jpg)
+
+# 710. Insect
+
+Mss3zM
+
+![710](assets/710.jpg)
 
 
 
@@ -4255,6 +4308,17 @@ ltjGDd
 
 
 
-https://www.shadertoy.com/results?query=&sort=love&from=312&num=12
+
+
+
+
+
+
+
+
+
+
+
+https://www.shadertoy.com/results?query=&sort=love&from=324&num=12
 
 https://www.shadertoy.com/user/jeyko/sort=popular&from=8&num=8

@@ -1,0 +1,528 @@
+[link](https://cn.vitejs.dev/)
+
+# 1. 什么选 Vite
+
+当前使用 webpack, Rollup, Parcel 等打包器对 JavaScript 项目进行打包.
+
+当构建越来越大型的应用时, 需要处理的 JavaScript 代码量也呈指数级增长, 此时就会碰到两大问题:
+
+## 1.1 缓慢的服务器启动
+
+当冷启动开发服务器时, 基于打包器的方式启动必须优先抓取并构建整个应用, 然后才能提供服务.
+
+![1.1_1](assets/1.1_bundler.png)
+
+Vite 通过在一开始将应用中的模块区分为 **依赖** 和 **源码** 两类, 改进了开发服务器的启动时间.
+
+- **依赖**: 大多为在开发阶段不会变动的纯 JavaScript. 一些较大的依赖 (例如有上百个模块的组件库) 处理的代价很高. 依赖通常会存在多种模块化格式 (如 ESM 或 CommonJS).
+
+  Vite 将会使用 [esbuild](https://esbuild.github.io/) 预构建依赖. Esbuild 使用 Go 编写, 并且比以 JavaScript 编写的打包器预构建依赖快 10-100 倍.
+
+- **源码**: 通常包含一些并非直接是 JavaScript 的文件, 需要转换 (例如: JSX, CSS 或者 Vue/Svelte 组件), 时常会被编辑. 同时, 并不是所有的源代都需要同时被加载 (例如基于路由拆分的代码模块).
+
+  Vite 以 [原生 ESM](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules) 方式提供源码. 实际上是让浏览器接管了打包程序的部分工作. Vite 只需要在浏览器请求源码时进行转换并按需提供源码. 根据场景动态导入代码, 即只在当前屏幕上实际使用时才会被处理.
+
+![1.1_esm](assets/1.1_esm.png)
+
+## 1.2 缓慢的更新
+
+基于打包器启动时, 重建整个包的效率很低. 主要原因还是因为更新速度会随着应用体积增长而直线下降.
+
+一些打包器的开发服务器将构建内容存入内存, 这样在文件更改时使模块图的一部分失活即可, 但这仍需要整个重新构建并重载页面. 这样代价很高, 并且重新加载页面会消除应用的当前状态, 所以打包器支持了动态模块热重载 (HMR): 允许一个模块 "热替换" 它自己, 而不影响页面其余部分, 这大大改进了开发体验, 但速度仍然会随着应用规模的增长而显著下降.
+
+在 Vite 中, HMR 是在原生 ESM 上执行的. 当编辑一个文件时, Vite 只需要精确地使已编辑的模块与其最近的 HMR 边界之间的链失活 (大多数时候只是模块本身), 使得无论应用大小如何, HMR 始终能保持快速更新.
+
+Vite 同时利用 HTTP 头来加整整个页面的重新加载 (再次让浏览器为我们做更多事情): 源码模块的请求会根据 `304 Not Modified`进行协商缓存, 而依赖模块请求则会通过 `Cache-Control: max-age=31536000,immutable`进行强缓存, 因此一旦被缓存它们将不需要再次请求.
+
+## 1.3 为什么生产环境仍需打包
+
+尽管原生 ESM 现在得到了广泛支持, 但嵌套导入会导致额外的网络往返, 在生产环境中发布未打包的 ESM 仍然效率低下 (即使使用 HTTP/2). 为了生产环境中获得最佳的加载性能, 最好还是将代码进行 tree-shaking, 懒加载和 chunk 分割(以获得更好的缓存).
+
+### a. 为何不用 ESBuild 打包?
+
+虽然 `esbuild`快得惊人, 并且已经是一个在构建库方面比较出色的工具, 但一些针对构建应用的重要功能仍然还在持续开发中 - 特别是代码分割和 CSS 处理方面. 目前来说 Rollup 在应用打包方面更加成熟和灵活. 未来在这些功能稳定后, 不排除使用 `esbuild`作为生产构建器的可能.
+
+# 2. 开始
+
+## 2.1 总览
+
+Vite (法语意为 "快速的", 发音 `/vit/`) 是一种新型前端构建工具, 能够显著提升前端开发体验. 它主要由两部分组成:
+
+- 一个开发服务器, 它基于 **原生 ES 模块** 提供了丰富的内建功能, 如速度快到惊人的 **模块热更新 (HMR)**.
+- 一套构建指令, 它使用 Rollup 打包你的代码, 并且它是预配置的, 可输出用于生产环境的高度优化过的静态资源.
+
+Vite 意在提供开箱即用的配置, 同时它的 **插件 API** 和 **JavaScript API** 带来了高度的可扩展性, 并有完整的类型支持.
+
+## 2.2 浏览器支持
+
+默认的构建目标浏览器是能 [在 script 标签上支持原生 ESM](https://caniuse.com/es6-module) 和 [原生 ESM 动态导入](https://caniuse.com/es6-module-dynamic-import). 传统浏览器可以通过官方插件 [@vitejs/plugin-legacy](https://github.com/vitejs/vite/tree/main/packages/plugin-legacy) 支持.
+
+## 2.3 搭建第一个 Vite 项目
+
+> **兼容性注意**
+>
+> Vite 需要 Node.js 版本 >= 12.0.0.
+
+使用 NPM:
+
+```bash
+npm init vite@latest
+```
+
+使用 Yarn:
+
+```bash
+yarn create vite
+```
+
+使用 PNPM:
+
+```bash
+pnpx create-vite
+```
+
+还可以通过附加的命令行选项直接指定**项目名称**和想要**使用的模板**.
+
+例如, 要构建一个 Vite + Vue 项目:
+
+```bash
+# npm 6.x
+npm init vite@latest my-vue-app --template vue
+
+# npm 7+, 需要额外的双横线
+npm init vite@latest my-vue-app -- --template vue
+
+# yarn
+yarn create vite my-vue-app --template vue
+```
+
+支持的模板预设包括:
+
+- vanilla
+- vanilla-ts
+- vue
+- vue-ts
+- react
+- react-ts
+- preact
+- preact-ts
+- lit-element
+- lit-element-ts
+- svelte
+- svelte-ts
+
+## 2.4 社区模板
+
+`create-vite`是一个快速生成主流框架基础模板的工具. 查看 Awesome Vite 仓库的 [社区维护模板](https://github.com/vitejs/awesome-vite#templates), 里面包含各种工具和不同框架的模板. 你可以用如 [degit](https://github.com/Rich-Harris/degit) 之类的工具, 使用社区模板来搭建项目.
+
+```sh
+npx degit user/project my-project
+cd my-project
+
+npm install
+npm run dev
+```
+
+如果该项目使用 `main`作为默认分支, 需要在项目名后添加 `#main`.
+
+```sh
+npx degit user/project#main my-project
+```
+
+## 2.5 `index.html`与项目根目录
+
+在一个 Vite 项目中, `index.html`在项目最外层而不是在 `public`文件夹内. 这是有意而为之的: 在开发期间 Vite 是一个服务器, 而 `index.html`是该 Vite 项目的入口文件.
+
+Vite 将 `index.html`视为源码和模块图的一部分. Vite 解析 `<script type="module" src="...">`, 这个标签指向 JavaScript 源码. 甚至内联引入 JavaScript 的 `<script type="module">` 和引用 CSS 的 `<link href>` 也能利用 Vite 特有的功能被解析. 另外, `index.html`中的 URL 将被自动转换, 因此不再需要 `%PUBLIC_URL%`占位符了.
+
+与静态 HTTP 服务器类似, Vite 也有 "根目录" 的概念, 即服务文件的位置. 在接下来的文档中将看到它会以 `<root>`代称. 源码中的绝对 URL 路径将以项目的 "根" 作为基础来解析, 因此你可以像在普通的静态文件服务器上一样编写代码 (并且功能更强大!). Vite 还能够处理依赖关系, 解析处于根目录外的文件位置, 这使得它即使在基于 monorepo 的方案中也十分有用.
+
+Vite 也支持多个 `.html`作入口点的多页面应用模式.
+
+### a. 指定替代根目录
+
+`vite` 以当前工作目录作为根目录启动开发服务器. 也可以通过 `vite serve some/sub/dir`来指定一个替代的根目录.
+
+## 2.6 命令行界面
+
+在安装了 Vite 的项目中, 可以在 npm scripts 中使用 `vite`可执行文件, 或者直接使用 `npx vite`运行. 下面是通过脚手架创建的 Vite 项目中默认的 npm scripts:
+
+```json
+{
+    "scripts": {
+        "dev": "vite", // 启动开发服务器
+        "build": "vite build", // 为生产环境构建
+        "serve": "vite preview" // 本地预览生产构建
+    }
+}
+```
+
+可以指定额外的命令行选项, 如 `--port`或 `--https`. 运行 `npx vite --help`获得完整的命令行选项列表.
+
+## 2.7 使用未发布的功能
+
+想要体验最新的功能, 可以自行克隆 [vite 仓库](https://github.com/vitejs/vite)到本地机器上然后自行将其链接 (需要 Yarn 1.x):
+
+```sh
+git clone https://github.com/vitejs/vite.git
+cd vite
+yarn
+cd packages/vite
+yarn build
+yarn link
+```
+
+然后, 回到你的 vite 项目并运行 `yarn link vite`. 重新启动开发服务器 (`yarn dev`)来体验新功能.
+
+# 3. 功能
+
+对基础的使用来说, 使用 Vite 开发和使用一个静态文件服务器并没有太大功能. 然而, Vite 还通过原生 ESM 导入提供了许多主要用于打包场景的增强功能.
+
+## 3.1 NPM 依赖解析和预构建
+
+原生 ES 导入不支持下面这样的裸模块导入:
+
+```js
+import { someMethod } from 'my-dep';
+```
+
+上面的代码会在浏览器中抛出一个错误. Vite 将会检测到所有被加载的源文件中的此类裸模块导入, 并执行以下操作:
+
+1. 预构建它们可以提高页面加载速度, 并将 CommonJS / UMD 转换为 ESM 格式. 预构建这一步由 esbuild 执行, 这使得 Vite 的冷启动时间比任何基于 JavaScript 的打包器都要快得多.
+2. 重写导入合法的 URL, 例如 `/node_modules/.vite/my-dep.js?v=f3sf2ebd`以便浏览器能够正确导入它们.
+
+## 3.2 模块热重载
+
+Vite 提供了一套原生 ESM 的 HMR API. 具有 HMR 功能的框架可以利用该 API 提供即时, 准确的更新, 而无需重新加载页面或清除应用程序状态. Vite 内置了 HMR 到 [Vue 单文件组件 (SFC)](https://github.com/vitejs/vite/tree/main/packages/plugin-vue) 和 [React Fast Refresh](https://github.com/vitejs/vite/tree/main/packages/plugin-react-refresh) 中. 也通过 [@prefresh/vite](https://github.com/preactjs/prefresh/tree/main/packages/vite) 对 Preact 实现了官方集成.
+
+## 3.3 TypeScript
+
+Vite 天然支持引入 `.ts`文件.
+
+Vite 仅执行 `.ts`文件的转译工作, 并**不执行**任何类型检查. 并假设类型检查已经被你的 IDE 或构建过程接管了 (你可以在构建脚本中运行 `tsc --noEmit`或者安装 `vue-tsc`然后运行 `vue-tsc --noEmit`来对你的 `*.vue`文件做类型检查).
+
+Vite 使用 esbuild 将 TypeScript 转译到 JavaScript, 约是 `tsc`速度的20-30倍, 同时 HMR 更新反应到浏览器的时间小于 50ms.
+
+### a. TypeScript 编译器选项
+
+`tsconfig.json`中 `compilerOptions`下的一些配置项需要特别注意.
+
+#### `isolatedModules`
+
+应该设置为 `true`.
+
+这是因为 `esbuild`只执行没有类型信息的转译, 它并不支持某些特性, 如 `const enum`和隐式类型导入.
+
+你必须在 `tsconfig.json`中的 `compilerOptions`下设置 `"isolatedModules": true`. 如此做, TS 会警告你不要使用隔离 (isolated) 转译的功能.
+
+#### `useDefineForClassFields`
+
+从 Vite v2.5.0 开始, 如果 TypeScript 的 target 是 `ESNext`, 此选项默认值则为 `true`. 这与 `tsc`v4.3.2 及以后版本的行为一致. 这也是标准的 ECMAScript 的运行时行为.
+
+但对于那些习惯其他编程语言或旧版本 TypeScript 的开发者来说, 这可能是违反直觉的.
+
+如果你正在使用一个严重依赖 class fields 的库, 请注意该库对此选项的预期设置.
+
+大多数库都希望该值为 `true`, 如 MobX, Vue Class Components 8.x 等.
+
+但是有几个库还没有兼容这个新的默认值, 其中包括 `lit-element`.
+
+#### `影响构建结果的其他编译器选项`
+
+- `extends`
+- `importsNotUsedAsValues`
+- `jsxFactory`
+- `jsxFragmentFactory`
+
+### b. 客户端类型
+
+Vite 默认的类型定义是写给它的 Node.js API 的. 要将其补充到一个 Vite 应用的客户端代码环境中, 请添加一个 `d.ts`声明文件.
+
+```ts
+/// <reference types="vite/clinet" />
+```
+
+同时, 你也可以将 `vite/client`添加到 `tsconfig`中的 `compilerOptions.types`下.
+
+```json
+{
+    "compilerOptions": {
+        "types": ["vite/client"]
+    }
+}
+```
+
+这将会提供以下类型定义补充:
+
+- 资源导入 (例如: 导入一个 `.svg`文件)
+- `import.meta.env`上 Vite 注入的环境变量的类型定义
+- `import.meta.hot`上的 HMR API 类型定义
+
+## 3.4 Vue
+
+Vite 为 Vue 提供第一优先级支持:
+
+- Vue3 单文件组件支持: [@vitejs/plugin-vue](https://github.com/vitejs/vite/tree/main/packages/plugin-vue)
+- Vue3 JSX 支持: [@vitejs/plugin-vue-jsx](https://github.com/vitejs/vite/tree/main/packages/plugin-vue-jsx)
+- Vue2 支持: [underfin/vite-plugin-vue2](https://github.com/underfin/vite-plugin-vue2)
+
+## 3.5 JSX
+
+`.jsx`和 `.tsx`文件同样开箱即用. JSX 的转译同样是通过 esbuild, 默认为 React 16 风格. 期望 esbuild 中支持 React 17 风格的 JSX 请看[这里](https://github.com/evanw/esbuild/issues/334).
+
+Vue 用户应使用官方提供的 @vitejs/plugin-vue-jsx 插件, 它提供了 Vue3 特性的支持, 包括 HMR, 全局组件解析, 指令和插槽.
+
+如果不是在 React 或 Vue 中使用 JSX, 自定义的 `jsxFactory`和 `jsxFragment`可以使用 esbuild 选项进行配置. 例如对 Preact:
+
+```js
+// vite.config.js
+export default defineConfig({
+    esbuild: {
+        jsxFactory: 'h',
+        jsxFragment: 'Fragment'
+    }
+});
+```
+
+可以使用 `jsxInject` (这是一个仅在 Vite 中使用的选项) 为 JSX 注入 helper, 避免手动导入:
+
+```js
+// vite.config.js
+export default defineConfig({
+    esbuild: {
+        jsxInject: `import React from 'react'`
+    }
+})
+```
+
+## 3.6 CSS
+
+导入 `.css`文件将会把内容插入到 `<style>`标签中, 同时也带有 HMR 支持. 也能够以字符串的形式检索处理后的, 作为其模块默认导出的 CSS.
+
+### a. `@import`内联和变基
+
+Vite 通过 `postcss-import`预配置支持了 CSS `@import`内联, Vite 的路径别名也遵从 CSS `@import`. 换句话说, 所有 CSS `url()`引用, 即使导入的文件在不同的目录中, 也总是自动变基, 以确保正确性.
+
+Sass 和 Less 文件也支持 `@import`别名和 URL 变基.
+
+### b. PostCSS
+
+如果项目包含有效的 PostCSS 配置 (任何受 [postcss-load-config](https://github.com/postcss/postcss-load-config)支持的格式, 例如 `postcss.config.js`), 它将会自动应用于所有已导入的 CSS.
+
+### c. CSS Modules
+
+任何以 `.module.css`为后缀名的 CSS 文件都被认为是一个 [CSS modules 文件](https://github.com/css-modules/css-modules). 导入这样的文件会返回一个相应的模块对象.
+
+```css
+/* example.module.css */
+.red {
+    color: red;
+}
+```
+
+```js
+import classes from './example.module.css';
+document.getElementById('foo').className = classes.red;
+```
+
+CSS modules 行为可以通过 `css.modules`选项进行配置.
+
+如果 `css.modules.localsConvention`设置开启了 camelCase 格式变量名转换 (例如 `localsConvention: 'camelCaseOnly'`), 你还可以使用按名导入.
+
+```js
+// .apply-color => applyColor
+import { applyColor } from './example.module.css';
+document.getElementById('foo').className = applyColor;
+```
+
+### d. CSS 预处理器
+
+由于 Vite 的目标仅为现代浏览器, 因此建议使用原生 CSS 变量和实现 CSSWG 草案的 PostCSS 插件 (例如 [postcss-nesting](https://github.com/csstools/postcss-nesting))来编写简单的, 符合未来标准的 CSS.
+
+话虽如此, 但 Vite 也同时提供了对 `.scss .sass .less .styl .stylus`文件的内置支持. 没有必要为它们安装特定的 Vite 插件, 但必须安装相应的预处理器依赖:
+
+```sh
+# .scss .sass
+npm i -D sass
+
+# .less
+npm i -D less
+
+# .styl .stylus
+npm i -D stylus
+```
+
+如果用的是单文件组件, 可以通过 `<style lang="sass">`或其他预处理器自动开启.
+
+Vite 为 Sass 和 Less 改进了 `@import`解析, 以保证 Vite 别名也能被使用. 另外, `url()`中的相对路径引用的, 与根文件不同目录中的 Sass/Less 文件会自动变基以保证正确性.
+
+由于 Stylus API 限制, `@import`别名和 URL 变基不支持 Stylus.
+
+还可以通过在文件扩展名前加上 `.module`来结合使用 CSS modules 和预处理器, 例如 `style.module.scss`.
+
+## 3.7 静态资源处理
+
+导入一个静态资源会返回解析后的 URL:
+
+```js
+import imgUrl from './img.png';
+document.getElementById('hero-img').src = imgUrl;
+```
+
+添加一些特殊的查询参数可以更改资源被引入的方式:
+
+```js
+// 显式加载资源为一个 URL
+import assetAsURL from './asset.js?url'
+
+// 以字符串形式加载资源
+import assetAsString from './shader.glsl?raw'
+
+// 加载为 Web Worker
+import Worker from './worker.js?worker'
+
+// 在构建时 Web Worker 内联为 base64 字符串
+import InlineWorker from './worker.js?worker&inline'
+```
+
+## 3.8 JSON
+
+JSON 可以被直接导入, 同样支持具名导入:
+
+```js
+// 导入整个对象
+import json from './example.json'
+
+// 对一个根字段使用具名导入, 有效帮助 treeshaking
+import { field } from './example.json'
+```
+
+## 3.9 Glob 导入
+
+Vite 支持使用特殊的 `import.meta.glob`函数从文件系统导入多个模块
+
+```js
+const modules = import.meta.glob('./dir/*.js');
+```
+
+以上将会被转译为下面的样子:
+
+```js
+// vite 生成的代码
+const modules = {
+    './dir/foo.js': () => import('./dir/foo.js'),
+    './dir/bar.js': () => import('./dir/bar.js')
+}
+```
+
+你可以遍历 `modules`对象的 key 值来访问相应的模块
+
+```js
+for(const path in modules) {
+    modules[path]().then(mod => {
+        console.log(path, mod);
+    });
+}
+```
+
+匹配到的文件默认是懒加载的, 通过动态导入实现, 并会在构建时分离为独立的 chunk. 如果倾向于直接引入所有的模块 (例如依赖于这些模块中的副作用首先被应用), 你可以使用 `import.meta.globEager`代替:
+
+```js
+const modules = import.meta.globEager('./dir/*.js')
+```
+
+以上会被转译为下面的样子:
+
+```js
+// vite 生成的代码
+import * as __glob__0_0 from './dir/foo.js';
+import * as __glob__0_1 from './dir/bar.js';
+const modules = {
+    './dir/foo.js': __glob__0_0,
+    './dir/bar.js': __glob__0_1
+}
+```
+
+请注意:
+
+- 这是一个 Vite 独有的功能而不是一个 Web 或 ES 标准.
+- 该 Glob 模式会被当成导入标识符: 必须是相对路径 (以 `./`开头)或绝对路径 (以 `/`开头, 相对于项目根目录解析).
+- Glob 匹配是使用 `fast-glob`来实现的, 阅读它的文档来查阅 [支持的 Glob 模式](https://github.com/mrmlnc/fast-glob#pattern-syntax).
+
+## 3.10 WebAssembly
+
+预编译的 `.wasm`文件可以直接被导入 - 默认导出一个函数, 返回值为所导出 wasm 实例对象的 Promise:
+
+```js
+import init from './example.wasm'
+
+init().then(exports => {
+    exports.test();
+})
+```
+
+`init`函数还可以将传递给 `WebAssembly.instantiate`的导入对象作为其第二个参数:
+
+```js
+init({
+    imports: {
+        someFunc: () => {
+
+        }
+    }
+}).then(()=>{
+
+});
+```
+
+在生产构建中, 体积小于 `assetInlineLimit`的 `.wasm`文件将会被内联为 base64 字符串. 否则, 它们将作为资源复制到 `dist`目录中, 并按需获取.
+
+## 3.11 Web Worker
+
+一个 web worker 脚本可以直接通过添加一个 `?worker`或 `?sharedworker`查询参数来导入. 默认导出一个自定义的 worker 构造器:
+
+```js
+import MyWorker from './worker?worker';
+
+const worker = new MyWorker();
+```
+
+Worker 脚本也可以使用 `import`语句来替代 `importScripts()` - 注意, 在开发过程中, 这依赖于浏览器原生支持, 目前只在 Chrome 中适用, 而在生产版本中, 它已经被编译掉了.
+
+默认情况下, worker 脚本将在生产构建中编译成单独的 chunk. 如果你想将 worker 内联为 base64 字符串, 请添加 `inline`查询参数:
+
+```js
+import MyWorker from './worker?worker&inline'
+```
+
+## 3.12 构建优化
+
+### a. CSS 代码分割
+
+Vite 会自动地将一个异步 chunk 模块中使用到的 CSS 代码抽取出来并为其生成一个单独的文件. 这个 CSS 文件将在该异步 chunk 加载完成时自动通过一个 `<link>`标签载入, 该异步 chunk 会保证只在 CSS 加载完毕后再执行, 避免发生 [FOUC](https://en.wikipedia.org/wiki/Flash_of_unstyled_content#:~:text=A%20flash%20of%20unstyled%20content,before%20all%20information%20is%20retrieved.).
+
+如果你更倾向于将所有的 CSS 抽取到一个文件中, 你可以通过设置 `build.cssCodeSplit`为 `false`来禁用 CSS 代码分割.
+
+### b. 预加载指令生成
+
+Vite 会为入口 chunk 和它们在打包出的 HTML 中的直接引入自动生成 `<link rel="modulepreload">`指令.
+
+### c. 异步 Chunk 加载优化
+
+在实际项目中, Rollup 通常会生成 "共用" chunk - 被两个或以上的其他 chunk 共享的 chunk. 与动态导入相结合, 会很容易出现下面这种场景:
+
+![3.12](assets/3.12.png)
+
+在无优化的情境下, 当异步 chunk `A`被导入时, 浏览器将必须请求和解析 `A`, 然后它才能弄清楚它也需要共用 chunk `C`. 这会导致额外的网络往返:
+
+```
+Entry ---> A ---> C
+```
+
+Vite 将使用一个预加载步骤自动重写代码, 来分割动态导入调用, 以实现当 `A`被请求时, `C`也将同时被请求:
+
+```
+Entry ---> (A + C)
+```
+
+`C`也可能有更深的导入, 在未优化的场景中, 这会导致更多的网络往返. Vite 的优化会跟踪所有的直接导入, 无论导入的深度如何, 都能够完全消除不必要的往返.

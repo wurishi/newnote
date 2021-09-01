@@ -788,10 +788,6 @@ float woodPattern(vec2 c) {
     return o;
 }
 
-
-
-
-//textures from https://www.shadertoy.com/view/4ds3WS by Reinder
 void setTexture( out vec4 o, in vec2 fragCoord )
 {
     

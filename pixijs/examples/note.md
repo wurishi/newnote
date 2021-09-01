@@ -177,15 +177,15 @@ const sprite = new PIXI.Sprite(texture);
 
 ## Color Matrix
 
-
+![colormatrix](assets/colormatrix.jpg)
 
 ## Displacement Map - Crawlies
 
-
+![dmcrawlies](assets/dmcrawlies.jpg)
 
 ## Displacement Map - Flag
 
-
+![dmflag](assets/dmflag.jpg)
 
 # FILTERS-ADVANCED
 

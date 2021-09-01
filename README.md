@@ -190,6 +190,10 @@ U3D JobSystem
 
 [参考资料](https://www.vertexshaderart.com/) (*需要根据github重新写一套框架, 目前代码仅能实现极少数的效果*)
 
+# vite
+
+参考资料: [Vite 官方中文文档](https://cn.vitejs.dev/)
+
 # vivus
 
 SVG 路径动画

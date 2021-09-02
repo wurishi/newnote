@@ -569,6 +569,549 @@ Falsy 虚值的插件将被忽略, 可以用来轻松地启用或停用插件.
 
 ## 4.3 强制插件排序
 
+为了与某些 Rollup 插件兼容, 可能需要强制执行插件的顺序, 或者只在构建时使用. 这应该是 Vite 插件的实现细节. 可以使用 `enforce`修饰符来强制插件的位置:
+
+- `pre`: 在 Vite 核心插件之前调用该插件
+- 默认: 在 Vite 核心插件之后调用该插件
+- `post`: 在 Vite 构建插件之后调用该插件
+
+```js
+// vite.config.js
+import image from '@rollup/plugin-image'
+import { defaultConfig } from 'vite'
+
+export default defineConfig({
+    plugins: [
+        {
+            ...image(),
+            enforce: 'pre'
+        }
+    ]
+});
+```
+
+查看 Plugins API Guide 获取细节信息, 并在 Vite Rollup 插件 兼容性列表中注意 `encorce`标签和流行插件的使用说明.
+
 ## 4.4 按需应用
 
+默认情况下插件在开发 (serve) 和生产 (build) 模式中都会调用. 如果插件在服务或构建期间按需使用, 请使用 `apply`属性指明它们仅在 `'build'`或 `'serve'`模式时调用:
+
+```js
+// vite.config.js
+import typescript2 from 'rollup-plugin-typescript2'
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+    plugins: [
+        {
+            ...typescript2(),
+            apply: 'build'
+        }
+    ]
+});
+```
+
 ## 4.5 创建插件
+
+阅读 插件 API 指引 文档了解如何创建插件.
+
+# 5. 依赖预构建
+
+当你首次启动 Vite 时, 你可能会注意到打印出了以下信息:
+
+```
+Optimizable dependencies detected: （侦测到可优化的依赖：）
+react, react-dom
+Pre-bundling them to speed up dev server page load...（将预构建它们以提升开发服务器页面加载速度）
+(this will be run only when your dependencies have changed)（这将只会在你的依赖发生变化时执行）
+```
+
+## 5.1 原因
+
+这就是 Vite 执行的所谓的 "依赖项构建". 这个过程有两个目的:
+
+1. **CommonJS 和 UMD 兼容性:** 开发阶段中, Vite 的开发服务器将所有代码视为原生 ES 模块. 因此, Vite 必须先将作为 CommonJS 或 UMD 发布的依赖项转换为 ESM.
+
+   当转换 CommonJS 依赖时, Vite 会执行智能导入分析, 这样即使导出是动态分配的 (如 React), 按名导入也会符合预期效果:
+
+   ```js
+   import React, { useState } from 'react';
+   ```
+
+2. **性能:** Vite 将有许多内部模块的 ESM 依赖关系转换为单个模块, 以提高后续页面加载性能.
+
+   一些包将它们的 ES 模块构建作为许多单独的文件相互导入. 例如, `lodash-es`有超过 600 个内置模块! 当我们执行 `import { debounce } from 'lodash-es'`时, 浏览器同时发出 600 多个 HTTP 请求! 尽管服务器在处理这些请求时没有问题, 但大量的请求会在浏览器端造成网络拥塞, 导致页面的加载速度相当慢.
+
+   通过预构建 `lodash-es`成为一个模块, 我们就只需要一个 HTTP 请求了!
+
+## 5.2 自动依赖搜寻
+
+如果没有找到相应的缓存, Vite 将抓取你的源码, 并自动寻找引入的依赖项 (即 "bare import", 表示期望从 `node_modules`解析), 并将这些依赖项作为预构建包的入口点. 预构建通过 esbuild 执行, 所以它通常非常快.
+
+在服务器已经启动之后, 如果遇到一个新的依赖关系导入, 而这个依赖关系还没有在缓存中, Vite 将重新运行依赖构建进程并重新加载页面.
+
+## 5.3 Monorepo 和链接依赖
+
+在一个 monorepo 启动中, 该仓库中的某个依赖可能会成为另一个包的依赖. Vite 会自动侦测没有从 `node_modules`解析的依赖项, 并将链接的依赖视为源码. 它不会尝试打包被链接的依赖, 而是会分析被链接依赖的依赖列表.
+
+> 注意:
+>
+> 由于依赖关系的处理方式不同, 链接的依赖关系在最终构建时可能无法正常工作. 使用 `npm package`代替所有本地依赖, 以避免最终的 bundle 问题.
+
+## 5.4 自定义行为
+
+默认的依赖项发现为启发式可能并不总是可取的. 在你想要显式地从列表中包含/排除依赖项的情况下, 请使用 `optimizeDeps`配置项.
+
+当你遇到不能直接在源码中发现的 import 时, `optimizeDeps.include`或 `optimizeDeps.exclude`就是典型的用例. 例如, import 可能是插件转换的结果. 这意味着 Vite 无法在初始扫描时发现 import , 它只能在浏览器请求文件时转换后才能发现. 这将导致服务器在启动后立即重新打包.
+
+`include`和 `exclude`都可以用来处理这个问题. 如果依赖项很大 (包含很多内部模块) 或者是 CommonJS, 那么你应该 `include`它. 如果依赖项很小, 并且已经是有效的 ESM, 则可以 `exclude`它, 让浏览器直接加载它.
+
+## 5.5 缓存
+
+### a. 文件系统缓存
+
+Vite 会将预构建的依赖缓存到 `node_modules/.vite`. 它根据几个源来决定是否需要重新运行预构建步骤:
+
+- `package.json`中的 `dependencies`列表
+- 包管理器的 lockfile, 例如 `package-lock.json`, `yarn.lock`, 或者 `pnpm-lock.yaml`
+- 可能在 `vite.config.js`相关字段中配置过的
+
+只有在上述其中一项发生更改时, 才需要重新运行预构建.
+
+如果出于某些原因, 想要强制 Vite 重新构建依赖, 可以用 `--force`命令行选项启动开发服务器, 或者手动删除 `node_modules/.vite`目录.
+
+### b. 浏览器缓存
+
+解析后的依赖请求会以 HTTP 头 `max-age=31536000,immutable`强缓存, 以提高在开发时的页面重载性能. 一旦被缓存, 这些请求将永远不会再到达开发服务器. 如果安装了不同的版本 (这反映在包管理器的 lockfile 中), 则附加的版本 query 会自动使它们失效. 如果想通过本地编辑来调试依赖项, 你可以:
+
+1. 通过浏览器调试工具的 Network 选项卡暂时禁用缓存.
+2. 重启 Vite dev server, 并添加 `--force`命令以重新构建依赖.
+3. 重新载入页面
+
+# 6. 静态资源处理
+
+## 6.1 将资源引入为 URL
+
+引入一个静态资源会返回解析后的公共路径:
+
+```js
+import imgUrl from './img.png'
+document.getElementById('hero-img').src = imgUrl;
+```
+
+例如, `imgUrl`在开发时会是 `/img.png`, 在生产构建后可能是 `/assets/img.2d8efhg.png`.
+
+行为类似于 Webpack 的 `file-loader`. 区别在于导入既可以使用绝对公共路径 (基于开发期间的项目根路径), 也可以使用相对路径.
+
+- `url()`在 CSS 中的引用也以同样的方式处理.
+- 如果 Vite 使用了 Vue 插件, Vue SFC 模板中的资源引用都将自动转换为导入.
+- 常见的图像, 媒体和字体文件类型被自动检测为资源. 你可以使用 `assetsInclude`选项扩展内部列表.
+- 引用的资源作为构建资源图的一部分包括在内, 将生成散列文件名, 并可以由插件进行处理以进行优化.
+- 较小的资源体积小于 `assetsInlineLimit`选项值则会被内联为 base64 data URL.
+
+### a. 显式 URL 引入
+
+未被包含在内部列表或 `assetsInclude`中的资源, 可以使用 `?url`后缀显式导入为一个 URL. 这十分有用, 例如要导入 [Houdini Paint Worklets](https://houdini.how/usage/) 时:
+
+```js
+import workletURL from 'extra-scalloped-border/worklet.js?url';
+CSS.paintWorklet.addModule(workletURL);
+```
+
+### b. 将资源引入为字符串
+
+资源可以使用 `?raw`后缀声明作为字符串引入.
+
+```js
+import shaderString from './shader.glsl?raw';
+```
+
+### c. 导入脚本作为 Worker
+
+脚本可以通过 `?worker`或 `?sharedworker`后缀导入为 web worker.
+
+```js
+// 在生产构建中将会分离出 chunk
+import Worker from './shader.js?worker'
+const worker = new Worker()
+```
+
+```js
+// sharedworker
+import SharedWorker from './shader.js?sharedworker'
+const sharedWorker = new SharedWorker()
+```
+
+```js
+// 内联为 base64 字符串
+import InlineWorker from './shader.js?worker&inline'
+```
+
+查看 Web Worker 小节 获取更多细节.
+
+### d. `public`目录
+
+如果你有下列资源:
+
+- 不会被源码引用 (如 `robots.txt`)
+- 必须保持原有文件名 (不需要经过 hash)
+- 或者压根不想引入该资源, 只是想得到其 URL
+
+那么你可以将该资源放在指定的 `public`目录中, 它应位于你的项目根目录. 该目录中的资源在开发时能直接通过 `/`根路径访问到, 并且打包时会被完整复制到目标目录的根目录下.
+
+目录默认是 `<root>/public`, 但可以通过 `publicDir`选项来配置.
+
+请注意:
+
+- 引入 `public`中的资源永远应该使用根绝对路径 - 举个例子, `public/icon.png`应该在源码中被引用为 `/icon.png`.
+- `public`中的资源不应该被 JavaScript 文件引用.
+
+## 6.2 new URL(url, import.meta.url)
+
+`import.meta.url`是一个 ESM 的原生功能, 会暴露当前模块的 URL. 将它与原生的 URL 构造器 组合使用, 在一个 JavaScript 模块中, 通过相对路径我们就能得到一个被完整解析的静态资源 URL:
+
+```js
+const imgUrl = new URL('./img.png', import.meta.url);
+
+document.getElementById('hero-img').src = imgUrl;
+```
+
+这在现代浏览器中能够原生使用 - 实际上, Vite 并不需要在开发阶段处理这些代码!
+
+这个模式同样还可以通过字符串模板支持动态 URL:
+
+```js
+function getImageUrl(name) {
+    return new URL(`./dir/${name}.png`, import.meta.url).href;
+}
+```
+
+在生产构建时, Vite 才会进行必要的转换保证 URL 在打包和资源哈希后仍指向正确的地址.
+
+> 注意: 无法在 SSR 中使用
+>
+> 如果你正在以服务端渲染模式使用 Vite 则此模式不支持, 因为 `import.meta.url`在浏览器和 Node.js 中有不同的语义. 服务端的产物也无法预先确定客户端主机 URL.
+
+# 7. 构建生产版本
+
+当需要将应用部署到生产环境时, 只需运行 `vite build`命令. 默认情况下, 它使用 `<root>/index.html`作为其构建入口点, 并生成能够静态部署的应用程序包. 请查阅 部署静态站点 获取常见服务的部署指引.
+
+## 7.1 浏览器兼容性
+
+用于生产的构建包会假设目标浏览器支持现代 JavaScript 语法. 默认情况下, vite 的目标浏览器是指能够 [支持原生 ESM script 标签](https://caniuse.com/es6-module) 和 [支持原生 ESM 动态导入](https://caniuse.com/es6-module-dynamic-import) 的. 作为参考, vite 使用这个 [browserslist](https://github.com/browserslist/browserslist) 作为查询标准:
+
+```
+defaults and supports es6-module and supports es6-module-dynamic-import, not opera > 0, not samsung > 0, not and_qq > 0
+```
+
+你也可以通过 `build.target`配置项指定构建目标, 最低支持 `es2015`.
+
+请注意, 默认情况下 Vite 只处理语法转译, 且 **默认不包含任何 polyfill**. 你可以前往 [Polyfill.io](https://polyfill.io/v3/)查看, 这是一个基于用户浏览器 User-Agent 字符串自动生成 polyfill 包的服务.
+
+传统浏览器可以通过插件 [@vitejs/plugin-legacy](https://github.com/vitejs/vite/tree/main/packages/plugin-legacy) 来支持, 它将自动生成传统版本的 chunk 及与其相对应 ES 语言特性方面的 polyfill. 兼容版的 chunk 只会在不支持原生 ESM 的浏览器中进行按需加载.
+
+## 7.2 公共基础路径
+
+如果你需要在嵌套的公共路径下部署项目, 只需指定 `base`配置项, 然后所有资源的路径都将据此配置重写. 这个选项也可以通过命令行参数指定, 例如: `vite build --base=/my/public/path/`.
+
+由 JS 引入的资源 URL, CSS 中的 `url()`引用以及 `.html`文件中引用的资源在构建过程中都会自动调整, 以适配此选项.
+
+当然, 情况也有例外, 当访问过程中需要使用动态连接的 url 时, 可以使用全局注入的 `import.meta.env.BASE_URL`变量, 它的值为公共基础路径. 注意, 这个变量在构建时会被静态替换, 因此, 它必须按 `import.meta.env.BASE_URL`的原样出现 (例如 `import.meta.env['BASE_URL']`是无效的)
+
+## 7.3 自定义构建
+
+构建过程可以通过多种 构建配置选项 来自定义构建. 具体来说, 可以通过 `build.rollupOptions`直接调整底层的 Rollup 选项:
+
+```js
+// vite.config.js
+module.exports = defineConfig({
+    build: {
+        rollupOptions: {
+           // https://rollupjs.org/guide/en/#big-list-of-options 
+        }
+    }
+})
+```
+
+例如, 你可以使用仅在构建期间应用的插件来指定多个 Rollup 输出.
+
+## 7.4 文件变化时重新构建
+
+你可以使用 `vite build --watch`来启用 rollup 的监听器. 或者, 你可以直接通过 `build.watch`调整底层的 `WatcherOptions`选项:
+
+```js
+// vite.config.js
+module.exports = defineConfig({
+    build: {
+        watch: {
+            // https://rollupjs.org/guide/en/#watch-options
+        }
+    }
+})
+```
+
+## 7.5 多页面应用模式
+
+假设有下面这样的项目文件结构:
+
+```
+├── package.json
+├── vite.config.js
+├── index.html
+├── main.js
+└── nested
+    ├── index.html
+    └── nested.js
+```
+
+在开发过程中, 简单地导航或链接到 `/nested/`将会按预期工作, 与正常的静态文件服务器表现一致.
+
+在构建过程中, 你只需指定多个 `.html`文件作为入口点即可.
+
+```js
+// vite.config.js
+const { resolve } = require('path');
+const { defineConfig } = require('vite');
+
+module.exports = defineConfig({
+    build: {
+        rollupOptions: {
+            input: {
+                main: resolve(__dirname, 'index.html'),
+                nested: resolve(__dirname, 'nested/index.html')
+            }
+        }
+    }
+});
+```
+
+如果你指定了另一个根目录, 请记住, 在解析输入路径时, `__dirname`的值将仍然是 vite.config.js 文件所在的目录. 因此, 你需要把对应入口文件的 `root`的路径添加到 `resolve`的参数中.
+
+## 7.6 库模式
+
+当你开发面向浏览器的库时, 你可能会将大部分时间花在该库的测试/演示页面上. 在 Vite 中你可以使用 `index.html`获得如丝般中顺滑的开发体验.
+
+当这个库进行发布构建时, 请使用 `build.lib`配置项, 以确保将那些你不想打包进库的依赖进行外部化处理, 例如 `vue`或 `react`:
+
+```js
+// vite.config.js
+const path = require('path');
+const { defineConfig } = require('vite');
+
+module.exports = defineConfig({
+    build: {
+        lib: {
+            entry: path.resolve(__dirname, 'lib/main.js'),
+            name: 'MyLib',
+            fileName: (format) => `my-lib.${format}.js`
+        },
+        rollupOptions: {
+            // 确保外部化处理那些不想打包进库的依赖
+            external: ['vue'],
+            output: {
+                // 在 UMD 构建模式下为这些外部化的依赖提供一个全局变量
+                globals: {
+                    vue: 'Vue'
+                }
+            }
+        }
+    }
+});
+```
+
+使用如上配置运行 `vite build`时, 将会使用一套面向库的 Rollup 预设, 并且将为该库提供两种构建格式: `es`和 `umd` (可在 `build.lib`中配置).
+
+推荐在库的 `package.json`中使用如下格式:
+
+```json
+{
+    "name": "my-lib",
+    "files": ["dist"],
+    "main": "./dist/my-lib.umd.js",
+    "module": "./dist/my-lib.es.js",
+    "exports": {
+        ".": {
+            "import": "./dist/my-lib.es.js",
+            "require": "./dist/my-lib.umd.js"
+        }
+    }
+}
+```
+
+# 8. 部署静态站点
+
+本指南建立在以下几个假设基础之上:
+
+- 你正在使用的是默认的构建输出路径 (`dist`). 这个路径可以通过 `build.outDir`更改, 在这种情况下, 你可以从这篇指南中找出所需的指引.
+
+- 正在使用 NPM , 或者 Yarn 等其他可以运行下面脚本指令的包管理工具.
+
+- Vite 已作为一个本地开发依赖 (dev dependency) 安装在你的项目中, 并且你已经配置好了如下的 npm scripts:
+
+  ```json
+  {
+      "scripts": {
+          "build": "vite build",
+          "serve": "vite preview"
+      }
+  }
+  ```
+
+  值得注意的是 `vite preview`用作预览本地构建, 而不应直接作为生产服务器.
+
+> 注意
+>
+> 本篇指南提供了部署 Vite 静态站点的说明. Vite 也对服务端渲染 (SSR) 有了实验性的支持. SSR 是指支持在 Node 中运行相应应用的前端框架, 预渲染成 HTML, 最后在客户端激活 (hydrate). 查看 SSR 指南 了解更多细节. 另一方面, 如果你在寻找与传统服务端框架集成的方式, 那么请查看 后端集成 章节.
+
+## 8.1 构建应用
+
+你可以运行 `npm run build`命令来执行应用的构建.
+
+默认情况下, 构建会输出到 `dist`文件夹中. 你可以部署这个 `dist`文件夹到任何你喜欢的平台.
+
+### a. 本地测试应用
+
+当你构建完成应用后, 你可以通过运行 `npm run serve`命令, 在本地测试该应用.
+
+```sh
+npm run build
+npm run serve
+```
+
+`vite preview`命令会在本地启动一个静态 Web 服务器, 将 `dist`文件夹运行在 `http://localhost:5000`. 这样在本地环境下查看该构建产物是否正常可用就方便了.
+
+你可以通过 `--port`参数来配置服务的运行端口.
+
+```json
+{
+    "scripts": {
+        "serve": "vite preview --port 8080"
+    }
+}
+```
+
+## 8.2 GitHub Pages
+
+> 注意
+>
+> 如果你将 script 的名字 `serve`改为了 `preview`, 你可能会遇到某些包管理工具在处理 [前置 & 后置 scripts](https://docs.npmjs.com/cli/v7/using-npm/scripts#pre--post-scripts) 方面的问题.
+
+1. 在 `vite.config.js`中设置正确的 `base`.
+
+   如果要部署在 `https://<USERNAME>.github.io`上, 你可以省略 `base`使其默认为 `'/'`.
+
+   如果要部署在 `https://<USERNAME>.github.io/<REPO>/`上, 例如你的仓库为 `https://github.com/<USERNAME>/<REPO>`, 那么请设置 `base`为 `/<REPO>/`.
+
+2. 在你的项目中 ,创建一个 `deploy.sh`脚本, 包含以下内容, 运行脚本来部署站点:
+
+   ```sh
+   #!/usr/bin/env sh
+   
+   # 发生错误时终止
+   set -e
+   
+   # 构建
+   npm run build
+   
+   # 进入构建文件夹
+   cd dist
+   
+   # 如果要部署到自定义域名
+   # echo 'www.example.com' > CNAME
+   
+   git init
+   git add -A
+   git commit -m 'deploy'
+   
+   # 如果要部署在 https://<USERNAME>.github.io
+   # git push -f git@github.com:<USERNAME>/<USERNAME>.github.io.git master
+   
+   # 如果要部署在 https://<USERNAME>.github.io/<REPO>
+   # git push -f git@github.com:<USERNAME>/<REPO>.git master:gh-pages
+   
+   cd -
+   ```
+
+   > TIP
+   >
+   > 也可以在 CI 中配置该脚本, 使得每次推送代码时自动部署.
+
+### a. GitHub Pages 配合 Travis CI
+
+1. 在 `vite.config.js`中设置正确的 `base`.
+
+   如果要部署在 `https://<USERNAME or GROUP>.github.io/`上, 可以省略 `base`使其默认为 `'/'`.
+
+   如果要部署在 `https://<USERNAME or GROUP>.github.io/<REPO>/`, 例如你的仓库地址为 `https://github.com/<USERNAME>/<REPO>`, 那么请设置 `base`为 `'/<REPO>/'`.
+
+2. 在项目根目录创建一个 `.travis.yml`文件.
+
+3. 在本地运行 `npm install`并且提交 (commit) 生成的 lockfile (`package-lock.json`).
+
+4. 使用 GitHub Pages 部署的配置文件模板, 并按照 [Travis CI 文档](https://docs.travis-ci.com/user/deployment/pages/) 进行配置:
+
+   ```yaml
+   language: node_js
+   node_js:
+   	- lts/*
+   install:
+   	- npm ci
+   script:
+   	- npm run build
+   deploy:
+   	provider: pages
+   	skip_cleanup: true
+   	local_dir: dist
+   	# 在 GitHub 上生成的 token, 允许 Travis 推送代码到你的仓库.
+   	# 在仓库的 Travis 设置页面, 设为安全的环境变量
+   	github_token: $GITHUB_TOKEN
+   	keep_history: true
+   	on:
+   		branch: master
+   ```
+
+## 8.3 GitLab Pages 配合 GitLab CI
+
+1. 在 `vite.config.js`中设置正确的 `base`.
+
+   如果要部署在 `https://<USERNAME or GROUP>.gitlab.io/`上, 可以省略 `base`使其默认为 `'/'`.
+
+   如果要部署在 `https://<USERNAME or GROUP>.gitlab.io/<REPO>/`上, 例如仓库地址为 `https://gitlab.com/<USERNAME>/<REPO>`, 那么请设置 `base`为 `'/<REPO>/'`.
+
+2. 在项目根目录创建一个 `.gitlab-ci.yml`文件, 并包含以下内容. 它将使得每次你更改内容时都重新构建和部署站点:
+
+   ```yaml
+   image: node:16.5.0
+   pages:
+   	stage: deploy
+   	cache:
+   		key:
+   			files:
+   				- package-lock.json
+   			prefix: npm
+   		paths:
+   			- node_modules/
+   	script:
+   		- npm install
+   		- npm run build
+   		- cp -a dist/. public/
+   	artifacts:
+   		paths:
+   			- public
+   	rules:
+   		- $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+   ```
+
+## 8.4 Netlify
+
+## 8.5 Google Firebase
+
+## Surge
+
+## Heroku
+
+## Vercel
+
+## Azure 的静态网站应用
+
+## 腾讯云 Webify

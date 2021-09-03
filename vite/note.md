@@ -1104,6 +1104,11 @@ npm run serve
 
 ## 8.4 Netlify
 
+1. 在 [Netlify](https://www.netlify.com/) 上, 使用以下设置, 配置一个来自 GitHub 的项目:
+   - 构建命令: `vite build`或 `npm run build`
+   - 发布目录: `dist`
+2. 点击部署按钮
+
 ## 8.5 Google Firebase
 
 ## Surge

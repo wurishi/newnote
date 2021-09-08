@@ -1111,7 +1111,34 @@ npm run serve
 
 ## 8.5 Google Firebase
 
-## Surge
+1. 确保已经安装 [firebase-tools](https://www.npmjs.com/package/firebase-tools).
+
+2. 在项目根目录创建 `firebase.json` 和 `.firebaserc`两个文件, 包含以下内容:
+
+   `firebase.json`
+
+   ```json
+   {
+       "hosting": {
+           "public": "dist",
+           "ignore": []
+       }
+   }
+   ```
+
+   `.firebaserc`
+
+   ```json
+   {
+       "projects": {
+           "default": "<YOUR_FIREBASE_ID>"
+       }
+   }
+   ```
+
+3. 运行 `npm run build`后, 通过 `firebase deploy`命令部署.
+
+## 8.6 Surge
 
 ## Heroku
 

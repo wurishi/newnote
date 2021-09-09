@@ -1140,10 +1140,95 @@ npm run serve
 
 ## 8.6 Surge
 
-## Heroku
+1. 首先确保已经安装 [surge](https://www.npmjs.com/package/surge).
 
-## Vercel
+2. 运行 `npm run build`.
 
-## Azure 的静态网站应用
+3. 运行 `surge dist` 命令部署到 surge.
 
-## 腾讯云 Webify
+你也可以通过添加 `surge dist yourdomain.com` 部署到一个自定义域名.
+
+## 8.7 Heroku
+
+1. 安装 [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli).
+
+2. 注册一个 Heroku 账号.
+
+3. 运行 `heroku login` 并填入你的 Heroku 凭证.
+
+4. 在项目根目录创建一个 `static.json`, 包含以下内容.
+
+    ```json
+    {
+        "root": "./dist"
+    }
+    ```
+
+这是你站点的配置, 阅读 [heroku-buildpack-static](https://github.com/heroku/heroku-buildpack-static) 文档来了解更多.
+
+5. 配置好你的 Heroku git 远程地址
+
+    ```sh
+    # 版本变更
+    git init
+    git add
+    git commit -m "My site ready for deployment."
+
+    # 创建一个具有指定名称的新应用
+    heroku apps:create example
+
+    # 为静态站点设置 buildpack
+    heroku buildpacks:set https://github.com/heroku/heroku-buildpack-static.git
+    ```
+
+6. 部署站点
+
+    ```sh
+    # 发布站点
+    git push heroku master
+
+    # 在浏览器中打开 Heroku 的面板
+    heroku open
+    ```
+
+## 8.8 Vercel
+
+要通过 [Vercel for Git](https://vercel.com/docs/git) 部署你的 Vite 应用, 请确保它已被推送至一个 Git 仓库.
+
+进入 [https://vercel.com/import/git](https://vercel.com/import/git) 并根据你的 Git 托管服务 (GitHub, GitLab 或 BitBucket) 将项目导入 Vercel. 根据指引, 选择带有 `package.json` 的项目根目录. 并使用 `npm run build` 来覆写构建步骤, 并将输出目录设置为 `./dist`.
+
+在项目被导入之后, 所有后续的推送都将生成预览部署, 但只有对生产分支(通常是 "main")所做的更改才会触发生产部署.
+
+一旦部署, 你会得到一个实时查看应用的 URL.
+
+## 8.9 Azure 的静态网站应用
+
+你可以通过微软 Azure 的 [静态网站应用](https://azure.microsoft.com/zh-cn/services/app-service/static/) 服务来快速部署你的 Vite 应用. 你只需:
+
+- 注册 Azure 账号并获取一个订阅 (subscription) 的 key. 可以在 [此处快速完成注册](https://azure.microsoft.com/zh-cn/free/).
+
+- 将你的应用代码托管到 GitHub.
+
+- 在 VSCode 中安装 [SWA 扩展](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurestaticwebapps).
+
+安装完此扩展后, 进入你应用的根目录. 打开 SWA 的扩展程序, 登录 Azure, 并点击"+", 来创建一个全新的 SWA. 系统会提示你指定所需的订阅 key.
+
+按照扩展程序的启动向导, 给你的应用程序起个名字, 选择框架预设, 并指定应用程序的根目录 (通常为 `/`) 以及构建文件的路径 `/dist`. 此向导完成后, 会在你的 repo 中的 `.github` 文件夹中创建一个 Github Action.
+
+这个 action 致力于部署你的应用程序 (可以在仓库的 Actions 标签中, 查看相关进度), 成功完成后, 你可以点击 Github 中出现的 "浏览站点" 的按钮, 查看你的应用程序.
+
+## 8.10 腾讯云 Webify
+
+[腾讯云 Webify](https://webify.cloudbase.net/) 支持从 Git 仓库直接部署您的 Vite 应用.
+
+进入 [Webify 新建应用页面](https://cloud.tencent.com/login?s_url=https%3A%2F%2Fconsole.cloud.tencent.com%2Fwebify%2Fnew), 根据选择您代码仓库所在的 Git 平台 (GitHub, GitLab 或者 Gitee 码云), 完成授权流程后, 便可导入仓库.
+
+应用配置如下:
+
+- 构建命令填入 `npm run build`
+
+- 输出目录填入 `dist`
+
+- 安装命令填入 `npm install`
+
+应用创建之后, 等待构建, 部署完毕, 便可以通过应用的默认域名 (`.app.tcloudbase.com`) 来访问应用.

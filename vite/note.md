@@ -1232,3 +1232,244 @@ npm run serve
 - 安装命令填入 `npm install`
 
 应用创建之后, 等待构建, 部署完毕, 便可以通过应用的默认域名 (`.app.tcloudbase.com`) 来访问应用.
+
+# 9. 环境变量和模式
+
+## 9.1 环境变量
+
+Vite 在一个特殊的 `import.meta.env` 对象上暴露环境变量. 这里有一些在所有情况下都可以使用的内建变量:
+
+- `import.meta.env.MODE`: {string} 应用运行的模式.
+
+- `import.meta.env.BASE_URL`: {string} 部署应用时的基本 URL. 它由 `base` 配置项决定.
+
+- `import.meta.env.PROD`: {boolean} 应用是否运行在生产环境.
+
+- `import.meta.env.DEV`: {boolean} 应用是否运行在开发环境 (永远与 `import.meta.env.PROD` 相反).
+
+### 生产环境替换
+
+在生产环境中, 这些环境变量会在构建时被 **表态替换**, 因此, 在引用它们时请使用完全静态的字符串. 动态的 key 将无法生效. 例如, 动态 key 取值 `import.meta.env[key]` 是无效的.
+
+它还将替换出现在 JavaScript 和 Vue 模板中的字符串. 这应该是一种罕见的情况, 但可能是不小心为之的. 有一些方法可以避免这个问题:
+
+- 对于 JavaScript 字符串, 你可以使用 unicode 零宽度空格 `\u200b` (一个看不见的分隔符)来分割这个字符串, 例如: `import.meta\u200b.env.MODE`.
+
+- 对于 Vue 模板或其他编译到 JavaScript 字符串的 HTML, 你可以使用 `<wbr>` 标签, 例如: `import.meta.<wbr>env.MODE`.
+
+## 9.2 `.env` 文件
+
+Vite 使用 [dotenv](https://github.com/motdotla/dotenv) 从你的环境目录中的下列文件加载额外的环境变量:
+
+```
+.env                # 所有情况下都会加载
+.env.local          # 所有情况下都会加载, 但会被 git 忽略
+.env.[mode]         # 只在指定模式下加载
+.env.[mode].local   # 只在指定模式下加载, 但会被 git 忽略
+```
+
+加载的环境变量也会通过 `import.meta.env` 暴露给客户端源码.
+
+为了防止意外地将一些环境变量泄漏到客户端, 只有以 `VITE_` 为前缀的变量才会暴露给经过 vite 处理的代码。例如下面这个文件中：
+
+```
+DB_PASSWORD=foobar
+VITE_SOME_KEY=123
+```
+
+只有 `VITE_SOME_KEY` 会被暴露为 `import.meta.env.VITE_SOME_KEY` 提供给客户端源码, 而 `DB_PASSWORD` 则不会.
+
+> **安全注意事项**
+> - `.env.*.local` 文件应是本地的, 可以包含敏感变量. 你应该将 `.local` 添加到你的 `.gitignore` 中, 以避免它们被 git 检入.
+> - 由于任何暴露给 Vite 源码的变量最终都将出现在客户端包中, `VITE_*` 变量应该不包含任何敏感信息.
+
+### 智能提示
+
+默认情况下, Vite 为 `import.meta.env` 提供了类型定义. 随着在 `.env[mode]` 文件中自定义了越来越多的环境变量, 你可能想要在代码中获取这些以 `VITE_` 为前缀的用户自定义环境变量的 TypeScript 智能提示.
+
+要想做到这一点, 你可以在 `src` 目录下创建一个 `env.d.ts` 文件, 接着按下面这样增加 `ImportMetaEnv` 的定义:
+
+```typescript
+interface ImportMetaEnv {
+    VITE_APP_TITLE: string
+    // 更多环境变量...
+}
+```
+
+## 9.3 模式
+
+默认情况下, 开发服务器 (`serve` 命令)运行在 `development` (开发)模式, 而 `build` 命令运行在 `production` (生产)模式.
+
+这意味着当执行 `vite build` 时, 它会自动加载 `.env.production` 中可能存在的环境变量:
+
+```
+# .env.production
+VITE_APP_TITLE=My App
+```
+
+在你的应用中, 你可以使用 `import.meta.env.VITE_APP_TITLE` 渲染标题.
+
+然而, 重要的是要理解**模式**是一个更广泛的概念, 而不仅仅是开发和生产. 一个典型的例子是, 你可能希望有一个 "staging" (预发布|预上线)模式, 它应该具有类似于生产的行为, 但环境变量与生产环境略有不同.
+
+你可以通过传递 `--mode` 选项标志来覆盖命令使用的默认模式. 例如, 如果你想为我们假设的 staging 模式构建应用:
+
+```sh
+vite build --mode staging
+```
+
+为了使应用实现预期行为, 我们还需要一个 `.env.staging` 文件:
+
+```
+# .env.staging
+NODE_ENV=production
+VITE_APP_TITLE=My App (staging)
+```
+
+现在, 你的 staging 应用应该具有类似于生产的行为, 但显示的标题与生产环境不同.
+
+# 10. 服务端渲染
+
+> **实验性**
+> SSR 支持还处于试验阶段, 你可能会遇到 bug 和不受支持的用例. 请考虑你可能承担的风险.
+
+> **注意**
+> SSR 特别指支持在 Node.js 中运行相同应用程序的前端框架 (例如 React, Preact, Vue 和 Svelte), 将其预渲染成 HTML, 最后在客户端进行注水化处理。 如果你正在寻找与传统服务器端框架的集成, 请查看后端集成指南.
+> 下面的指南还假定你在选择的框架中有使用 SSR 的经验, 并且只关注特定于 Vite 的集成细节.
+
+> Low-Level API
+> 这是一个底层的 API, 是为库和框架作者准备的. 如果你的目标是构建一个应用程序, 请确保优先查看 Vite SSR 章节 中更上层的 SSR 插件和工具. 也就是说, 大部分应用都是基于 Vite 的底层 API 之上构建的.
+
+## 10.1 示例项目
+
+Vite 为服务端渲染 (SSR) 提供了内建支持. 这里的 Vite 范例包含了 Vue 3 和 React 的 SSR 设置示例, 可以作为本指南的参考:
+
+- [Vue 3](https://github.com/vitejs/vite/tree/main/packages/playground/ssr-vue)
+
+- [React](https://github.com/vitejs/vite/tree/main/packages/playground/ssr-react)
+
+## 10.2 源码结构
+
+一个典型的 SSR 应用应该有如下的源文件结构:
+
+```
+- index.html
+- src/
+    - main.js           # 导出环境无关的 (通用的) 应用代码
+    - entry-client.js   # 将应用挂载到一个 DOM 元素上
+    - entry-server.js   # 使用某框架的 SSR API 渲染该应用
+```
+
+`index.html` 将需要引用 `entry-client.js` 并包含一个占位标记供给服务端渲染时注入:
+
+```html
+<div id="app"><!--ssr-outlet--></div>
+<script type="module" src="/src/entry-client.js"></script>
+```
+
+你可以使用任何你喜欢的占位标记来替代 `<!--ssr-outlet-->`, 只要它能够被正确替换.
+
+## 10.3 情景逻辑
+
+如果需要执行 SSR 和客户端间情景逻辑, 可以使用:
+
+```js
+if(import.meta.env.SSR) {
+    // ... 仅在服务端执行的逻辑
+}
+```
+
+这是在构建过程中被静态替换的, 因此它将允许对未使用的条件分支进行摇树优化.
+
+## 10.4 设置开发服务器
+
+在构建 SSR 应用程序时, 你可能希望完全控制主服务器，并将 Vite 与生产环境脱钩。因此，建议以中间件模式使用 Vite. 下面是一个关于 express 的例子:
+
+server.js
+
+```js
+const fs = require('fs');
+const path = require('path');
+const express = require('express');
+const { createServer: createViteServer } = require('vite');
+
+async function createServer() {
+    const app = express();
+
+    // 以中间件模式创建 vite 应用, 这将禁用 vite 自身的 HTML 服务逻辑
+    // 并让上级服务器接管控制
+
+    // 如果你想使用 vite 自己的 HTML 服务逻辑 (将 Vite 作为一个开发中间件来使用),
+    // 那么这里请用 'html'
+    const vite = await createViteServer({
+        server: { middlewareMode: 'ssr' }
+    });
+
+    // 使用 vite 的 Connect 实例作为中间件
+    app.use(vite.middlewares);
+
+    app.use('*', async (req, res) => {
+        // 服务 index.html - 下面我们来处理这个问题
+    });
+
+    app.listen(3000);
+}
+
+createServer();
+```
+
+这里 `vite` 是 ViteDevServer 的一个实例. `vite.middlewares` 是一个 Connect 实例，它可以在任何一个兼容 connect 的 Node.js 框架中被用作一个中间件。
+
+下一步是实现 `*` 处理程序供给服务端渲染的 HTML:
+
+```js
+app.use('*', async (req, res) => {
+    const url = req.originalUrl;
+
+    try {
+        // 1. 读取 index.html
+        let template = fs.readFileSync(
+            path.resolve(__dirname, 'index.html'),
+            'utf-8'
+        );
+
+        // 2. 应用 vite HTML 转换. 这将会注入 vite HMR 客户端,
+        // 同时也会从 vite 插件应用 HTML 转换.
+        // 例如: @vitejs/plugin-react-refresh 中的 global preambles
+        template = await vite.transformIndexHtml(url, template);
+
+        // 3. 加载服务器入门。vite.ssrLoadModule 将自动转换
+        // 你的 ESM 源码使之可以在 Node.js 中运行！无需打包
+        // 并提供类似 HMR 的根据情况随时失效。
+        const { render } = await vite.ssrLoadModule('/src/entry-server.js');
+
+        // 4. 渲染应用的 HTML. 这假设 entry-server.js 导出的 `render`
+        // 函数调用了适当的 SSR 框架 API.
+        // 例如: ReactDOMServer.renderToString()
+        const appHtml = await render(url);
+
+        // 5. 注入渲染后的应用程序 HTML 到模板中.
+        const html = template.replace(`<!--ssr-outlet-->`, appHtml);
+
+        // 6. 返回渲染后的 HTML.
+        res.status(200).set({ 'Content-Type': 'text/html' }).end(html);
+    } catch (e) {
+        // 如果捕获到了一个错误，让 vite 来修复该堆栈，这样它就可以映射回你的实际源码中。
+        vite.ssrFixStacktrace(e);
+        console.error(e);
+        res.status(500).end(e.message);
+    }
+});
+```
+
+`package.json` 中的 `dev` 脚本也应该相应地改变，使用服务器脚本：
+
+```diff
+"scripts": {
+-   "dev": "vite"
++   "dev": "node server"
+}
+```
+
+## 10.5 生产环境构建
+
+为了将 SSR 项目交付生产，我们需要：

@@ -856,7 +856,125 @@ count += 1; // Error 只有 incrementer.js 可以改变这个值。
 
 # 8. 大选项列表
 
-## 8.1 核心功能
+## 8.1 核心功能 (Core functionality)
+
+### 输入 (input `-i/--input`)
+
+`String`这个包的入口点 (例如：你的 `main.js, app.js, index.js`)
+
+### 文件 (file `-o/--output.file`)
+
+`String`要写入的文件。也可用于生成 `sourcemaps`，如果适用。
+
+### 格式 (format `-f/--output.format`)
+
+`String`生成包的格式。下列之一：
+
+- `amd` - 异步模块定义，用于像 RequireJS 这样的模块加载器。
+- `cjs` - CommonJS，适用于 Node 和 Browserify/Webpack。
+- `esm` - 将软件包保存为 ES 模块文件，在现代浏览器中可以通过 `<script type="module">`标签引入。
+- `iife` - 一个自动执行的功能，适合作为 `<script>`标签。如果要为应用程序创建一个捆绑包，您可能想要使用它，因为它会使文件大小变小。
+- `umd` - 通用模块定义，以 `amd, cjs, iife`为一体。
+- `system` - SystemJS 加载器格式。
+
+### 生成包名称 (name `-n/--name`)
+
+`String`变量名，代表你的 `iife/umd`包，同一页上的其他脚本可以访问它。
+
+```js
+// rollup.config.js
+export default {
+    ...,
+    output: {
+        file: 'bundle.js',
+        format: 'iife',
+        name: 'MyBundle'
+    }
+};
+
+// -> var MyBundle = (function () {...
+```
+
+### 插件 (plugins)
+
+插件对象数组 `Array`(或一个插件对象) - 有关详细信息请参阅插件入门。记住要调用导入的插件函数(即 `commonjs()`, 而不是 `commonjs`)。
+
+```js
+// rollup.config.js
+import resolve from 'rollup-plugin-node-resolve';
+import commonjs from 'rollup-plugin-commonjs';
+
+export default {
+    entry: 'main.js',
+    plugins: [
+        resolve(),
+        commonjs()
+    ]
+}
+```
+
+### 外链 (external `-e/--external`)
+
+两者任一：`Function`需要一个 `id`并返回 `true`(外部引用)或 `false`(不是外部引用)，或者 `Array`应该保留在 bundle 的外部引用的模块 ID. ID 应该是：
+
+1. 外部依赖的名称。
+
+2. 一个已被找到路径的 ID (像文件的绝对路径)。
+
+```js
+// rollup.config.js
+import path from 'path';
+
+export default {
+    ...
+    external: [
+        'some-externally-required-library',
+        path.resolve('./src/some-local-file-that-should-not-be-bundled.js')
+    ]
+}
+```
+
+当作为命令行参数给出时，它应该是以逗号分隔的 ID 列表：
+
+```sh
+rollup -i src/main.js ... -e foo,bar,bar
+```
+
+### 全局模块 (globals `-g/--globas`)
+
+`Object`形式的 `id: name`键值对，用于 `umd/iife`包。例如：
+
+```js
+import $ from 'jquery';
+```
+
+我们想告诉 Rollup `jquery`模块的 id 等同于 `$`变量：
+
+```js
+// rollup.config.js
+export default {
+    ...,
+    format: 'iife',
+    name: 'MyBundle',
+    globals: {
+        jquery: '$'
+    }
+};
+
+/*
+var MyBundle = (function ($) {
+    // 代码在这里
+}(window.jQuery));
+*/
+```
+
+或者，提供将外部模块 ID 转换为全局模块的功能。
+
+当作为命令行参数给出时，它应该是一个逗号分隔的 "id: name" 键值对列表：
+
+```sh
+rollup -i src/main.js ... -g jquery:$,underscore:_
+```
 
 ## 8.2 高级功能
 

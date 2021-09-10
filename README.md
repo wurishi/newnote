@@ -124,6 +124,10 @@ concurrent 实验
 
 参考资料: [Redux-Saga](https://redux-saga-in-chinese.js.org/) **(完成)**
 
+# rollupjs
+
+参考资源: [rollup.js](https://rollupjs.org/guide/zh)
+
 # rust
 
 Rust
@@ -192,7 +196,9 @@ U3D JobSystem
 
 # vite
 
-参考资料: [Vite 官方中文文档](https://cn.vitejs.dev/)
+参考资料: [Vite 官方中文文档](https://cn.vitejs.dev/) **(完成)**
+
+API 部分
 
 # vivus
 

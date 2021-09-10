@@ -283,6 +283,10 @@ module.exports = main;
 
 # 4. 命令行
 
+我们一般在命令行中使用 Rollup. 你也可以提供一份配置文件来简化命令行操作，同时还能启用 Rollup 的高级特性。
+
+## 4.1 配置文件
+
 Rollup 的配置文件是可选的，但是使用配置文件的作用很强大，而且很方便，因此我们推荐你使用。
 
 配置文件是一个 ES6 模块，它对外暴露一个对象，这个对象包含了一些 Rollup 需要的一些选项。通常，我们把这个配置文件叫做 `rollup.config.js`，它通常位于项目的根目录。
@@ -340,33 +344,515 @@ export default {
 
 如果你想使用 Rollup 的配置文件，记得在命令行里加上 `--config` 或 `-c`.
 
-## 4.1 配置文件
-
 ## 4.2 命令行的参数
+
+配置文件中的许多选项和命令行的参数是等价的。如果你使用这里的参数，那么将重写配置文件。想了解更多的话，仔细查阅 *8. 大选项列表*。
+
+```
+-i, --input <filename>  要打包的文件 (必须)
+-o, --file <output>     输出的文件 (如果没有这个参数，则直接输出到控制台)
+-f, --format <format>   输出的文件类型 (amd, cjs, esm, iife, umd)
+-e, --external <ids>    将模块 ID 的逗号分隔列表排除
+-g, --globals <pairs>   以 'module ID:Global' 键值对的形式，用逗号分隔开 任何定义在这里模块 ID 定义添加到外部依赖
+
+-n, --name <name>       生成 UMD 模块的名字
+-h, --help              输出 help 信息
+-m, --sourcemap         生成 sourcemap (`-m inline` for inline map)
+--amd.id                AMD 模块的 ID, 默认是个匿名函数
+--amd.define            使用 Function 来代替 'define'
+--no-strict             在生成的包中省略`"use strict";`
+--no-conflict           对于 UMD 模块来说，给全局变量生成一个无冲突的方法
+--intro                 在打包好的文件的块的内部(wrapper内部)的最顶部插入一段内容
+--outro                 在打包好的文件的块的内部(wrapper内部)的最底部插入一段内容
+--banner                在打包好的文件的块的外部(wrapper外部)的最顶部插入一段内容
+--footer                在打包好的文件的块的外部(wrapper外部)的最顶部插入一段内容
+--interop               包含公共的模块 (这个选项是默认添加的)
+```
+
+此外，还可以使用以下参数：
+
+`-h/--help`
+
+打印帮助文档。
+
+`-v/--version`
+
+打印已安装的 Rollup 版本号。
+
+`-w/--watch`
+
+监听源文件是否有改动，如果有改动，重新打包。
+
+`--slient`
+
+不要将警告打印到控制台。
 
 # 5. JavaScript API
 
+Rollup 提供 JavaScript 接口那样可以通过 Node.js 来使用。你可以很少使用，而且很可能使用命令行接口，除非你想扩展 Rollup 本身，或者用于一些难懂的任务，例如用代码把文件束生成出来。
+
 ## 5.1 rollup.rollup
 
+该函数返回一个 `Promise`，它解析了一个 `bundle` 对象，此对象带有不同的属性及方法，如下：
+
+```js
+const rollup = require('rollup');
+
+// see below for details on the options
+const inputOptions = {...};
+const outputOptions = {...};
+
+async function build() {
+    // create a bundle
+    const bundle = await rollup.rollup(inputOptions);
+
+    console.log(bundle.imports); // an array of external dependencies
+    console.log(bundle.exports); // an array of names exported by the entry point
+    console.log(bundle.modules); // an array of module objects
+
+    // generate code and a sourcemap
+    const { code, map } = await bundle.generate(outputOptions);
+
+    // or write the bundle to disk
+    await bundle.write(outputOptions);
+}
+
+build();
+```
+
+### a. 输入参数 (inputOptions)
+
+`inputOptions` 对象包含下列属性。查看 *8. 大选项列表* 以获得这些参数更详细的资料：
+
+```js
+const inputOptions = {
+    // 核心参数
+    input, // 唯一必填参数
+    external,
+    plugins,
+
+    // 高级参数
+    onwarn,
+    cache,
+
+    // 危险参数
+    acorn,
+    context,
+    moduleContext,
+    legacy
+};
+```
+
+### b. 输出参数 (outputOptions)
+
+`outputOptions` 对象包括下列属性：
+
+```js
+const outputOptions = {
+    // 核心参数
+    file, // 若有 bundle.write 必填
+    format, // 必填
+    name,
+    globals,
+
+    // 高级参数
+    paths,
+    banner,
+    footer,
+    intro,
+    outro,
+    sourcemap,
+    sourcemapFile,
+    interop,
+
+    // 危险区域
+    exports,
+    amd,
+    indent,
+    strict
+};
+```
+
 ## 5.2 rollup.watch
+
+Rollup 也提供了 `rollup.watch` 函数，当它检测到磁盘上单个模块已经改变，它会重新构建你的文件束。当你通过命令行运行 Rollup, 并带上 `--watch` 标记时，此函数会被内部使用。
+
+```js
+const rollup = require('rollup');
+
+const watchOptions = {...};
+const watcher = rollup.watch(watchOptions);
+
+watcher.on('event', event => {
+    // event.code 会是下面其中一个：
+    // START        - 监听器正在启动 (重启)
+    // BUNDLE_START - 构建单个文件束
+    // BUNDLE_END   - 完成文件束构建
+    // END          - 完成所有文件束构建
+    // ERROR        - 构建时遇到错误
+    // FATAL        - 遇到无可修复的错误
+});
+
+// 停止监听
+watcher.close();
+```
+
+### a. 监听参数 (watchOptions)
+
+`watchOptions` 参数是一个你会从一个配置文件中导出的配置 (或一个配置数据)。
+
+```js
+const watchOptions = {
+    ...inputOptions,
+    output: [outputOptions],
+    watch: {
+        chokidar,
+        include,
+        exclude
+    }
+};
+```
 
 # 6. Rollup 与其他工具集成
 
 ## 6.1 npm packages
 
+在某些时候，你的项目很可能依赖于从 npm 安装到你的 `node_module` 文件夹中的软件包。与 Webpack 和 Browserify 这样的其他捆绑包不同，Rollup 不知道如何打破常规去处理这些依赖。我们需要添加一些配置。
+
+让我们添加一个简单的依赖 [the-answer](https://www.npmjs.com/package/the-answer).
+
+```sh
+npm install the-answer # or `npm i the-answer`
+```
+
+如果修改我们的 `src/main.js` 入口文件：
+
+```js
+// src/main.js
+import answer from 'the-answer';
+
+export default function() {
+    console.log('the answer is ' + answer);
+}
+```
+
+然后执行 Rollup
+
+```sh
+npm run build
+```
+
+我们将会看到下面这些警告：
+
+```
+(!) Unresolved dependencies
+https://github.com/rollup/rollup/wiki/Troubleshooting#treating-module-as-external-dependency
+the-answer (imported by main.js)
+```
+
+打包后的 `bundle.js` 仍然会在 Node.js 中工作，因为 `import` 声明转变成了 CommonJS 中的 `require`语句，但是 `the-answer`不包含在包中。因此，我们需要一个插件。
+
+### a. rollup-plugin-node-resolve
+
+[rollup-plugin-node-resolve](https://github.com/rollup/rollup-plugin-node-resolve) 这个插件可以告诉 Rollup 如何查找外部模块。安装它：
+
+```sh
+npm install --save-dev rollup-plugin-node-resolve
+```
+
+将它加入到你的配置文件中：
+
+```js
+// rollup.config.js
+import resolve from 'rollup-plugin-node-resolve';
+
+export default {
+    input: 'src/main.js',
+    output: {
+        file: 'bundle.js',
+        format: 'cjs'
+    },
+    plugins: [ resolve() ]
+};
+```
+
+这次，当你运行 `npm run build`，再没有警告输出 - 打包文件 bundle 包含了引用的模块。
+
+### b. rollup-plugin-commonjs
+
+一些库导出成你可以正常导入的 ES6 模块 - `the-answer` 就是一个这样的模块。但是目前，npm 中的大多数包都是以 CommonJS 模块的形式出现的。在它们更改之前，我们需要将 CommonJS 模块转换为 ES2015 供 Rollup 处理。
+
+这个 [rollup-plugin-commonjs](https://github.com/rollup/rollup-plugin-commonjs)插件就是用来将 CommonJS 转换成 ES2015 模块的。
+
+请注意，`rollup-plugin-commonjs` 应该用在其他插件转换你的模块之前 - 这是为了防止其他插件的改变破坏 CommonJS 的检测。
+
 ## 6.2 Peer dependencies
+
+假设你正在构建一个具有对等依赖关系 (peer dependency) 的库，例如 React 或 Lodash. 如果你如上所述设置外部引用 (externals). 你的 Rollup 将把所有 `imports` 的模块打包在一起：
+
+```js
+import answer from 'the-answer';
+import _ from 'lodash';
+```
+
+你可以微调哪些导入是想要打包的，哪些是外部的引用 (externals)。对于这个例子，我们认为 `lodash`是外部的引用，而不是 `the-answer`.
+
+这是配置文件：
+
+```js
+// rollup.config.js
+import resolve from 'rollup-plugin-node-resolve';
+
+export default {
+    input: 'src/main.js',
+    output: {
+        file: 'bundle.js',
+        format: 'cjs'
+    },
+    plugins: [ resolve({
+        // 将自定义选项传递给解析插件
+        customResolveOptions: {
+            moduleDirectory: 'node_modules'
+        }
+    }) ],
+    // 指出应将哪些模块视为外部模块
+    external: ['lodash']
+}
+```
+
+这样，`lodash` 现在将被视为外部的，不会与你的库打包在一起。
+
+`external`接受一个模块名称的数组或一个接受模块名称的函数，如果它被视为外部引用 (externals) 则返回 `true`。例如：
+
+```js
+export default {
+    // ...
+    external: id => /lodash/.test(id)
+}
+```
+
+如果你使用 [babel-plugin-lodash](https://github.com/lodash/babel-plugin-lodash)来最优选择 lodash 模块，在这种情况下，Babel 将转换你的导入语句，如下所示：
+
+```js
+import _merge from 'lodash/merge';
+```
+
+`external` 的数组形式不会处理通配符，所以这个导入只会以函数的形式被视作外部依赖/引用。
 
 ## 6.3 Babel
 
+许多开发人员在他们的项目中使用 Babel, 以便他们可以使用未被浏览器和 Node.js 支持的将来版本的 JavaScript 特性。
+
+使用 Babel 和 Rollup 的最简单方法是使用 [rollup-plugin-babel](https://github.com/rollup/rollup-plugin-babel)。安装它：
+
+```js
+// rollup.config.js
+import resolve from 'rollup-plugin-node-resolve';
+import babel from 'rollup-plugin-babel';
+
+export default {
+    input: 'src/main.js',
+    output: {
+        file: 'bundle.js',
+        format: 'cjs'
+    },
+    plugins: [
+        resolve(),
+        babel({
+            exclude: 'node_modules/**' // 只编译我们的源代码
+        })
+    ]
+};
+```
+
+在 Babel 实际编译代码之前，需要进行配置。创建一个新文件 `src/.babelrc`:
+
+```json
+{
+    "presets": [
+        ["latest", {
+            "es2015": {
+                "modules": false
+            }
+        }]
+    ],
+    "plugins": ["external-helpers"]
+}
+```
+
+这个设置有一些不寻常的地方。首先，我们设置 `"modules": false`，否则 Babel 会在 Rollup 有机会做处理之前，将我们的模块转成 CommonJS，导致 Rollup 的一些处理失败。
+
+其次，我们使用 `external-helpers` 插件，它允许 Rollup 在包的顶部只引用一次 `helpers`，而不是每个使用它们的模块中都引用一遍 (这是默认行为)。
+
+第三，我们将 `.babelrc`文件放在 `src`中，而不是根目录下。这允许我们对于不同的任务有不同的 `.babelrc`配置，比如像测试，如果我们以后需要的话 - 通常为单独的任务单独配置会更好。
+
+现在，在我们运行 rollup 之前，我们需要安装 `latest`preset 和 `external-helpers`插件：
+
+```sh
+npm i -D babel-preset-latest babel-plugin-external-helpers
+```
+
+运行 Rollup 现在将创建一个 bundle 包。实际上我们并没有使用任何 ES2015 特性。我们来改变一下，编辑 `src/main.js`：
+
+```js
+// src/main.js
+import answer from 'the-answer';
+
+export default () => {
+    console.log(`the answer is ${answer}`);
+}
+```
+
+运行 Rollup `npm run build`，检查打包后的 bundle:
+
+```js
+'use strict';
+
+var index = 42;
+
+var main = (function () {
+    console.log('the answer is ' + index);
+});
+
+module.exports = main;
+```
+
 ## 6.4 Gulp
+
+Rollup 返回 gulp 能明白的 `promises`，所以集成很容易。
+
+语法和配置文件非常相似，但属性分为两个不同的操作，对应于 JavaScript API:
+
+```js
+const gulp = require('gulp');
+const rollup = require('rollup');
+const rollupTypescript = require('rollup-plugin-typescript');
+
+gulp.task('build', async function() {
+    const bundle = await rollup.rollup({
+        input: './src/main.ts',
+        plugins: [
+            rollupTypescript()
+        ]
+    });
+
+    await bundle.write({
+        file: './dist/library.js',
+        format: 'umd',
+        name: 'library',
+        sourcemap: true
+    });
+});
+```
 
 # 7. ES 模块语法
 
-## 7.1 导入
+以下内容旨在对 [ES2015 规范](https://www.ecma-international.org/ecma-262/6.0/) 中定义的模块行为做一个轻量级的参考，因为对导入和导出语句的正确理解对于成功使用 Rollup 是至关重要的。
 
-## 7.2 导出
+## 7.1 导入 (Importing)
 
-## 7.3 绑定是如何工作的
+导入的值不能重新分配，尽管导入的对象和数组可以被修改 (导出模块，以及任何其他的导入，都将受到该修改的影响)。在这种情况下，它们的行为与 const 声明类似。
+
+### a. 命名导入 (Named Imports)
+
+从源模块导入其原始名称的特定项目。
+
+```js
+import { something } from './module.js';
+```
+
+从源模块导入特定项，并在导入时指定自定义名称。
+
+```js
+import { something as somethingElse } from './module.js';
+```
+
+### b. 命名空间导入 (Namespace Imports)
+
+将源模块中的所有内容作为对象导入，将所有源模块的命名导出公开为属性和方法。默认导出被排除在此对象之外。
+
+```js
+import * as module from './module.js'
+```
+
+上面的 'something' 的例子将被附加到作为属性的导入对象上。"module.something"。
+
+### c. 默认导入 (Default Import)
+
+导入源模块的默认导出：
+
+```js
+import something from './module.js';
+```
+
+### d. 空的导入 (Empty Import)
+
+加载模块代码，但不要创建任何新对象。
+
+```js
+import './module.js';
+```
+
+这对于 polyfills 是有用的，或者当导入的代码的主要目的是与原型有关的时候。
+
+## 7.2 导出 (Exporting)
+
+### a. 命名导出 (Named Exports)
+
+导出以前声明的值：
+
+```js
+var something = true;
+
+export { something };
+```
+
+在导出时重命名：
+
+```js
+export { something as somethingElse };
+```
+
+声明后立即导出：
+
+```js
+// 这可以与 'var', 'let', 'const', 'class', 'function' 配合使用
+export var something = true;
+```
+
+### b. 默认导出 (Default Export)
+
+导出一个值作为源模块的默认导出：
+
+```js
+export default something;
+```
+
+仅当源模块只有一个导出时，才建议使用此做法。
+
+将默认和命名导出组合在同一模块中是不好的做法，尽管它是规范允许的。
+
+## 7.3 绑定是如何工作的 (How bindings work)
+
+ES 模块导出实时绑定，而不是值，所以值可以在最初根据这个示例导入后更改：
+
+```js
+// incrementer.js
+export let count = 0;
+
+export function increment() {
+    count += 1;
+}
+
+// main.js
+import { count, increment } from './incrementer.js';
+
+console.log(count); // 0
+increment();
+console.log(count); // 1
+
+count += 1; // Error 只有 incrementer.js 可以改变这个值。
+```
 
 # 8. 大选项列表
 

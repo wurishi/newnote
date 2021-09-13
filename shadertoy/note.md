@@ -4319,6 +4319,24 @@ XdB3Dw
 
 ![713](assets/713.jpg)
 
+# 714. Useless Box
+
+XdBSD3
+
+![714](assets/714.jpg)
+
+# 715. The Disco Tunnel
+
+lsBSRR
+
+![715](assets/715.jpg)
+
+# 716. Sneak Preview
+
+XsK3R3
+
+![716](assets/716.jpg)
+
 
 
 

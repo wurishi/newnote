@@ -126,7 +126,7 @@ concurrent 实验
 
 # rollupjs
 
-参考资源: [rollup.js](https://rollupjs.org/guide/zh)
+参考资源: [rollup.js](https://rollupjs.org/guide/zh) **(完成)**
 
 # rust
 

@@ -976,8 +976,247 @@ var MyBundle = (function ($) {
 rollup -i src/main.js ... -g jquery:$,underscore:_
 ```
 
-## 8.2 高级功能
+## 8.2 高级功能 (Advanced functionality)
 
-## 8.3 危险区域
+### 路径 (paths)
+
+`Function`, 它获取一个 ID 并返回一个路径, 或者 `id: path`对的 `Object`. 在提供的位置, 这些路径将被用于生成的包而不是模块 ID,从而允许您从 CDN 加载依赖关系:
+
+```js
+// app.js
+import { selectAll } from 'd3';
+selectAll('p').style('color', 'purple');
+
+// rollup.config.js
+export default {
+    input: 'app.js',
+    external: ['d3'],
+    output: {
+        file: 'bundle.js',
+        format: 'amd',
+        paths: {
+            d3: 'https://d3js.org/d3.v4.min'
+        }
+    }
+};
+
+// bundle.js
+define(['https://d3js.org/d3.v4.min'], function(d3) {
+    d3.selectAll('p').style('color', 'purple');
+});
+```
+
+### banner / footer
+
+`String`字符串以 前置/追加 到文件束  (bundle). (注意: "banner" 和 "footer" 选项不会破坏 sourcemaps).
+
+```js
+// rollup.config.js
+export default {
+    ...,
+    banner: '/* my-library version ' + version + ' */',
+    footer: '/* follow me on Twitter! @rich_harris */'
+}
+```
+
+### intro / outro
+
+`String`类似于 `banner`和 `footer`, 除了代码在内部任何特定格式的包装器 (wrapper).
+
+```js
+export default {
+    ...,
+    intro: 'var ENVIRONMENT = "production";'
+}
+```
+
+### 缓存 (cache)
+
+`Object`以前生成的包. 使用它来加速后续的构建 - Rollup 只会重新分析已经更改的模块.
+
+### onwarn
+
+`Function`将拦截警告信息. 如果没有提供, 警告将被复制并打印到控制台.
+
+警告是至少有一个 `code`和 `message`属性的对象, 这意味着您可以控制如果处理不同类型的警告:
+
+```js
+onwarn (warning) {
+    // 跳过某些警告
+    if(warning.code === `UNUSED_XTERNAL_IMPORT`) return;
+    
+    // 抛出异常
+    if(warning.code === 'NON_EXISTENT_EXPORT') throw new Error(warning.message);
+    
+    // 控制台打印一切警告
+    console.warn(warning.message);
+}
+```
+
+许多警告也有一个 `loc`属性和一个 `frame`, 你可以定位到警告的来源:
+
+```js
+onwarn({loc, frame ,message}) {
+    // 打印位置 (如果适用)
+    if(loc) {
+        console.warn(`${loc.file} (${loc.line}:${loc.column}) ${message}`);
+        if(frame) console.warn(frame);
+    } else {
+        console.warn(message);
+    }
+}
+```
+
+### sourcemap (`-m/--sourcemap`)
+
+如果 `true`, 将创建一个单独的 sourcemap 文件. 如果 `inline`, sourcemap 将作为数据 URI 附加到生成的 `output`文件中.
+
+### sourcemapFile
+
+`String`生成的包的位置. 如果这是一个绝对路径, sourcemap 中的所有源代码路径都将相对于它. `map.file`属性是 sourcemapFile 的基本名称(basename), 因为 sourcemap 的位置被假定为与 bundle 相邻.
+
+如果指定 `output`, `sourcemapFile`不是必须的, 在这种情况下, 将通过给 bundle 输出文件添加 ".map" 后缀来推断输出文件名.
+
+### interop
+
+`Boolean`是否添加 'interop块'. 默认情况下 (`interop: true`), 为了安全起见, 如果需要区分默认和命名导出, 则 Rollup 会将任何外部依赖项 "default" 导出到一个单独的变量. 这通常只适用于您的外部依赖关系 (例如 Babel) (如果您确定不需要它), 则可以使用 "interop: false" 来节省几个字节.
+
+## 8.3 危险区域 (Danger zone)
+
+你可能不需要使用这些选项, 除非你知道你在做什么!
+
+### treeshake
+
+是否应用 tree-shaking. 建议您省略此选项 (默认为 `treeshake: true`), 除非您发现由 tree-shaking 算法引起的 bug, 在这种情况下, 请使用 "treeshake: false".
+
+### acorn
+
+任何应该传递给 Acorn 的选项, 例如 `allowReserved: true`.
+
+### context
+
+默认情况下, 模块的上下文 - 即顶级的 `this`的值为 `undefined`. 在极少数情况下, 你可能需要将其更改为其他内容, 如 `'window'`.
+
+### moduleContext
+
+和 `options.context`一样, 但是每个模块可以是 `id: context`对的对象, 也可以是 `id => context`函数.
+
+### legacy
+
+为了增加对诸如 IE8 之类的旧版环境的支持, 通过剥离更多可能无法正常工作的现代化的代码, 其代价是偏离 ES6 模块环境所需的精确规范.
+
+### exports
+
+`String`使用什么导出模式. 默认为 `auto`, 它根据 `entry`模块导出的内容猜测你的意图:
+
+- `default` - 如果你使用 `export default ... `仅仅导出一个东西, 那适合用这个.
+- `named` - 如果你导出多个东西, 适合用这个.
+- `none` - 如果你不导出任何内容 (例如, 你正在构建应用程序, 而不库), 则适合用这个
+
+`default` 和 `named`之间的区别会影响其他人如何使用文件束(bundle). 如果您使用 `default`, 则 CommonJS 用户可以执行此操作:
+
+```js
+var yourLib = require('your-lib');
+```
+
+使用 `named`, 用户可以这样做:
+
+```js
+var yourMethod = require('your-lib').yourMethod;
+```
+
+有点波折就是如果你使用 `named`导出, 但是**同时**也有一个 `default`导出, 用户必须这样做才能使用默认的导出:
+
+```js
+var yourMethod = require('your-lib').yourMethod;
+var yourLib = require('your-lib')['default'];
+```
+
+### amd (`--amd.id` and `--amd.define`)
+
+`Object`可以包含以下属性:
+
+**amd.id** `String`用于 AMD/UMD 软件包的 ID:
+
+```js
+// rollup.config.js
+export default {
+    ...,
+    format: 'amd',
+    amd: {
+    	id: 'my-bundle'
+	}
+};
+
+// -> define('my-bundle', ['dependency'], ...)
+```
+
+**amd.define** `String`要使用的函数名称, 而不是 `define`:
+
+```js
+// rollup.config.js
+export default {
+    ...,
+    format: 'amd',
+    amd: {
+    	define: 'def'
+    }
+};
+
+// -> def(['dependency'], ...)
+```
+
+### indent
+
+`String`是要使用的缩进字符串, 对于需要缩进代码的格式 (`amd, iif, umd`). 也可以是 `false`(无缩进)或 `true`(默认 - 自动缩进)
+
+```js
+// rollup.config.js
+export default {
+    ...,
+    indent: false
+};
+```
+
+### strict
+
+`true`或 `false` (默认为 `true`) - 是否在生成的非 ES6 软件包的顶部包含 'use strict' pragma. 严格来说, ES6 模块始终都是严格模式, 所以你应该没有很好的理由来禁用它.
 
 ## 8.4 Watch options
+
+这些选项仅在运行 Rollup 时使用 `--watch`标志或使用 `rollup.watch`时生效.
+
+### watch.chokidar
+
+一个 `Boolean`值表示应该使用 [chokidar](https://github.com/paulmillr/chokidar) 而不是内置的 `fs.watch`, 或者是一个传递给 chokidar 的选项对象.
+
+如果你希望使用它, 你必须单独安装 chokidar.
+
+### watch.include
+
+限制文件监控至某些文件:
+
+```js
+// rollup.config.js
+export default {
+    ...,
+    watch: {
+    	include: 'src/**'
+    }
+}
+```
+
+### watch.exclude
+
+防止文件被监控:
+
+```js
+// rollup.config.js
+export default {
+    ...,
+    watch: {
+        exclude: 'node_modules/**'
+    }
+}
+```
+

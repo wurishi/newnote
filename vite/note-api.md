@@ -196,7 +196,98 @@ Vite 插件也可以提供钩子来服务于特定的 Vite 目标。这些钩子
 
 #### `configResolved`
 
+- **类型**：`(config: ResolvedConfig) => void | Promise<void>`
+
+- **种类**：`async, parallel`
+
+    在解析 Vite 配置后调用。使用这个钩子读取和存储最终解析的配置。当插件需要根据运行的命令做一些不同的事情时，它也很有用。
+
+    示例：
+
+    ```js
+    const examplePlugin = () => {
+        let config;
+
+        return {
+            name: 'read-config',
+            configResolved(resolvedConfig) {
+                // 存储最终解析的配置
+                config = resolvedConfig;
+            },
+            // 在其他钩子中使用存储的配置
+            transform(code, id) {
+                if(config.command === 'server') {
+                    // server: 由开发服务器调用的插件
+                } else {
+                    // build: 由 Rollup 调用的插件
+                }
+            }
+        };
+    };
+    ```
+
 #### `configureServer`
+
+- **类型**：`(server: ViteDevServer) => (() => void) | void | Promise<(() => void) | void>`
+
+- **种类**：`async, sequential`
+
+- **此外请看**：ViteDevServer
+
+    是用于配置开发服务器的钩子。最常见的用例是在内部 connect 应用程序中添加自定义中间件：
+
+    ```js
+    const myPlugin = () => ({
+        name: 'configure-server',
+        configureServer(server) {
+            server.middlewares.use((req, res, next) => {
+                // 自定义请求处理。。。
+            });
+        }
+    });
+    ```
+
+    **注入后置中间件**
+
+    `configureServer`钩子将在内部中间件被安装前调用，所以自定义的中间件将会默认会比内部中间件早运行。如果你想注入一个在内部中间件之后运行的中间件，你可以从 `configureServer`返回一个函数，将会在内部中间件安装后被调用：
+
+    ```js
+    const myPlugin = () => ({
+        name: 'configure-server',
+        configureServer(server) {
+            // 返回一个在内部中间件安装后
+            // 被调用的后置钩子
+            return () => {
+                server.middlewares.use((req, res, next) => {
+                    // 自定义请求处理。。。
+                });
+            };
+        }
+    });
+    ```
+
+    **存储服务器访问**
+
+    在某些情况下，其他插件钩子可能需要访问开发服务器实例（例如访问 websocket 服务器，文件系统监视程序或模块图）。这个钩子也可以用来存储服务器实例以供其他钩子访问：
+
+    ```js
+    const myPlugin = () => {
+        let server;
+        return {
+            name: 'configure-server',
+            configureServer(_server) {
+                server = _server;
+            },
+            transform(code, id) {
+                if(server) {
+                    // 使用 server...
+                }
+            }
+        };
+    };
+    ```
+
+    注意 `configureServer`在运行生产版本时不会被调用，所以其他钩子需要防范它缺失。
 
 #### `transformIndexHtml`
 

@@ -1,0 +1,19 @@
+{
+    "name": "antvg2",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "vite"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@antv/g2": "^4.1.27"
+    },
+    "devDependencies": {
+        "typescript": "^4.4.3",
+        "vite": "^2.5.8"
+    }
+}

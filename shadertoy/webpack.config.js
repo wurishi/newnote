@@ -7,7 +7,7 @@ const options = webpack({
   devtool: 'cheap-eval-source-map',
   devServer: {
     open: true,
-    port: 9000,
+    port: 9009,
     contentBase: path.join(__dirname),
     // host: '172.16.2.0'
   },

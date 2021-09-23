@@ -3,6 +3,9 @@
         "target": "esnext",
         "module": "esnext",
         "moduleResolution": "node",
-        "isolatedModules": true
+        "isolatedModules": true,
+        "allowSyntheticDefaultImports": true,
+        "resolveJsonModule": true,
+        "types": ["vite/client"]
     }
 }

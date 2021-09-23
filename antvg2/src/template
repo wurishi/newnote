@@ -1,0 +1,9 @@
+import { Chart } from '@antv/g2';
+
+export default function() {
+
+}
+
+export const MENU1 = '3';
+export const MENU2 = '1';
+export const TITLE = '基础折线图';

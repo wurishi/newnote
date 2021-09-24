@@ -96,7 +96,43 @@
 
 # 4. 面积图
 
+## 4.1 基础面积图
+
+### 基础面积图 (area_basic)
+
+### 基础面积图 (有负值) (area_basic_with_negative)
+
+### 大规模区域图 (area_basic_large)
+
+## 4.2 堆叠面积图
+
+### 堆叠面积图 (area_stacked)
+
+### 百分比堆叠面积图 (area_stacked_percentage)
+
+## 4.3 区间面积图
+
+### 区间面积图 (area_range)
+
+## 4.4 河流图
+
+### 河流图 (area_streamgraph)
+
 # 5. 柱状图
+
+## 5.1 基础柱状图
+
+### 基础柱状图 (column_basic)
+
+### 带倒角的柱状图 (column_basic_corner_radius)
+
+### 区间柱状图 (column_basic_ranged)
+
+### 瀑布图 (column_basic_waterfall)
+
+### 带标识的柱状图 (column_basic_marked)
+
+### 螺旋坐标系 (column_basic_helix_coordinate)
 
 # 6. 条形图
 

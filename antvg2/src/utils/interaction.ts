@@ -26,6 +26,7 @@ const ACTION = {
         `element-sibling-highlight:${action}`,
     ELEMENT_RANGE_HIGHLIGHT: (action: string) =>
         `element-range-highlight:${action}`,
+    SCALE_TRANSLATE: (action: string) => `scale-translate:${action}`,
 };
 
 export default {

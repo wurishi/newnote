@@ -66,6 +66,55 @@ export default (function () {
                 '核函数概率密度回归曲线',
             ],
         },
+        {
+            name: '面积图',
+        },
+        {
+            name: '柱状图',
+        },
+        {
+            name: '条形图',
+        },
+        {
+            name: '饼图',
+        },
+        {
+            name: '点图',
+        },
+        {
+            name: '雷达图',
+        },
+        {
+            name: '漏斗图',
+        },
+        {
+            name: '热力图',
+        },
+        {
+            name: '箱型图',
+        },
+        {
+            name: '烛形图',
+        },
+        {
+            name: '仪表盘',
+        },
+        {
+            name: '地图',
+        },
+        {
+            name: '分面',
+        },
+        {
+            name: '关系图',
+        },
+        {
+            name: '组件使用',
+        },
+        {
+            name: '其他图表',
+            children: ['其他图表'],
+        },
     ];
     const gui = new GUI({ width: 400 });
     let guiMenus: GUIMenus = {};

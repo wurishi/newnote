@@ -112,6 +112,8 @@ leetcode
 
 [LearningPixi](https://github.com/Zainking/learningPixi) **(完成)**
 
+# pythonquantitative
+
 # reactconcurrent
 
 concurrent 实验

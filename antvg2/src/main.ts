@@ -97,6 +97,7 @@ export default (function () {
         },
         {
             name: '热力图',
+            children: ['色块图', '日历热力图', '热力图'],
         },
         {
             name: '箱型图',

@@ -82,9 +82,11 @@ export default (function () {
         },
         {
             name: '条形图',
+            children: ['基础条形图', '分组条形图', '堆叠条形图'],
         },
         {
             name: '饼图',
+            children: ['基础饼图', '环图', '南丁格尔玫瑰图', '嵌套饼图'],
         },
         {
             name: '点图',

@@ -158,25 +158,89 @@
 
 ## 5.4 分组层叠柱状图
 
+### 分组层叠柱状图 (column_dodge_stack)
+
+### 极坐标系下分组层叠柱状图 (column_dodge_stack_circular)
+
 ## 5.5 直方图
+
+### 直方图 (column_histogram)
+
+### 直方图范围刻度 (column_histogram_binwidth)
+
+### 层叠直方图 (column_histogram_stacked)
 
 # 6. 条形图
 
 ## 6.1 基础条形图
 
+### 基础条形图 (bar_basic)
+
+### 区间条形图 (bar_basic_ranged)
+
+### 时间条形图 (bar_basic_time_bar)
+
+### 玉珏图 (bar_basic_radial_bar)
+
+### 带背景的玉珏图 (bar_basic_radial_bar_width_background)
+
+### Radial bar chart (bar_basic_radial_line)
+
 ## 6.2 分组条形图
 
+### 分组条形图 (bar_dodge_grouped)
+
+### 城市产品销售额 Top10 (bar_dodge_bar4)
+
+### 镜像分组条形图 (bar_dodge_bar5)
+
 ## 6.3 堆叠条形图
+
+### 堆叠条形图 (bar_stack)
+
+### 条形图 - diverging (bar_stack_bar_diverge)
 
 # 7. 饼图
 
 ## 7.1 基础饼图
 
+### 基础饼图 (pie_basic_labelline)
+
+### 基础饼图 - 内部文本 (pie_basic_innerlabel)
+
+### 基础饼图 - 蜘蛛标签 (pie_basic_spider_label)
+
+### 个性化标签饼图 (pie_basic_custom_label)
+
+### 饼图 - 限定角度范围 (pie_basic_ranged)
+
+### 饼图 - 半径大小 (pie_basic_size)
+
+### 饼图 - 带纹理 (pie_basic_texture)
+
+### 基础饼图 - 蜘蛛标签 - 隐藏遮挡标签布局 (pie_basic_spider_with_hide_overlap)
+
 ## 7.2 环图
+
+### 环图 (pie_donut)
+
+### 日常作息可视化 (pie_donut_clock)
+
+### 饼图 - 分割空白 (pie_donut_slice)
 
 ## 7.3 南丁格尔玫瑰图
 
+### 南丁格尔玫瑰图 (pie_rose)
+
+### 多色南丁格尔玫瑰图 (pie_rose_color)
+
+### 南丁格尔玫瑰环图 (pie_rose_donut)
+
+### 玫瑰图 - 限定角度范围 (pie_rose_ranged)
+
 ## 7.4 嵌套饼图
+
+### 多层饼图 (pie_nested)
 
 # 8. 点图
 
@@ -199,6 +263,10 @@
 ## 11.1 色块图
 
 ## 11.2 日历热力图
+
+### 水平日历色块图 (heatmap_calendar_horizontal)
+
+### 日历色块图 (heatmap_calendar)
 
 ## 11.3 热力图
 

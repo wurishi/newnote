@@ -90,6 +90,7 @@ export default (function () {
         },
         {
             name: '点图',
+            children: ['散点图', '气泡图', '扰动点图']
         },
         {
             name: '雷达图',

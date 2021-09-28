@@ -246,7 +246,17 @@
 
 ## 8.1 散点图
 
+### 散点图 (point_scatter_series)
+
+### 多形状散点图 (point_scatter_shapes)
+
 ## 8.2 气泡图
+
+### 气泡图 (point_bubble)
+
+### 带文本的气泡图 (point_bubble_text)
+
+### 气泡图 - 自定义 shape (point_bubble_image)
 
 ## 8.3 扰动点图
 

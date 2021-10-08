@@ -2,6 +2,8 @@
 
 [参考资料](https://antv-g2.gitee.io/zh/docs/manual/about-g2)
 
+[DataSet](https://antv-g2.gitee.io/zh/docs/manual/dataset/dataset)
+
 # anypixel
 
 [参考资料](https://github.com/googlecreativelab/anypixel)

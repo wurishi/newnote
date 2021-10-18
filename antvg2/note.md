@@ -260,6 +260,10 @@
 
 ## 8.3 扰动点图
 
+### 扰动点图 (point_jitter)
+
+### Pizza Chart (point_jitter_pizza)
+
 # 9. 雷达图
 
 ## 9.1 雷达图

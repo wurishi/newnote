@@ -268,13 +268,37 @@
 
 ## 9.1 雷达图
 
+### 基础雷达图 (radar_basic)
+
+### 基础雷达图（线） (radar_with_line)
+
+### 雷达图复杂曲线 (radar_flower_line)
+
 # 10. 漏斗图
 
 ## 10.1 漏斗图
 
+### 基础漏斗图 (funnel_basic)
+
+### 对比漏斗图 (funnel_comparision)
+
+### 尖底漏斗图 (funnel_pyramid)
+
+### 对称漏斗图 (funnel_symmetric)
+
 # 11. 热力图
 
 ## 11.1 色块图
+
+### 色块图 (heatmap_basic)
+
+### 极坐标下的色块图 (heatmap_polar)
+
+### 六边形分箱 (heatmap_hexagon)
+
+### 分块热力图 (heatmap_hot_rect)
+
+### 矩形分处图 (heatmap_rectangle)
 
 ## 11.2 日历热力图
 
@@ -284,17 +308,43 @@
 
 ## 11.3 热力图
 
+### 热力图 (heatmap_image)
+
+### 核函数概率密度分布 (heatmap_kernel_smooth_density)
+
 # 12. 箱型图
 
 ## 12.1 箱型图
+
+### 基础箱型图 (box_basic)
+
+### 分组箱型图 (box_grouped)
+
+### 基础箱型图（有异常值） (box_with_error)
+
+### 一维箱型图 (box_one_dim)
+
+### 极坐标系箱型图 (box_radial_box)
 
 # 13. 烛形图
 
 ## 13.1 烛形图
 
+### 股票图 (candlestick_basic)
+
+### 股票图与柱状图 (candlestick_k_and_column)
+
+### 股票图与范围区域图 (candlestic_k_and_area)
+
 # 14. 仪表盘
 
 ## 14.1 仪表盘
+
+### 仪表盘 (gauge_basic)
+
+### 仪表盘（多色） (gauge_color)
+
+### 仪表盘（文字） (gauge_text)
 
 # 15. 地图
 

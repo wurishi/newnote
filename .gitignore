@@ -21,3 +21,4 @@ learnu3d/*/Logs/
 learnu3d/*/obj/
 learnu3d/*/*.csproj
 reactwebpack4cook/dist/*
+.DS_Store

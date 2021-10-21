@@ -33,7 +33,10 @@ function* createMenu(
     yield guiMenus;
 }
 
+let prevClearFn: any = null;
+
 function clearCharts() {
+    prevClearFn && prevClearFn();
     const chart = document.getElementById('chart');
     chart.innerHTML = '';
 }
@@ -90,13 +93,15 @@ export default (function () {
         },
         {
             name: '点图',
-            children: ['散点图', '气泡图', '扰动点图']
+            children: ['散点图', '气泡图', '扰动点图'],
         },
         {
             name: '雷达图',
+            children: ['雷达图'],
         },
         {
             name: '漏斗图',
+            children: ['漏斗图'],
         },
         {
             name: '热力图',
@@ -104,12 +109,15 @@ export default (function () {
         },
         {
             name: '箱型图',
+            children: ['箱型图'],
         },
         {
             name: '烛形图',
+            children: ['烛形图'],
         },
         {
             name: '仪表盘',
+            children: ['仪表盘'],
         },
         {
             name: '地图',
@@ -151,7 +159,7 @@ export default (function () {
                     foo: () => {
                         clearCharts();
                         document.title = TITLE + ' ' + key;
-                        module.default();
+                        prevClearFn = module.default();
                         setHistory(key);
                     },
                 };

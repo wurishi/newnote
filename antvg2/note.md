@@ -346,17 +346,53 @@
 
 ### 仪表盘（文字） (gauge_text)
 
+### 刻度仪表盘 (gauge_tick)
+
 # 15. 地图
 
 ## 15.1 地图
+
+### 带气泡的地图 (map_bubble)
+
+### 世界分级统计地图 (map_choropleth)
+
+### 六边形分箱示意地图 (map_hex_choropleth)
+
+### 美国地图六边形分割 (map_us_states_hex)
+
+### 带热力图的地图 (map_with_heatmap)
+
+### Legend-Size (map_legend_size)
 
 # 16. 分面
 
 ## 16.1 分面分类
 
+### 列分面 (facet_column)
+
+### List 分面 (facet_list)
+
+### 散点矩阵 (facet_matrix)
+
+### 2 维行列分面 (facet_rect)
+
+### 行分面 (facet_row)
+
+### 镜像分面 (transpose) (facet_mirror_transpose)
+
+### 镜像分面 (facet_mirror)
+
+### 圆形分面 (facet_circle)
+
+### 多级 tree 分面 (facet_tree_column)
+
+### tree 分面 (facet_tree)
+
 # 17. 关系图
 
 ## 17.1 关系图
+
+### 矩形树图 (relation_treemap)
 
 # 18. 组件使用
 

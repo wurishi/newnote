@@ -121,12 +121,15 @@ export default (function () {
         },
         {
             name: '地图',
+            children: ['地图'],
         },
         {
             name: '分面',
+            children: ['分面分类'],
         },
         {
             name: '关系图',
+            children: ['关系图'],
         },
         {
             name: '组件使用',

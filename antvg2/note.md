@@ -466,6 +466,8 @@
 
 ## 19.1 其他图表
 
+### 子弹图 (other_bullet_graph)
+
 ### 词云 (other_word_cloud)
 
 ### 带图片遮罩的词云 (other_word_cloud_mask)

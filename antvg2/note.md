@@ -410,6 +410,10 @@
 
 ### 径向系统树图 (relation_radial_dendrogram)
 
+### 径向紧凑树图 (relation_radial_tidy_tree)
+
+### 桑基图 (relation_sankey)
+
 # 18. 组件使用
 
 ## 18.1 Annotation

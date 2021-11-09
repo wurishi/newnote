@@ -456,6 +456,12 @@
 
 ### xy crosshairs, 带文本 (tooltip_3)
 
+## 18.4 图例
+
+### 通过回调设置 legend marker (legend_marker_callback)
+
+### 自定义图例 items (legend_custom_items)
+
 # 19. 其他图表
 
 ## 19.1 其他图表

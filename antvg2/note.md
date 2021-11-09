@@ -414,6 +414,12 @@
 
 ### 桑基图 (relation_sankey)
 
+### voronoi 图 (relation_voronoi)
+
+### 极坐标 voronoi 图 (relation_voronoi_polar)
+
+### Circle Packing (relation_circle_packing)
+
 # 18. 组件使用
 
 ## 18.1 Annotation

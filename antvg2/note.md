@@ -450,6 +450,12 @@
 
 ## 18.3 Tooltip
 
+### 极坐标下的半径轴 crosshairs (tooltip_1)
+
+### 极坐标下的 xy crosshairs (tooltip_2)
+
+### xy crosshairs, 带文本 (tooltip_3)
+
 # 19. 其他图表
 
 ## 19.1 其他图表

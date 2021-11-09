@@ -394,6 +394,22 @@
 
 ### 矩形树图 (relation_treemap)
 
+### Treemap-Children (relation_treemap_children)
+
+### 极坐标系下的矩形树图 (relation_polar_treemap)
+
+### 相邻层次图 (relation_adjacency)
+
+### 旭日图 (relation_sunburst)
+
+### 极坐标弧长链接图 (relation_arc_polar)
+
+### 弧长链接图 (relation_arc)
+
+### 和弦图 (relation_chord)
+
+### 径向系统树图 (relation_radial_dendrogram)
+
 # 18. 组件使用
 
 ## 18.1 Annotation

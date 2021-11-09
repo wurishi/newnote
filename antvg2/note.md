@@ -424,6 +424,14 @@
 
 ## 18.1 Annotation
 
+### RegionFilter1 (annotation_guide_region_filter1)
+
+### RegionFilter2 (annotation_guide_region_filter2)
+
+### DataRegion (annotation_line3)
+
+### DataMarker (annotation_line5)
+
 ## 18.2 Label
 
 ## 18.3 Tooltip

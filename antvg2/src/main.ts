@@ -133,6 +133,7 @@ export default (function () {
         },
         {
             name: '组件使用',
+            children: ['Annotation', 'Label', 'Tooltip', '图例']
         },
         {
             name: '其他图表',

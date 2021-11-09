@@ -4502,6 +4502,36 @@ wsGBWd
 
 Wty3WD
 
+# 751. Day 47 - Isometric 2
+
+WtcXD8
+
+# 752. [music][twitch] Day 5 of MDTMJVM
+
+wtd3zX
+
+# 753. Day 670
+
+fdKSDW
+
+# 754. Day 669
+
+sdySWh
+
+# 755. Day 558
+
+7tBGDd
+
+# 756. Livecode demozoo jam
+
+7t23DK
+
+# 757. Day 538
+
+ftS3z1
+
+
+
 
 
 
@@ -4518,4 +4548,4 @@ Wty3WD
 
 https://www.shadertoy.com/results?query=&sort=love&from=372&num=12
 
-https://www.shadertoy.com/user/jeyko/sort=popular&from=8&num=8
+https://www.shadertoy.com/user/jeyko/sort=newest&from=8&num=8

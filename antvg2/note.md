@@ -434,6 +434,20 @@
 
 ## 18.2 Label
 
+### 折线图 label (label_line2)
+
+### 柱状图文本 (label_column9)
+
+### 饼图文本 (label_pie1)
+
+### 地图文本 (label_map)
+
+### label-位置 (label_position)
+
+### 散点图文本 (label_scatter)
+
+### 矩形树图文本 (label_treemap)
+
 ## 18.3 Tooltip
 
 # 19. 其他图表

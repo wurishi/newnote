@@ -1,0 +1,11 @@
+import { Scene, LineLayer, PointLayer } from '@antv/l7';
+import { GaodeMap, Mapbox } from '@antv/l7-maps';
+
+export default function () {
+    const scene = new Scene({
+        id: 'map',
+    });
+    scene.on('loaded', () => {});
+}
+
+export const TITLE = '';

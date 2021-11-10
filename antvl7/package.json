@@ -1,0 +1,19 @@
+{
+  "name": "antvl7",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "vite",
+    "build": "tsc && vite build",
+    "serve": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^4.3.2",
+    "vite": "^2.6.4"
+  },
+  "dependencies": {
+    "@antv/l7": "^2.5.47",
+    "@antv/l7-maps": "^2.5.47",
+    "@types/dat.gui": "^0.7.7",
+    "dat.gui": "^0.7.7"
+  }
+}

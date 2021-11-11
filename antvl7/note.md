@@ -47,3 +47,13 @@
 ### 海南省地图 (basic_hainan)
 
 ## 3.2 气泡图
+
+### 中国地图气泡图 (bubble_china)
+
+### 世界地图气泡 (bubble_world_map)
+
+### 中国省级地图气泡 (bubble_province)
+
+### 中国市地图气泡 (bubble_city)
+
+### 中国县地图气泡 (bubble_county)

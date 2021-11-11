@@ -12,6 +12,10 @@
 
 [参考资料](https://antv-l7.gitee.io/zh/examples/gallery)
 
+# antvx6
+
+[参考资料](https://antv-x6.gitee.io/en/examples/gallery)
+
 # anypixel
 
 [参考资料](https://github.com/googlecreativelab/anypixel)

@@ -6,8 +6,8 @@ let prevClearFn: any = null;
 
 function clear() {
     prevClearFn && prevClearFn();
-    const map = document.getElementById('map');
-    map && (map.innerHTML = '');
+    const app = document.getElementById('app');
+    app && (app.innerHTML = '');
 }
 
 function setHistory(key: string) {
@@ -50,71 +50,53 @@ function* createMenu(
 export default (function () {
     const menus = [
         {
-            name: '官方精品库',
-            children: ['动画', '基础可视化'],
-        },
-        {
-            name: 'React 组件',
+            name: 'Tutorials',
             children: [
-                'COVID-19 地图',
-                'Scene 组件',
-                'Layer 组件',
-                'Control 组件',
+                '画布 Graph',
+                '基类 Cell',
+                '节点 Node',
+                '边 Edge',
+                '群组 Group',
+                '连接桩 Port',
+                '网格 Grid',
+                '背景 Background',
+                '剪切板 Clipboard',
+                '撤销/重做 Redo/Undo',
+                '点选/框选',
+                '对齐线 Snapline',
+                '滚动 Scroller',
+                '小地图 MiniMap',
+                '拖拽 Dnd',
+                '键盘快捷键 Keyboard',
+                '滚轮缩放 MouseWheel',
+                '节点和边的交互',
             ],
         },
         {
-            name: '行政区划',
-            children: ['填充图', '气泡图', '钻取地图', 'React 组件'],
+            name: 'Component',
+            children: ['Practices', 'FAQ'],
         },
         {
-            name: '绘制组件',
-            children: ['绘制组件', 'UI 控件'],
+            name: 'Node',
         },
         {
-            name: '点图层',
-            children: [
-                '气泡地图',
-                '文本标注',
-                '散点地图',
-                '亮度图',
-                '聚合图',
-                '符号地图',
-                '3D 柱状地图',
-                '复合图表地图',
-                '自定义 Marker',
-            ],
+            name: 'Edge',
         },
         {
-            name: '线图层',
-            children: ['路径地图', '弧线地图', '线动画', '等值线地图'],
+            name: 'Graph',
         },
         {
-            name: '面图层',
-            children: ['填充地图', '3D填充图'],
+            name: 'Interaction',
         },
         {
-            name: '热力图',
-            children: ['经典热力图', '蜂窝热力图', '网格热力图'],
-        },
-        {
-            name: '栅格图层',
-            children: ['栅格图层'],
-        },
-        {
-            name: '教程示例',
-            children: ['地图', 'Marker', '组件', '图层'],
+            name: 'Layout',
+            children: ['General Layout', 'Tree Layout'],
         },
     ];
-    const gui = new GUI({ width: 400 });
-    const parentElement = gui.domElement.parentElement;
-    if (parentElement) {
-        parentElement.style.position = 'fixed';
-        parentElement.style.zIndex = '1000';
-    }
-    let guiMenus: any = {};
-    for (guiMenus of createMenu(gui, menus)) {
-    }
 
+    const gui = new GUI({ width: 400 });
+    let guiMenus: any = {};
+    for (guiMenus of createMenu(gui, menus));
     gui.add(
         {
             auto: () => {
@@ -140,7 +122,7 @@ export default (function () {
                     },
                 };
                 folder.add(obj, 'foo').name(TITLE);
-                if (getHistory() == key) {
+                if (getHistory() === key) {
                     historyFn = obj.foo;
                     historyFn && historyFn();
                     folder.open();

@@ -1,0 +1,19 @@
+{
+  "name": "antvx6-demo",
+  "version": "0.0.0",
+  "scripts": {
+    "start": "vite",
+    "build": "tsc && vite build",
+    "serve": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^4.3.2",
+    "vite": "^2.6.4"
+  },
+  "dependencies": {
+    "@antv/hierarchy": "^0.6.8",
+    "@antv/x6": "^1.28.1",
+    "@types/dat.gui": "^0.7.7",
+    "dat.gui": "^0.7.7"
+  }
+}

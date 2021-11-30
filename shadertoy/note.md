@@ -4602,9 +4602,63 @@ Ns2XD3
 
 ![760](assets/760.jpg)
 
+# 761. Day 490
+
+NdlXzs
 
 
 
+# 762. Cookie casual Shader Showdown
+
+NsfXRf
+
+
+
+# 763. Not a 16-cell honeycomb
+
+7ssSD4
+
+
+
+# 764. Day 486[4d kaliset]
+
+ssfSWN
+
+
+
+# 765. Day 486[4d projected fractal]
+
+7dXXD4
+
+
+
+# 766. Day 485[4d projected apollonian]
+
+fdXSD4
+
+
+
+# 767. Day 482
+
+NslSRM
+
+
+
+# 768. Day 478
+
+7sBGDc
+
+
+
+# 769. Day 475
+
+fsB3zt
+
+
+
+# 770. day 428
+
+ttGBRR
 
 
 
@@ -4620,4 +4674,4 @@ Ns2XD3
 
 https://www.shadertoy.com/results?query=&sort=love&from=372&num=12
 
-https://www.shadertoy.com/user/jeyko/sort=newest&from=8&num=8
+https://www.shadertoy.com/user/jeyko/sort=newest&from=24&num=8

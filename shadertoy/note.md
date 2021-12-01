@@ -4660,6 +4660,10 @@ fsB3zt
 
 ttGBRR
 
+# 771. Day 423
+
+Wl3Bzl
+
 
 
 
@@ -4674,4 +4678,4 @@ ttGBRR
 
 https://www.shadertoy.com/results?query=&sort=love&from=372&num=12
 
-https://www.shadertoy.com/user/jeyko/sort=newest&from=24&num=8
+https://www.shadertoy.com/user/jeyko/sort=newest&from=32&num=8

@@ -39,4 +39,16 @@ export default {
     R2FYLbHWTcCWh5PiE: `38. blorp`,
     '3K4LGxEGgP7MLHZnb': `39. bobble`,
     '6329mueSGExenMjbN': `40. dotp`,
+    Sx3Sk35wbBx2sGAxM: `41. sdf-ish`,
+    JANswiNfyJnruo62E: `42. dotto-chouhoukei`,
+    S8WjbT3dh5ZHhbpAS: `43. crepe`,
+    j7v3Ha4S2hwxhSCi9: `44. the galactic loom of sound and light`,
+    SHEuL7KCpNnj28Rmn: `45. incId`,
+    SMeHXTzP7e6vTniKx: `46. escnyc`,
+    mSDHF7AjBowN86DnJ: `47. synapsicorporation`,
+    '3pFLZ6LMxGuHYkjcr': `48. point cloud vs spheres rmx`,
+    T3o69kd5wMtWNCj5k: `49. LED Display`,
+    oJEAooRzirpb8qcPe: `50. ShaderDough`,
+    '6Yx2A7TQ6NnyHhFPQ': `51. bwow`,
+    //
 };

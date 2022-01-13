@@ -641,7 +641,7 @@ function init() {
         Object.keys(arts).forEach((key) => {
             const arr = key.split('/');
             let name = arr[arr.length - 1].split('.')[0];
-            let sort = Number.MAX_SAFE_INTEGER;
+            let sort = -1;
             if ((nameLib as any)[name]) {
                 name = (nameLib as any)[name];
                 sort = Number(name.split('.')[0]);

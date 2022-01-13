@@ -4,6 +4,11 @@ import getConfig from './lib/config';
 import { checkCanRenderToFloat, checkCanUseFloat } from './lib/utils';
 import HistoryTexture from './lib/HistoryTexture';
 import ProgramManager from './lib/ProgramManager';
+import createAudioStreamSource from './lib/AudioStreamSource';
+import { GUI } from 'dat.gui';
+const arts = import.meta.glob('./art/*.ts');
+import nameLib from './name';
+import ListenerManager from './lib/ListenerManager';
 
 const s = getConfig();
 
@@ -16,6 +21,7 @@ const settings = {
     mode: 'POINTS',
     sound: '',
     lineSize: 'NATIVE',
+    mouse: false,
     backgroundColor: [0, 0, 0, 1],
     shader: [
         '// -----[ shader missing! ] -----',
@@ -38,6 +44,8 @@ function getShader(id: string) {
 }
 
 let gl: WebGLRenderingContext;
+
+let resetMouseInfo: any = null;
 
 class VS {
     g: {
@@ -293,10 +301,85 @@ class VS {
 
             // TODO: 688 sc
 
+            s.streamSource = createAudioStreamSource({
+                context: s.context,
+                autoPlay: true,
+                crossOrigin: 'anonymouse',
+            });
+
+            s.streamSource.on('error', (err: any) => {
+                console.error(err);
+            });
+            s.streamSource.on(
+                'newSource',
+                (source: MediaStreamAudioSourceNode) => {
+                    source.connect(s.analyser!);
+                }
+            );
+            s.streamSource.on('ended', () => {
+                // console.log('end');
+                s.streamSource.play();
+            });
+
             s.programManager = new ProgramManager(gl);
 
             document.body.appendChild(gl.canvas);
             this.queueRender();
+
+            const addTouchPosition = (column: number, x: number, y: number) => {
+                x = x * 2 - 1;
+                y = y * -2 + 1;
+
+                if (!s.canUseFloat) {
+                    x = Math.max(0, (x * 255) | 0);
+                    y = Math.max(0, (y * 255) | 0);
+                }
+                const offset = column * 4;
+                s.touchHistory!.buffer[offset + 0] = x;
+                s.touchHistory!.buffer[offset + 1] = y;
+            };
+
+            const addTouchPressure = (column: number, pressure: number) => {
+                if (!s.canUseFloat) {
+                    pressure = Math.max(0, (pressure * 255) | 0);
+                }
+                const offset = column * 4;
+                s.touchHistory!.buffer[offset + 2] = pressure;
+            };
+
+            const listener = new ListenerManager();
+            listener.on(window as any, 'mousemove', (e: MouseEvent) => {
+                if (!settings.mouse) {
+                    return;
+                }
+                const rect = gl.canvas.getBoundingClientRect();
+                const w = gl.canvas.clientWidth;
+                const h = gl.canvas.clientHeight;
+                const x = (e.clientX - rect.left) / w;
+                const y = (e.clientY - rect.top) / h;
+
+                this.g.mouse[0] = x * 2 - 1;
+                this.g.mouse[1] = y * -2 + 1;
+                addTouchPosition(0, x, y);
+            });
+            resetMouseInfo = () => {
+                this.g.mouse[0] = 0;
+                this.g.mouse[1] = 0;
+                addTouchPosition(0, 0, 0);
+                addTouchPressure(0, 0);
+            };
+            listener.on(window as any, 'mousedown', () => {
+                if (!settings.mouse) {
+                    return;
+                }
+                addTouchPressure(0, 1);
+            });
+            listener.on(window as any, 'mouseup', () => {
+                if (!settings.mouse) {
+                    return;
+                }
+                addTouchPressure(0, 0);
+            });
         }
     }
 
@@ -421,7 +504,9 @@ class VS {
     ) {
         twgl.bindFramebufferInfo(gl);
 
-        const size = lineSize === 'NATIVE' ? 1 : window.devicePixelRatio || 1;
+        // const size = lineSize === 'NATIVE' ? 1 : window.devicePixelRatio || 1;
+        const size =
+            settings.lineSize === 'NATIVE' ? 1 : Number(settings.lineSize);
         gl.lineWidth(size);
 
         gl.enable(gl.DEPTH_TEST);
@@ -508,6 +593,109 @@ function init() {
     if (!vs) {
         vs = new VS();
 
+        const gui = new GUI();
+        const f = gui.addFolder('settings');
+        f.open();
+        const modeUI = f.add(vs.g, 'mode', {
+            POINTS: gl.POINTS,
+            LINES: gl.LINES,
+            LINE_LOOP: gl.LINE_LOOP,
+            LINE_STRIP: gl.LINE_STRIP,
+            TRIANGLES: gl.TRIANGLES,
+            TRIANGLE_FAN: gl.TRIANGLE_FAN,
+            TRIANGLE_STRIP: gl.TRIANGLE_STRIP,
+        });
+        const numUI = f.add(settings, 'num', 256, 100000);
+        const lineSize = f.add(settings, 'lineSize', ['NATIVE', 2, 5, 10]);
+        let playFlag = false;
+        const ui: any = {
+            play: false,
+            art: '',
+        };
+        f.add(ui, 'play')
+            .name('Music')
+            .onChange((v) => {
+                if (!playFlag) {
+                    playFlag = true;
+                    s.streamSource.init();
+                    s.streamSource.setSource('/audio1.mp3');
+                } else {
+                    if (v) {
+                        s.streamSource.play();
+                    } else {
+                        s.streamSource.stop();
+                    }
+                }
+            });
+        f.add(settings, 'mouse')
+            .name('Mouse')
+            .onChange((v) => {
+                if (!v) {
+                    resetMouseInfo && resetMouseInfo();
+                }
+            });
+
+        const waitSortList: any[] = [];
+        const artList: any = {};
+        let count = 0;
+        Object.keys(arts).forEach((key) => {
+            const arr = key.split('/');
+            let name = arr[arr.length - 1].split('.')[0];
+            let sort = Number.MAX_SAFE_INTEGER;
+            if ((nameLib as any)[name]) {
+                name = (nameLib as any)[name];
+                sort = Number(name.split('.')[0]);
+            } else {
+                name = '🐯' + name;
+            }
+            // artList[name] = key;
+            count++;
+
+            waitSortList.push([name, key, sort]);
+        });
+        waitSortList.sort((a, b) => {
+            const [, , sortA] = a;
+            const [, , sortB] = b;
+            return sortA - sortB;
+        });
+        waitSortList.forEach(([name, mk]) => {
+            artList[name] = mk;
+        });
+        f.name = 'Count: ' + count;
+        f.add(ui, 'art', artList).onChange((v) => {
+            let tmp = '';
+            Object.keys(artList).find((key) => {
+                if (artList[key] === v) {
+                    tmp = key;
+                    return true;
+                }
+            });
+            arts[v]().then((module) => {
+                const {
+                    name = '',
+                    mode = WebGLRenderingContext.POINTS,
+                    num = 10000,
+                    text,
+                } = module.default;
+                if (text) {
+                    numUI.setValue(num);
+                    modeUI.setValue(mode);
+                    vs.tryNewProgram(text);
+                    const app = document.getElementById('app');
+                    app && (app.innerHTML = name);
+                }
+
+                if (tmp) {
+                    const t = tmp.indexOf('🐯') === 0 ? tmp.substr(2) : tmp;
+                    copyToClipboard(
+                        `'${t}': ` + '`' + count + '. ' + name + '`,'
+                    );
+                } else {
+                    copyToClipboard('');
+                }
+            });
+        });
+
         vs.tryNewProgram(`
         #define NUM_SEGMENTS 128.0
         #define NUM_POINTS (NUM_SEGMENTS * 2.0)
@@ -549,6 +737,19 @@ function init() {
           float val = invV;
           v_color = mix(vec4(hsv2rgb(vec3(hue, sat, val)), 1), background, v * v);
         }`);
+    }
+}
+
+function copyToClipboard(s: string) {
+    if ('clipboardData' in window) {
+        (window as any).clipboardData.setData('text', s);
+    } else {
+        document.oncopy = (e) => {
+            e.clipboardData?.setData('text', s);
+            e.preventDefault();
+            document.oncopy = null;
+        };
+        document.execCommand('Copy');
     }
 }
 

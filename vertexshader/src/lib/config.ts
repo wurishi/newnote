@@ -61,6 +61,8 @@ interface iConfig {
     countBufferInfo?: twgl.BufferInfo;
 
     programManager?: ProgramManager;
+
+    streamSource?: any;
 }
 
 let isMobile = false; //window.navigator.userAgent.match(/Android|iPhone|iPad|iPod|Windows Phone/i)

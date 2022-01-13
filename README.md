@@ -210,9 +210,13 @@ U3D JobSystem
 
 参考资料: [Unity3D Entity Component System 入门学习](https://blog.csdn.net/u012632851/category_7034956.html) **(完成)**
 
+# vertexshader
+
+[参考资料](https://github.com/greggman/vertexshaderart)
+
 # vertexshaderart
 
-[参考资料](https://www.vertexshaderart.com/) (*需要根据github重新写一套框架, 目前代码仅能实现极少数的效果*)
+[参考资料](https://www.vertexshaderart.com/) (*建议使用vertexshader*)
 
 # vite
 

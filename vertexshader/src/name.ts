@@ -50,5 +50,11 @@ export default {
     T3o69kd5wMtWNCj5k: `49. LED Display`,
     oJEAooRzirpb8qcPe: `50. ShaderDough`,
     '6Yx2A7TQ6NnyHhFPQ': `51. bwow`,
-    //
+    'b2AspWSvDsXib8Kkc': `52. Torus Bulb`,
+    'PpwJ5uNXyzHCnWSZJ': `53. rbowsnd`,
+    'Qh7WiD2iwnCrdfCXy': `54. It's So In Vogue To Be Dead`,
+    'zHorsBAipg3PMpwaL': `55. Barnsley Fern`,
+    'Bv7nLsmSbowtSoGpA': `56. fwosh`,
+    'GxbSZ33B9swmxAmdT': `57. notmizu`,
+    'jETzmmycobJrRvXH9': `58. SphereDistribution`,
 };

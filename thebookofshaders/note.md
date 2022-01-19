@@ -2461,7 +2461,7 @@ void main() {
 
 可以继续在 [PixelSpirit Deck](https://patriciogonzalezvivo.github.io/PixelSpiritDeck/) 上学习卡片组的形状.
 
-## 8. 矩阵
+## 8. Matrices (矩阵)
 
 2D Matrices 二维矩阵
 
@@ -2789,7 +2789,7 @@ void main() {
 
 在如你所见, 我们用对向量乘以矩阵的方式对待色彩. 用这种方式, 我们 "移动" 这些值.
 
-## 9. 图案
+## 9. Patterns (图案)
 
 因为着色器按一个个像素执行, 那么无论你重复一个图形多少次, 计算的数量仍然是个常数.
 
@@ -3186,3 +3186,1251 @@ void main(){
 ### 9.4 制定自己的规则
 
 制作程序图案是种寻找最小可重复元素的古老练习. 我们作为长时间使用网格和图案来装饰织物, 地面和物品的镶边的物种. 从古希腊的弯曲图案, 到中国的窗栅设计, 重复和变化的愉悦吸引我们的想象. 花些时间浏览 [decorative](https://archive.org/stream/traditionalmetho00chririch#page/130/mode/2up) [patterns](https://www.pinterest.com/patriciogonzv/paterns/) 并看看在漫长的历史里, 艺术家和设计师是如何寻找在秩序的预测性和由混沌与衍变产生的惊奇之间的边界的. 从阿拉伯几何图案, 到斑斓的非洲编制艺术, 这里有一整个图案的宇宙要学习.
+
+## 10. Generative designs (生成设计)
+
+### 10.1 随机
+
+随机性是熵的最大表现。我们如何在看似可预测而且严苛的代码环境中生成随机性呢？
+
+```
+y = fract(sin(x)*1.0);
+```
+
+上面的例子中，我们提取了 `sin` 函数其波形的分数部分。值域为 -1.0 到 1.0 之间的 `sin` 函数被取了小数点后的部分，并返回 0.0 到 1.0 间的正值。我们可以通过这种效果通过把正弦函数打散成小片段来得到一些伪随机数。如何实现呢？通过在 sin(x) 的值上乘以大些的数，比如将上面的 1.0 改成更大的数字。
+
+当你加到 100000.0, 将再也区分不出 sin 波。小数部分的粒度将 sin 的循环变成为伪随机的混沌。
+
+### 10.2 控制混沌
+
+在上个例子中你可以看到 `sin()`在 -1.5707 和 1.5707 上有较大波动，那是因为这就是 sin 取得的最大值和最小值的地方。
+
+使用随机会很难，它不是太混沌难测就是有时又不够混乱。所以一般我们使用 `rand()` 函数。
+
+如果仔细观察随机分布，会注意到相比边缘，中部更集中。
+
+```glsl
+y = rand(x);
+y = rand(x) * rand(x);
+y = sqrt(rand(x));
+y = pow(rand(x), 5.);
+```
+
+谨记我们用的 `rand()`是确定性随机，也被称作是伪随机。这就意味着，就 `rand(1.)`为例，总会返回相同的值。
+
+### 10.3 2D 随机
+
+对随机有了深入的理解，是时候将它应用到二维，x轴和y轴。为此我们需要将一个二维向量转化为一维浮点数。这里有几种不同的方法来实现，但 `dot()`函数在这个例子中尤其有用。它根据两个向量的方向返回一个 0.0 到 1.0 之间的值。
+
+```glsl
+// Author @patriciogv - 2015
+// http://patriciogonzalezvivo.com
+
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+
+float random (vec2 st) {
+    return fract(sin(dot(st.xy,
+                         vec2(12.9898,78.233)))*
+        43758.5453123);
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+
+    float rnd = random( st );
+
+    gl_FragColor = vec4(vec3(rnd),1.0);
+}
+```
+
+看下第13行到15行，注意如何操作 `vec2 st`和另一个二维向量 `vec2(12.9898,78.233)`。
+
+- 试着改变14和15行的值。看看随机图案的变化。
+- 好好用鼠标(u_mouse)和时间 (u_time)调戏这个随机函数。
+
+### 10.4 使用混沌
+
+二维的随机看起来是不是像电视的噪点？对组成图像来说，随机是个难用的原始素材。让我们学着如何来利用它。
+
+我们的第一步是在网格上的应用；用 `floor()`函数，将会产生一个单元整数列表。如下代码，尤其是22行和23行。
+
+```glsl
+// Author @patriciogv - 2015
+// Title: Mosaic
+
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+
+float random (vec2 st) {
+    return fract(sin(dot(st.xy,
+                         vec2(12.9898,78.233)))*
+        43758.5453123);
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+
+    st *= 10.0; // Scale the coordinate system by 10
+    vec2 ipos = floor(st);  // get the integer coords
+    vec2 fpos = fract(st);  // get the fractional coords
+
+    // Assign a random value based on the integer coord
+    vec3 color = vec3(random( ipos ));
+
+    // Uncomment to see the subdivided grid
+    // color = vec3(fpos,0.0);
+
+    gl_FragColor = vec4(color,1.0);
+}
+```
+
+在缩放空间10倍后(在21行)，我们将坐标系统的整数和小数部分分离。我们对最后一步操作不陌生，因为我们曾经用这种方法来将空间细分成 0.0 到 1.0 的小单元。我们根据得到坐标的整数部分作为一个通用值来隔离一个区域的像素，让它看起来像个单独的单元。然后我们可以用这个通用值来为这个区域得到一个随机值。因为我们的随机函数是伪随机，在单元内的所有像素返回的随机值都是同一个常量。
+
+取消第29行保留我们坐标的小数部分，这样我们仍旧可以将其作为一个坐标系统，并在单元内部画图形。
+
+结合这两个量 - 坐标的整数部分和小数部分 - 将使你可以结合变化和秩序。
+
+看下这个著名的 `10 PRINT CHR$(205.5+RND(1)); : GOTO 10`迷宫管理局吕的 GLSL 代码块。
+
+```glsl
+// Author @patriciogv - 2015
+// Title: Truchet - 10 print
+
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+#define PI 3.14159265358979323846
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+
+float random (in vec2 _st) {
+    return fract(sin(dot(_st.xy,
+                         vec2(12.9898,78.233)))*
+        43758.5453123);
+}
+
+vec2 truchetPattern(in vec2 _st, in float _index){
+    _index = fract(((_index-0.5)*2.0));
+    if (_index > 0.75) {
+        _st = vec2(1.0) - _st;
+    } else if (_index > 0.5) {
+        _st = vec2(1.0-_st.x,_st.y);
+    } else if (_index > 0.25) {
+        _st = 1.0-vec2(1.0-_st.x,_st.y);
+    }
+    return _st;
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+    st *= 10.0;
+    // st = (st-vec2(5.0))*(abs(sin(u_time*0.2))*5.);
+    // st.x += u_time*3.0;
+
+    vec2 ipos = floor(st);  // integer
+    vec2 fpos = fract(st);  // fraction
+
+    vec2 tile = truchetPattern(fpos, random( ipos ));
+
+    float color = 0.0;
+
+    // Maze
+    color = smoothstep(tile.x-0.3,tile.x,tile.y)-
+            smoothstep(tile.x,tile.x+0.3,tile.y);
+
+    // Circles
+    // color = (step(length(tile),0.6) -
+    //          step(length(tile),0.4) ) +
+    //         (step(length(tile-vec2(1.)),0.6) -
+    //          step(length(tile-vec2(1.)),0.4) );
+
+    // Truchet (2 triangles)
+    // color = step(tile.x,tile.y);
+
+    gl_FragColor = vec4(vec3(color),1.0);
+}
+```
+
+这里仍前一单的 `truchetPattern()`函数根据单元产生的随机值来随机画一个方向的对角线。
+
+你可以通过取消50到53行的代码块的注释得到其他有趣的图案，或者通过取消35和36行来得到图案的动画。
+
+### 10.5 掌握随机
+
+[Ryoji Ikeda](https://www.ryojiikeda.com/)，日本电子作曲家，视觉艺术家，是运用随机的大师。他的作品是如此的富有感染力而难忘。他在音乐和视觉媒介中随机的应用，不再是混乱无序，反而以假乱真地折射出我们技术文化的复杂性。
+
+看看 Ikeda 的作品并试试看下面的练习：
+
+- 做按行随机移动的单元 (以相反方向)。只显示亮一些的单元。让各行的速度随时间变化。
+
+  ```glsl
+  // Author @patriciogv - 2015
+  // Title: Ikeda Test patterns
+  
+  #ifdef GL_ES
+  precision mediump float;
+  #endif
+  
+  uniform vec2 u_resolution;
+  uniform vec2 u_mouse;
+  uniform float u_time;
+  
+  float random (in float x) {
+      return fract(sin(x)*1e4);
+  }
+  
+  float random (in vec2 st) {
+      return fract(sin(dot(st.xy, vec2(12.9898,78.233)))* 43758.5453123);
+  }
+  
+  float randomSerie(float x, float freq, float t) {
+      return step(.8,random( floor(x*freq)-floor(t) ));
+  }
+  
+  void main() {
+      vec2 st = gl_FragCoord.xy/u_resolution.xy;
+      st.x *= u_resolution.x/u_resolution.y;
+  
+      vec3 color = vec3(0.0);
+  
+      float cols = 2.;
+      float freq = random(floor(u_time))+abs(atan(u_time)*0.1);
+      float t = 60.+u_time*(1.0-freq)*30.;
+  
+      if (fract(st.y*cols* 0.5) < 0.5){
+          t *= -1.0;
+      }
+  
+      freq += random(floor(st.y));
+  
+      float offset = 0.025;
+      color = vec3(randomSerie(st.x, freq*100., t+offset),
+                   randomSerie(st.x, freq*100., t),
+                   randomSerie(st.x, freq*100., t-offset));
+  
+      gl_FragColor = vec4(1.0-color,1.0);
+  }
+  ```
+
+- 同样地，让某几行以不同的速度和方向。用鼠标位置关联显示单元的阀值。
+
+  ```glsl
+  // Author @patriciogv - 2015
+  // Title: Ikeda Data Stream
+  
+  #ifdef GL_ES
+  precision mediump float;
+  #endif
+  
+  uniform vec2 u_resolution;
+  uniform vec2 u_mouse;
+  uniform float u_time;
+  
+  float random (in float x) {
+      return fract(sin(x)*1e4);
+  }
+  
+  float random (in vec2 st) {
+      return fract(sin(dot(st.xy, vec2(12.9898,78.233)))* 43758.5453123);
+  }
+  
+  float pattern(vec2 st, vec2 v, float t) {
+      vec2 p = floor(st+v);
+      return step(t, random(100.+p*.000001)+random(p.x)*0.5 );
+  }
+  
+  void main() {
+      vec2 st = gl_FragCoord.xy/u_resolution.xy;
+      st.x *= u_resolution.x/u_resolution.y;
+  
+      vec2 grid = vec2(100.0,50.);
+      st *= grid;
+  
+      vec2 ipos = floor(st);  // integer
+      vec2 fpos = fract(st);  // fraction
+  
+      vec2 vel = vec2(u_time*2.*max(grid.x,grid.y)); // time
+      vel *= vec2(-1.,0.0) * random(1.0+ipos.y); // direction
+  
+      // Assign a random value base on the integer coord
+      vec2 offset = vec2(0.1,0.);
+  
+      vec3 color = vec3(0.);
+      color.r = pattern(st+offset,vel,0.5+u_mouse.x/u_resolution.x);
+      color.g = pattern(st,vel,0.5+u_mouse.x/u_resolution.x);
+      color.b = pattern(st-offset,vel,0.5+u_mouse.x/u_resolution.x);
+  
+      // Margins
+      color *= step(0.2,fpos.y);
+  
+      gl_FragColor = vec4(1.0-color,1.0);
+  }
+  ```
+
+- 创造其他有趣的效果。
+
+  ```glsl
+  // Author @patriciogv - 2015
+  // Title: DeFrag
+  
+  #ifdef GL_ES
+  precision mediump float;
+  #endif
+  
+  uniform vec2 u_resolution;
+  uniform vec2 u_mouse;
+  uniform float u_time;
+  
+  float random (in float x) { return fract(sin(x)*1e4); }
+  float random (in vec2 _st) { return fract(sin(dot(_st.xy, vec2(12.9898,78.233)))* 43758.5453123);}
+  
+  void main() {
+      vec2 st = gl_FragCoord.xy/u_resolution.xy;
+      st.x *= u_resolution.x/u_resolution.y;
+  
+      // Grid
+      vec2 grid = vec2(100.0,50.);
+      st *= grid;
+  
+      vec2 ipos = floor(st);  // integer
+  
+      vec2 vel = floor(vec2(u_time*10.)); // time
+      vel *= vec2(-1.,0.); // direction
+  
+      vel *= (step(1., mod(ipos.y,2.0))-0.5)*2.; // Oposite directions
+      vel *= random(ipos.y); // random speed
+  
+      // 100%
+      float totalCells = grid.x*grid.y;
+      float t = mod(u_time*max(grid.x,grid.y)+floor(1.0+u_time*u_mouse.y),totalCells);
+      vec2 head = vec2(mod(t,grid.x), floor(t/grid.x));
+  
+      vec2 offset = vec2(0.1,0.);
+  
+      vec3 color = vec3(1.0);
+      color *= step(grid.y-head.y,ipos.y);                                // Y
+      color += (1.0-step(head.x,ipos.x))*step(grid.y-head.y,ipos.y+1.);   // X
+      color = clamp(color,vec3(0.),vec3(1.));
+  
+      // Assign a random value base on the integer coord
+      color.r *= random(floor(st+vel+offset));
+      color.g *= random(floor(st+vel));
+      color.b *= random(floor(st+vel-offset));
+  
+      color = smoothstep(0.,.5+u_mouse.x/u_resolution.x*.5,color*color); // smooth
+      color = step(0.5+u_mouse.x/u_resolution.x*0.5,color); // threshold
+  
+      //  Margin
+      color *= step(.1,fract(st.x+vel.x))*step(.1,fract(st.y+vel.y));
+  
+      gl_FragColor = vec4(1.0-color,1.0);
+  }
+  ```
+
+完美地掌握随机之美是困难的，尤其是你想要让作品看起来很自然。随机仅仅是过于混乱，真实生活中很少有东西看上去如此随机。如果观察玻璃上雨滴的肌理或是股票的曲线 - 这两个都挺随机的 - 但他们和本章开始的随机图案看起来不是同一对爹妈生成的。原因？嗯，随机值之间没有什么相关性，而大多数自然图案（肌理）都会对前一个状态有所记忆（基于前一个状态）。
+
+## 11. Noise (噪声)
+
+稍事休息，我们来转换一下思路。我们已经玩过了看起来像电视白噪音的 `random`函数，尽管脑子里还嗡嗡地转着 `shader`，但是已经眼花缭乱了。是时候出去走走了。
+
+我们感知得到浮动在皮肤上的空气，晒在脸上的阳光。世界如此生动而丰富。颜色，质地，声音。当我们走在路上，不免会注意到路面，石头，树木和云朵的表面的样子。
+
+这些纹理的不可预测性可以叫做随机，但是它们看起来不像是我们之间玩的 random. 真实世界是如此的丰富而复杂，我们如何才能用计算机模拟这些多样的纹理呢？
+
+这就是 [Ken Perlin](https://mrl.nyu.edu/~perlin/) 想要解答的问题。在20世纪80年代早期，他被委任为电影"Tron"(电子世界争霸战)制作现实中的纹理。为了解决这个问题，他想出了一个优雅的算法，且获得了奥斯卡奖。
+
+下面这个并不是经典的 Perlin noise 算法，但是这是一个理解如何生成 noise 的好的出发点。
+
+```glsl
+float i = floor(x); // 整数 (i 代表 integer)
+float f = fract(x); // 小数 (f 代表 fraction)
+y = rand(i); // rand() 随机
+// y = mix(rand(i), rand(i + 1.0), f);
+// y = mix(rand(i), rand(i + 1.0), smoothstep(0., 1., f));
+```
+
+这里和之前我们做的事情很像。我们把单精度浮点 x 分割成它的整数部分 i 和小数部分 f 。我们用 `floor()`获取 i，用 `fract()`获取 f。然后我们 `rand()`x 的整数部分，即根据这个整数生成一个随机值。
+
+在这之后有两个被注释掉的语句。第一句的作用是线性插值。
+
+```glsl
+y = mix(rand(i), rand(i + 1.0), f);
+```
+
+我们储存在 f 中的 `fract()`值 `mix()`了两个随机值。
+
+我们知道我们可以用 `smoothstep()`获得比线性插值更好的插值，试试取消第二句注释。
+
+```glsl
+y = mix(rand(i), rand(i + 1.0), smoothstep(0., 1., f));
+```
+
+在取消注释后，注意顶点的变化如何变得顺滑了起来。在一些 noise 的应用中你会发现程序员喜欢用他们自己的**三次多项式函数**，而不是用 `smoothstep()`。
+
+```glsl
+float u = f * f * (3.0 - 2.0 * f); // custom cubic curve
+y = mix(rand(i), rand(i + 1.0), u); // using it in the interpolation
+```
+
+这种 smooth randomness（平滑后的随机值）是一个图形工程师或者说艺术家的制胜法定 - 它能生成非常有机的图像或几何形态。Perlin 的 noise 算法被无数次用到各种语言和各种维度的设计中，制作出无数迷人的作品。
+
+现在轮到你了：
+
+- 写你自己的 `float noise(float x)`函数。
+- 用你的 noise 函数为图形制作动效，可以是移动，旋转或改变大小。
+- 用 noise 让一群图形一起“跳舞"。
+- 用 noise 制作有机的形态。
+- 创作一个"生物"，给它添加更多独特的动作，使其成为独特的角色。
+
+### 11.1 2D Noise
+
+现在我们知道了如何在一维使用 noise，是时候进入二维世界了。在 2D 中，除了在一条线的两点 (fract(x) 和 fract(x) + 1.0) 中插值，还可以在一个平面上的方形的四角 (fract(st), fract(st) + vec2(1.0, 0.), fract(st) + vec2(0., 1.) 和 fract(st) + vec2(1., 1.)) 中插值。
+
+同样，如果我们想要在三维中使用 noise，就需要在一个立方体的8个角中插值。这个技术的重点在于插入随机值，所以我们叫它 **value noise**。
+
+就像一维的那个例子，这个插值不是线性的，而是三次方的，它会平滑地在方形网格中插入点。
+
+让我们来看一下这个方程。
+
+```glsl
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+
+// 2D Random
+float random (in vec2 st) {
+    return fract(sin(dot(st.xy,
+                         vec2(12.9898,78.233)))
+                 * 43758.5453123);
+}
+
+// 2D Noise based on Morgan McGuire @morgan3d
+// https://www.shadertoy.com/view/4dS3Wd
+float noise (in vec2 st) {
+    vec2 i = floor(st);
+    vec2 f = fract(st);
+
+    // Four corners in 2D of a tile
+    float a = random(i);
+    float b = random(i + vec2(1.0, 0.0));
+    float c = random(i + vec2(0.0, 1.0));
+    float d = random(i + vec2(1.0, 1.0));
+
+    // Smooth Interpolation
+
+    // Cubic Hermine Curve.  Same as SmoothStep()
+    vec2 u = f*f*(3.0-2.0*f);
+    // u = smoothstep(0.,1.,f);
+
+    // Mix 4 coorners percentages
+    return mix(a, b, u.x) +
+            (c - a)* u.y * (1.0 - u.x) +
+            (d - b) * u.x * u.y;
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+
+    // Scale the coordinate system to see
+    // some noise in action
+    vec2 pos = vec2(st*5.0);
+
+    // Use the noise function
+    float n = noise(pos);
+
+    gl_FragColor = vec4(vec3(n), 1.0);
+}
+```
+
+我们先把空间大小变成五倍（第45行）以便看清栅格间的插值。然后在 noise 函数中我们把空间分成更小的单元。我们把它的整数部分和非整数部分都储存在这个单元里。我们计算整数位置的顶点的坐标，并给每个顶点生成一个随机值（第23-26行）。最后，在第 35 行用我们之前储存的小数位置的值，在四个顶点的随机值之间插值。
+
+现在又到你了，试试下面的练习：
+
+- 改变第 45 行的乘数。添加动态试试。
+- 缩放到什么程度会让 noise 再度变得像 random ？
+- 缩放到什么程度就看不出来 noise 了？
+- 试试看把 noise 函数和鼠标位置连起来。
+- 如果我们把 noise 的斜率处理成距离场（distance field）会怎么样？用它来做点有趣的事情。
+- 现在你已经可以在混沌和有序之间进行一些操控了，是时候把这些知识用起来了。用长方形，色彩，和 noise 做一幅 [Mark Rothko](https://en.wikipedia.org/wiki/Mark_Rothko) 的复杂的画作吧。
+
+### 11.2 生成式设计中的 noise 应用
+
+Noise 算法的设计初衷是将难以言说的自然质感转化成数字图像。在目前我们看到的一维和二维实践中，都是在 random values (随机值) 之间插值，所以它们才被叫做 **Value Noise**，但是还有很多很多获取 noise 的方法。
+
+```glsl
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+
+float random2(vec2 st){
+    st = vec2( dot(st,vec2(127.1,311.7)),
+              dot(st,vec2(269.5,183.3)) );
+    
+    return -1.0 + 2.0 * fract( sin( dot( st.xy, vec2(12.9898,78.233) ) ) * 43758.5453123);
+}
+
+// Gradient Noise by Inigo Quilez - iq/2013
+// https://www.shadertoy.com/view/lsf3WH
+float noise(vec2 st) {
+    vec2 i = floor(st);
+    vec2 f = fract(st);
+	
+	vec2 u = f*f*(3.0-2.0*f);
+
+    return mix( mix( random2( i + vec2(0.0,0.0) ), 
+                     random2( i + vec2(1.0,0.0) ), u.x),
+                mix( random2( i + vec2(0.0,1.0) ), 
+                     random2( i + vec2(1.0,1.0) ), u.x), u.y);
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+    st.x *= u_resolution.x/u_resolution.y;
+    vec3 color = vec3(0.0);
+
+    vec2 pos = vec2(st*10.0);
+
+    color = vec3( noise(pos)*.5+.5 );
+
+    gl_FragColor = vec4(color,1.0);
+}
+```
+
+上面这个例子中，value noise 看起来非常“块状”。为了消除这种块状的效果，在 1985 年 Ken Perlin 开发了另一种 noise 算法 Gradient Noise。Ken 解决了如何插入随机的 gradients （梯度，渐变）而不是一个固定值。这些梯度值来自于一个二维的随机函数，返回一个方向（vec2 格式的向量），而不仅仅是一个值（float 格式）。如下：
+
+```glsl
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+
+vec2 random2(vec2 st){
+    st = vec2( dot(st,vec2(127.1,311.7)),
+              dot(st,vec2(269.5,183.3)) );
+    return -1.0 + 2.0*fract(sin(st)*43758.5453123);
+}
+
+// Gradient Noise by Inigo Quilez - iq/2013
+// https://www.shadertoy.com/view/XdXGW8
+float noise(vec2 st) {
+    vec2 i = floor(st);
+    vec2 f = fract(st);
+
+    vec2 u = f*f*(3.0-2.0*f);
+
+    return mix( mix( dot( random2(i + vec2(0.0,0.0) ), f - vec2(0.0,0.0) ),
+                     dot( random2(i + vec2(1.0,0.0) ), f - vec2(1.0,0.0) ), u.x),
+                mix( dot( random2(i + vec2(0.0,1.0) ), f - vec2(0.0,1.0) ),
+                     dot( random2(i + vec2(1.0,1.0) ), f - vec2(1.0,1.0) ), u.x), u.y);
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+    st.x *= u_resolution.x/u_resolution.y;
+    vec3 color = vec3(0.0);
+
+    vec2 pos = vec2(st*10.0);
+
+    color = vec3( noise(pos)*.5+.5 );
+
+    gl_FragColor = vec4(color,1.0);
+}
+```
+
+花一分钟来看一下上面两个例子，注意 [value noise](https://www.shadertoy.com/view/lsf3WH) 和 [gradient noise](https://www.shadertoy.com/view/XdXGW8) 的区别。
+
+就像一个画家非常了解画上的颜料是如何晕染的，越了解 noise 是如何运作的，越能更好地使用 noise。比如，如果我们要用一个二维的 noise 来旋转空间中的直线，我们就可以制作下图的旋涡状效果，看起来就像木头表皮一样。
+
+```glsl
+// Author @patriciogv - 2015
+// http://patriciogonzalezvivo.com
+
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+
+float random (in vec2 st) {
+    return fract(sin(dot(st.xy,
+                         vec2(12.9898,78.233)))
+                * 43758.5453123);
+}
+
+// Value noise by Inigo Quilez - iq/2013
+// https://www.shadertoy.com/view/lsf3WH
+float noise(vec2 st) {
+    vec2 i = floor(st);
+    vec2 f = fract(st);
+    vec2 u = f*f*(3.0-2.0*f);
+    return mix( mix( random( i + vec2(0.0,0.0) ),
+                     random( i + vec2(1.0,0.0) ), u.x),
+                mix( random( i + vec2(0.0,1.0) ),
+                     random( i + vec2(1.0,1.0) ), u.x), u.y);
+}
+
+mat2 rotate2d(float angle){
+    return mat2(cos(angle),-sin(angle),
+                sin(angle),cos(angle));
+}
+
+float lines(in vec2 pos, float b){
+    float scale = 10.0;
+    pos *= scale;
+    return smoothstep(0.0,
+                    .5+b*.5,
+                    abs((sin(pos.x*3.1415)+b*2.0))*.5);
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+    st.y *= u_resolution.y/u_resolution.x;
+
+    vec2 pos = st.yx*vec2(10.,3.);
+
+    float pattern = pos.x;
+
+    // Add noise
+    pos = rotate2d( noise(pos) ) * pos; // 旋转空间
+
+    // Draw lines
+    pattern = lines(pos,.5); // 画直线
+
+    gl_FragColor = vec4(vec3(pattern),1.0);
+}
+```
+
+另一种用 noise 制作有趣的图案的方式是用 distance field （距离场）处理它。
+
+```glsl
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+
+vec2 random2(vec2 st){
+    st = vec2( dot(st,vec2(127.1,311.7)),
+              dot(st,vec2(269.5,183.3)) );
+    return -1.0 + 2.0*fract(sin(st)*43758.5453123);
+}
+
+// Gradient Noise by Inigo Quilez - iq/2013
+// https://www.shadertoy.com/view/XdXGW8
+float noise(vec2 st) {
+    vec2 i = floor(st);
+    vec2 f = fract(st);
+
+    vec2 u = f*f*(3.0-2.0*f);
+
+    return mix( mix( dot( random2(i + vec2(0.0,0.0) ), f - vec2(0.0,0.0) ),
+                     dot( random2(i + vec2(1.0,0.0) ), f - vec2(1.0,0.0) ), u.x),
+                mix( dot( random2(i + vec2(0.0,1.0) ), f - vec2(0.0,1.0) ),
+                     dot( random2(i + vec2(1.0,1.0) ), f - vec2(1.0,1.0) ), u.x), u.y);
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+    st.x *= u_resolution.x/u_resolution.y;
+    vec3 color = vec3(0.0);
+
+    float t = 1.0;
+    // Uncomment to animate
+    // t = abs(1.0-sin(u_time*.1))*5.;
+    // Comment and uncomment the following lines:
+    st += noise(st*2.)*t; // Animate the coordinate space
+    color = vec3(1.) * smoothstep(.18,.2,noise(st)); // Big black drops
+    color += smoothstep(.15,.2,noise(st*10.)); // Black splatter 黑色的泼溅点
+    color -= smoothstep(.35,.4,noise(st*10.)); // Holes on splatter 泼溅点上的洞
+
+    gl_FragColor = vec4(1.-color,1.0);
+}
+```
+
+第三种方法是用 noise 函数来变换一个形状。
+
+```glsl
+// Author @patriciogv - 2015
+// http://patriciogonzalezvivo.com
+
+// My own port of this processing code by @beesandbombs
+// https://dribbble.com/shots/1696376-Circle-wave
+
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+
+vec2 random2(vec2 st){
+    st = vec2( dot(st,vec2(127.1,311.7)),
+              dot(st,vec2(269.5,183.3)) );
+    return -1.0 + 2.0*fract(sin(st)*43758.5453123);
+}
+
+// Gradient Noise by Inigo Quilez - iq/2013
+// https://www.shadertoy.com/view/XdXGW8
+float noise(vec2 st) {
+    vec2 i = floor(st);
+    vec2 f = fract(st);
+
+    vec2 u = f*f*(3.0-2.0*f);
+
+    return mix( mix( dot( random2(i + vec2(0.0,0.0) ), f - vec2(0.0,0.0) ),
+                     dot( random2(i + vec2(1.0,0.0) ), f - vec2(1.0,0.0) ), u.x),
+                mix( dot( random2(i + vec2(0.0,1.0) ), f - vec2(0.0,1.0) ),
+                     dot( random2(i + vec2(1.0,1.0) ), f - vec2(1.0,1.0) ), u.x), u.y);
+}
+
+mat2 rotate2d(float _angle){
+    return mat2(cos(_angle),-sin(_angle),
+                sin(_angle),cos(_angle));
+}
+
+float shape(vec2 st, float radius) {
+	st = vec2(0.5)-st;
+    float r = length(st)*2.0;
+    float a = atan(st.y,st.x);
+    float m = abs(mod(a+u_time*2.,3.14*2.)-3.14)/3.6;
+    float f = radius;
+    m += noise(st+u_time*0.1)*.5;
+    // a *= 1.+abs(atan(u_time*0.2))*.1;
+    // a *= 1.+noise(st+u_time*0.1)*0.1;
+    f += sin(a*50.)*noise(st+u_time*.2)*.1;
+    f += (sin(a*20.)*.1*pow(m,2.));
+    return 1.-smoothstep(f,f+0.007,r);
+}
+
+float shapeBorder(vec2 st, float radius, float width) {
+    return shape(st,radius)-shape(st,radius-width);
+}
+
+void main() {
+	vec2 st = gl_FragCoord.xy/u_resolution.xy;
+	vec3 color = vec3(1.0) * shapeBorder(st,0.8,0.02);
+
+	gl_FragColor = vec4( 1.-color, 1.0 );
+}
+```
+
+给你的练习：
+
+- 你还能做出什么其他图案呢？花岗岩？大理石？岩浆？水？找三种你感兴趣的材质，用 noise 加一些算法把它们做出来。
+- 用 noise 给一个形状变形。
+- 把 noise 加到动作中会如何？
+- 用代码生成波洛克（Jackson Pollock）的画。
+
+### 11.3 Simplex Noise
+
+对于 Ken Perlin 来说他的算法所取得的成功是远远不够的。他觉得可以更好。在 2001 年的 Siggraph (Siggraph 是由美国计算机协会 计算机图形专业组 组织的计算机图形学顶级年度会议) 上，他展示了 "simplex noise"，simplex noise 比之前的算法有如下优化：
+
+- 它有着更低的计算复杂度和更少乘法计算。
+- 它可以用更少的计算量达到更高的维度。
+- 制作出的 noise 没有明显的人工痕迹。
+- 有着定义得很精巧的连续的 gradients（梯度），可以大大降低计算成本。
+- 特别易于硬件实现。
+
+他是如何优化算法的呢？我们已经知道在二维中他是如何在四个点（正方形的四个角）之间插值的。所以没错你已经猜到了，对于三维（[这里有个示例](https://thebookofshaders.com/edit.php#11/3d-noise.frag)）和四维我们需要插入 8 个和 16 个点。对吧？也就是说对于 N 维你需要插入 2 的 n 次方个点 (2^N)。但是 Ken 很聪明地意识到尽管很显然填充屏幕的形状应该是方形，在二维中最简单的形状却是等边三角形。所以他把正方形网格替换成了单纯形的等边三角形的网格。
+
+这时 N 维的形状就只需要 N + 1 个点了。也就是说在二维中少了 1 个点，三维中少了 4 个，四维中则少了 11 个！巨大的提升！
+
+在二维中插值过程和常规的 noise 差不多，通过在一组点之间插值。但是在这种情况下，改用单纯形网格，我们只需要给总共 3 个点插值。
+
+这个单纯形网格是如何制作的？这是另一个聪明绝顶而十分优雅的做法。可以先把常规的四角网格分成两个等腰三角形，然后再把三角形歪斜成等边三角形。
+
+![11.3](assets/11.3.png)
+
+然后，就像 [Stefan Gustavson 在这篇文献中说的：](http://staffwww.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf) “通过观察转换后坐标的整数部分，我们就可以快速地判断哪个包含着两个单纯形的单元含有我们所需的点。并且通过比较 x 和 y 的大小，我们就可以判断这个点是在上三角还是下三角中，并且遍历这个正确的三角形。”
+
+在下面的代码中你可以取消第44行的注释，看一看网格是如何歪斜的，然后取消第47行的注释，看一看如何建造单纯形网格。注意第22行中我们仅仅通过判断 `if x > y`（下三角）还是 `y > x`（上三角），就把歪斜过的正方形切成了两个等腰三角形。
+
+```glsl
+// Author @patriciogv - 2015 - patriciogonzalezvivo.com
+
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+
+vec2 skew (vec2 st) {
+    vec2 r = vec2(0.0);
+    r.x = 1.1547*st.x;
+    r.y = st.y+0.5*r.x;
+    return r;
+}
+
+vec3 simplexGrid (vec2 st) {
+    vec3 xyz = vec3(0.0);
+
+    vec2 p = fract(skew(st));
+    if (p.x > p.y) {
+        xyz.xy = 1.0-vec2(p.x,p.y-p.x);
+        xyz.z = p.y;
+    } else {
+        xyz.yz = 1.0-vec2(p.x-p.y,p.y);
+        xyz.x = p.x;
+    }
+
+    return fract(xyz);
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+    vec3 color = vec3(0.0);
+
+    // Scale the space to see the grid
+    st *= 10.;
+
+    // Show the 2D grid
+    color.rg = fract(st);
+
+    // Skew the 2D grid
+    // color.rg = fract(skew(st));
+
+    // Subdivide the grid into to equilateral triangles
+    // color = simplexGrid(st);
+
+    gl_FragColor = vec4(color,1.0);
+}
+```
+
+另一个 **Simplex Noise** 的优化是把三次 Hermite 函数（Cubic Hermite Curve: f(x) = 3x^2-2x^3 ，和 `smoothstep()`一样）替换成了四次 Hermite 函数（f(x) = 6x^5-15x^4+10x^3）。这就使得函数曲线两端更“平”，所以每格的边缘更加优雅地与另一个链接。也就是说格子的过渡更加连续。
+
+```glsl
+// 三次 Hermite 曲线。和 smoothstep() 一样
+y = x * x * (3.0 - 2.0 * x);
+// 四次 Hermite 曲线。
+y = x * x * x * (x * (x * 6. - 15.) + 10.);
+```
+
+注意四次 Hermite 曲线的末端发生了怎样的变化。你可以阅读 [Ken 自己的解释](https://mrl.cs.nyu.edu/~perlin/paper445.pdf)了解更多。
+
+所有这些进展汇聚成了算法中的杰作 **Simplex Noise**。下面是这个算法在 GLSL 中的应用，作者是 Ian McEwan，以[这篇论文](http://webstaff.itn.liu.se/~stegu/jgt2012/article.pdf)发表。
+
+```glsl
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+
+// Some useful functions
+vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
+
+//
+// Description : GLSL 2D simplex noise function
+//      Author : Ian McEwan, Ashima Arts
+//  Maintainer : ijm
+//     Lastmod : 20110822 (ijm)
+//     License :
+//  Copyright (C) 2011 Ashima Arts. All rights reserved.
+//  Distributed under the MIT License. See LICENSE file.
+//  https://github.com/ashima/webgl-noise
+//
+float snoise(vec2 v) {
+
+    // Precompute values for skewed triangular grid
+    const vec4 C = vec4(0.211324865405187,
+                        // (3.0-sqrt(3.0))/6.0
+                        0.366025403784439,
+                        // 0.5*(sqrt(3.0)-1.0)
+                        -0.577350269189626,
+                        // -1.0 + 2.0 * C.x
+                        0.024390243902439);
+                        // 1.0 / 41.0
+
+    // First corner (x0)
+    vec2 i  = floor(v + dot(v, C.yy));
+    vec2 x0 = v - i + dot(i, C.xx);
+
+    // Other two corners (x1, x2)
+    vec2 i1 = vec2(0.0);
+    i1 = (x0.x > x0.y)? vec2(1.0, 0.0):vec2(0.0, 1.0);
+    vec2 x1 = x0.xy + C.xx - i1;
+    vec2 x2 = x0.xy + C.zz;
+
+    // Do some permutations to avoid
+    // truncation effects in permutation
+    i = mod289(i);
+    vec3 p = permute(
+            permute( i.y + vec3(0.0, i1.y, 1.0))
+                + i.x + vec3(0.0, i1.x, 1.0 ));
+
+    vec3 m = max(0.5 - vec3(
+                        dot(x0,x0),
+                        dot(x1,x1),
+                        dot(x2,x2)
+                        ), 0.0);
+
+    m = m*m ;
+    m = m*m ;
+
+    // Gradients:
+    //  41 pts uniformly over a line, mapped onto a diamond
+    //  The ring size 17*17 = 289 is close to a multiple
+    //      of 41 (41*7 = 287)
+
+    vec3 x = 2.0 * fract(p * C.www) - 1.0;
+    vec3 h = abs(x) - 0.5;
+    vec3 ox = floor(x + 0.5);
+    vec3 a0 = x - ox;
+
+    // Normalise gradients implicitly by scaling m
+    // Approximation of: m *= inversesqrt(a0*a0 + h*h);
+    m *= 1.79284291400159 - 0.85373472095314 * (a0*a0+h*h);
+
+    // Compute final noise value at P
+    vec3 g = vec3(0.0);
+    g.x  = a0.x  * x0.x  + h.x  * x0.y;
+    g.yz = a0.yz * vec2(x1.x,x2.x) + h.yz * vec2(x1.y,x2.y);
+    return 130.0 * dot(m, g);
+}
+
+void main() {
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+    st.x *= u_resolution.x/u_resolution.y;
+
+    vec3 color = vec3(0.0);
+
+    // Scale the space in order to see the function
+    st *= 10.;
+
+    color = vec3(snoise(st)*.5+.5);
+
+    gl_FragColor = vec4(color,1.0);
+}
+```
+
+好了，技术细节就说到这里，现在你可以利用它好好自由发挥一下：
+
+- 凝神思考每个 noise 的实例的模样。设想它们是你的原材料，就像雕塑家手中的大理石。你觉得每一个带给你怎样不同的“感觉”？眯起你的眼睛释放想象力，就像你在观察云朵的形状的时候那样。你看到了什么？你想起了什么？你觉得每个 noise 生成的图像可以用来做成什么？放开胆量去做吧，用代码实现它。
+
+- 做一个 shader 来表现流体的质感。比如像[熔岩灯](https://en.wikipedia.org/wiki/Lava_lamp?oldformat=true)，墨水滴，水，等等。
+
+  ```glsl
+  // Author @patriciogv - 2015
+  // http://patriciogonzalezvivo.com
+  
+  #ifdef GL_ES
+  precision mediump float;
+  #endif
+  
+  uniform vec2 u_resolution;
+  uniform vec2 u_mouse;
+  uniform float u_time;
+  
+  vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+  vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+  vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
+  
+  float snoise(vec2 v) {
+      const vec4 C = vec4(0.211324865405187,  // (3.0-sqrt(3.0))/6.0
+                          0.366025403784439,  // 0.5*(sqrt(3.0)-1.0)
+                          -0.577350269189626,  // -1.0 + 2.0 * C.x
+                          0.024390243902439); // 1.0 / 41.0
+      vec2 i  = floor(v + dot(v, C.yy) );
+      vec2 x0 = v -   i + dot(i, C.xx);
+      vec2 i1;
+      i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+      vec4 x12 = x0.xyxy + C.xxzz;
+      x12.xy -= i1;
+      i = mod289(i); // Avoid truncation effects in permutation
+      vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 ))
+          + i.x + vec3(0.0, i1.x, 1.0 ));
+  
+      vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
+      m = m*m ;
+      m = m*m ;
+      vec3 x = 2.0 * fract(p * C.www) - 1.0;
+      vec3 h = abs(x) - 0.5;
+      vec3 ox = floor(x + 0.5);
+      vec3 a0 = x - ox;
+      m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
+      vec3 g;
+      g.x  = a0.x  * x0.x  + h.x  * x0.y;
+      g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+      return 130.0 * dot(m, g);
+  }
+  
+  void main() {
+      vec2 st = gl_FragCoord.xy/u_resolution.xy;
+      st.x *= u_resolution.x/u_resolution.y;
+      vec3 color = vec3(0.0);
+      vec2 pos = vec2(st*3.);
+  
+      float DF = 0.0;
+  
+      // Add a random position
+      float a = 0.0;
+      vec2 vel = vec2(u_time*.1);
+      DF += snoise(pos+vel)*.25+.25;
+  
+      // Add a random position
+      a = snoise(pos*vec2(cos(u_time*0.15),sin(u_time*0.1))*0.1)*3.1415;
+      vel = vec2(cos(a),sin(a));
+      DF += snoise(pos+vel)*.25+.25;
+  
+      color = vec3( smoothstep(.7,.75,fract(DF)) );
+  
+      gl_FragColor = vec4(1.0-color,1.0);
+  }
+  ```
+
+- 用 Simplex Noise 给你现在的作品添加更多的材质效果。
+
+  ```glsl
+  // Author @patriciogv ( patriciogonzalezvivo.com ) - 2015
+  
+  #ifdef GL_ES
+  precision mediump float;
+  #endif
+  
+  #define PI 3.14159265359
+  #define TWO_PI 6.28318530718
+  
+  uniform vec2 u_resolution;
+  uniform float u_time;
+  
+  float shape(vec2 st, int N){
+      st = st*2.-1.;
+      float a = atan(st.x,st.y)+PI;
+      float r = TWO_PI/float(N);
+      return cos(floor(.5+a/r)*r-a)*length(st);
+  }
+  
+  float box(vec2 st, vec2 size){
+      return shape(st*size,4);
+  }
+  
+  float hex(vec2 st, bool a, bool b, bool c, bool d, bool e, bool f){
+      st = st*vec2(2.,6.);
+  
+      vec2 fpos = fract(st);
+      vec2 ipos = floor(st);
+  
+      if (ipos.x == 1.0) fpos.x = 1.-fpos.x;
+      if (ipos.y < 1.0){
+          return a? box(fpos-vec2(0.03,0.), vec2(1.)) : box(fpos, vec2(0.84,1.));
+      } else if (ipos.y < 2.0){
+          return b? box(fpos-vec2(0.03,0.), vec2(1.)) : box(fpos, vec2(0.84,1.));
+      } else if (ipos.y < 3.0){
+          return c? box(fpos-vec2(0.03,0.), vec2(1.)) : box(fpos, vec2(0.84,1.));
+      } else if (ipos.y < 4.0){
+          return d? box(fpos-vec2(0.03,0.), vec2(1.)) : box(fpos, vec2(0.84,1.));
+      } else if (ipos.y < 5.0){
+          return e? box(fpos-vec2(0.03,0.), vec2(1.)) : box(fpos, vec2(0.84,1.));
+      } else if (ipos.y < 6.0){
+          return f? box(fpos-vec2(0.03,0.), vec2(1.)) : box(fpos, vec2(0.84,1.));
+      }
+      return 0.0;
+  }
+  
+  float hex(vec2 st, float N){
+      bool b[6];
+      float remain = floor(mod(N,64.));
+      for(int i = 0; i < 6; i++){
+          b[i] = mod(remain,2.)==1.?true:false;
+          remain = ceil(remain/2.);
+      }
+      return hex(st,b[0],b[1],b[2],b[3],b[4],b[5]);
+  }
+  
+  vec3 random3(vec3 c) {
+      float j = 4096.0*sin(dot(c,vec3(17.0, 59.4, 15.0)));
+      vec3 r;
+      r.z = fract(512.0*j);
+      j *= .125;
+      r.x = fract(512.0*j);
+      j *= .125;
+      r.y = fract(512.0*j);
+      return r-0.5;
+  }
+  
+  const float F3 =  0.3333333;
+  const float G3 =  0.1666667;
+  float snoise(vec3 p) {
+  
+      vec3 s = floor(p + dot(p, vec3(F3)));
+      vec3 x = p - s + dot(s, vec3(G3));
+  
+      vec3 e = step(vec3(0.0), x - x.yzx);
+      vec3 i1 = e*(1.0 - e.zxy);
+      vec3 i2 = 1.0 - e.zxy*(1.0 - e);
+  
+      vec3 x1 = x - i1 + G3;
+      vec3 x2 = x - i2 + 2.0*G3;
+      vec3 x3 = x - 1.0 + 3.0*G3;
+  
+      vec4 w, d;
+  
+      w.x = dot(x, x);
+      w.y = dot(x1, x1);
+      w.z = dot(x2, x2);
+      w.w = dot(x3, x3);
+  
+      w = max(0.6 - w, 0.0);
+  
+      d.x = dot(random3(s), x);
+      d.y = dot(random3(s + i1), x1);
+      d.z = dot(random3(s + i2), x2);
+      d.w = dot(random3(s + 1.0), x3);
+  
+      w *= w;
+      w *= w;
+      d *= w;
+  
+      return dot(d, vec4(52.0));
+  }
+  
+  void main(){
+  	vec2 st = gl_FragCoord.xy/u_resolution.xy;
+      st.y *= u_resolution.y/u_resolution.x;
+  
+      float t = u_time*0.5;
+  
+      float df = 1.0;
+      df = mix(hex(st,t),hex(st,t+1.),fract(t));
+      df += snoise(vec3(st*75.,t*0.1))*0.03;
+  	gl_FragColor = vec4(mix(vec3(0.),vec3(1.),step(0.7,df)),1.0);
+  }
+  ```
+
+## 12. Cellular noise (网格噪声)
+
+1996年，在原始的 Perlin Noise 发布六年后，Perlin 的 Simplex Noise 发布五年前，[Steven Worley 写了一篇名为“A Cellular Texture Basis Function”的论文](http://www.rhythmiccanvas.com/research/papers/worley.pdf)。在这篇论文里，他描述了一种现在被广泛使用的程序化纹理技术。
+
+要理解它背后的原理，我们需要从**迭代**开始思考。你可能已经知道迭代是什么意思了，对，就是使用 `for`循环。 GLSL 的 for 循环，只有一个需要注意的：我们检查循环是否继续的次数必须是一个常数 (const)。所以，没有动态循环 - 迭代的次数必须是固定的。
+
+网格噪声基于距离场，这里的距离是指到一个特征点集最近的点的距离。比如说我们要写一个 4 个特征点的距离场，我们应该做什么呢？**对每一个像素，计算它到最近的特征点的距离**。也就是说，我们需要遍历所有 4 个特征点，计算他们到当前像素点的距离，并把最近的那个距离存下来。
+
+```glsl
+float min_dist = 100.; // A variable to store the closest distance to a point
+
+min_dist = min(min_dist, distance(st, point_a));
+min_dist = min(min_dist, distance(st, point_b));
+min_dist = min(min_dist, distance(st, point_c));
+min_dist = min(min_dist, distance(st, point_d));
+```
+
+这种做法不是很优雅，但至少行得通。现在让我们用数组和 for 循环重写。
+
+```glsl
+float m_dist = 100.; // minimum distance
+for(int i = 0; i < TOTAL_POINTS; i++) {
+  float dist = distance(st, points[i]);
+  m_dist = min(m_dist, dist);
+}
+```
+
+我们用一个 for 循环遍历特征点集的数组，用一个 `min()`函数来获得最小距离。
+
+```glsl
+// Author: @patriciogv
+// Title: 4 cells DF
+
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+
+void main() {
+    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+    st.x *= u_resolution.x/u_resolution.y;
+
+    vec3 color = vec3(.0);
+
+    // Cell positions
+    vec2 point[5];
+    point[0] = vec2(0.83,0.75);
+    point[1] = vec2(0.60,0.07);
+    point[2] = vec2(0.28,0.64);
+    point[3] =  vec2(0.31,0.26);
+    point[4] = u_mouse/u_resolution;
+
+    float m_dist = 1.;  // minimum distance
+
+    // Iterate through the points positions
+    for (int i = 0; i < 5; i++) {
+        float dist = distance(st, point[i]);
+
+        // Keep the closer distance
+        m_dist = min(m_dist, dist);
+    }
+
+    // Draw the min distance (distance field)
+    color += m_dist;
+
+    // Show isolines
+    // color -= step(.7,abs(sin(50.0*m_dist)))*.3;
+
+    gl_FragColor = vec4(color,1.0);
+}
+```
+
+上面的代码中，其中一个特征点分配给了鼠标位置。把鼠标放上去玩一玩，你可以更直观地了解上面的代码是如何运行的。然后试试：
+
+- 你可以让其余的几个特征点也动起来吗？
+- 在读完关于形状的章节后，想象一些关于距离场的有意思的用法。
+- 如果你要往距离场里添加更多的特征点怎么办？如果我们想动态地添加减少特征点数怎么办？
+
+### 12.1 平铺和迭代
+
+你可能注意到 GLSL 对 for 循环和数组似乎不太友好。如前所说，循环不接受动态的迭代次数。还有，遍历很多实例会显著地降低着色器的性能。这意味着我们不能把这个方法用在很大的特征点集上。我们需要寻找另一个策略，一个能利用 GPU 并行架构优势的策略。
+
+解决这个问题的一个方法是把空间分割成网格。并不需要计算每一个像素点到每一个特征点的距离，对吧？已经知道每个像素点是在自己的线程中运行，我们可以把空间分割成网格（cells），每个网格对应一个特征点。另外，为避免网格交界区域的偏差，我们需要计算像素点到相邻网格中的特征点的距离。这就是[Steven Worley的论文](http://www.rhythmiccanvas.com/research/papers/worley.pdf)中的主要思想。最后，每个像素点只需要计算到九个特征点的距离：他所在的网格的特征点和相邻八个网格的特征点。我们已经在图案，随机和噪声这些章节介绍了如何把空间分割成网格。
+
+```glsl
+// Scale
+st *= 3.;
+
+// Tile the space
+vec2 i_st = floor(st);
+vec2 f_st = fract(st);
+```
+
+
+
+## 13. Fractional brownian motion (分形布朗运行)
+
+## 14. Fractals (分形)

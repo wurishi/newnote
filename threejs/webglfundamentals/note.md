@@ -1391,7 +1391,187 @@ function step(a, b) {
 
 # 组织和重构
 
-## 十七. WebGL 码少趣多 (未完成)
+## 十七. WebGL 码少趣多
+
+编写 WebGL 代码时，你需要将着色器对链接到程序中，然后找到输入变量的位置。这些输入变量包括属性和全局变量，找到他们的位置非常啰唆和无聊。
+
+```js
+// 初始化时
+var u_lightWorldPosLoc = gl.getUniformLocation(program, 'u_lightWorldPos');
+// 有多少 uniform 就需要写多少次 gl.getUniformLocation
+
+var a_positionLoc = gl.getAttribLocation(progame, 'a_position');
+// 有多少 attribue 就需要写多少次 gl.getAttribLocation
+
+// 初始化或绘制时需要的全局变量
+var lightWorldPos = [100, 200, 300];
+var positionBuffer = gl.createBuffer();
+var positionNumComponents = new Float32Array([0, 0, 1]);
+var diffuseTextureUnit = 0;
+// 以及其他变量值
+
+// 绘制时
+gl.useProgram(program);
+
+// 设置所有的缓冲和属性 有多少缓冲属性就要执行多少次上面三步，绑定buffer，填充数据，启用
+gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+gl.vertexAttribPointer(a_positionLoc, positionNumComponents, gl.FLOAT, false, 0, 0);
+gl.enableVertexAttribArray(a_positionLoc);
+
+// 设置使用的纹理 有多少纹理就要按 TEXTURE0, TEXTURE1 的顺序依次启用纹理并绑定
+gl.activeTexture(gl.TEXTURE0 + diffuseTextureUnit);
+gl.bindTexture(gl.TEXTURE_2D, diffuseTexture);
+
+// 设置所有的全局变量 有多少全局变量就要按数据的类型(float/vec2/vec3/vec4/mat4...)设置多少次
+gl.uniform3fv(u_lightWorldPosLoc, lightWorldPos)
+
+// 最后
+gl.drawArrays(...);
+
+```
+
+这会导致需要写很多代码。
+
+这里有很多方式简化这个过程，首先可以一次性获取 WebGL 中需要的所有属性和全局变量的位置，然后在一个方法中设置它们。我们可以传递一个 JavaScript 对象给这个方法。
+
+像这样：
+
+```js
+// 初始化时
+var uniformSetters = webglUtils.createUniformSettes(gl, program);
+var attribSetters = webglUtils.createAttributeSetters(gl, program);
+
+var attribs = {
+  a_position: { buffer: positionBuffer, numComponents: 3 },
+  // 其他 attr
+};
+
+// 初始化或绘制时需要的全局变量值
+var uniforms = {
+  u_lightWorldPos: [100, 200, 300],
+  // 其他 uniforms
+  u_diffuse: diffuseTexture,
+};
+
+// 绘制时
+gl.useProgram(program);
+
+// 设置所有的缓冲和属性
+webglUtils.setAttributes(attribSetters, attribs);
+
+// 设置需要的全局变量和纹理
+webglUtils.setUniforms(uniformSetters, uniforms);
+
+gl.drawArrays(...);
+```
+
+这样看起来就简单，清晰，代码量少一些了。
+
+如果需要你也可以使用多个 JavaScript 对象。
+
+这是使用这个辅助方法的一个例子：
+
+code1
+
+继续让代码更少一点，在之前的代码中我们用自己创建的缓冲设置 `attribs`，假设你想创建一个位置，法向量和纹理坐标的缓冲，你可能需要写这些代码：
+
+```js
+// 一个三角形
+var positions = [0, -10, 0, 10, 10, 0, -10, 10, 0];
+var texcoords = [0.5, 0, 1, 1, 0, 1];
+var normals   = [0, 0, 1, 0, 0, 1, 0, 0, 1];
+
+var positionBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, new FLoat32Array(positions), gl.STATIC_DRAW);
+
+// 同样需要创建 texcoordBuffer 和 normalBuffer
+```
+
+简化形式是这样：
+
+```js
+// 一个三角形
+var arrays = {
+   position: { numComponents: 3, data: [0, -10, 0, 10, 10, 0, -10, 10, 0], },
+   texcoord: { numComponents: 2, data: [0.5, 0, 1, 1, 0, 1],               },
+   normal:   { numComponents: 3, data: [0, 0, 1, 0, 0, 1, 0, 0, 1],        },
+};
+
+var bufferInfo = createBufferInfoFromArrays(gl, arrays);
+
+// 渲染时
+webglUtils.setBuffersAndAttributes(gl, attribSetters, bufferInfo);
+
+...
+
+// 绘制几何体
+gl.drawArrays(gl.TRIANGLES, 0, bufferInfo.numElements);
+```
+
+这是结果：
+
+code2
+
+甚至在使用索引时也可以这样做，`webglUtils.setBuffersAndAttributes`会设置所有属性并使用你提供的 `indices`设置 `ELEMENT_ARRAY_BUFFER`，所以你需要调用 `gl.drawElements`。
+
+```js
+// 索引矩形
+var arrays = {
+   position: { numComponents: 3, data: [0, 0, 0, 10, 0, 0, 0, 10, 0, 10, 10, 0], },
+   texcoord: { numComponents: 2, data: [0, 0, 0, 1, 1, 0, 1, 1],                 },
+   normal:   { numComponents: 3, data: [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1],     },
+   indices:  { numComponents: 3, data: [0, 1, 2, 1, 2, 3],                       },
+};
+
+var bufferInfo = webglUtils.createBufferInfoFromArrays(gl, arrays);
+
+// 设置所有需要的缓冲和属性
+webglUtils.setBuffersAndAttributes(gl, attribSetters, bufferInfo);
+
+...
+
+// 绘制几何体
+gl.drawElements(gl.TRIANGLES, bufferInfo.numElements, gl.UNSIGNED_SHORT, 0);
+```
+
+这是结果：
+
+code3
+
+`createBufferInfoFromArrays`方法本质上创建了类似这样的一个对象：
+
+```js
+bufferInfo = {
+  numElements: 4, // 或者其他元素的实际个数
+  indices: WebGLBuffer, // 如果没有索引这个属性就不存在
+  attribs: {
+    a_position: { buffer: WebGLBuffer, numComponents: 3 },
+    a_normal: { buffer: WebGLBuffer, numComponents: 3 },
+    a_texcoord: { buffer: WebGLBuffer, numComponents: 2 },
+  }
+}
+```
+
+然后 `webglUtils.setBuffersAndAttributes`使用通过这个对象设置所有的缓冲和属性。
+
+最后是我们假定 `position`总是有三个单位长度(x, y, z)，`texcoords`总是有 2 个单位长度，索引 3 个单位长度，法向量 3 个单位长度，然后让程序推测出单元的个数。
+
+对应版本：
+
+code4
+
+并不能确定哪个方式更好，因为推测有可能出错。例如想在纹理坐标中添加一个单位长度存储其他信息，按照 2 个单位去推测单元个数就会出错。当然，如果出错了可以像前一个例子那样声明单元个数。
+
+为什么不按照属性在着色器中的类型来确定单元的个数？因为当我们使用 `vec4`时，大多数情况下只从缓冲中提供 3 个单位长度的数据，WebGL 会自动设置 `w = 1`。所以这就意味着我们不能轻易推断出用户的真实意愿，因为他们在着色器中定义的单位长度可能和提供的长度不相符。
+
+下面是一个针对 Setters 简单的简化：
+
+code5
+
+### 我们能直接使用 setter 么？
+
+
 
 ## WebGL 绘制多个物体
 

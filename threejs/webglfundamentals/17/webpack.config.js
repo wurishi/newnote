@@ -7,8 +7,8 @@ const options = webpack({
   devtool: 'cheap-eval-source-map',
   devServer: {
     open: true,
-    port: 9000,
-    contentBase: path.join(__dirname, 'dist'),
+    port: 9009,
+    contentBase: path.join(__dirname, 'dist')
   },
   module: {
     rules: [

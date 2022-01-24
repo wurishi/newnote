@@ -202,13 +202,23 @@
 
 # 51. bwow
 
+![51](assets/51.jpg)
+
 # 52. Torus Bulb
+
+![52](assets/52.jpg)
 
 # 53. rbowsnd
 
+![53](assets/53.jpg)
+
 # 54. It's So In Vogue To Be Dead
 
+![54](assets/54.jpg)
+
 # 55. Barnsley Fern
+
+![55](assets/55.jpg)
 
 # 56. fwosh
 

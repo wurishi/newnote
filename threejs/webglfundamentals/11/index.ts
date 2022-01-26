@@ -1,6 +1,8 @@
+/// <reference path="../m4.d.ts" />
+/// <reference path="../m3.d.ts" />
 import * as webglUtils from '../webgl-utils';
-import * as m4 from '../m4';
 import { GUI } from 'dat.gui';
+import * as utils from '../utils';
 
 // 18
 const geometry = [
@@ -752,7 +754,7 @@ void main() {
   a_color.setUInt8(new Uint8Array(colorsArr), 3, true);
 
   const translation = [45, 150, 0];
-  const rotation = [m4.degToRad(40), m4.degToRad(25), m4.degToRad(325)];
+  const rotation = [m3.degToRad(40), m3.degToRad(25), m3.degToRad(325)];
   const scale = [1, 1, 1];
   // const color = [Math.random(), Math.random(), Math.random(), 1];
 
@@ -808,7 +810,7 @@ void main() {
 
     // u_color.uniform4fv(color);
 
-    let matrix = m4.projection(canvas.clientWidth, canvas.clientHeight, 400);
+    let matrix = utils.projection(canvas.clientWidth, canvas.clientHeight, 400);
     matrix = m4.translate(
       matrix,
       translation[0],

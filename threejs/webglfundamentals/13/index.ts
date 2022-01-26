@@ -1,5 +1,6 @@
+/// <reference path="../m4.d.ts" />
+/// <reference path="../m3.d.ts" />
 import * as webglUtils from '../webgl-utils';
-import * as m4 from '../m4';
 import { GUI } from 'dat.gui';
 
 const geometry = new Float32Array([
@@ -686,14 +687,14 @@ void main() {
   a_position.setFloat32(geometry, 3, false);
   a_color.setUInt8(colorArr, 3, true);
 
-  let cameraAngleRadians = m4.degToRad(0);
-  const fieldOfViewRadians = m4.degToRad(60);
+  let cameraAngleRadians = m3.degToRad(0);
+  const fieldOfViewRadians = m3.degToRad(60);
 
   drawScene();
 
   const gui = new GUI();
   gui.add({ cameraAngle: 0 }, 'cameraAngle', 0, 360).onChange((a) => {
-    cameraAngleRadians = m4.degToRad(a);
+    cameraAngleRadians = m3.degToRad(a);
     drawScene();
   });
 

@@ -1,5 +1,7 @@
+/// <reference path="../m4.d.ts" />
+/// <reference path="../m3.d.ts" />
 import * as webglUtils from '../webgl-utils';
-import * as m4 from '../m4';
+
 import { getGeometry, normalsArr } from '../data';
 import { GUI } from 'dat.gui';
 
@@ -116,11 +118,11 @@ void main() {
   a_position.setFloat32(getGeometry(), 3);
   a_normal.setFloat32(normalsArr, 3);
 
-  const fieldOfViewRadians = m4.degToRad(60);
+  const fieldOfViewRadians = m3.degToRad(60);
   let fRotationRadians = 0;
   let shininess = 150;
-  let innerLimit = m4.degToRad(10);
-  let outerLimit = m4.degToRad(20);
+  let innerLimit = m3.degToRad(10);
+  let outerLimit = m3.degToRad(20);
   const api = {
     r: 0,
     shininess: 150,
@@ -136,7 +138,7 @@ void main() {
     .add(api, 'r')
     .name('fRotationRadians')
     .onChange((r) => {
-      fRotationRadians = m4.degToRad(r);
+      fRotationRadians = m3.degToRad(r);
       drawScene();
     });
   gui.add(api, 'shininess', 0, 300).onChange((s) => {
@@ -153,14 +155,14 @@ void main() {
     .add(api, 'i', 0, 180)
     .name('innerLimit')
     .onChange((i) => {
-      innerLimit = m4.degToRad(i);
+      innerLimit = m3.degToRad(i);
       drawScene();
     });
   gui
     .add(api, 'o', 0, 180)
     .name('outerLimit')
     .onChange((o) => {
-      outerLimit = m4.degToRad(o);
+      outerLimit = m3.degToRad(o);
       drawScene();
     });
 

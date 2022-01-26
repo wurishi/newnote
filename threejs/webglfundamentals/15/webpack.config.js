@@ -1,13 +1,14 @@
 const webpack = require('webpack');
 const path = require('path');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
+const plugins = require('../webpack-plugins');
 
 const options = webpack({
   entry: './index.ts',
   devtool: 'cheap-eval-source-map',
   devServer: {
     open: true,
-    port: 9000,
+    port: 9090,
     contentBase: path.join(__dirname, 'dist'),
   },
   module: {
@@ -27,16 +28,7 @@ const options = webpack({
       context: __dirname,
       manifest: require('./dist/dll/main.manifest.json'),
     }),
-    new HTMLWebpackPlugin({
-      templateContent: `<html>
-      <head>
-      <script src="./dll/main.dll.js"></script>
-      </head>
-      <body>
-        
-      </body>
-    </html>`,
-    }), //
+    ...plugins
   ],
   output: {
     filename: 'bundle.js',

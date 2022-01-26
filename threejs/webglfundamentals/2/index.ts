@@ -1,5 +1,5 @@
+/// <reference path="../m3.d.ts" />
 import * as webglUtils from '../webgl-utils';
-import * as m3 from '../m3';
 import { GUI } from 'dat.gui';
 
 const vertex = `

@@ -1,5 +1,6 @@
+/// <reference path="../m4.d.ts" />
+/// <reference path="../m3.d.ts" />
 import * as webglUtils from '../webgl-utils';
-import * as m4 from '../m4';
 import { geometryArr, normalsArr } from './data';
 import { GUI } from 'dat.gui';
 
@@ -87,7 +88,7 @@ void main() {
   a_position.setFloat32(geometryArr, 3, false);
   a_normal.setFloat32(normalsArr, 3, false);
 
-  const fieldOfViewRadians = m4.degToRad(60);
+  const fieldOfViewRadians = m3.degToRad(60);
   let fRotationRadians = 0;
 
   drawScene();
@@ -100,7 +101,7 @@ void main() {
     .add(api, 'r', 0, 360)
     .name('fRotationRadians')
     .onChange((r) => {
-      fRotationRadians = m4.degToRad(r);
+      fRotationRadians = m3.degToRad(r);
       drawScene();
     });
 

@@ -1,7 +1,10 @@
-import * as webglUtils from '../webgl-utils';
-import * as primitives from '../primitives';
-import * as m4 from '../m4';
-import * as textureUtils from '../texture-utils';
+/// <reference path="../m4.d.ts" />
+/// <reference path="../m3.d.ts" />
+/// <reference path="../primitives.d.ts" />
+/// <reference path="../webgl-utils.d.ts" />
+/// <reference path="../texture-utils.d.ts" />
+/// <reference path="../chroma.d.ts" />
+import * as webglUtils2 from '../webgl-utils';
 
 const vs = `
 uniform mat4 u_worldViewProjection;
@@ -63,13 +66,13 @@ void main() {
 `;
 
 (() => {
-    const canvas = webglUtils.createCanvas();
+    const canvas = webglUtils2.createCanvas();
     const gl = canvas.getContext('webgl');
     if (!gl) return;
 
     const buffers = primitives.createSphereBuffers(gl, 10, 48, 24);
 
-    const program = webglUtils.createProgram2(gl, vs, fs);
+    const program = webglUtils2.createProgram2(gl, vs, fs);
     const uniformSetters = webglUtils.createUniformSetters(gl, program);
     const attribSetters = webglUtils.createAttributeSetters(gl, program);
 
@@ -113,14 +116,8 @@ void main() {
 
     const textures = [
         textureUtils.makeStripeTexture(gl, { color1: '#fff', color2: '#ccc' }),
-        textureUtils.makeStripeTexture(gl, {
-            color1: '#fff',
-            color2: '#ff0000',
-        }),
-        textureUtils.makeStripeTexture(gl, {
-            color1: '#fff',
-            color2: '#0000ff',
-        }),
+        textureUtils.makeCheckerTexture(gl, { color1: '#FFF', color2: '#CCC' }),
+        textureUtils.makeCircleTexture(gl, { color1: '#FFF', color2: '#CCC' }),
     ];
 
     const objects: any[] = [];
@@ -133,7 +130,9 @@ void main() {
             xRotation: rand(Math.PI * 2),
             yRotation: rand(Math.PI),
             materialUniforms: {
-                // u_colorMult:
+                u_colorMult: chroma
+                    .hsv(rand(baseColor, baseColor + 120), 0.5, 1)
+                    .gl(),
                 u_diffuse: textures[randInt(textures.length)],
                 u_specular: [1, 1, 1, 1],
                 u_shininess: rand(500),

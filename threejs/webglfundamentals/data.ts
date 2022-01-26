@@ -1,4 +1,4 @@
-import * as m4 from './m4';
+/// <reference path="m4.d.ts" />
 
 const arr = [
   // left column front

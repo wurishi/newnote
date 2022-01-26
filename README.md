@@ -50,6 +50,10 @@
 
 思路: 类似 echarts example 网站，用一套可视化 UI 代替代码实现编辑功能，并最终提供一个代码输出的功能。ECS / dat.gui (进行中)
 
+# ecsts
+
+基于 ecs cli (coffee-script) 的 js cli (see lib/jscli)
+
 # electron
 
 electron
@@ -94,7 +98,7 @@ leetcode
 
 # mocha
 
-参考资料: [mochajs.cn](https://mochajs.cn/) **(完成)**
+参考资料: [mochajs.cn](https://mochajs.cn/)
 
 # nginx
 
@@ -172,7 +176,7 @@ Rust
 
 # thebookofshaders
 
-参考资料: [The Book of Shaders](https://thebookofshaders.com/) (进行中)
+参考资料: [The Book of Shaders](https://thebookofshaders.com/) (进行中, 原书资源暂时到15章，且并不完整20220126)
 
 # thinkinfp
 
@@ -209,6 +213,8 @@ U3D JobSystem
 # unityecs
 
 参考资料: [Unity3D Entity Component System 入门学习](https://blog.csdn.net/u012632851/category_7034956.html) **(完成)**
+
+# unityshaderstudy
 
 # vertexshader
 

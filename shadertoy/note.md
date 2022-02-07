@@ -4680,9 +4680,37 @@ ltB3zt
 
 NlsXDH
 
+# 776. a basic checkerboard
 
+ssjcRD
 
+# 777. Rainbow layers
 
+Nd2cRd
+
+# 778. basic shapes v1
+
+fsjczw
+
+# 779. odos| voronoi boxes
+
+NsScDV
+
+# 780. CATS with basic shapes
+
+7d2yRD
+
+# 781. odos | spiral
+
+sd2cRd
+
+# 782. odos|psrdnoise warping
+
+sdSyWK
+
+# 783. odos|toon fire
+
+NdjyWV
 
 
 

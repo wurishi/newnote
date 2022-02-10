@@ -164,6 +164,8 @@ Rust
 
 参考网站: [shadertoy](https://www.shadertoy.com/) (*进行中*)
 
+https://shadertoyunofficial.wordpress.com/
+
 # svg
 
 参考网站: [腾讯云社区](https://cloud.tencent.com/developer/section/1423860)

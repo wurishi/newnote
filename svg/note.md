@@ -297,7 +297,67 @@ Web 开发中有一个很有用的工具：`display:none`。在 SVG 上依然可
 
 所有 SVG 元素的初始 `display`值都是 `inline`。
 
+## 1.4 Fills and Strokes (填充和描边)
 
+现在你可以用你掌握的知识来绘制任何图形了，下一个目标是给它们着色，包括指定对象的属性，使用内联 CSS 样式，或者内嵌的 CSS 样式，或者使用外部的 CSS 样式文件。大多数的 web 网站的 SVG 使用的是内联样式 CSS，对于这些方法都有优缺点。
+
+### Fill 和 Stroke 属性
+
+#### 上色
+
+大多数基本的涂色可以通过在元素上设置两个属性来搞定：`fill`和 `stroke`属性。`fill`属性设置对象内部的颜色，`stroke`属性设置绘制对象的线条的颜色。你可以使用在 HTML 中的 CSS 颜色命名方案定义它们的颜色，比如说颜色名（像red这种），rgb值（像rgb(255,0,0)这样），十六进制值（#FF0000），rgba值（rgba(255,0,0,1)），等等。
+
+```svg
+<rect x="10" y="10" width="100" height="100" stroke="blue" fill="purple" fill-opacity="0.5" stroke-opacity="0.8" />
+```
+
+此外，在 SVG 中你可以分别定义填充色和边框色的不透明度，属性 `fill-opacity`控制填充色的不透明度，属性 `stroke-opacity`控制描边的不透明度。
+
+> 注意：FireFox 3+ 支持 rgba 值，并且能够提供同样的效果。但是为了在其他浏览器中保持兼容，最好将它和填充/描边的不透明度分开使用。如果同时指定了rgba值和填充/描边不透明度，它们将都被调用。(即，`<rect fill="rgba(255,0,0,0.5)" fill-opacity="0.3" />`表示填充色透明度为0.5 * 0.3 = 0.15)
+
+#### 描边
+
+除了颜色属性，还有其他一些属性来控制绘制描边的方式。
+
+```svg
+<svg width="160" height="140" xmlns="http://www.w3.org/2000/svg" version="1.1">
+  <line x1="40" x2="120" y1="20" y2="20" stroke="black" stroke-width="20" stroke-linecap="butt"/>
+  <line x1="40" x2="120" y1="60" y2="60" stroke="black" stroke-width="20" stroke-linecap="square"/>
+  <line x1="40" x2="120" y1="100" y2="100" stroke="black" stroke-width="20" stroke-linecap="round"/>
+</svg>
+```
+
+`stroke-width`属性定义了描边的宽度。注意，描边是以路径为中心线绘制的，路径的每一侧都有均匀分布的描边。
+
+第二个影响描边的属性是 `stroke-linecap`属性，它控制边框终点的形状。
+
+`stroke-linecap`属性的值有三种可能值：
+
+- `butt`：用直边结束线段，它是常规做法，线段边界90度垂直于描边的方向，贯穿它的终点。
+- `square`：效果差不多，但是会稍微超出实际路径的范围，超出的大小由 `stroke-width`控制。
+- `round`：表示边框的终点是圆角，圆色的半径也是由 `stroke-width`控制的。
+
+还有一个 `stroke-linejoin`属性，用来控制两条描边线段之间，用什么方式连接。
+
+```svg
+<polyline points="40 60 80 20 120 60" stroke="black" stroke-width="20"
+          stroke-linecap="butt" fill="none" stroke-linejoin="miter"/>
+<polyline points="40 140 80 100 120 140" stroke="black" stroke-width="20"
+          stroke-linecap="round" fill="none" stroke-linejoin="round"/>
+<polyline points="40 220 80 180 120 220" stroke="black" stroke-width="20"
+          stroke-linecap="square" fill="none" stroke-linejoin="bevel"/>
+```
+
+每条折线都是由两个线段连接起来的，连接处的样式由 `stroke-linejoin`属性控制，它有三个可用的值，`miter`是默认值，表示用方形画笔在连接处形成尖角，`round`表示用圆角连接，实现平滑效果。最后还有一个值 `bevel`，连接处会形成一个斜接。
+
+最后，你可以通过指定 `stroke-dasharray`属性，将虚线类型应用在描边上。
+
+```svg
+<path d="M 10 75 Q 50 10 100 75 T 190 75" stroke="black"
+      stroke-linecap="round" stroke-dasharray="5,10,5" fill="none"/>
+<path d="M 10 75 L 190 75" stroke="red"
+      stroke-linecap="round" stroke-width="1" stroke-dasharray="5,5" fill="none"/>
+```
 
 
 

@@ -1,0 +1,48 @@
+<script lang="ts" setup>
+import { ref } from 'vue'
+const scale = ref(240)
+</script>
+
+<template>
+    <div></div>
+    <input type="range" min="0" max="500" v-model="scale" />
+    <span>{{ scale }}</span>
+    <svg>
+        <defs>
+            <filter id="filter">
+                <feTurbulence type="fractalNoise" baseFrequency=".01" numOctaves="10" />
+                <feDisplacementMap in="SourceGraphic" :scale="scale" />
+            </filter>
+        </defs>
+    </svg>
+</template>
+
+<style scoped>
+div {
+    width: 1px;
+    height: 1px;
+    filter: url(#filter);
+
+    box-shadow: rgb(240 255 243) 80vw 11vh 34vmin 16vmin,
+        rgb(17 203 215) 33vw 71vh 23vmin 1vmin,
+        rgb(250 70 89) 4vw 85vh 21vmin 9vmin,
+        rgb(198 241 231) 8vw 4vh 22vmin 12vmin,
+        rgb(198 241 231) 89vw 11vh 31vmin 19vmin,
+        rgb(240 255 243) 5vw 22vh 38vmin 19vmin,
+        rgb(250 70 89) 97vw 35vh 33vmin 16vmin,
+        rgb(250 70 89) 51vw 8vh 35vmin 14vmin,
+        rgb(17 203 215) 75vw 57vh 40vmin 4vmin,
+        rgb(250 70 89) 28vw 18vh 31vmin 11vmin,
+        rgb(250 70 89) 8vw 89vh 31vmin 2vmin,
+        rgb(17 203 215) 13vw 8vh 26vmin 19vmin,
+        rgb(240 255 243) 98vw 12vh 35vmin 5vmin,
+        rgb(17 203 215) 35vw 29vh 27vmin 18vmin,
+        rgb(17 203 215) 67vw 58vh 22vmin 15vmin,
+        rgb(198 241 231) 67vw 24vh 25vmin 7vmin,
+        rgb(17 203 215) 76vw 52vh 22vmin 7vmin,
+        rgb(250 70 89) 46vw 86vh 26vmin 20vmin,
+        rgb(240 255 243) 50vw 20vh 25vmin 1vmin,
+        rgb(250 70 89) 74vw 14vh 25vmin 16vmin,
+        rgb(240 255 243) 31vw 100vh 29vmin 20vmin;
+}
+</style>

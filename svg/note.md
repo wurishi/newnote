@@ -741,9 +741,205 @@ Demo 1.5.12
 
 紧接着，通过 `feTurbulence`产生分形噪声图形，使用 `feDisplacementMap`进行映射置换，最后给图形叠加上这个滤镜效果。
 
+## 1.6 Getting Started (入门)
 
+一个简单的 svg 例子：
 
+```html
+<svg
+     version="1.1"
+     baseProfile="full"
+     width="300"
+     height="200"
+     xmlns="http://www.w3.org/2000/svg"
+     >
+  <rect width="100%" height="100%" fill="red" />
+  <circle cx="150" cy="100" r="80" fill="green" />
+  <text x="150" y="125" font-size="60" text-anchor="middle" fill="white">SVG</text>
+</svg>
+```
 
+整个 SVG 的渲染过程涉及以下内容：
 
+1. 从 `svg`根元素开始：
+   - 为其他类型的验证标识 SVG 的版本，应始终使用 `version`和 `baseProfile`属性。
+   - 作为 XML 方言，SVG 必须始终在正确的绑定名称空间（`xmlns`属性）。
+2. 通过绘制 `rect`覆盖整个图像区域的矩形将背景设置为红色。
+3. `circle`在红色矩形的中心处绘制一个半径为80像素的绿色圆圈。
+4. 文本“SVG”被绘制。每个字母的内部都用白色填充。通过将锚点设置在我们想要的中点位置来定位文本。在上面的例子中，将中点指定为绿色圆圈的中心位置，按字体大小对垂直位置进行了微调。
 
+### SVG 文件的基本属性
 
+- 首先要注意的是元素渲染的顺序。SVG 文件的全局有效规则是，后面的元素在之前的元素上面被渲染。元素越后面越可见。
+- 网络上的 SVG 文件可以直接在浏览器中显示或通过多种方法嵌入到 HTML 文件中：
+  - 如果 HTML 是 XHTML 并按类型提供 `application/xhtml+xml`，则 SVG 可以直接嵌入到 XML 源中。
+  - 如果 HTML 是 HTML5，并且浏览器是符合 HTML5 的浏览器，则 SVG 也可以直接嵌入。但是，可能会出现符合 HTML5 规范的语法更改。
+  - SVG 文件可以用一个 `object`元素引用：`<object data="image.svg" type="image/svg+xml" />`
+  - `<iframe src="image.svg"></iframe>`
+  - 理论上也可以使用 `img`元素引用 SVG ，不过在 FireFox 4.0 之前不可用。
+  - 最后，也可以使用 JavaScript 动态创建 SVG 并将其插入到 HTML DOM 树中。一般通过这种方法为那些无法处理 SVG 的浏览器提供替代方案。
+
+### SVG 文件类型
+
+SVG 文件有两种风格。普通的 SVG 文件是包含 SVG 标记的简单文本文件。这些文件的推荐文件扩展名是“.svg“（全部小写）。
+
+由于 SVG 文件在用于某些应用程序（如地理应用程序）时文件大小可能会非常大。因此 SVG 规范还允许使用 gzip 压缩的 SVG 文件。这些文件的推荐文件扩展名是“.svgz“（全部小写）。不幸的是，由于 Firefox 无法从本地计算机加 gzip 压缩的 SVG，所以应避免使用 gzip 压缩的 SVG，除非发布到网络服务器，参考下一节。
+
+### Webservers
+
+对于普通的 SVG 文件，服务器应该发送的 HTTP 头文件为：
+
+```
+Content-Type: image/svg+xml
+Vary: Accept-Encoding
+```
+
+对于 gzip 压缩的 SVG 文件，服务器应该发送的 HTTP 头文件为：
+
+```
+Content-Type: image/svg+xml
+Content-Encoding: gzip
+Vary: Accept-Encoding
+```
+
+## 1.7 Gradients (渐变 - 线性)
+
+SVG 中并非只能简单填充颜色和描边，还可以创建并在填充和描边上应用渐变色。
+
+有两种类型的渐变：线性渐变和径向渐变。你**必须**给渐变内容指定一个 `id`属性，否则文档内的其他元素就不能引用它。为了让渐变能被重复使用，渐变内容需要定义在 `<defs>`标签内容，而不是定义在形状上。
+
+### 线性渐变
+
+线性渐变沿着直线改变颜色，要插入一个线性渐变你需要在 SVG 的 `defs`元素内，创建一个 `<linearGradient>`节点。
+
+```svg
+<svg width="120" height="240">
+  <defs>
+    <linearGradient id="Gradient1">
+      <stop class="stop1" offset="0%" />
+      <stop class="stop2" offset="50%" />
+      <stop class="stop3" offset="100%" />
+    </linearGradient>
+    <linearGradient id="Gradient2" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="red" />
+      <stop offset="50%" stop-color="black" stop-opacity="0" />
+      <stop offset="100%" stop-color="blue" />
+    </linearGradient>
+  </defs>
+
+  <rect id="rect1" x="10" y="10" rx="15" ry="15" width="100" height="100" />
+  <rect x="10" y="120" rx="15" ry="15" width="100" height="100" fill="url(#Gradient2)" />
+</svg>
+```
+
+```css
+#rect1 {
+  fill: url(#Gradient1);
+}
+.stop1 {
+  stop-color: red;
+}
+.stop2 {
+  stop-color: black;
+  stop-opacity: 0;
+}
+.stop3 {
+  stop-color: blue;
+}
+```
+
+以上是一个应用了线性渐变的 `<rect>`元素的示例。线性渐变内部有几个 `<stop>`结点，这些结点通过指定位置的 `offset`（偏移）属性和 `stop-color`（颜色中值）属性来说明在渐变的特定位置上应该是什么颜色。可以直接指定这两个属性值，也可以通过 CSS 来指定他们的值。在该示例中指明了渐变开始颜色为红色，到中间位置时变成半透明的黑色，最后变成蓝色。你可以根据需求插入很多中间颜色，但是偏移量应该始终从 0% 开始（或者0也可以），到 100%（或1）结束。如果 `stop`设置的 offset 有重合，将使用 XML 树中较晚设置的值。而且类似填充和描边，你也可以指定 `stop-opacity`来设置某个位置的不透明度。
+
+使用渐变时，需要在一个对象的 `fill`或 `stroke`属性中引用它，这跟在 CSS 中使用 `url`引用元素的方法一样。在本例中，我们已经给一个渐变指定了一个 ID - "Gradient1"。想要引用它，只需要将属性 `fill`设置为 `url(#Gradient1)`即可，也可以用同样的方式来处理 `stroke`。
+
+`<linearGradient>`元素还需要一些其他的属性值，它们指定了渐变的大小和出现范围。渐变的方向可以通过两个点来控制，它们分别是属性 `x1, x2, y1, y2`，这些属性定义了渐变路线走向。渐变色默认是水平方向，但是通过修改这些属性，就可以旋转该方向，如 Gradient2 就创建了一个垂直渐变：
+
+```svg
+<linearGradient id="Gradient2" x1="0" x2="0" y1="0" y2="1" />
+```
+
+注意：你也可以在渐变上使用 `xlink:href`属性，如果使用了该属性，一个渐变的属性和颜色中值可以被另一个渐变包含引用。如下，可以让 Gradient2 不再需要重新创建与 Gradient1 相同的颜色中值了。
+
+```svg
+<linearGradient id="Gradient1">
+	<stop id="stop1" offset="0%" />
+  <stop id="stop2" offset="50%" />
+  <stop id="stop3" offset="100%" />
+</linearGradient>
+<linearGradient id="Gradient2" x1="0" x2="0" y1="0" y2="1" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#Gradient1" />
+```
+
+### 径向渐变
+
+径向渐变与线性渐变相似，只是它是从一个点开始发散绘制渐变。创建径向渐变需要在文档的 `defs`中添加一个 `radialGradient`元素。
+
+```html
+<svg width="120" height="240">
+  <defs>
+    <radialGradient id="RadialGradient1">
+      <stop offset="0" stop-color="red" />
+      <stop offset="100%" stop-color="blue" />
+    </radialGradient>
+    <radialGradient id="RadialGradient2" cx="0.25" cy="0.25" r="0.25" xlink:href="#RadialGradient1" />
+  </defs>
+
+  <rect x="10" y="10" rx="15" ry="15" width="100" height="100" fill="url(#RadialGradient1)" />
+  <rect x="10" y="120" rx="15" ry="15" width="100" height="100" fill="url(#RadialGradient2)" />
+</svg>
+```
+
+`stop`的使用方法与之前一致，`<radialGradient>`元素有多个属性来描述其位置和方向，但它更加复杂，本质上径向渐变也是通过两个点来定义其边缘位置的。
+
+第一点定义了渐变结束所围绕的圆环，它需要一个中心点，由 `cx, cy`属性及半径 `r`来定义。通过设置这些点可以移动渐变范围并改变它的大小。
+
+第二个点被称为焦点，由 `fx, fy`属性定义，它用来描述渐变的中心位置。
+
+### 中心和焦点
+
+Demo 1.7.2
+
+如果焦点被移动到圆圈的外面，渐变将不能正确呈现，所以该点会被假定在圆圈范围内。如果没有给出焦点，将认为该点与中心点的位置一致。
+
+### spreadMethod
+
+`spreadMethod`属性用来控制当前渐变到达终点的行为，这个属性可以有三个值：`pad, reflect, repeat`。`pad`就是默认效果，即当渐变到达终点时，最终的偏移颜色被用于填充对象剩下的空间。`reflect`会让渐变一直持续下去，不过它的效果是与渐变本身相反的。`repeat`也会让渐变继续，但是它不会像 `reflect`那样反向渐变，而是跳回到最初的颜色然后继续渐变。
+
+Demo 1.7.3
+
+### gradientUnits
+
+两种渐变都有一个叫做 `gradientUnits`（渐变单元）的属性，它描述了渐变的大小和方向的单元系统。该属性有两个值：`userSpaceOnUse, objectBoundingBox`。
+
+默认值为 `objectBoundingBox`，它大体上定义了对象的渐变大小范围，只需要指定 0 到 1 的坐标值，渐变就会自动的缩放到对象相同大小。
+
+`userSpaceOnUse`则使用绝对单元，此时你必须知道对象的具体位置，并将渐变放在同样的地位置上才行，所以 `rdialGradient`需要改成如下形式：
+
+```svg
+<radialGradient id="Gradient1" cx="60" cy="60" r="50" fx="35" fy="35" gradientUnits="userSpaceOnUse">
+```
+
+## 1.8 Other content in SVG (SVG 中的其他内容)
+
+除了图形原件，如矩形和圆形之外，SVG 还提供了一些元素用来在图片中嵌入别的类型的内容。
+
+### 嵌入光栅图像
+
+很像在 HTML 中的 `img` 元素，SVG 有一个 `image`元素，用于同样的目的。你可以利用它嵌入任意光栅（以及矢量）图像。它的规格要求应用至少支持PNG，JPG和SVG格式文件。
+
+嵌入的图像变成了一个普通的 SVG 元素。这意味着你可以在其内容上进行剪切，遮罩，滤镜，旋转以及其他 SVG 工具。
+
+```svg
+<svg width="200" height="200">
+  <image x="90" y="-65" width="128" height="100" transform="rotate(45)" xlink:href="/image1.jpg"/>
+</svg>
+```
+
+### 嵌入任意 XML
+
+因为 SVG 是一个 XML，所以你总是可以在 SVG 文档的任何位置嵌入任意的 XML。在 SVG 中添加了 `<foreignObject>`元素。它的唯一目的是作为其他标记的容器和 SVG 样式属性的载体（可以使用 `width`和 `height`来定义该元素占用的空间）。
+
+如果你有很长的文本，使用 HTML 布局比 SVG 的 `text`元素更适合时，就可以使用 `foreignObject`元素将 XHTML 内容嵌入到 SVG 中。
+
+另外使用 MathML 写的方程式也是一个经常被引用的例子。
+
+最后，因为 `foreignObject`是一个 SVG 元素，所以它也可以像图像那样，可以将 SVG 的所有工具都应用到上面。

@@ -222,9 +222,27 @@
 
 # 56. fwosh
 
+![56](assets/56.jpg)
+
 # 57. notmizu
 
+![57](assets/57.jpg)
+
 # 58. SphereDistribution
+
+![58](assets/58.jpg)
+
+# 59. smutz
+
+![59](assets/59.jpg)
+
+# 60. terrain
+
+![60](assets/60.jpg)
+
+# 61. spagbal
+
+![61](assets/61.jpg)
 
 
 

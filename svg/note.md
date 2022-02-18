@@ -1100,7 +1100,7 @@ Patterns （图案）可能是 SVG 中最让人混淆的填充类型之一了，
     </linearGradient>
     <pattern id="Pattern" x="0" y="0" width=".25" height=".25">
       <rect x="0" y="0" width="50" height="50" fill="skyblue" />
-      <rect x="0" y="0" width="25" height="25" fill="url(#Gradient2" />
+      <rect x="0" y="0" width="25" height="25" fill="url(#Gradient2)" />
       <circle cx="25" cy="25" r="20" fill="url(#Gradient1)" fill-opacity="0.5" />
     </pattern>
   </defs>

@@ -1261,3 +1261,64 @@ P'(x,y) ← P(x + scale * (XC(x,y) - 0.5), y + scale * (YC(x,y) - 0.5))
 
 - `scale`就是公式中的缩放比例，可正可负，默认值为 0 。
 
+例子 2.1.1
+
+假设 Map 映射图片是下面这张图：
+
+![2.1.1](assets/2.1.1.png)
+
+即左边一半颜色是 RGB(255, 127, 127)，也就是 R 通道值为 1，G 和 B 通道值为 0.5，右半边则完全透明。
+
+```svg
+<svg>
+  <defs>
+    <filter id="filter-ripple">
+      <feImage xlink:href="/map.png" x="0" y="0" width="256" height="256" result="ripple" />
+      <feDisplacementMap xChannelSelector="R" yChannelSelector="G" color-interpolation-filters="sRGB" :scale="scale" in="SourceGraphic" in2="ripple" />
+      <feComposite operator="in" in2="ripple" />
+    </filter>
+  </defs>
+</svg>
+<svg width="256" height="192" style="outline:1px dotted;">
+  <image xlink:href="/mm1.jpg" width="256" height="192" filter="url(#filter-ripple)" />
+</svg>
+```
+
+因为 `xChannelSelector="R" yChannelSelector="G"`，水平方向基于 R 颜色通道进行位移，垂直方向基于 “G” 颜色通道进行位移。
+
+由于 RGB(255, 127, 127)颜色的 R 值为 1，G 值为 0.5，所以 `XC(x, y) = 1`，`YC(x, y) = 0.5`，套用公式可以得到最终坐标为：`P(x + scale * 0.5, y + 0)`，于是随着 `scale`变化，图片将会在水平方向上发生移动。
+
+例子 2.1.2
+
+白色 RGB 值为最大的 255 ，黑色 RGB 值为最小的 0 。也就是说对于黑白图片而言，颜色越深，对应的图片区域越往右下方移动，颜色越浅，对应的图片区域越往左上方移动。
+
+当 `feImage`图片颜色为 50 度灰，即 RGB(127, 127, 127) 时(16 进制值为 `#f7f7f7`)，图片是纹丝不动的。
+
+另外，最终效果还与 `feImage`的尺寸和位置有关，因为如果 `feImage`的尺寸远远大于原图，那么对应的像素值是会发生位移的。所以通常 `feImage`的尺寸和被应用的图形元素尺寸是一致的。
+
+## 2.2 水波特效的实现
+
+实现水波特效的难点不在于滤镜，而在于 `feImage`图片。
+
+如果对最终的特效要求不是很高，可以直接使用 SVG 绘制一个嵌套的环形渐变：
+
+例子 2.2.1
+
+通过改变 `scale`值，即可实现水波效果。（Safari 下有效，Chrome 下无效）
+
+业界真正用来实现水波效果的 map 图一般都是：
+
+中间区域使用五十度灰，红色色带锥形交错，中间是黑色带。`x, y`轴采用红色和绿色通道来映射，最终形成的水波效果就非常接近自然世界中的水波涟漪。
+
+但是如果使用 PNG 图片来绘制这张图片会有一个问题，那就是尺寸太大，一张 512*512 规格的 PNG 图片大小约为 212K，这样一来为了这个特效加载这张大图资源就显得性价比非常低了。另外由于这张图片色彩非常丰富，一般也无法进行常规压缩，所以要大规模应用的话，一般会使用 JavaScript 代码在 `canvas`上绘制这张经典的水波映射图，然后转换成 base64 内容，并赋予 `feImage`元素的 `xlink:href`属性。
+
+绘制大致分为三步：
+
+1. 50 度灰色背景。
+2. 红绿相间锥形渐变。
+3. 交错的暗色条纹。
+
+例子 2.2.2
+
+## 2.3 其他效果
+

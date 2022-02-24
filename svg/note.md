@@ -1,6 +1,6 @@
-[link](https://cloud.tencent.com/developer/section/1423865)
-
 # 1. 教程 (Tutorial)
+
+[link](https://cloud.tencent.com/developer/section/1423865)
 
 ## 1.1 Basic Shapes (基本形状)
 
@@ -1321,4 +1321,297 @@ P'(x,y) ← P(x + scale * (XC(x,y) - 0.5), y + scale * (YC(x,y) - 0.5))
 例子 2.2.2
 
 ## 2.3 其他效果
+
+例子 2.2.3
+
+# 3. 其他 (Miscellaneous)
+
+[link](https://cloud.tencent.com/developer/section/1423865)
+
+## 3.1 Applying SVG effects to HTML content
+
+现代浏览器支持在 CSS 样式中使用 SVG 来对 HTML 内容应用图像效果。
+
+你可以在同一文件中使用 SVG 样式，也可以通过外部样式表引入。有三个属性可以使用：`mask`，`clip-path`和 `filter`。
+
+> 注意：外部文件引入的 SVG 必须与原始文件同源。
+
+### 使用内嵌 SVG
+
+要想在 CSS 样式中应用 SVG 效果，首先需要创建一个引用 SVG 的 CSS 样式。
+
+```css
+<style>p { mask: url(#my-mask); }</style>
+```
+
+在上面的例子中，所有段落都会被 ID 为 my-mask 的 SVG 遮罩。
+
+例子 3.1.1: Masking
+
+```css
+.target {
+  mask: url(#mask-1);
+  /* 大部分浏览器对于 CSS 中的 mask 支持不好 */
+  -webkit-mask: url(#mask-1);
+  /* -webkit-mask 的效果更类似于 clip-path */
+}
+```
+
+例子 3.1.2: Clipping
+
+```css
+.target {
+  clip-path: url(#clipping-path-1);
+  /* 大部分浏览器仅支持内嵌 SVG 的 clip-path */
+}
+```
+
+例子 3.1.3: Filtering
+
+例子 3.1.4 Blurred Text
+
+基于 Webkit 的浏览器有一个名为 `blur`的 CSS 过滤器。使用 SVG 也可以达到相同的效果。
+
+注意模糊效果计算较繁重，在页面滚动或动画元素中要谨慎使用。
+
+### 使用外部文件
+
+用于clip, mask 和 filter 的 SVG 可以从外部源加载，只要该源来自与其应用的 HTML 文档来源相同。
+
+```css
+.target {
+  clip-path: url(resources.svg#c1);
+  /* 大部分浏览器不支持 */
+}
+```
+
+## 3.2 SVG animation with SMIL
+
+Chrome 45 弃用了 SMIL，建议使用 CSS 动画以及 Web 动画。
+
+Gecko 2.0 (Firefox 4 / Thunderbird 3.3 / SeaMonkey 2.1) 使用 [Synchronized Multimedia Integration Language](https://www.w3.org/TR/REC-smil/) (SMIL) 引入了对动画 SVG 的支持。SMIL 允许你：
+
+- 变动一个元素的数字属性（x, y .....）
+- 变动变形属性（translation 或 rotation）
+- 变动颜色属性
+- 物体方向与运动路径方向同步
+
+### 一个元素的动画属性
+
+下面的示例变动了一个圆的 `cx`属性。只需要在 `<circle>`元素里面添加一个 `<animate>`元素。对 `<animate>`元素来说有以下几个比较重要的属性：
+
+- `attributeName`: 变动的属性的属性名。
+- `from`: 变动的初始值。
+- `to`: 变动的终值。
+- `dur`: 动画的持续时间。（"5s"表示 5秒）
+
+如果想要对同一个元素变动更多的属性，只需要添加更多的 `<animate>`元素。
+
+```svg
+<svg width="300" height="100">
+  <rect x="0" y="0" width="300" height="100" stroke="black" stroke-width="1" />
+  <circle cx="0" cy="50" r="15" fill="blue" stroke="black" stroke-width="1">
+    <animate attributeName="cx" from="0" to="100" dur="5s" repeatCount="indefinite" />
+  </circle>
+</svg>
+```
+
+### 让变形属性变化
+
+`<animateTransform>`元素用于变动 `transform`属性。
+
+```svg
+<rect x="0" y="50" width="15" height="34" fill="blue" stroke="black" stroke-width="1">
+  <animateTransform
+                    attributeName="transform"
+                    begin="0s"
+                    dur="20s"
+                    type="rotate"
+                    from="0 60 60"
+                    to="360 100 60"
+                    repeatCount="indefinite"
+                    />
+</rect>
+```
+
+### 沿着路径动画
+
+`<animateMotion>`元素使一个元素的位置动起来，并顺着路径同步旋转。定义这个路径是与在 `<path>`元素中定义路径的方法相同。
+
+示例 3.2.3: 线性运动
+
+示例 3.2.4: 曲线运动
+
+## 3.3 SVG as an Image
+
+SVG 图像可以作为一种图片格式用在很多环境中。很多浏览器支持在下列环境中应用 SVG 图像：
+
+- HTML ：`<img>`元素或 `<svg>`元素。
+- CSS ：`background-image`属性。
+
+### Gecko 专有环境
+
+在 Gecko 2.0 (Firefox 4 / Thunderbird 3.3 / SeaMonkey 2.1)引入了在以下环境中支持使用 SVG ：
+
+- CSS：`list-style-image`属性。
+- SVG：`<image>`和 `<feImage>`元素。
+- Canvas：`drawImage`函数。
+
+### 局限
+
+如果 SVG 作为一个图像，出于安全目的，Gecko 在 SVG 环境上作了一些限制：
+
+- 禁用了 JavaScript。
+- 外部源（比如说：图像，样式表）不能载入，但是行内源可以。
+- 链接的 `:visited`伪类不能呈现。
+- 禁用了平台原生的小部件样式（基于操作系统主题）。
+
+注意上面的限制是针对图像环境专有的。直接看到的 SVG，或者嵌入 HTML 的 `<iframe>`元素，`<object>`元素和 `<embed>`元素中的 SVG 不受这些限制。
+
+# 4. 不规则边框的生成方案
+
+[参考链接](https://github.com/chokcoco/iCSS/issues/106)
+
+## 4.1 需求背景，给不规则图形添加边框
+
+在日常开发中，时常会遇到一些非矩形，非圆形的图案，如：
+
+![4.1](assets/4.1.png)
+
+使用纯 CSS，搭配一些技巧，是可以制作出上面的图形的，但这只是需求的第一步。
+
+紧接着，可能会有要给上述图形添加边框的需求。
+
+## 4.2 使用 `drop-shadow`添加边框
+
+示例 4.2:
+
+通过给元素添加一个 `drop-shadow`，可以实现给不规则图形添加一个阴影：
+
+```css
+.arrow-button {
+  filter: drop-shadow(0 0 2px #000);
+}
+```
+
+## 4.3 `drop-shadow`方案的局限性
+
+使用 `drop-shadow`方案的局限性在于，它只能对不规则图形生成阴影，但无法生成不带模糊的边框效果。
+
+## 4.4 使用 SVG `feMorphology`滤镜添加边框
+
+换个思路，其实只需要复制一个原图形，并将其稍微放大一点点并改变颜色。然后两个图形叠加在一起，就能够生成一个带边框的不规则图形。
+
+CSS 中也有能够放大元素的能力 `transform: scale()`，但如果用 CSS 来实现就需要再叠加一个放大一点的元素作为边框，显得不太优雅。
+
+所以选用 `feMorphology`滤镜来实现给不规则图形添加边框。
+
+`feMorphology`为形态滤镜，它的输入源通常是图形的 `alpha`通道，它有两个操作可以使图形腐蚀（变薄）或扩张（加粗）。
+
+- operator: `erode`腐蚀模式，`dilate`为扩张模式，默认为 `erode`。
+- radius: 笔触的大小，接受一个数字，表示该模式下的效果程度，默认为 0 。
+
+先简单的将该滤镜应用到文字上看看效果：Demo 4.4.1
+
+### 借用 `feMorphology`的扩张能力给不规则图形添加边框
+
+Demo 4.4.2:
+
+```svg
+<filter id="outline">
+  <feMorphology in="SourceAlpha" result="DILATED" operator="dilate" radius="1" />
+  <feMerge>
+    <feMergeNode in="DILATED" />
+    <feMergeNode in="SourceGraphic" />
+  </feMerge>
+</filter>
+```
+
+1. `feMorphology`将原图的不透明通道作为输入，采用了 `dilate`扩张模式且程度为 `radius="1"`，生成了一个比原图往外扩大 1px 的黑色图块。
+2. 使用 `feMerge`将黑色图块和原图叠加在一起。
+
+效果还算可以，就是边框颜色是黑色的，如果我们希望边框的颜色是其他颜色，有没有办法呢？
+
+### 辅以 `feFlood`和 `feComposite`改变边框颜色
+
+通过 `feFlood`和 `feComposite`两个 SVG 滤镜，可以给生成的图块上不同的颜色：Demo 4.4.3
+
+```svg
+<filter id="outline">
+  <feMorphology in="SourceAlpha" result="DILATED" operator="dilate" radius="1" />
+
+  <feFlood flood-color="green" flood-opacity="1" in="DILATED" result="flood" />
+  <feComposite in="flood" in2="DILATED" operator="in" result="OUTLINE" />
+
+  <feMerge>
+    <feMergeNode in="OUTLINE" />
+    <feMergeNode in="SourceGraphic" />
+  </feMerge>
+</filter>
+```
+
+通过设置 `<feFlood>`元素的属性 `flood-color="green"`即可控制生成的边框（图块）的颜色。
+
+### 总结
+
+- 使用 `drop-shadow`可以实现给不规则图形添加阴影，但是无法实现给不规则图形添加实体不带模糊的边框。
+- 使用 `feMorphology` SVG 滤镜可以实现给不规则图形添加边框效果，通过控制 `radius="1"`可以调节边框的大小。
+- 使用 `feMorphology`辅以. `feFlood`和 `feComposite`滤镜改变边框颜色。
+- 通过 CSS Filter 的 url 模式，可以快速的将 SVG 滤镜引入 HTML 元素。
+
+值得注意的是，由于图形高宽不是 1:1 的，且 `feMorphology`的 `dilate`模式也不会根据元素的高宽等比例扩张，所以生成的边框不一定在各处均匀相等，而 `feMorphology`的 `radius`属性可以传入两个值，使用空格分离，分别用来控制横向和纵向扩张大小，在实现使用时可以微调一下来解决边框不均匀的问题。
+
+# 5. 巧用 SVG 滤镜制作表情包
+
+## 5.1 什么是  SVG `feTurbulence`滤镜？
+
+Turbulence 意为湍流，不稳定气流。而 SVG `<feTurbulence>`滤镜能够实现半透明的烟熏或波状图像。通常用于实现一些特殊的纹理。滤镜利用 Perlin 噪声函数创建了一个图像。噪声在模拟云雾效果时非常有用，能产生非常复杂的质感，利用它可以实现人造纹理比如说云纹，大理石纹的合成。
+
+先来看一个简单的 DEMO 5.1.1:
+
+```html
+<div>Coco</div>
+<div class="turbulence">Coco</div>
+
+<svg>
+  <filter id="fractal" filterUnits="objectBoundingBox" x="0%" y="0%" width="100%" height="100%">
+    <feTurbulence id="turbulence" type="fractalNoise" baseFrequency="0.03" numOctaves="1" />
+    <feDisplacementMap in="SourceGraphic" scale="50"></feDisplacementMap>
+  </filter>
+</svg>
+```
+
+```css
+.turbulence {
+  filter: url(#fractal);
+}
+```
+
+将 `feTurbulence`滤镜应用于图片。Demo 5.1.2:
+
+接下来给上述滤镜添加一个动画，利用 SVG 的 `animate`标签，动态的改变 `baseFrequency`参数：Demo 5.1.3
+
+## 5.2 巧用 `feTurbulence`滤镜实现各种动效
+
+利用 `feTurbulence`和 `feDisplacementMap`相结合，并通过改变滤镜中的几个参数：`baseFrequency`，`numOctaves`，`scale`。都会得到不一样的效果，结合这几个属性就可以得到不同的动画效果。
+
+### 动态改变 `feDisplacementMap`的 `scale`的参数
+
+`feDisplacementMap`滤镜是用于改变元素和图形的像素位置的。该滤镜通过遍历原图形的所有像素点，通过 `feTurbulence`滤镜产生的噪声函数将原图像的每个像素点重新映射到一个新的位置，形成一个新的图形。
+
+而 `scale`表示新得到的图像的扭曲程度，这个值越大，图像越扭曲。
+
+通过设置一个非常大的初始值，我们可以将输入的任何源图像粒子化，看这个 DEMO 5.2.1:
+
+```svg
+<feDisplacementMap in="SourceGraphic" in2="img" xChannelSelector="R" yChannelSelector="G" scale="600" />
+```
+
+这时只需要将滤镜的 `scale="600"`动态变化回 `scale="1"`就能实现一个图形从粒子化正正常化的动画效果。
+
+### 事件触发的动效
+
+如果想要由用户的点击触发动效，用 SVG 的 `animate`标签实现将会受到一些限制，此时可以借助一些 JavaScript 代码来实现：Demo 5.2.2
+
+
 

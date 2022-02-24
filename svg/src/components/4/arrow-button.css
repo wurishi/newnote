@@ -1,0 +1,32 @@
+.arrow-button {
+    position: relative;
+    width: 180px;
+    height: 64px;
+    background: #f49714;
+}
+
+.arrow-button::after {
+    content: '';
+    position: absolute;
+    width: 32px;
+    height: 64px;
+    top: 0;
+    right: -32px;
+    background: linear-gradient(
+            -45deg,
+            transparent 0,
+            transparent 22px,
+            #f49714 22px,
+            #f49714 100%
+        ),
+        linear-gradient(
+            -135deg,
+            transparent 0,
+            transparent 22px,
+            #f49714 22px,
+            #f49714 100%
+        );
+    background-size: 32px 32px;
+    background-repeat: no-repeat;
+    background-position: 0 bottom, 0 top;
+}

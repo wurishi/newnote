@@ -80,7 +80,7 @@ const dataDisplacementImg = (function () {
     return canvas.toDataURL()
 })()
 
-const dataImg2 = (() => {
+export const dataImg2 = (() => {
     const canvas = document.createElement('canvas')
     const context = canvas.getContext('2d')
     if (!context) {
@@ -109,7 +109,7 @@ const Utils = {
         Linear(t: number, e: number, r: number, a: number) {
             return (r * t) / a + e
         },
-        easeInOut(e: number, t: number, i: number, n: number) {
+        EaseInOut(e: number, t: number, i: number, n: number) {
             if ((e /= n / 2) < 1) return (i / 2) * e * e + t
             return (-i / 2) * (--e * (e - 2) - 1)
         },
@@ -234,4 +234,34 @@ export function rippleEffect(target: HTMLElement) {
     })
 }
 
-export function flow(target: HTMLElement) {}
+export function flow(mapID: string) {
+    const map = document.querySelector(mapID)
+    if (map) {
+        const run = () => {
+            Utils.Ani.Animation(
+                0,
+                60,
+                5e3,
+                (time: number, end: boolean) => {
+                    map.setAttribute('scale', String(time))
+                    if (end) {
+                        Utils.Ani.Animation(
+                            60,
+                            0,
+                            5e3,
+                            (_t: number, _e: boolean) => {
+                                map.setAttribute('scale', String(_t))
+                                if (_e) {
+                                    run()
+                                }
+                            },
+                            'EaseInOut'
+                        )
+                    }
+                },
+                'EaseInOut'
+            )
+        }
+        run()
+    }
+}

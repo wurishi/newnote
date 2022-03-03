@@ -59,13 +59,67 @@ Shader "Shader的名字" {
     Subshader {
       [Tags] // 标签
       [CommonState] // 提供给多个 Pass 块使用的设置
-      Pass {} // 可能有多个 Pass ，每个 Pass 触发一次渲染过程
+      Pass {
+        [Pass Tags] // Pass 的标签
+        [Render Setup] // 渲染设置，比如颜色混合
+        [Texture Setup] // 纹理设置，只有在 fixed function shader 中才可以使用
+      } // 可能有多个 Pass ，每个 Pass 触发一次渲染过程
     }
   }
   
   [Fallback] // 降级的着色器
+  
+  [CustomEditor] // 当有自定义 shader 的设置 UI 时使用
 }
 ```
 
 # 4. 属性定义
+
+## 4.1 什么是材质球
+
+比如说穿的衣服为什么显示为红色，是因为衣服的材质将太阳光中的其他颜色都吸收掉了，只反射红色。
+
+## 4.2 什么是 Shader
+
+决定了材质与灯光之间是怎样计算的。
+
+## 4.3 Shader 属性定义的通用格式
+
+将整个 Shader 看作一个类，`Properties`就等于这个类的成员变量。
+
+`Properties { Property [Property ...]}`
+
+```glsl
+Properties {
+  _name ("display name", Int) = number
+  // _name 变量的名字，一般以下划线开始
+  // display name 在 Inspector 面板显示的名称
+  // Int 表示变量类型
+  // = number 表示默认值
+  _float ("testFloat", Float) = 1.0
+  _range ("testRange", Range(min, max)) = 1.0
+  // 通过设置 min 和 max 设置变量的范围
+  // Range 和 Float 都是 single number
+  _color ("testColor", Color) = (.34, .85, .92, 1)
+  _vector ("textVector", Vector) = (1, 1, 1, 1)
+  // Color 和 Vector 都是由四个数字组成的
+  _2D ("test2D", 2D) = "white" {}
+  // 平面材质
+  _rect ("testRect", Rect) = "black" {}
+  _cube ("testCube", Cube) = "gray" {}
+  // CubeMap 定义六个面的纹理
+  // 2D, Rect, Cube 的 "" 内表示默认材质颜色，可以为空或以下几个值：
+  // "white" RGBA(1, 1, 1, 1)
+  // "black" RGBA(0, 0, 0, 0)
+  // "gray" RGBA(0.5, 0.5, 0.5, 0.5)
+  // "bump" RGBA(0.5, 0.5, 1, 0.5)
+  // "red" RGBA(1, 0, 0, 0)
+  // {} 中可以定义 options 
+  // TexGen: { TexGen EyeLinear }
+  // 纹理坐标生成模式。可以是 ObjectLinear, EyeLinear, SphereMap, CubeNormal等，它们直接对应 OpenGL 的 texgen 模式。注意，如果使用自定义顶点程序，则 texgen 将被忽略。
+  // LightmapMode: { LightmapMode } 纹理会受到每一个渲染器的 lightmap 参数的影响，即该纹理可以不在材质中，而是受渲染器设置参数影响。
+  _3D ("test3D", 3D) = "" {}
+  // 3D 纹理，只能由脚本创建纹理内容，且仅 OpenGL 3.0 及以上才支持。
+}
+```
 

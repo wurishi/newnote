@@ -407,4 +407,168 @@ display: -webkit-box;
 -webkit-box-orient: vertical;
 ```
 
-## 
+# 6. 全兼容的多列均匀布局问题
+
+## 6.1 `display: flex`
+
+```css
+.demo1 {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+```
+
+## 6.2 借助伪元素及 `text-align: justify`
+
+`text-align: justify`可以用来实现两端对齐文本效果：
+
+> `text-align` CSS 属性定义行内内容（如文字）如何相对于它的块父元素对齐。它并不控制块元素自己的对齐，只控制它的行内内容的对齐。
+>
+> `text-align: justify`表示文字向两侧对齐。
+
+但使用它并没有效果，W3C 上有一段解释：
+
+> 最后一个水平对齐属性是 `justify`，会带来自己的一些问题。CSS 中没有说明如何处理连字符，因为不同的语言有不同的连字规则。
+>
+> 虽然 `text-align: justify`属性是全兼容的，但是要使用它实现两端对齐，需要注意在模块之间添加 **【空格/换行符/制表符】**才能起作用。
+
+尝试给在 HTML 中添加换行换，但仍无效。
+
+还需要修改 `text-align-last`属性，该属性规定如何对齐文本的最后一行，并且仅在 `text-align: justify`时才起作用。
+
+```css
+.justify {
+  text-align: justify;
+  text-align-last: justify;
+}
+```
+
+## 6.3 `text-align: justify`和伪元素
+
+`text-align-last`兼容性不佳，另外一种就是使用 `text-align: justify`和伪元素配合。因为 `justify`只有在存在第二行的情况下，第一行才两端对齐。
+
+```css
+.justify2 {
+  text-align: justify;
+}
+.justify2::after {
+  content: "";
+  display: inline-block;
+  position: relative;
+  width: 100%;
+}
+```
+
+# 7. 消失的边界线
+
+导航栏中经常出现，要求每行中最后一列的右边框消失。
+
+## 7.1 `nth-child`
+
+如果不需要兼容 `IE8-`，使用 CSS3 新增的选择器无疑是一种好方法。
+
+```css
+.demo1 li {
+  border-right: 1px solid #999;
+}
+.demo1 li:nth-child(3n) {
+  border-right: 0;
+}
+```
+
+这个方案需要明确知晓一行有几列。
+
+## 7.2 反向 `margin`
+
+通过设置 `li`的左边框，并将 `ul`整体向左移一个像素（`li`左边框几个像素，就往左移几个像素），最后设置整个容器的 `overflow: hidden`将最左边的左边框隐藏。
+
+```css
+.demo2.container {
+  overflow: hidden;
+}
+.demo2 li {
+  border-left: 1px solid #999;
+}
+.demo2 ul {
+  margin-left: -1px;
+}
+```
+
+这个方案可以适应不同的 `li`个数。
+
+# 8. 纯 CSS 的导航栏 Tab 切换方案
+
+使用纯 CSS 实现的难点在于：
+
+- 如何接收点击事件
+- 如何操作相关 DOM
+
+## 8.1 `:target`伪类选择器
+
+> `:target`是 CSS3 新增的一个伪类，可用于选取当前活动的目标元素。就是 URL 末尾带有锚点名称 #，就可以指向文档内某个具体元素。这个被链接的元素就是目标元素，它需要有一个 id 去匹配文档中的锚点。
+
+用 `:target`接收到点击事件：
+
+```css
+.demo1 #content1,
+.demo1 #content2 {
+  display: none;
+}
+
+.demo1 #content1:target,
+.demo1 #content2:target {
+  display: block;
+}
+```
+
+然后利用 `~`兄弟选择符：
+
+```css
+.demo1 #content1:target ~ .nav li:first-child {
+  background: #ff7300;
+  color: #fff;
+}
+.demo1 #content2:target ~ .nav li:last-child {
+  background: #ff7300;
+  color: #fff;
+}
+```
+
+注意，由于兄弟选择符只能选择元素之后的元素，所以在 DOM 树中，`content`必须在 `nav`之前才能根据 `:target`选择到对应的导航元素。
+
+## 8.2 `input`与 `label`
+
+除了 `<a>`标签外，还有一种方式可以接收到点击事件，就是拥有 `checked`属性的表单元素：
+
+- `<input type="radio" />`
+- `<input type="checkbox" />`
+
+对于上面二种元素，使用 `:checked`也可以接收到点击事件。
+
+```css
+.demo2 .nav1:checked ~ .nav li:first-child {
+  background: #ff7300;
+  color: #fff;
+}
+.demo2 .nav2:checked ~ .nav li:last-child {
+  background: #ff7300;
+  color: #fff;
+}
+.demo2 .nav1:checked ~ .content > div {
+  display: none;
+}
+.demo2 .nav1:checked ~ .content > div:first-child {
+  display: block;
+}
+.demo2 .nav2:checked ~ .content > div {
+  display: none;
+}
+.demo2 .nav2:checked ~ .content > div:last-child {
+  display: block;
+}
+.demo2 .content > div {
+  display: none;
+}
+```
+

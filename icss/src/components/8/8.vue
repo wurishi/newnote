@@ -28,6 +28,21 @@
             <div class="content2">列表2内容：abcdefghijkl</div>
         </div>
     </div>
+
+    <div class="demo3">
+        <div class="container">
+            <div id="content31">列表1内容：123456</div>
+            <div id="content32">列表2内容：abcdefghijkl</div>
+        </div>
+        <ul class="nav">
+            <li>
+                <a href="#content31">列表1</a>
+            </li>
+            <li>
+                <a href="#content32">列表2</a>
+            </li>
+        </ul>
+    </div>
 </template>
 
 <style scoped>
@@ -86,5 +101,16 @@
 }
 .demo2 .content > div {
     display: none;
+}
+
+.demo3 .container {
+    width: 300px;
+    height: 300px;
+    overflow: hidden;
+}
+.demo3 .container div {
+    width: 300px;
+    height: 300px;
+    background: green;
 }
 </style>

@@ -572,3 +572,591 @@ display: -webkit-box;
 }
 ```
 
+## 8.3 利用锚点和 `overflow: hidden`
+
+通过设置 `container`的 `overflow: hidden`，然后利用锚点通过 `container`内部滚动达到 tab 内容切换的效果。
+
+```html
+<div class="container">
+  <div id="content31">列表1内容：123456</div>
+  <div id="content32">列表2内容：abcdefghijkl</div>
+</div>
+```
+
+# 9. 多列等高布局
+
+规定下面的布局，实现多列等高布局。
+
+```html
+<div class="container">
+  <div class="left">多列等高布局左</div>
+  <div class="right">多列等高布局右</div>
+</div>
+```
+
+通常只是要求多列的背景色一致。
+
+## 9.1 使用 `display: flex`的方式实现
+
+```css
+.container1 {
+  display: flex;
+  flex-direction: row;
+}
+```
+
+## 9.2 使用正负 `margin`与 `padding`相冲的方式实现
+
+```css
+.container2 {
+  overflow: hidden;
+}
+.container2 .left,
+.container2 .right {
+  float: left;
+  padding-bottom: 5000px;
+  margin-bottom: -5000px;
+}
+```
+
+## 9.3 父容器背景色实现
+
+```css
+.container3 {
+  background: deeppink;
+  width: 400px;
+  overflow: hidden;
+}
+.container3 .left {
+  float: left;
+  background: none;
+}
+.container3 .right {
+  float: left;
+  background: yellowgreen;
+}
+```
+
+## 9.4 父容器多重背景色 - 线性渐变
+
+```css
+.container4 {
+  height: 120px;
+  width: 400px;
+  background: linear-gradient(90deg, deeppink 50%, yellowgreen 0);
+}
+
+.container4 .left,
+.container4 .right {
+  float: left;
+  background: none;
+}
+```
+
+## 9.5 `display: table-cell`实现
+
+```css
+.container5 {
+  display: table;
+}
+.container5 .left,
+.container5 .right {
+  display: table-cell;
+}
+```
+
+# 10. 单标签实现斜线
+
+假定高宽各为 100px ，如何使用单个标签实现斜线效果。
+
+## 10.1 CSS3 旋转缩放
+
+使用伪元素画出一条直线，然后绕 div 中心旋转 45deg，最后放大 1.414 倍。
+
+```css
+.demo1 {
+  position: relative;
+  overflow: hidden;
+}
+.demo1::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 50px;
+  box-sizing: border-box;
+  border-bottom: 1px solid deeppink;
+  transform-origin: bottom center;
+  transform: rotateZ(45deg) scale(1.414);
+}
+```
+
+## 10.2 线性渐变
+
+```css
+.demo2 {
+  background: linear-gradient(
+    45deg,
+    transparent 49.5%,
+    deeppink 49.5%,
+    deeppink 50.5%,
+    transparent 50.5%
+  );
+}
+```
+
+## 10.3 伪元素 + 三角形
+
+利用 CSS border 可以实现一个三角形，利用伪元素画二个略不同的三角形，将二者堆叠露出中间的边线即可。
+
+```css
+.demo3 {
+  position: relative;
+  background: #fff;
+}
+.demo3::before,
+.demo3::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 0;
+}
+.demo3::before {
+  border: 49px solid transparent;
+  border-left-color: deeppink;
+  border-bottom-color: deeppink;
+}
+.demo3::after {
+  border: 48px solid transparent;
+  border-left-color: #fff;
+  border-bottom-color: #fff;
+}
+```
+
+## 10.4 `clip-path`
+
+使用 `clip-path`的 `polygon`来伪元素上画二个三角形，挡在元素上仅留下中间的一条线，形成斜线。
+
+```css
+.demo4 {
+  position: relative;
+  background: deeppink;
+}
+.demo4::before,
+.demo4::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: #fff;
+}
+.demo4::before {
+  clip-path: polygon(0 0, 0 100px, 100px 100px, 0 0);
+}
+.demo4::after {
+  clip-path: polygon(100px 99px, 100px 0, 1px 0, 100px 99px);
+}
+```
+
+## 10.5 直接画线
+
+也可以利用 `polygon`画一个非常细的四边形作为斜线。
+
+```css
+.demo5 {
+  background: deeppink;
+  clip-path: polygon(1px 0, 100px 99px, 99px 100px, -1px 0);
+}
+```
+
+# 11. IFC, BFC, GFC 与 FFC
+
+FC 即 Formatting Contexts，格式化上下文。`*FC`可以称作视觉格式化模型。CSS 视觉格式化模型（visual formatting model）是用来处理文档并将它显示在视觉媒体上的机制。这是 CSS 的一个基础概念。
+
+比较常见的是 CSS2.1 规范中的 IFC（Inline Formatting Contexts）和 BFC（Block Formatting Contexts）。后两个则是 CSS3 的新增规范，GFC（GridLayout Formatting Contexts）和 FFC（Flex Formatting Contexts）。
+
+FC 是网页 CSS 视觉渲染的一部分，用于决定盒子模型的布局，其子元素将如何定位以及和其他元素的关系和相互作用。
+
+## 11.1 基础概念
+
+### Box
+
+Box 是 CSS 布局的对象和基本单位，直观点讲就是一个磁面是由很多个 Box 组成的，元素的类型和 `display`属性决定了 Box 的类型。
+
+1. block-level Box：当元素的 `display`属性为 `block, list-item, table`时，它就是块级元素。块级元素视觉上呈现为块，竖直排列。
+
+   每个块级元素至少生成一个块级盒（block-level Box）参与 BFC，它被称为主要块级盒（principal block-level Box）。一些元素，比如 `<li>`会生成额外的盒来放置项目符号，不过多数元素只生成一个主要块级盒。
+
+2. inline-level Box：当元素的 `display`属性为 `inline, inline-block, inline-table`时，称它为行内级元素。视觉上它将内容与其他行内级元素排列为多行。段落内容，文本或图片都是行内级元素。行内级元素生成行内极盒（inline-level Box），参与 IFC。
+
+3. flex container：当元素的 `display`属性为 `flex, inline-flex`时，称它为弹性容器。`display: flex`会导致一个元素生成一个块级（block-level）弹性容器框。`display: inline-flex`会导致一个元素生成一个行内级（inline-level）弹性容器框。
+
+4. grid container：当元素的 `display`属性为 `grid, inline-grid`时，称它为栅格容器。
+
+### 块容器盒（block container box）
+
+它只包含其他块级盒，或只包含行内级盒。
+
+## 11.2 IFC（Inline Formatting Contexts）
+
+行内级格式化上下文用来规定行内级盒子的格式化规则。
+
+IFC 仅在一个块级元素中仅包含内联级别元素时才会生成。
+
+布局规则：
+
+1. 内部的盒子会在水平方向，一个接一个地放置。
+2. 这些盒子垂直方向的起点从包含它们的块盒子的顶部开始。
+3. 摆放这些盒子的时候，它们在水平方向上的 `padding, border, margin` 所占用的空间都会被考虑在内。
+4. 在垂直方向上，这些框可能会以不同形式来对齐（`vertical-align`）：它们可能会使用底部或顶部对齐，也可能通过其内部的文本基线（`baseline`）对齐。
+5. 能把在一行上的框都完全包含进去的一个矩形区域，被称为该行的行框（line box）。行框的宽度是由包含块和存在的浮动来决定的。
+6. IFC 中的 line box 一般左右边都贴紧其包含块，但是会因为 float 元素的存在发生变化。float 元素会位于 IFC 与 line box 之间，使得 line box 宽度缩短。
+7. IFC 中的 line box 高度由 CSS 行高计算规则来确定。同一个 IFC 下的多个 line box 高度可能会不同（比如一行包含了较高的图片，另一行只有文本）。
+8. 当 inline-level boxes 的总宽度少于包含它们的 line box 时，其水平渲染规则由 `text-align`属性来决定，如果值为 `justify`，那么浏览器会对 inline-boxes（注意不是 inline-table 和 inline-block boxes）中的文字和空格做出拉伸。
+9. 当一个 inline box 超过 line box 的宽度时，它会被分割成多个 boxes，这些 boxes 被分布在多个 line box 里。如果一个 inline box 不能被分割（比如只包含单个字符，或 `word-breaking`机制被禁用，或该行内框受 `white-space`属性值为 `no wrap / pre`的影响），那么这个 inline box 将溢出这个 line box。
+
+IFC 具体实用在：
+
+- 水平居中：当一个块要在环境中水平居中时，设置其为 inline-block 则会在外层产生 IFC，通过设置父容器 `text-align: center`则可以使其水平居中。
+- 垂直居中：创建一个 IFC，用其中一个元素撑开父元素的高度，然后设置其 `vertical-align: middle`，其行内元素则可以在此父元素下垂直居中。
+
+### 使用 IFC 实现多行文本的水平垂直居中
+
+```css
+.demo1 {
+  text-align: center;
+  width: 400px;
+  line-height: 300px;
+  height: 300px;
+  background-color: #ccc;
+}
+.demo1 p {
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 18px;
+  line-height: normal;
+}
+```
+
+## 11.3 BFC（Block Formatting Contexts）
+
+块格式化上下文是页面上的一个独立的渲染区域，容器里面的子元素不会在布局上影响外面的元素。它是决定块盒子的布局及浮动元素相互影响的一个因素。
+
+下列情况下将创建一个块格式化上下文：
+
+1. 根元素或其他包含它的元素
+2. 浮动元素（`float`不为 `none`）
+3. 绝对定位元素（`position`为 `absolute / fixed`）
+4. 行内块（`display: inline-block`）
+5. 表格单元格（`display: table-cell` HTML 表格单元格默认属性）
+6. 表格标题（`display: table-caption` HTML 表格标题默认属性）
+7. `overflow`的值不为 `visible`的元素
+8. 弹性盒子（`display`为 `flex / inline-flex`）
+
+块格式化上下文包括了创建该上下文的元素的所有子元素，但不包括创建了新的块格式化上下文的子元素。
+
+包含浮动元素的块塌缩，清除浮动等都是 BFC 的应用场景。
+
+## 11.4 GFC（Grid Formatting Contexts）
+
+## 11.5 FFC（Flex Formatting Contexts）
+
+要注意的是弹性容器不是块容器，下列适用于块布局的属性不适用于弹性布局：
+
+1. 在 CSS3 多列布局模块中定义的 `column-*`属性不适用于弹性容器。
+2. `float`和 `clear`属性对于弹性项没有作用，并不会把它带离文档流。然而，浮动属性仍然会通过影响 `display`属性的计算值而影响 box 的生成。
+3. `vertical-align`属性对于弹性项没有作用。
+4. `::first-line`和 `::first-letter`伪元素不适用于弹性容器，而且弹性容器不会为它们的祖先提供第一个格式化的行或第一个字母。
+
+# 12. 几个特殊且实用的伪类选择器
+
+## 12.1 `:root`
+
+`:root`伪类匹配文档树的根元素。应用到 HTML，`:root`即表示为 `<html>`元素，除了优先级更高外，相当于 html 标签选择器。
+
+语法样式：
+
+```css
+:root { background: #000 }
+```
+
+在使用 CSS 变量时，声明全局 CSS 变量时 `:root`会很有用。
+
+## 12.2 `:empty`
+
+`:empty`伪类，代表没有子元素的元素。
+
+这里的子元素只计算元素结点及文本（包括空格）。注释，运行指令不考虑在内。
+
+```html
+<div class="demo1">
+  <div>1</div>
+  <div>&nbsp;</div>
+  <div></div>
+</div>
+```
+
+```css
+.demo1 div {
+  height: 20px;
+  background: blue;
+  border: 1px solid red;
+}
+.demo1 div:empty {
+  display: none;
+}
+```
+
+## 12.3 `:not`
+
+CSS 否定伪类，`:not(x)`可以选择除某个元素之外的所有元素。x 不能包含另外一个否定选择器。
+
+关于 `:not`伪类有几个有趣的现象：
+
+- 它不像其他伪类，它不会增加选择器的优先级。它的优先级即为它参数选择器的优先级。
+- 使用 `:not(*)`将匹配任何非元素的元素，因此这个规则将永远不会被应用。
+- 这个选择器只会应用在一个元素上，你不能用它排除所有祖先元素。比如 `body:not(table) a`将依旧会应用在 `table`内部的 `<a>`上，因为 `<tr>`还是会把 `:not`匹配到的。
+
+## 12.4 `:target`
+
+`:target`代表一个特殊的元素，它需要一个 id 去匹配文档 URI 的片段标识符。
+
+# 13. CSS 自定义属性
+
+很多人喜欢称之为 CSS 变量，准确的说 CSS 没有变量。只有自定义属性！
+
+```css
+/* 声明一个变量 */
+:root {
+    --bgColor: #000;
+}
+```
+
+使用它：
+
+```css
+.demo1 {
+  background: var(--bgColor);
+}
+```
+
+## 13.1 CSS 自定义属性的层叠与作用域
+
+CSS 自定义属性是支持继承的，但说成级联或层叠可能更贴切。
+
+> 在 CSS 中，一个元素的实际属性是由其自身属性以及其祖先元素的属性层叠得到的。CSS 自定义属性也支持层叠的特性，当一个属性没有在当前元素定义时，则会转而使用其祖先元素的属性。当前元素定义的属性会覆盖祖先元素的同名属性。
+
+```css
+.demo2 {
+  --bgColor: red; /* 这里会覆盖祖先元素定义的 --bgColor 属性 */
+  background: var(--bgColor);
+}
+```
+
+> CSS 自定义属性是不支持 !important 声明的。
+
+## 13.2 组合使用
+
+CSS 自定义属性可以进行组合使用：
+
+```css
+:root {
+  --word: "Hello";
+  --word-second: "World";
+}
+.demo3::before {
+  content: var(--word) "_" var(--word-second);
+}
+```
+
+## 13.3 计算属性 `calc()`
+
+CSS 自定义属性还可以结合 CSS3 的 `calc()`函数一起使用。
+
+```css
+:root {
+  --margin: 10px;
+}
+.demo4 {
+  border: 1px solid var(--bgColor);
+  text-indent: calc(var(--margin) * 10);
+}
+```
+
+## 13.4 CSS 自定义属性的用途
+
+### 代码更加符合 DRY （Don't repeat yourself）原则
+
+一个页面的配色通常有几种主要颜色，同一个颜色会在多个地方用到。之前是使用 LESS, SASS 等预处理器的变量系统完成的，现在可以直接使用 CSS 自定义属性来完成。
+
+### 精简代码，减少冗余
+
+一般而言，使用媒体查询时，会将需要响应改变的属性全部罗列一遍。
+
+### 方便从 JS 中读/写，统一修改
+
+CSS 自定义属性可以和 JS 交互。
+
+```js
+// 读取
+const root = getComputedStyle(document.documentElement)
+const cssVariable = root.getPropertyValue('--bgColor').trim()
+console.log(cssVariable)
+
+// 写入
+document.documentElement.style.setProperty('--bgColor', '#0f0')
+```
+
+# 14. CSS 命名方式是否有必要规范
+
+# 15. 关于 `reset.css`
+
+`reset.css`的目的是为了消除不同的浏览器在默认样式上的不同表现。
+
+## 15.1 YUI 版本的 `reset.css`
+
+早先 YUI 的一个版本的 `reset.css`：
+
+```css
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, textarea, p, blockquote, th, td {
+  margin: 0;
+  padding: 0;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+fieldset, img {
+  border: 0;
+}
+address, caption, cite, code, dfn, em, strong, th, var {
+  font-style: normal;
+  font-weight: normal;
+}
+ol, ul {
+  list-style: none;
+}
+caption, th {
+  text-align: left;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-size: 100%;
+  font-weight: normal;
+}
+q:before, q:after {
+  content: '';
+}
+abbr, acronym {
+  border: 0;
+}
+```
+
+这个版本的 reset 是使用一刀切的方式，让所有元素统一在同一起跑线上。但为此，对于 `div, dt, li, th, td`等本身没有默认 `padding`和 `margin`的标签重复设置造成了冗余代码，且将 `h1-h6`这类本身有具体语义化的元素一刀切的去掉了它们本身的特性。
+
+## 15.2 `normalize.css`
+
+[normalize.css v5.0.0](https://necolas.github.io/normalize.css/5.0.0/normalize.css) 做了些什么？
+
+1. 统一了一些元素在所有浏览器下的表现，保护有用的浏览器默认样式而不是完全清零它们，让它们在各个浏览器下表现一致。
+2. 为大部分元素提供一般化的表现。
+3. 修复了一些浏览器的 Bug，并且让它们在所有浏览器下保持一致性。
+4. 通过一些巧妙的细节提升了 CSS 的可用性。
+5. 提供了详尽的文档让开发者知道，不同元素在不同浏览器下的渲染规则。
+
+# 16. 字体 `font-family`
+
+## 16.1 字体的分类
+
+就 Web 常用的一些字体而言，大致可以分为这几种字体类型：
+
+- serif 衬线
+- sans-serif 无衬线
+- monospace 等宽
+- fantasy 梦幻
+- cuisive 草体
+
+其实大体上分为**衬线字体**和**无衬线字体**，等宽字体中也有衬线等宽和无衬线等宽字体。这 5 个分类是 `font-family`的 5 个可用字体系列取值。
+
+也就是说，上述 5 个名字，代表的并非某个特定字体，而是一系列字体，这些通用的名称允许用户代理（通常就是浏览器）从相应集合中选择一款字体。
+
+这也就解释了，`font-family`中的 family 家庭的意思。也就是不单单指一个，而是可以指定多个。
+
+## 16.2 serif -- 衬线字体
+
+衬线的意思是在字符笔画末端有叫做衬线的小细节的额外装饰，而且笔画的粗细会有所不同，这些细节在大写字母中特别明显。
+
+### 宋体（SimSun）
+
+Windows 下大部分浏览器的默认中文字体，是为适应印刷术而出现的一种汉字字体。笔画有粗细变化，是一种衬线字体，宋体在小字号下的显示效果还可以，但是字号一大体验就很差了，一般不建议做标题字体使用。
+
+### Times New Roman
+
+MAC 平台 Safari 下默认的英文字体，是最常见且广为人知的西文衬线字体之一，众多网页浏览器和文字处理软件都是用它作为默认字体。
+
+## 16.3 sans-serif -- 无衬线字体
+
+sans 的意思是无。专指西文中没有衬线的字体，并与汉字字体中的黑体相对应。与衬线字体相反，该类字体通常是机械的和统一线条的，它们往往拥有相同的曲率，笔直的线条，锐利的转角。
+
+中文下，无衬线字体就是黑体，黑体字也被称为方体或等线体，没有衬线装饰，字形端庄，笔画横平竖直，笔迹全部一样精细。
+
+### 微软雅黑（Microsoft Yahei）
+
+从 Windows Vista 开始，微软提供的新字体，一款无衬线的黑体类字体，显著提高了字体的显示效果。现在这款字体已经成为 Windows 浏览器最值得使用的中文字体。
+
+### 华文黑体（STHeiti），华文细黑（STXihei）
+
+属于同一字体家庭系列，MAC OS X 10.6 之前的简体中文系统界面的默认中文字体，正常粗细就是华文细黑，粗体下则是华文黑体。
+
+### 黑体-简（Heiti SC）
+
+从 MAC OS X 10.6 开始，黑体-简代替华文黑体用作简体中文系统界面默认字体，苹果生态最常用的字体之一，包括 iPhone，iPad 等设备用的也是这款字体。
+
+### 冬青黑体（Hiragino Sans GB）
+
+又叫苹果丽黑，Hiragino 是字游工房设计的系列字体名称。是一款清新的专业印刷字体，小字号时足够清晰，MAC OS X 10.6 开始自带有 W3 和 W6 。
+
+### Helvetica，Helvetica Neue
+
+被广泛用于全世界使用拉丁字母和西里尔字母的国家。Helvetica 是苹果电脑的默认字体，微软常用的 Arial 字体也来自于它。
+
+### Arial
+
+Windows 平台上默认的无衬线西文字体，有多种变体，比例及字重（weight）和 Helvetica 极为相近。
+
+### Verdana
+
+无衬线字体，优点在于它在小字上仍结构清晰端整，阅读辨识容易。
+
+### Tahoma
+
+十分常见的无衬线字体，字体结构和 Verdana 很相似，其字元间距较小，而且对 Unicode 字集的支持范围较大。许多不喜欢 Arial 字体的人常常会改用 Tahoma 来代替，除了是因为 Tahoma 很容易取得之外，也是因为 Tahoma 没有一些 Arial 为人诟病的缺点，例如大写“i”与小写“L”难以分辨等。
+
+## 16.4 monospace -- 等宽字体
+
+等宽字体是指字符宽度相同的电脑字体，常见于 IDE 或编辑器中，每个字母的宽度相等，通常用于计算机相关书籍中排版代码块。
+
+除了 IDE ，技术文章中的代码块经常也是用等宽字体进行排版。
+
+### Consolas
+
+这是一套等宽的字体，属无衬线字体。这个字体使用了微软的 ClearType 字型平滑技术，主要是设计做为代码的显示字型之用，特别之处是它的“0”字加入了斜撇，以方便与字母“O”分辨。
+
+> ClearType：是由微软在其操作系统中提供的屏幕亚像素微调字体平滑工具，让 Windows 字体更加漂亮。在 Windows XP 平台上，这项技术默认是关闭的，到了 Windows Vista 才默认开启。
+
+```css
+font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+```
+
+上面是 Github 代码区块的字体设置，可以看到默认是 `Consolas`，紧接着的几个都是其他等宽字体。如果用户的系统中都没有预装这些字体，则会匹配最后一个 `monospace`，它会让浏览器从用户系统中选择一个等宽字体进行展示。
+
+## 16.5 fantasy -- 梦幻 和 cuisive -- 草体
+
+这二种字体在浏览器中不常用，在各个浏览器中有明显的差异。
+
+## 16.6 中文字体的兼容写法
+

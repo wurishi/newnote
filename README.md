@@ -202,6 +202,10 @@ https://shadertoyunofficial.wordpress.com/
 - fundamentals: [fundamentals](https://threejsfundamentals.org/threejs/lessons/zh_cn/) (*进行中*)
 - webgl - webglfundamentals: [webglfundamentals](https://webglfundamentals.org/webgl/lessons/zh_cn/)
 
+# typescripttips
+
+TS小技巧
+
 # u3decs
 
 参考资料: [Unity 中的 ECS 编程](https://blog.csdn.net/andrewfan/category_8967683.html) _(进行中)_

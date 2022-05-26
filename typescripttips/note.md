@@ -1,4 +1,4 @@
-# 1. 从一个对象生成一个联合类型
+# 01. 从一个对象生成一个联合类型
 
 ```typescript
 export const fruitCounts = {
@@ -79,7 +79,7 @@ const singleFruitCount2: NewSingleFruitCount = {
 };
 ```
 
-# 2. 增强联合类型
+# 02. 增强联合类型
 
 当想要把以下的联合类型:
 
@@ -137,3 +137,128 @@ type EntityWithId = {
 ```
 
 使用 `& Record<>` 我们扩展了 `EntityWithId`, 并且在定义 Record 的 key 时, 我们规定了 key 的名称必须使用以 type 为开头的 xxxId.
+
+# 03. ts-toolbelt
+
+```typescript
+// 我们有这样一个 query 字符串
+const query = `/home?a=foo&b=wow`
+
+// 最终我们希望得到一个这样的对象
+const obj:Union.Merge<QueryParams> = {
+    a: 'foo',
+    b: 'wow'
+}
+```
+
+并且, 当 query 改变成 `/home?a=bar&b=wow`时, 我们希望 TS 能够提示我们 obj 的 a 属性需要改变.
+
+通过使用 ts-toolbelt :
+
+```typescript
+type Query = typeof query // /home?a=foo&b=wow
+
+type SecondQueryPart = String.Split<Query, "?">[1]; // a=foo&b=wow
+
+type QueryElements = String.Split<SecondQueryPart, "&">; // ['a=foo', 'b=wow']
+```
+
+接着
+
+```typescript
+type QueryParams = {
+    [QueryElement in QueryElements[number]]: { // 这里的 QueryElements[number] 代表了 QueryElements 中的每一项
+        [Key in String.Split<QueryElement, '='>[0]]: // 这里等于把 a=foo, b=wow 分别将 a 和 b 作为 QueryParams 类型的 key, 值就是对应的 foo 和 wow
+        	String.Split<QueryElement, '='>[1];
+    }
+}[QueryElements[number]]
+```
+
+# 04. 函数重载
+
+我们有这样三个函数:
+
+```typescript
+const addOne = (a: number) => {
+  return a + 1;
+};
+
+const numToString = (a: number) => {
+  return a.toString();
+};
+
+const stringToNum = (a: string) => {
+  return parseInt(a);
+};
+```
+
+然后我们希望有一个 `compose`方法能够组合以上三个函数并返回正确的函数签名, 比如说:
+
+```typescript
+const addOne1 = compose(addOne); // 我们希望 addOne1 的函数签名为 (input: number) => number
+
+const addOneToString = compose(addOne, numToString) // 函数签名最好可以是 (input: number) => string
+
+const fn = compose(addOne, numToString, stringToNum) // 函数签名应该为 (input: number) => number
+```
+
+此时我们可以利用 typescript 的函数签名重载功能来实现:
+
+```typescript
+export function compose<Input, FirstArg>(
+  func: (input: Input) => FirstArg
+): (input: Input) => FirstArg;
+
+export function compose<Input, FirstArg, SecondArg>(
+  func: (input: Input) => FirstArg,
+  func2: (input: FirstArg) => SecondArg
+): (input: Input) => SecondArg;
+
+export function compose<Input, FirstArg, SecondArg, ThirdArg>(
+  func: (input: Input) => FirstArg,
+  func2: (input: FirstArg) => SecondArg,
+  func3: (input: SecondArg) => ThirdArg
+): (input: Input) => ThirdArg;
+
+export function compose(...args: any[]) {
+  // 具体的实现
+}
+```
+
+# 05. 使用 extends 缩小泛型范围
+
+假设我们有一个 `getDeepValue`方法, 可以用来查找对象深层次的属性值, 比如:
+
+```typescript
+const obj = {
+  foo: {
+    a: true,
+    b: 2,
+  },
+  bar: {
+    c: 'cool',
+    d: 2,
+  },
+};
+
+const result1 = getDeepValue(obj, 'foo', 'a') // true
+const result2 = getDeepValue(obj, 'bar', 'd') // 2
+```
+
+我们希望当设置 `getDeepValue`的第二个参数为 'foo' 时, 第三个参数能够自动限制为 'a | b'. 
+
+```typescript
+export const getDeepValue = <
+  Obj,
+  FirstKey extends keyof Obj,
+  SecondKey extends keyof Obj[FirstKey]
+>(
+  obj: Obj,
+  firstKey: FirstKey,
+  secondKey: SecondKey
+): Obj[FirstKey][SecondKey] => {
+  // 具体函数实现
+};
+```
+
+此时, `getDeepValue`函数的第二个参数会自动被限制为 'foo | bar', 第三个参数也会自动根据第二个参数变化. 并且返回值也会有正确的类型.

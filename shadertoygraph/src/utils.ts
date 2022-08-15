@@ -1,4 +1,4 @@
-import { AttribLocation, UniformLocation } from './type'
+import { AttribLocation, TextureImage2DLocation, UniformLocation } from './type'
 
 export function createProgram(
     gl: WebGLRenderingContext,
@@ -100,6 +100,41 @@ export function getUniformLocation(
         },
         uniform3f(x, y, z) {
             gl.uniform3f(loc, x, y, z)
+        },
+    }
+}
+
+export function getTexture(
+    gl: WebGLRenderingContext,
+    program: WebGLProgram,
+    name: string,
+    source: TexImageSource
+): TextureImage2DLocation {
+    const last = name.charAt(name.length - 1)
+    const index = Number(last)
+    if (index.toString() !== last) {
+        throw new Error(`(${name}) iChannel 名称最后一位需要指示 index`)
+    }
+    const loc = gl.getUniformLocation(program, name)
+    const texture = gl.createTexture() as WebGLTexture
+    let tmp = source
+    return {
+        bindTexture() {
+            if (!tmp) {
+                return
+            }
+            gl.uniform1i(loc, index)
+            gl.activeTexture(gl.TEXTURE0 + index)
+            gl.bindTexture(gl.TEXTURE_2D, texture)
+
+            gl.texImage2D(
+                gl.TEXTURE_2D,
+                0,
+                gl.RGBA,
+                gl.RGBA,
+                gl.UNSIGNED_BYTE,
+                source
+            )
         },
     }
 }

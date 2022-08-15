@@ -62,7 +62,7 @@ function render(now: number) {
 
     main.stats.update()
 
-    renderFn(time, iframe)
+    renderFn(time, iframe, elapsedTime)
 
     requestAnimationFrame(render)
 }

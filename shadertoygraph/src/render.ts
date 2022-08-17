@@ -1,16 +1,19 @@
 import {
+    CanvasMouseHandler,
+    MyWebGLFramebuffer,
     RenderInstance,
     ShaderBufferName,
     ShaderInstance,
     ShaderToy,
 } from './type'
 import {
+    createFramebuffer,
     createProgram,
     getAttribLocation,
-    getTexture,
     getUniformLocation,
+    handleMouseEvent,
 } from './utils'
-import { vertex, fragment } from './shaderTemplate'
+import { vertex, fragment, DEFAULT_SOUND } from './shaderTemplate'
 
 enum PRECISION {
     MEDIUMP = 'mediump',
@@ -19,10 +22,15 @@ enum PRECISION {
 }
 
 let renderList: RenderInstance[] = []
-const bufferMap = new Map<ShaderBufferName, HTMLCanvasElement>()
+let rootCanvas: HTMLCanvasElement | null = null
+let rootGL: WebGL2RenderingContext | null = null
+let canvasMouseHandler: CanvasMouseHandler | null = null
+const framebufferMap = new Map<string, MyWebGLFramebuffer>()
 
 export function createRender(shaderToy: ShaderToy) {
     destory()
+
+    init()
 
     const shaderList = shaderToy.shaderList.concat()
     shaderList.sort((a, b) => {
@@ -34,23 +42,33 @@ export function createRender(shaderToy: ShaderToy) {
         return a.name.localeCompare(b.name)
     })
 
-    shaderList.forEach((shader) => {
-        const render = createRenderInstance(shader)
+    shaderList.forEach((shader, index) => {
+        const render = createRenderInstance(shader, index)
         if (render) {
             if (shader.channels) {
                 render.channels = []
                 shader.channels?.forEach((channel, i) => {
                     if (channel.type === 'Buffer') {
-                        const c = bufferMap.get(
-                            channel.value
-                        ) as HTMLCanvasElement
-                        const texture = getTexture(
-                            render.gl,
-                            render.program,
-                            'iChannel' + i,
-                            c
-                        )
-                        render.channels?.push(texture)
+                        const myfb = framebufferMap.get(channel.value)
+                        if (myfb) {
+                            render.channels?.push(myfb.createBindChannel(i))
+                        }
+                        // if (!framebufferMap.has(channel.value)) {
+                        //     framebufferMap.set(
+                        //         channel.value,
+                        //         getFramebuffer(render.gl, i)
+                        //     )
+                        // }
+                        // const c = bufferMap.get(
+                        //     channel.value
+                        // ) as HTMLCanvasElement
+                        // const texture = getTexture(
+                        //     render.gl,
+                        //     render.program,
+                        //     'iChannel' + i,
+                        //     c
+                        // )
+                        // render.channels?.push(texture)
                     }
                 })
             }
@@ -60,27 +78,18 @@ export function createRender(shaderToy: ShaderToy) {
     })
 }
 
-function createRenderInstance(shader: ShaderInstance): RenderInstance | null {
-    const canvas =
-        shader.name === 'Image'
-            ? document.createElement('canvas')
-            : (bufferMap.get(shader.name) as HTMLCanvasElement)
-    canvas.style.width = '400px'
-    canvas.style.height = '300px'
-    if (shader.name === 'Image') {
-        document.body.appendChild(canvas)
-    } else {
-        document.body.appendChild(canvas)
-        // canvas.style.position = 'fixed'
-        // canvas.style.left = '-10000px'
-    }
-    const gl = canvas.getContext('webgl2')
+function createRenderInstance(
+    shader: ShaderInstance,
+    index: number
+): RenderInstance | null {
+    const gl = rootGL as WebGL2RenderingContext
     if (gl) {
         const v = vertex
         let f = fragment
         f = f.replace('{COMMON}', '')
         f = f.replace('{PRECISION}', PRECISION.MEDIUMP)
         f = f.replace('{USER_FRAGMENT}', shader.getFragment())
+        f = f.replace('{MAIN_SOUND}', DEFAULT_SOUND)
         const program = createProgram(gl, v, f)
 
         const a_position = getAttribLocation(gl, program, 'a_position')
@@ -88,9 +97,15 @@ function createRenderInstance(shader: ShaderInstance): RenderInstance | null {
             new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1])
         )
 
+        let framebuffer: MyWebGLFramebuffer | undefined = undefined
+        if (shader.name.startsWith('Buffer')) {
+            framebuffer = createFramebuffer(gl, index)
+            framebufferMap.set(shader.name, framebuffer)
+        }
+
         return {
             name: shader.name,
-            canvas,
+            canvas: rootCanvas as HTMLCanvasElement,
             gl,
             program,
             props: {
@@ -99,7 +114,9 @@ function createRenderInstance(shader: ShaderInstance): RenderInstance | null {
                 iTime: getUniformLocation(gl, program, 'iTime'),
                 iFrame: getUniformLocation(gl, program, 'iFrame'),
                 iTimeDelta: getUniformLocation(gl, program, 'iTimeDelta'),
+                iMouse: getUniformLocation(gl, program, 'iMouse'),
             },
+            framebuffer,
         }
     }
     return null
@@ -123,45 +140,95 @@ export function resizeCanvasToDisplaySize(
 }
 
 export function render(iTime: number, iFrame: number, iTimeDelta: number) {
+    let resize = false
+    const wh = { width: 0, height: 0 }
+    if (rootCanvas) {
+        resize = resizeCanvasToDisplaySize(rootCanvas, false)
+    }
+    if (resize) {
+        wh.width = rootCanvas?.width || 0
+        wh.height = rootCanvas?.height || 0
+    }
+    let posX = 0
+    let posY = 0
+    let oriX = 0
+    let oriY = 0
+    if (canvasMouseHandler) {
+        const { data } = canvasMouseHandler
+        posX = data.posX
+        posY = data.posY
+        oriX = Math.abs(data.oriX)
+        oriY = Math.abs(data.oriY)
+        if (!data.isDown) {
+            oriX = -oriX
+        }
+        if (!data.isSignalDown) {
+            oriY = -oriY
+        }
+        data.isSignalDown = false
+    }
     renderList.forEach((r) => {
-        const resize = resizeCanvasToDisplaySize(r.canvas, false)
+        const { framebuffer, gl, props } = r
         if (resize) {
-            r.gl.viewport(0, 0, r.canvas.width, r.canvas.height)
+            gl.viewport(0, 0, wh.width, wh.height)
         }
 
-        r.gl.useProgram(r.program)
-        // r.gl.clear(r.gl.COLOR_BUFFER_BIT);
+        gl.useProgram(r.program)
+        // gl.clear(gl.COLOR_BUFFER_BIT);
 
-        r.channels?.forEach((c) => {
-            c.bindTexture()
+        r.channels?.forEach((c, channelIdx) => {
+            // gl.getUniformLocation(program, name)
+            const id = gl.getUniformLocation(
+                r.program,
+                `iChannel${channelIdx}`
+            ) as WebGLUniformLocation
+            c(id)
         })
 
-        r.props.a_position.bindBuffer()
+        props.a_position.bindBuffer()
         if (resize) {
-            r.props.iResolution.uniform3f(r.canvas.width, r.canvas.height, 1)
+            props.iResolution.uniform3f(wh.width, wh.height, 1)
         }
 
-        r.props.iTime.uniform1f(iTime)
-        r.props.iFrame.uniform1i(iFrame)
-        r.props.iTimeDelta.uniform1f(iTimeDelta)
+        props.iTime.uniform1f(iTime)
+        props.iFrame.uniform1i(iFrame)
+        props.iTimeDelta.uniform1f(iTimeDelta)
+        props.iMouse.uniform4fv([posX, posY, oriX, oriY])
 
-        // r.gl.bindFramebuffer(r.gl.FRAMEBUFFER, null)
+        if (framebuffer) {
+            framebuffer.renderFramebuffer()
+        } else {
+            gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+        }
 
-        r.gl.drawArrays(r.gl.TRIANGLES, 0, 6)
+        gl.drawArrays(r.gl.TRIANGLES, 0, 6)
     })
 }
 
-export function destory() {
-    bufferMap.clear()
-    ;['BufferA', 'BufferB', 'BufferC', 'BufferD'].forEach((name) => {
-        const canvas = document.createElement('canvas')
-        bufferMap.set(name as ShaderBufferName, canvas)
-    })
+function init() {
+    rootCanvas = document.createElement('canvas')
+    rootCanvas.style.width = '400px'
+    rootCanvas.style.height = '300px'
+    document.body.appendChild(rootCanvas)
+
+    rootGL = rootCanvas.getContext('webgl2')
+
+    canvasMouseHandler = handleMouseEvent(rootCanvas)
+}
+
+function destory() {
+    if (canvasMouseHandler) {
+        canvasMouseHandler.clear()
+        canvasMouseHandler = null
+    }
+    if (rootCanvas && rootCanvas.parentElement) {
+        rootCanvas.parentElement.removeChild(rootCanvas)
+    }
+    rootCanvas = null
+    rootGL = null
     renderList.forEach((r) => {
         r.gl.deleteProgram(r.program)
-        if (r.canvas.parentElement) {
-            r.canvas.parentElement.removeChild(r.canvas)
-        }
     })
     renderList = []
+    framebufferMap.clear()
 }

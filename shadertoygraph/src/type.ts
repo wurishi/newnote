@@ -37,8 +37,10 @@ export type RenderInstance = {
         iTime: UniformLocation
         iFrame: UniformLocation
         iTimeDelta: UniformLocation
+        iMouse: UniformLocation
     }
-    channels?: TextureImage2DLocation[]
+    framebuffer?: MyWebGLFramebuffer
+    channels?: BindChannel[]
 }
 
 export type AttribLocation = {
@@ -51,8 +53,34 @@ export type UniformLocation = {
     uniform1f(x: number): void
     uniform2f(x: number, y: number): void
     uniform3f(x: number, y: number, z: number): void
+    uniform4fv(v: Float32List): void
 }
 
-export type TextureImage2DLocation = {
-    bindTexture(): void
+export type BindChannel = {
+    (id: WebGLUniformLocation): void
 }
+
+export type MyWebGLFramebuffer = {
+    framebuffer: WebGLFramebuffer
+    texture: WebGLTexture
+    renderFramebuffer(): void
+    createBindChannel(channel: number): BindChannel
+}
+
+export type CanvasMouseMetadata = {
+    oriX: number
+    oriY: number
+    posX: number
+    posY: number
+    isDown: boolean
+    isSignalDown: boolean
+}
+
+export type CanvasMouseHandler = {
+    data: CanvasMouseMetadata
+    clear(): void
+}
+
+// export type TextureImage2DLocation = {
+//     bindTexture(): void
+// }

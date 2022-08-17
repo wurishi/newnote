@@ -1,4 +1,10 @@
-import { AttribLocation, TextureImage2DLocation, UniformLocation } from './type'
+import {
+    AttribLocation,
+    CanvasMouseHandler,
+    CanvasMouseMetadata,
+    MyWebGLFramebuffer,
+    UniformLocation,
+} from './type'
 
 export function createProgram(
     gl: WebGLRenderingContext,
@@ -101,40 +107,150 @@ export function getUniformLocation(
         uniform3f(x, y, z) {
             gl.uniform3f(loc, x, y, z)
         },
-    }
-}
-
-export function getTexture(
-    gl: WebGLRenderingContext,
-    program: WebGLProgram,
-    name: string,
-    source: TexImageSource
-): TextureImage2DLocation {
-    const last = name.charAt(name.length - 1)
-    const index = Number(last)
-    if (index.toString() !== last) {
-        throw new Error(`(${name}) iChannel 名称最后一位需要指示 index`)
-    }
-    const loc = gl.getUniformLocation(program, name)
-    const texture = gl.createTexture() as WebGLTexture
-    let tmp = source
-    return {
-        bindTexture() {
-            if (!tmp) {
-                return
-            }
-            gl.uniform1i(loc, index)
-            gl.activeTexture(gl.TEXTURE0 + index)
-            gl.bindTexture(gl.TEXTURE_2D, texture)
-
-            gl.texImage2D(
-                gl.TEXTURE_2D,
-                0,
-                gl.RGBA,
-                gl.RGBA,
-                gl.UNSIGNED_BYTE,
-                source
-            )
+        uniform4fv(v) {
+            gl.uniform4fv(loc, v)
         },
     }
 }
+
+export function createFramebuffer(
+    gl: WebGLRenderingContext,
+    level: number
+): MyWebGLFramebuffer {
+    // const id = gl.getUniformLocation
+    const texture = gl.createTexture() as WebGLTexture
+    const framebuffer = gl.createFramebuffer() as WebGLFramebuffer
+    gl.bindTexture(gl.TEXTURE_2D, texture)
+    gl.texImage2D(
+        gl.TEXTURE_2D,
+        level,
+        gl.RGBA,
+        400,
+        300,
+        0,
+        gl.RGBA,
+        gl.UNSIGNED_BYTE,
+        null
+    )
+    gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer)
+    gl.framebufferTexture2D(
+        gl.FRAMEBUFFER,
+        gl.COLOR_ATTACHMENT0,
+        gl.TEXTURE_2D,
+        texture,
+        level
+    )
+
+    return {
+        framebuffer,
+        texture,
+        renderFramebuffer: () => {
+            // gl.bindRenderbuffer(gl.RENDERBUFFER, framebuffer)
+            gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer)
+        },
+        createBindChannel: (channel: number) => {
+            return (id: WebGLUniformLocation) => {
+                const tmp = 0
+                gl.uniform1i(id, tmp)
+                gl.activeTexture(gl.TEXTURE0 + tmp)
+                gl.bindTexture(gl.TEXTURE_2D, texture)
+                // console.log(tmp)
+            }
+        },
+    }
+}
+
+export function handleMouseEvent(
+    canvas: HTMLCanvasElement
+): CanvasMouseHandler {
+    const data: CanvasMouseMetadata = {
+        oriX: 0,
+        oriY: 0,
+        posX: 0,
+        posY: 0,
+        isDown: false,
+        isSignalDown: false,
+    }
+    function mouseDown(ev: MouseEvent) {
+        const rect = canvas.getBoundingClientRect()
+        data.oriX = Math.floor(
+            ((ev.clientX - rect.left) / (rect.right - rect.left)) * canvas.width
+        )
+        data.oriY = Math.floor(
+            canvas.height -
+                ((ev.clientY - rect.top) / (rect.bottom - rect.top)) *
+                    canvas.height
+        )
+        data.posX = data.oriX
+        data.posY = data.oriY
+        data.isDown = true
+        data.isSignalDown = true
+    }
+
+    function mouseUp(ev: MouseEvent) {
+        data.isDown = false
+    }
+
+    function mouseMove(ev: MouseEvent) {
+        if (data.isDown) {
+            const rect = canvas.getBoundingClientRect()
+            data.posX = Math.floor(
+                ((ev.clientX - rect.left) / (rect.right - rect.left)) *
+                    canvas.width
+            )
+            data.posY = Math.floor(
+                canvas.height -
+                    ((ev.clientY - rect.top) / (rect.bottom - rect.top)) *
+                        canvas.height
+            )
+        }
+    }
+
+    canvas.addEventListener('mousedown', mouseDown)
+    canvas.addEventListener('mouseup', mouseUp)
+    canvas.addEventListener('mousemove', mouseMove)
+
+    return {
+        data,
+        clear() {
+            canvas.removeEventListener('mousedown', mouseDown)
+            canvas.removeEventListener('mouseup', mouseUp)
+            canvas.removeEventListener('mousemove', mouseMove)
+        },
+    }
+}
+
+// export function getTexture(
+//     gl: WebGLRenderingContext,
+//     program: WebGLProgram,
+//     name: string,
+//     source: TexImageSource
+// ): TextureImage2DLocation {
+//     const last = name.charAt(name.length - 1)
+//     const index = Number(last)
+//     if (index.toString() !== last) {
+//         throw new Error(`(${name}) iChannel 名称最后一位需要指示 index`)
+//     }
+//     const loc = gl.getUniformLocation(program, name)
+//     const texture = gl.createTexture() as WebGLTexture
+//     let tmp = source
+//     return {
+//         bindTexture() {
+//             if (!tmp) {
+//                 return
+//             }
+//             gl.uniform1i(loc, index)
+//             gl.activeTexture(gl.TEXTURE0 + index)
+//             gl.bindTexture(gl.TEXTURE_2D, texture)
+
+//             gl.texImage2D(
+//                 gl.TEXTURE_2D,
+//                 0,
+//                 gl.RGBA,
+//                 gl.RGBA,
+//                 gl.UNSIGNED_BYTE,
+//                 source
+//             )
+//         },
+//     }
+// }

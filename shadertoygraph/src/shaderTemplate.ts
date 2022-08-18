@@ -6,6 +6,13 @@ void main() {
 }
 `
 
+export const newVertex = `#version 300 es
+layout(location = 0) in vec2 pos;
+void main() {
+  gl_Position = vec4(pos.xy, 0.0, 1.0);
+}
+`
+
 export const fragment = `#version 300 es
 precision {PRECISION} float;
 

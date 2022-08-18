@@ -7,6 +7,7 @@ import {
     ShaderToy,
 } from './type'
 import {
+    createDrawFullScreenTriangle,
     createFramebuffer,
     createProgram,
     getAttribLocation,
@@ -14,7 +15,7 @@ import {
     getUniformLocation,
     handleMouseEvent,
 } from './utils'
-import { vertex, fragment, DEFAULT_SOUND } from './shaderTemplate'
+import { vertex, fragment, DEFAULT_SOUND, newVertex } from './shaderTemplate'
 
 enum PRECISION {
     MEDIUMP = 'mediump',
@@ -23,6 +24,7 @@ enum PRECISION {
 }
 
 let renderList: RenderInstance[] = []
+let firstRender = false
 let rootCanvas: HTMLCanvasElement | null = null
 let rootGL: WebGL2RenderingContext | null = null
 let canvasMouseHandler: CanvasMouseHandler | null = null
@@ -72,13 +74,15 @@ function createRenderInstance(
 ): RenderInstance | null {
     const gl = rootGL as WebGL2RenderingContext
     if (gl) {
-        const v = vertex
+        const v = newVertex
         let f = fragment
         f = f.replace('{COMMON}', '')
         f = f.replace('{PRECISION}', PRECISION.MEDIUMP)
         f = f.replace('{USER_FRAGMENT}', shader.getFragment())
         f = f.replace('{MAIN_SOUND}', DEFAULT_SOUND)
         const program = createProgram(gl, v, f)
+
+        const gpuDraw = createDrawFullScreenTriangle(gl, program)
 
         const a_position = getAttribLocation(gl, program, 'a_position')
         a_position.setFloat32(
@@ -97,7 +101,7 @@ function createRenderInstance(
             gl,
             program,
             props: {
-                a_position,
+                // a_position,
                 iResolution: getUniformLocation(gl, program, 'iResolution'),
                 iTime: getUniformLocation(gl, program, 'iTime'),
                 iFrame: getUniformLocation(gl, program, 'iFrame'),
@@ -105,6 +109,7 @@ function createRenderInstance(
                 iMouse: getUniformLocation(gl, program, 'iMouse'),
             },
             framebuffer,
+            draw: gpuDraw,
         }
     }
     return null
@@ -155,8 +160,42 @@ export function render(iTime: number, iFrame: number, iTimeDelta: number) {
         }
         data.isSignalDown = false
     }
+    const props = {
+        resize,
+        wh,
+        iTime,
+        iFrame,
+        iTimeDelta,
+        posX,
+        posY,
+        oriX,
+        oriY,
+    }
+    // if (firstRender) {
+    //     firstRender = false
+    //     renderListRun(props, true)
+    // }
+    renderListRun(props)
+}
+
+function renderListRun(props: any, first = false) {
+    const { resize, wh, iTime, iFrame, iTimeDelta, posX, posY, oriX, oriY } =
+        props
     renderList.forEach((r) => {
         const { framebuffer, gl, props } = r
+        // if (first) {
+        //     if (r.name.startsWith('Buffer')) {
+        //         gl.clearColor(0, 0, 0, 0)
+        //         gl.clearDepth(1.0)
+        //         gl.clearStencil(0)
+        //         gl.clear(
+        //             gl.COLOR_BUFFER_BIT |
+        //                 gl.DEPTH_BUFFER_BIT |
+        //                 gl.STENCIL_BUFFER_BIT
+        //         )
+        //         return
+        //     }
+        // }
         if (resize) {
             gl.viewport(0, 0, wh.width, wh.height)
         }
@@ -173,7 +212,7 @@ export function render(iTime: number, iFrame: number, iTimeDelta: number) {
             c(id, channelIdx)
         })
 
-        props.a_position.bindBuffer()
+        // props.a_position.bindBuffer()
         if (resize) {
             props.iResolution.uniform3f(wh.width, wh.height, 1)
         }
@@ -189,7 +228,8 @@ export function render(iTime: number, iFrame: number, iTimeDelta: number) {
             gl.bindFramebuffer(gl.FRAMEBUFFER, null)
         }
 
-        gl.drawArrays(r.gl.TRIANGLES, 0, 6)
+        // gl.drawArrays(r.gl.TRIANGLES, 0, 6)
+        r.draw.draw()
     })
 }
 
@@ -202,6 +242,8 @@ function init() {
     rootGL = rootCanvas.getContext('webgl2')
 
     canvasMouseHandler = handleMouseEvent(rootCanvas)
+
+    firstRender = true
 }
 
 function destory() {

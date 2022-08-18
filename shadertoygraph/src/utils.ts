@@ -4,6 +4,7 @@ import {
     CanvasMouseMetadata,
     Format,
     GLFormat,
+    GPUDraw,
     Image2D,
     ImageTextureSetting,
     MyWebGLFramebuffer,
@@ -59,6 +60,32 @@ export function compileShader(
     }
 
     return shader
+}
+
+export function createDrawFullScreenTriangle(
+    gl: WebGL2RenderingContext,
+    program: WebGLProgram
+): GPUDraw {
+    const vpos = gl.getAttribLocation(program, 'pos')
+    let buffer: WebGLBuffer = gl.createBuffer() as WebGLBuffer
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+    gl.bufferData(
+        gl.ARRAY_BUFFER,
+        new Float32Array([-1.0, -1.0, 3.0, -1.0, -1.0, 3.0]),
+        gl.STATIC_DRAW
+    )
+    gl.bindBuffer(gl.ARRAY_BUFFER, null)
+
+    return {
+        draw: () => {
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+            gl.vertexAttribPointer(vpos, 2, gl.FLOAT, false, 0, 0)
+            gl.enableVertexAttribArray(vpos)
+            gl.drawArrays(gl.TRIANGLES, 0, 3)
+            gl.disableVertexAttribArray(vpos)
+            gl.bindBuffer(gl.ARRAY_BUFFER, null)
+        },
+    }
 }
 
 export function getAttribLocation(
@@ -238,30 +265,46 @@ export function createFramebuffer(
     level: number,
     setting: TextureSetting = DEFAULT_TEXTURE_SETTING
 ): MyWebGLFramebuffer {
-    const texture = createTexture(gl, 'T2D', setting, 'C4I8', 400, 300)
-    const framebuffer = gl.createFramebuffer() as WebGLFramebuffer
+    function createFBO() {
+        const texture = createTexture(gl, 'T2D', setting, 'C4I8', 400, 300)
+        const framebuffer = gl.createFramebuffer() as WebGLFramebuffer
 
-    gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer)
-    gl.framebufferTexture2D(
-        gl.FRAMEBUFFER,
-        gl.COLOR_ATTACHMENT0,
-        gl.TEXTURE_2D,
-        texture,
-        level
-    )
+        gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer)
+        gl.framebufferTexture2D(
+            gl.FRAMEBUFFER,
+            gl.COLOR_ATTACHMENT0,
+            gl.TEXTURE_2D,
+            texture,
+            level
+        )
+        return {
+            texture,
+            framebuffer,
+        }
+    }
+    const fbo1 = createFBO()
+    const fbo2 = createFBO()
+
+    let flag = true
+    let useFramebuffer = fbo1.framebuffer
+    let useTexture = fbo2.texture
 
     return {
-        framebuffer,
-        texture,
         renderFramebuffer: () => {
-            // gl.bindRenderbuffer(gl.RENDERBUFFER, framebuffer)
-            gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer)
+            gl.bindFramebuffer(gl.FRAMEBUFFER, useFramebuffer)
+            flag = !flag
+            if (flag) {
+                useFramebuffer = fbo1.framebuffer
+                useTexture = fbo2.texture
+            } else {
+                useFramebuffer = fbo2.framebuffer
+                useTexture = fbo1.texture
+            }
         },
         bindChannel: (id: WebGLUniformLocation, index: number) => {
             gl.uniform1i(id, index)
             gl.activeTexture(gl.TEXTURE0 + index)
-            gl.bindTexture(gl.TEXTURE_2D, texture)
-            // console.log('create')
+            gl.bindTexture(gl.TEXTURE_2D, useTexture)
         },
     }
 }

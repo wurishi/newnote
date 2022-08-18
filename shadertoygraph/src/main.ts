@@ -39,12 +39,22 @@ function init(): Main {
     return { stats, gui }
 }
 
+let aLink: HTMLAnchorElement
+
 function create() {
+    if (aLink && aLink.parentElement) {
+        aLink.parentElement.removeChild(aLink)
+    }
     then = 0
     time = 0
     iframe = 0
     if (currentShaderToy) {
         createRender(currentShaderToy)
+        aLink = document.createElement('a')
+        aLink.href = 'https://www.shadertoy.com/view/' + currentShaderToy.key
+        aLink.target = '_blank'
+        aLink.innerHTML = currentShaderToy.key
+        document.body.appendChild(aLink)
     }
 }
 

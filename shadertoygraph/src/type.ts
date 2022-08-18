@@ -33,7 +33,7 @@ export type RenderInstance = {
     gl: WebGL2RenderingContext
     program: WebGLProgram
     props: {
-        a_position: AttribLocation
+        // a_position: AttribLocation
         iResolution: UniformLocation
         iTime: UniformLocation
         iFrame: UniformLocation
@@ -42,6 +42,7 @@ export type RenderInstance = {
     }
     framebuffer?: MyWebGLFramebuffer
     channels?: BindChannel[]
+    draw: GPUDraw
 }
 
 export type AttribLocation = {
@@ -62,8 +63,8 @@ export type BindChannel = {
 }
 
 export type MyWebGLFramebuffer = {
-    framebuffer: WebGLFramebuffer
-    texture: WebGLTexture
+    // framebuffer: WebGLFramebuffer
+    // texture: WebGLTexture
     renderFramebuffer(): void
     bindChannel: BindChannel
 }
@@ -117,4 +118,8 @@ export type GLFormat = {
     format: number
     external: number
     type: number
+}
+
+export type GPUDraw = {
+    draw: () => void
 }

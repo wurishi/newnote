@@ -2,6 +2,8 @@ import {
     AttribLocation,
     CanvasMouseHandler,
     CanvasMouseMetadata,
+    Format,
+    GLFormat,
     Image2D,
     ImageTextureSetting,
     MyWebGLFramebuffer,
@@ -121,17 +123,20 @@ function createTexture(
     gl: WebGL2RenderingContext,
     type: TextureType,
     setting: TextureSetting,
+    format: Format,
     width?: number,
     height?: number
 ): WebGLTexture {
     const texture = gl.createTexture() as WebGLTexture
     if (texture) {
         const wrap = setting.wrap === 'CLAMP' ? gl.CLAMP_TO_EDGE : gl.REPEAT
-
+        const glFormat = format2GL(format)
         if (type === 'T2D') {
+            let needMipmap = true
             gl.bindTexture(gl.TEXTURE_2D, texture)
 
             if ('vflip' in setting) {
+                needMipmap = false
                 const imgSetting = setting as ImageTextureSetting
                 gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, imgSetting.vflip)
                 gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false)
@@ -142,12 +147,12 @@ function createTexture(
                 gl.texImage2D(
                     gl.TEXTURE_2D,
                     0,
-                    gl.RGBA,
+                    glFormat.format,
                     width,
                     height,
                     0,
-                    gl.RGBA,
-                    gl.UNSIGNED_BYTE,
+                    glFormat.external,
+                    glFormat.type,
                     null
                 )
             }
@@ -196,7 +201,7 @@ function createTexture(
                             gl.TEXTURE_MIN_FILTER,
                             gl.LINEAR_MIPMAP_LINEAR
                         )
-                        gl.generateMipmap(gl.TEXTURE_2D)
+                        needMipmap && gl.generateMipmap(gl.TEXTURE_2D)
                     }
                     break
                 default:
@@ -211,7 +216,7 @@ function createTexture(
                             gl.TEXTURE_MIN_FILTER,
                             gl.NEAREST_MIPMAP_LINEAR
                         )
-                        gl.generateMipmap(gl.TEXTURE_2D)
+                        needMipmap && gl.generateMipmap(gl.TEXTURE_2D)
                     }
                     break
             }
@@ -233,7 +238,7 @@ export function createFramebuffer(
     level: number,
     setting: TextureSetting = DEFAULT_TEXTURE_SETTING
 ): MyWebGLFramebuffer {
-    const texture = createTexture(gl, 'T2D', setting, 400, 300)
+    const texture = createTexture(gl, 'T2D', setting, 'C4I8', 400, 300)
     const framebuffer = gl.createFramebuffer() as WebGLFramebuffer
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer)
@@ -279,7 +284,7 @@ export function getImageTexture(
         loading = true
     })
     let _source = image
-    const texture = createTexture(gl, 'T2D', setting)
+    const texture = createTexture(gl, 'T2D', setting, 'C4I8')
     return {
         bindChannel: (id, index) => {
             if (loading) {
@@ -287,16 +292,19 @@ export function getImageTexture(
                 gl.activeTexture(gl.TEXTURE0 + index)
                 gl.bindTexture(gl.TEXTURE_2D, texture)
 
+                const format = format2GL('C4I8')
+
                 gl.texImage2D(
                     gl.TEXTURE_2D,
                     0,
-                    gl.RGBA,
-                    gl.RGBA,
-                    gl.UNSIGNED_BYTE,
+                    format.format,
+                    format.external,
+                    format.type,
                     _source
                 )
-
-                gl.generateMipmap(gl.TEXTURE_2D)
+                if (!setting.filter || setting.filter === 'MIPMAP') {
+                    gl.generateMipmap(gl.TEXTURE_2D)
+                }
             }
         },
     }
@@ -359,5 +367,79 @@ export function handleMouseEvent(
             canvas.removeEventListener('mouseup', mouseUp)
             canvas.removeEventListener('mousemove', mouseMove)
         },
+    }
+}
+
+export function format2GL(format: Format): GLFormat {
+    const GL = WebGL2RenderingContext
+    switch (format) {
+        case 'C4I8':
+            return {
+                format: GL.RGBA8,
+                external: GL.RGBA,
+                type: GL.UNSIGNED_BYTE,
+            }
+        case 'C1I8':
+            return {
+                format: GL.R8,
+                external: GL.RED,
+                type: GL.UNSIGNED_BYTE,
+            }
+        case 'C1F16':
+            return {
+                format: GL.R16F,
+                external: GL.RED,
+                type: GL.FLOAT,
+            }
+        case 'C4F16':
+            return {
+                format: GL.RGBA16F,
+                external: GL.RGBA,
+                type: GL.FLOAT,
+            }
+        case 'C1F32':
+            return {
+                format: GL.R32F,
+                external: GL.RED,
+                type: GL.FLOAT,
+            }
+
+        case 'C3F32':
+            return {
+                format: GL.RGB32F,
+                external: GL.RGB,
+                type: GL.FLOAT,
+            }
+        case 'Z16':
+            return {
+                format: GL.DEPTH_COMPONENT16,
+                external: GL.DEPTH_COMPONENT,
+                type: GL.UNSIGNED_SHORT,
+            }
+        case 'Z24':
+            return {
+                format: GL.DEPTH_COMPONENT24,
+                external: GL.DEPTH_COMPONENT,
+                type: GL.UNSIGNED_SHORT,
+            }
+        case 'Z32':
+            return {
+                format: GL.DEPTH_COMPONENT32F,
+                external: GL.DEPTH_COMPONENT,
+                type: GL.UNSIGNED_SHORT,
+            }
+        case 'UNKNOW':
+            return {
+                format: GL.RGBA,
+                external: GL.RGBA,
+                type: GL.UNSIGNED_BYTE,
+            }
+        case 'C4F32':
+        default:
+            return {
+                format: GL.RGBA32F,
+                external: GL.RGBA,
+                type: GL.FLOAT,
+            }
     }
 }

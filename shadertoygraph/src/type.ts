@@ -100,6 +100,21 @@ export type ImageTextureSetting = {
     vflip: boolean
 } & TextureSetting
 
-// export type TextureImage2DLocation = {
-//     bindTexture(): void
-// }
+export type Format =
+    | 'C4I8'
+    | 'C1I8'
+    | 'C1F16'
+    | 'C4F16'
+    | 'C1F32'
+    | 'C4F32'
+    | 'C3F32'
+    | 'Z16'
+    | 'Z24'
+    | 'Z32'
+    | 'UNKNOW'
+
+export type GLFormat = {
+    format: number
+    external: number
+    type: number
+}

@@ -2,12 +2,16 @@ import {
     AttribLocation,
     CanvasMouseHandler,
     CanvasMouseMetadata,
+    Image2D,
+    ImageTextureSetting,
     MyWebGLFramebuffer,
+    TextureSetting,
+    TextureType,
     UniformLocation,
 } from './type'
 
 export function createProgram(
-    gl: WebGLRenderingContext,
+    gl: WebGL2RenderingContext,
     vertex: string,
     fragment: string
 ) {
@@ -34,12 +38,12 @@ export function createProgram(
 }
 
 enum ShaderType {
-    VERTEX_SHADER = WebGLRenderingContext.VERTEX_SHADER,
-    FRAGMENT_SHADER = WebGLRenderingContext.FRAGMENT_SHADER,
+    VERTEX_SHADER = WebGL2RenderingContext.VERTEX_SHADER,
+    FRAGMENT_SHADER = WebGL2RenderingContext.FRAGMENT_SHADER,
 }
 
 export function compileShader(
-    gl: WebGLRenderingContext,
+    gl: WebGL2RenderingContext,
     shaderSource: string,
     shaderType: ShaderType
 ) {
@@ -56,7 +60,7 @@ export function compileShader(
 }
 
 export function getAttribLocation(
-    gl: WebGLRenderingContext,
+    gl: WebGL2RenderingContext,
     program: WebGLProgram,
     name: string
 ): AttribLocation {
@@ -89,7 +93,7 @@ export function getAttribLocation(
 }
 
 export function getUniformLocation(
-    gl: WebGLRenderingContext,
+    gl: WebGL2RenderingContext,
     program: WebGLProgram,
     name: string
 ): UniformLocation {
@@ -113,25 +117,125 @@ export function getUniformLocation(
     }
 }
 
-export function createFramebuffer(
-    gl: WebGLRenderingContext,
-    level: number
-): MyWebGLFramebuffer {
-    // const id = gl.getUniformLocation
+function createTexture(
+    gl: WebGL2RenderingContext,
+    type: TextureType,
+    setting: TextureSetting,
+    width?: number,
+    height?: number
+): WebGLTexture {
     const texture = gl.createTexture() as WebGLTexture
+    if (texture) {
+        const wrap = setting.wrap === 'CLAMP' ? gl.CLAMP_TO_EDGE : gl.REPEAT
+
+        if (type === 'T2D') {
+            gl.bindTexture(gl.TEXTURE_2D, texture)
+
+            if ('vflip' in setting) {
+                const imgSetting = setting as ImageTextureSetting
+                gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, imgSetting.vflip)
+                gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false)
+                gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE)
+            } else {
+                width = width || 0
+                height = height || 0
+                gl.texImage2D(
+                    gl.TEXTURE_2D,
+                    0,
+                    gl.RGBA,
+                    width,
+                    height,
+                    0,
+                    gl.RGBA,
+                    gl.UNSIGNED_BYTE,
+                    null
+                )
+            }
+
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrap)
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, wrap)
+
+            switch (setting.filter) {
+                case 'NONE':
+                    {
+                        gl.texParameteri(
+                            gl.TEXTURE_2D,
+                            gl.TEXTURE_MAG_FILTER,
+                            gl.NEAREST
+                        )
+                        gl.texParameteri(
+                            gl.TEXTURE_2D,
+                            gl.TEXTURE_MIN_FILTER,
+                            gl.NEAREST
+                        )
+                    }
+                    break
+                case 'LINEAR':
+                    {
+                        gl.texParameteri(
+                            gl.TEXTURE_2D,
+                            gl.TEXTURE_MAG_FILTER,
+                            gl.LINEAR
+                        )
+                        gl.texParameteri(
+                            gl.TEXTURE_2D,
+                            gl.TEXTURE_MIN_FILTER,
+                            gl.LINEAR
+                        )
+                    }
+                    break
+                case 'MIPMAP':
+                    {
+                        gl.texParameteri(
+                            gl.TEXTURE_2D,
+                            gl.TEXTURE_MAG_FILTER,
+                            gl.LINEAR
+                        )
+                        gl.texParameteri(
+                            gl.TEXTURE_2D,
+                            gl.TEXTURE_MIN_FILTER,
+                            gl.LINEAR_MIPMAP_LINEAR
+                        )
+                        gl.generateMipmap(gl.TEXTURE_2D)
+                    }
+                    break
+                default:
+                    {
+                        gl.texParameteri(
+                            gl.TEXTURE_2D,
+                            gl.TEXTURE_MAG_FILTER,
+                            gl.NEAREST
+                        )
+                        gl.texParameteri(
+                            gl.TEXTURE_2D,
+                            gl.TEXTURE_MIN_FILTER,
+                            gl.NEAREST_MIPMAP_LINEAR
+                        )
+                        gl.generateMipmap(gl.TEXTURE_2D)
+                    }
+                    break
+            }
+
+            // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false)
+            gl.bindTexture(gl.TEXTURE_2D, null)
+        }
+    }
+    return texture
+}
+
+const DEFAULT_TEXTURE_SETTING: TextureSetting = {
+    wrap: 'CLAMP',
+    filter: 'LINEAR',
+}
+
+export function createFramebuffer(
+    gl: WebGL2RenderingContext,
+    level: number,
+    setting: TextureSetting = DEFAULT_TEXTURE_SETTING
+): MyWebGLFramebuffer {
+    const texture = createTexture(gl, 'T2D', setting, 400, 300)
     const framebuffer = gl.createFramebuffer() as WebGLFramebuffer
-    gl.bindTexture(gl.TEXTURE_2D, texture)
-    gl.texImage2D(
-        gl.TEXTURE_2D,
-        level,
-        gl.RGBA,
-        400,
-        300,
-        0,
-        gl.RGBA,
-        gl.UNSIGNED_BYTE,
-        null
-    )
+
     gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer)
     gl.framebufferTexture2D(
         gl.FRAMEBUFFER,
@@ -148,13 +252,51 @@ export function createFramebuffer(
             // gl.bindRenderbuffer(gl.RENDERBUFFER, framebuffer)
             gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer)
         },
-        createBindChannel: (channel: number) => {
-            return (id: WebGLUniformLocation) => {
-                const tmp = 0
-                gl.uniform1i(id, tmp)
-                gl.activeTexture(gl.TEXTURE0 + tmp)
+        bindChannel: (id: WebGLUniformLocation, index: number) => {
+            gl.uniform1i(id, index)
+            gl.activeTexture(gl.TEXTURE0 + index)
+            gl.bindTexture(gl.TEXTURE_2D, texture)
+            // console.log('create')
+        },
+    }
+}
+
+const DEFAULT_IMAGE_TEXTURE_SETTING: ImageTextureSetting = {
+    vflip: true,
+    wrap: 'REPEAT',
+    filter: 'MIPMAP',
+}
+
+export function getImageTexture(
+    gl: WebGL2RenderingContext,
+    path: string,
+    setting: ImageTextureSetting = DEFAULT_IMAGE_TEXTURE_SETTING
+): Image2D {
+    let loading = false
+    const image = new Image()
+    image.src = path
+    image.addEventListener('load', () => {
+        loading = true
+    })
+    let _source = image
+    const texture = createTexture(gl, 'T2D', setting)
+    return {
+        bindChannel: (id, index) => {
+            if (loading) {
+                gl.uniform1i(id, index)
+                gl.activeTexture(gl.TEXTURE0 + index)
                 gl.bindTexture(gl.TEXTURE_2D, texture)
-                // console.log(tmp)
+
+                gl.texImage2D(
+                    gl.TEXTURE_2D,
+                    0,
+                    gl.RGBA,
+                    gl.RGBA,
+                    gl.UNSIGNED_BYTE,
+                    _source
+                )
+
+                gl.generateMipmap(gl.TEXTURE_2D)
             }
         },
     }
@@ -219,38 +361,3 @@ export function handleMouseEvent(
         },
     }
 }
-
-// export function getTexture(
-//     gl: WebGLRenderingContext,
-//     program: WebGLProgram,
-//     name: string,
-//     source: TexImageSource
-// ): TextureImage2DLocation {
-//     const last = name.charAt(name.length - 1)
-//     const index = Number(last)
-//     if (index.toString() !== last) {
-//         throw new Error(`(${name}) iChannel 名称最后一位需要指示 index`)
-//     }
-//     const loc = gl.getUniformLocation(program, name)
-//     const texture = gl.createTexture() as WebGLTexture
-//     let tmp = source
-//     return {
-//         bindTexture() {
-//             if (!tmp) {
-//                 return
-//             }
-//             gl.uniform1i(loc, index)
-//             gl.activeTexture(gl.TEXTURE0 + index)
-//             gl.bindTexture(gl.TEXTURE_2D, texture)
-
-//             gl.texImage2D(
-//                 gl.TEXTURE_2D,
-//                 0,
-//                 gl.RGBA,
-//                 gl.RGBA,
-//                 gl.UNSIGNED_BYTE,
-//                 source
-//             )
-//         },
-//     }
-// }

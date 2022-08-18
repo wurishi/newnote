@@ -10,6 +10,7 @@ import {
     createFramebuffer,
     createProgram,
     getAttribLocation,
+    getImageTexture,
     getUniformLocation,
     handleMouseEvent,
 } from './utils'
@@ -51,24 +52,11 @@ export function createRender(shaderToy: ShaderToy) {
                     if (channel.type === 'Buffer') {
                         const myfb = framebufferMap.get(channel.value)
                         if (myfb) {
-                            render.channels?.push(myfb.createBindChannel(i))
+                            render.channels?.push(myfb.bindChannel)
                         }
-                        // if (!framebufferMap.has(channel.value)) {
-                        //     framebufferMap.set(
-                        //         channel.value,
-                        //         getFramebuffer(render.gl, i)
-                        //     )
-                        // }
-                        // const c = bufferMap.get(
-                        //     channel.value
-                        // ) as HTMLCanvasElement
-                        // const texture = getTexture(
-                        //     render.gl,
-                        //     render.program,
-                        //     'iChannel' + i,
-                        //     c
-                        // )
-                        // render.channels?.push(texture)
+                    } else if (channel.type === 'Img') {
+                        const img = getImageTexture(render.gl, channel.value)
+                        render.channels?.push(img.bindChannel)
                     }
                 })
             }
@@ -182,7 +170,7 @@ export function render(iTime: number, iFrame: number, iTimeDelta: number) {
                 r.program,
                 `iChannel${channelIdx}`
             ) as WebGLUniformLocation
-            c(id)
+            c(id, channelIdx)
         })
 
         props.a_position.bindBuffer()

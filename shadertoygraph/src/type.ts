@@ -18,6 +18,7 @@ type ShaderBufferChannel = ShaderChannel & {
 
 type ShaderImageChannel = ShaderChannel & {
     type: 'Img'
+    value: string
 }
 
 export type ShaderInstance = {
@@ -29,7 +30,7 @@ export type ShaderInstance = {
 export type RenderInstance = {
     name: string
     canvas: HTMLCanvasElement
-    gl: WebGLRenderingContext
+    gl: WebGL2RenderingContext
     program: WebGLProgram
     props: {
         a_position: AttribLocation
@@ -57,14 +58,14 @@ export type UniformLocation = {
 }
 
 export type BindChannel = {
-    (id: WebGLUniformLocation): void
+    (id: WebGLUniformLocation, index: number): void
 }
 
 export type MyWebGLFramebuffer = {
     framebuffer: WebGLFramebuffer
     texture: WebGLTexture
     renderFramebuffer(): void
-    createBindChannel(channel: number): BindChannel
+    bindChannel: BindChannel
 }
 
 export type CanvasMouseMetadata = {
@@ -80,6 +81,24 @@ export type CanvasMouseHandler = {
     data: CanvasMouseMetadata
     clear(): void
 }
+
+export type Image2D = {
+    bindChannel: BindChannel
+}
+
+export type TextureFilterSetting = 'NONE' | 'LINEAR' | 'MIPMAP' | null
+export type TextureWrapSetting = 'CLAMP' | 'REPEAT'
+
+export type TextureType = 'T2D'
+
+export type TextureSetting = {
+    filter?: TextureFilterSetting
+    wrap: TextureWrapSetting
+}
+
+export type ImageTextureSetting = {
+    vflip: boolean
+} & TextureSetting
 
 // export type TextureImage2DLocation = {
 //     bindTexture(): void

@@ -14,11 +14,13 @@ type ShaderChannel = {
 type ShaderBufferChannel = ShaderChannel & {
     type: 'Buffer'
     value: ShaderBufferName
+    setting?: TextureSetting
 }
 
 type ShaderImageChannel = ShaderChannel & {
     type: 'Img'
     value: string
+    setting?: ImageTextureSetting
 }
 
 export type ShaderInstance = {
@@ -33,12 +35,12 @@ export type RenderInstance = {
     gl: WebGL2RenderingContext
     program: WebGLProgram
     props: {
-        // a_position: AttribLocation
         iResolution: UniformLocation
         iTime: UniformLocation
         iFrame: UniformLocation
         iTimeDelta: UniformLocation
         iMouse: UniformLocation
+        iDate: UniformLocation
     }
     framebuffer?: MyWebGLFramebuffer
     channels?: BindChannel[]
@@ -87,7 +89,7 @@ export type Image2D = {
     bindChannel: BindChannel
 }
 
-export type TextureFilterSetting = 'NONE' | 'LINEAR' | 'MIPMAP' | null
+export type TextureFilterSetting = 'NONE' | 'LINEAR' | 'MIPMAP' | 'NEAREST'
 export type TextureWrapSetting = 'CLAMP' | 'REPEAT'
 
 export type TextureType = 'T2D'
@@ -121,5 +123,5 @@ export type GLFormat = {
 }
 
 export type GPUDraw = {
-    draw: () => void
+    (): void
 }

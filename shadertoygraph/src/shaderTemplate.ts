@@ -14,7 +14,13 @@ void main() {
 `
 
 export const fragment = `#version 300 es
+#ifdef GL_ES
 precision {PRECISION} float;
+precision {PRECISION} int;
+precision mediump sampler3D;
+#endif
+
+#define HW_PERFORMANCE 1;
 
 uniform vec3    iResolution;
 uniform float   iTime;
@@ -22,8 +28,7 @@ uniform float   iTime;
 // uniform float iChannelTime[4];
 
 uniform vec4    iMouse;
-
-// uniform vec4 iDate;
+uniform vec4    iDate;
 // uniform float iSampleRate;
 // uniform vec3 iChannelResolution[4];
 
@@ -38,8 +43,6 @@ uniform sampler2D iChannel1;
 uniform sampler2D iChannel2;
 uniform sampler2D iChannel3;
 
-// out vec4 outputColor;
-
 {COMMON}
 
 {USER_FRAGMENT}
@@ -49,13 +52,55 @@ out vec4 shadertoy_out_color;
 void main() {
   shadertoy_out_color = vec4(1.0,1.0,1.0,1.0);
   vec4 color = vec4(0.0, 0.0, 0.0, 1.0);
-  // mainImage(outputColor, gl_FragCoord.xy);
   mainImage(color, gl_FragCoord.xy);
   if(shadertoy_out_color.x < 0.0) color = vec4(1.0, 0.0, 0.0, 1.0);
   if(shadertoy_out_color.y < 0.0) color = vec4(0.0, 1.0, 0.0, 1.0);
   if(shadertoy_out_color.z < 0.0) color = vec4(0.0, 0.0, 1.0, 1.0);
   if(shadertoy_out_color.w < 0.0) color = vec4(1.0, 1.0, 0.0, 1.0);
   shadertoy_out_color = vec4(color.xyz, 1.0);
+}
+`
+
+export const buffFragment = `#version 300 es
+#ifdef GL_ES
+precision {PRECISION} float;
+precision {PRECISION} int;
+precision mediump sampler3D;
+#endif
+
+#define HW_PERFORMANCE 1;
+
+uniform vec3    iResolution;
+uniform float   iTime;
+
+// uniform float iChannelTime[4];
+
+uniform vec4    iMouse;
+uniform vec4    iDate;
+// uniform float iSampleRate;
+// uniform vec3 iChannelResolution[4];
+
+uniform int     iFrame;
+uniform float   iTimeDelta;
+
+// uniform float iFrameRate;
+
+
+uniform sampler2D iChannel0;
+uniform sampler2D iChannel1;
+uniform sampler2D iChannel2;
+uniform sampler2D iChannel3;
+
+{COMMON}
+
+{USER_FRAGMENT}
+
+out vec4 outColor;
+
+void main() {
+  vec4 color = vec4(0.0, 0.0, 0.0, 1.0);
+  mainImage(color, gl_FragCoord.xy);
+  outColor = color;
 }
 `
 

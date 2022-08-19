@@ -15,7 +15,13 @@ import {
     getUniformLocation,
     handleMouseEvent,
 } from './utils'
-import { vertex, fragment, DEFAULT_SOUND, newVertex } from './shaderTemplate'
+import {
+    vertex,
+    fragment,
+    DEFAULT_SOUND,
+    newVertex,
+    buffFragment,
+} from './shaderTemplate'
 
 enum PRECISION {
     MEDIUMP = 'mediump',
@@ -75,19 +81,14 @@ function createRenderInstance(
     const gl = rootGL as WebGL2RenderingContext
     if (gl) {
         const v = newVertex
-        let f = fragment
+        let f = shader.name.startsWith('Buffer') ? buffFragment : fragment
         f = f.replace('{COMMON}', '')
-        f = f.replace('{PRECISION}', PRECISION.MEDIUMP)
+        f = f.replaceAll('{PRECISION}', PRECISION.MEDIUMP)
         f = f.replace('{USER_FRAGMENT}', shader.getFragment())
         f = f.replace('{MAIN_SOUND}', DEFAULT_SOUND)
         const program = createProgram(gl, v, f)
 
         const gpuDraw = createDrawFullScreenTriangle(gl, program)
-
-        const a_position = getAttribLocation(gl, program, 'a_position')
-        a_position.setFloat32(
-            new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1])
-        )
 
         let framebuffer: MyWebGLFramebuffer | undefined = undefined
         if (shader.name.startsWith('Buffer')) {
@@ -101,12 +102,12 @@ function createRenderInstance(
             gl,
             program,
             props: {
-                // a_position,
                 iResolution: getUniformLocation(gl, program, 'iResolution'),
                 iTime: getUniformLocation(gl, program, 'iTime'),
                 iFrame: getUniformLocation(gl, program, 'iFrame'),
                 iTimeDelta: getUniformLocation(gl, program, 'iTimeDelta'),
                 iMouse: getUniformLocation(gl, program, 'iMouse'),
+                iDate: getUniformLocation(gl, program, 'iDate'),
             },
             framebuffer,
             draw: gpuDraw,
@@ -142,6 +143,13 @@ export function render(iTime: number, iFrame: number, iTimeDelta: number) {
         wh.width = rootCanvas?.width || 0
         wh.height = rootCanvas?.height || 0
     }
+    const d = new Date()
+    const iDate = [
+        d.getFullYear(), // the year (four digits)
+        d.getMonth(), // the month (from 0-11)
+        d.getDate(), // the day of the month (from 1-31)
+        d.getHours() * 60.0 * 60.0 + d.getMinutes() * 60 + d.getSeconds(),
+    ]
     let posX = 0
     let posY = 0
     let oriX = 0
@@ -170,6 +178,7 @@ export function render(iTime: number, iFrame: number, iTimeDelta: number) {
         posY,
         oriX,
         oriY,
+        iDate,
     }
     // if (firstRender) {
     //     firstRender = false
@@ -179,9 +188,20 @@ export function render(iTime: number, iFrame: number, iTimeDelta: number) {
 }
 
 function renderListRun(props: any, first = false) {
-    const { resize, wh, iTime, iFrame, iTimeDelta, posX, posY, oriX, oriY } =
-        props
+    const {
+        resize,
+        wh,
+        iTime,
+        iFrame,
+        iTimeDelta,
+        posX,
+        posY,
+        oriX,
+        oriY,
+        iDate,
+    } = props
     renderList.forEach((r) => {
+        // console.log(r.name)
         const { framebuffer, gl, props } = r
         // if (first) {
         //     if (r.name.startsWith('Buffer')) {
@@ -203,13 +223,13 @@ function renderListRun(props: any, first = false) {
         gl.useProgram(r.program)
         // gl.clear(gl.COLOR_BUFFER_BIT);
 
-        r.channels?.forEach((c, channelIdx) => {
+        r.channels?.forEach((bind, channelIdx) => {
             // gl.getUniformLocation(program, name)
             const id = gl.getUniformLocation(
                 r.program,
                 `iChannel${channelIdx}`
             ) as WebGLUniformLocation
-            c(id, channelIdx)
+            bind(id, channelIdx)
         })
 
         // props.a_position.bindBuffer()
@@ -221,6 +241,7 @@ function renderListRun(props: any, first = false) {
         props.iFrame.uniform1i(iFrame)
         props.iTimeDelta.uniform1f(iTimeDelta)
         props.iMouse.uniform4fv([posX, posY, oriX, oriY])
+        props.iDate.uniform4fv(iDate)
 
         if (framebuffer) {
             framebuffer.renderFramebuffer()
@@ -228,13 +249,13 @@ function renderListRun(props: any, first = false) {
             gl.bindFramebuffer(gl.FRAMEBUFFER, null)
         }
 
-        // gl.drawArrays(r.gl.TRIANGLES, 0, 6)
-        r.draw.draw()
+        r.draw()
     })
 }
 
 function init() {
     rootCanvas = document.createElement('canvas')
+    rootCanvas.style.marginTop = '50px'
     rootCanvas.style.width = '400px'
     rootCanvas.style.height = '300px'
     document.body.appendChild(rootCanvas)

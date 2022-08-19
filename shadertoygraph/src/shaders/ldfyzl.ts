@@ -10,7 +10,7 @@ export default {
             getFragment() {
                 return Image
             },
-            channels: [{ type: 'Img', value: '/img.jpeg' }],
+            channels: [{ type: 'Img', value: '/textures/Abstract1.jpeg' }],
         },
     ],
 } as ShaderToy

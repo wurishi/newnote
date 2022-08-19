@@ -2,6 +2,7 @@ import Stats from 'stats.js'
 import { GUI } from 'dat.gui'
 import { createRender, render as renderFn } from './render'
 import { ShaderToy } from './type'
+import NameConfig from './name'
 
 const shaders = import.meta.glob('./shaders/*.ts')
 
@@ -24,14 +25,28 @@ function init(): Main {
             create()
         },
     }
-    const shaderNameList = Object.keys(shaders)
+    const keyToUrlMap = new Map<string, string>()
+    const nameRecord = NameConfig as Record<string, string>
+    const shaderNameList = Object.keys(shaders).map((url) => {
+        let arr = url.split('/')
+        arr = arr[arr.length - 1].split('.')
+        let key = arr[0]
+        if (nameRecord[key]) {
+            key = `${nameRecord[key]} (${key})`
+        }
+        keyToUrlMap.set(key, url)
+        return key
+    })
     const gui = new GUI()
-    gui.add(guiData, 'current', shaderNameList).onChange((val) => {
-        const fn = shaders[val]
-        fn().then((m) => {
-            currentShaderToy = m.default
-            create()
-        })
+    gui.add(guiData, 'current', shaderNameList).onChange((key) => {
+        const url = keyToUrlMap.get(key)
+        if (url) {
+            const fn = shaders[url]
+            fn().then((m) => {
+                currentShaderToy = m.default
+                create()
+            })
+        }
     })
 
     gui.add(guiData, 'ReLaunch')
@@ -53,7 +68,8 @@ function create() {
         aLink = document.createElement('a')
         aLink.href = 'https://www.shadertoy.com/view/' + currentShaderToy.key
         aLink.target = '_blank'
-        aLink.innerHTML = currentShaderToy.key
+        aLink.innerHTML =
+            currentShaderToy.name + '(' + currentShaderToy.key + ')'
         document.body.appendChild(aLink)
     }
 }

@@ -12,6 +12,7 @@ import {
     TextureType,
     UniformLocation,
 } from './type'
+import ImageList from './image'
 
 export function createProgram(
     gl: WebGL2RenderingContext,
@@ -76,15 +77,13 @@ export function createDrawFullScreenTriangle(
     )
     gl.bindBuffer(gl.ARRAY_BUFFER, null)
 
-    return {
-        draw: () => {
-            gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
-            gl.vertexAttribPointer(vpos, 2, gl.FLOAT, false, 0, 0)
-            gl.enableVertexAttribArray(vpos)
-            gl.drawArrays(gl.TRIANGLES, 0, 3)
-            gl.disableVertexAttribArray(vpos)
-            gl.bindBuffer(gl.ARRAY_BUFFER, null)
-        },
+    return () => {
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+        gl.vertexAttribPointer(vpos, 2, gl.FLOAT, false, 0, 0)
+        gl.enableVertexAttribArray(vpos)
+        gl.drawArrays(gl.TRIANGLES, 0, 3)
+        gl.disableVertexAttribArray(vpos)
+        gl.bindBuffer(gl.ARRAY_BUFFER, null)
     }
 }
 
@@ -160,10 +159,12 @@ function createTexture(
         const glFormat = format2GL(format)
         if (type === 'T2D') {
             let needMipmap = true
+            let isImage = false
             gl.bindTexture(gl.TEXTURE_2D, texture)
 
             if ('vflip' in setting) {
                 needMipmap = false
+                isImage = true
                 const imgSetting = setting as ImageTextureSetting
                 gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, imgSetting.vflip)
                 gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false)
@@ -187,75 +188,41 @@ function createTexture(
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrap)
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, wrap)
 
+            let magFilter = isImage ? gl.LINEAR : gl.NEAREST
+            let minFilter = gl.NEAREST_MIPMAP_LINEAR
+
             switch (setting.filter) {
                 case 'NONE':
                     {
-                        gl.texParameteri(
-                            gl.TEXTURE_2D,
-                            gl.TEXTURE_MAG_FILTER,
-                            gl.NEAREST
-                        )
-                        gl.texParameteri(
-                            gl.TEXTURE_2D,
-                            gl.TEXTURE_MIN_FILTER,
-                            gl.NEAREST
-                        )
+                        magFilter = minFilter = gl.NEAREST
+                        needMipmap = false
                     }
                     break
                 case 'LINEAR':
                     {
-                        gl.texParameteri(
-                            gl.TEXTURE_2D,
-                            gl.TEXTURE_MAG_FILTER,
-                            gl.LINEAR
-                        )
-                        gl.texParameteri(
-                            gl.TEXTURE_2D,
-                            gl.TEXTURE_MIN_FILTER,
-                            gl.LINEAR
-                        )
+                        magFilter = minFilter = gl.LINEAR
+                        needMipmap = false
                     }
                     break
                 case 'MIPMAP':
                     {
-                        gl.texParameteri(
-                            gl.TEXTURE_2D,
-                            gl.TEXTURE_MAG_FILTER,
-                            gl.LINEAR
-                        )
-                        gl.texParameteri(
-                            gl.TEXTURE_2D,
-                            gl.TEXTURE_MIN_FILTER,
-                            gl.LINEAR_MIPMAP_LINEAR
-                        )
-                        needMipmap && gl.generateMipmap(gl.TEXTURE_2D)
-                    }
-                    break
-                default:
-                    {
-                        gl.texParameteri(
-                            gl.TEXTURE_2D,
-                            gl.TEXTURE_MAG_FILTER,
-                            gl.NEAREST
-                        )
-                        gl.texParameteri(
-                            gl.TEXTURE_2D,
-                            gl.TEXTURE_MIN_FILTER,
-                            gl.NEAREST_MIPMAP_LINEAR
-                        )
-                        needMipmap && gl.generateMipmap(gl.TEXTURE_2D)
+                        magFilter = gl.LINEAR
+                        minFilter = gl.LINEAR_MIPMAP_LINEAR
                     }
                     break
             }
 
-            // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false)
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, magFilter)
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, minFilter)
+            needMipmap && gl.generateMipmap(gl.TEXTURE_2D)
+
             gl.bindTexture(gl.TEXTURE_2D, null)
         }
     }
     return texture
 }
 
-const DEFAULT_TEXTURE_SETTING: TextureSetting = {
+export const DEFAULT_TEXTURE_SETTING: TextureSetting = {
     wrap: 'CLAMP',
     filter: 'LINEAR',
 }
@@ -275,7 +242,7 @@ export function createFramebuffer(
             gl.COLOR_ATTACHMENT0,
             gl.TEXTURE_2D,
             texture,
-            level
+            0
         )
         return {
             texture,
@@ -309,7 +276,7 @@ export function createFramebuffer(
     }
 }
 
-const DEFAULT_IMAGE_TEXTURE_SETTING: ImageTextureSetting = {
+export const DEFAULT_IMAGE_TEXTURE_SETTING: ImageTextureSetting = {
     vflip: true,
     wrap: 'REPEAT',
     filter: 'MIPMAP',
@@ -327,7 +294,12 @@ export function getImageTexture(
         loading = true
     })
     let _source = image
-    const texture = createTexture(gl, 'T2D', setting, 'C4I8')
+
+    let f: Format = 'C4I8'
+    const imgConfig = ImageList.find((it) => it.url === path)
+    imgConfig && (f = imgConfig.format)
+
+    const texture = createTexture(gl, 'T2D', setting, f)
     return {
         bindChannel: (id, index) => {
             if (loading) {
@@ -335,7 +307,7 @@ export function getImageTexture(
                 gl.activeTexture(gl.TEXTURE0 + index)
                 gl.bindTexture(gl.TEXTURE_2D, texture)
 
-                const format = format2GL('C4I8')
+                const format = format2GL(f)
 
                 gl.texImage2D(
                     gl.TEXTURE_2D,

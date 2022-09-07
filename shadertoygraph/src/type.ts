@@ -47,6 +47,10 @@ export type RenderInstance = {
     draw: GPUDraw
 }
 
+export type CopyRender = {
+    (pos: number[], source: WebGLTexture, target: WebGLTexture): void
+}
+
 export type AttribLocation = {
     setFloat32(arr: Float32Array): void
     bindBuffer(): void
@@ -69,6 +73,7 @@ export type MyWebGLFramebuffer = {
     // texture: WebGLTexture
     renderFramebuffer(): void
     bindChannel: BindChannel
+    drawCopy(pos: number[]): void
 }
 
 export type CanvasMouseMetadata = {
@@ -124,4 +129,229 @@ export type GLFormat = {
 
 export type GPUDraw = {
     (): void
+}
+
+export type PassType = 'image' | 'sound' | 'buffer' | 'common' | 'cubemap'
+
+export type EffectPassInfoType =
+    | PassType
+    | 'volume'
+    | 'texture'
+    | 'webcam'
+    | 'mic'
+    | 'music'
+    | 'musicstream'
+    | 'keyboard'
+    | 'video'
+
+export type EffectPassInfo = {
+    channel: number
+    type: EffectPassInfoType
+    src: string
+    sampler: Sampler
+}
+
+export type EffectPassInput = {
+    mInfo: EffectPassInfo
+    globject?: Texture
+    loaded?: boolean
+    texture?: {
+        image: HTMLImageElement
+        destroy: () => void
+    }
+    volume?: {
+        image: { xres: number; yres: number; zres: number }
+        destroy: () => void
+    }
+    buffer?: {
+        id: number
+        destroy: () => void
+    }
+} | null
+
+export type EffectPassSoundProps = {
+    mSampleRate: number
+    mPlayTime: number
+    mPlaySamples: number
+    mTextureDimensions: number
+    mTmpBufferSamples: number
+    mPlaying: boolean
+
+    mBuffer?: AudioBuffer
+    mRenderTexture?: Texture
+    mRenderFBO?: RenderTarget
+    mData?: Uint8Array
+    mPlayNode?: AudioBufferSourceNode
+
+    mSoundShaderCompiled?: boolean
+}
+
+export enum TEXTYPE {
+    T2D = 0,
+    T3D = 1,
+    CUBEMAP = 2,
+}
+
+export enum TEXFMT {
+    C4I8 = 0,
+    C1I8 = 1,
+    C1F16 = 2,
+    C4F16 = 3,
+    C1F32 = 4,
+    C4F32 = 5,
+    Z16 = 6,
+    Z24 = 7,
+    Z32 = 8,
+    C3F32 = 9,
+}
+
+export enum CLEAR {
+    Color = 1,
+    ZBuffer = 2,
+    Stencil = 4,
+}
+
+export enum TEXWRP {
+    CLAMP = 0,
+    REPEAT = 1,
+}
+
+export enum BUFTYPE {
+    STATIC = 0,
+    DYNAMIC = 1,
+}
+
+export enum PRIMTYPE {
+    POINTS = 0,
+    LINES = 1,
+    LINE_LOOP = 2,
+    LINE_STRIP = 3,
+    TRIANGLES = 4,
+    TRIANGLE_STRIP = 5,
+}
+
+export enum RENDSTGATE {
+    WIREFRAME = 0,
+    FRONT_FACE = 1,
+    CULL_FACE = 2,
+    DEPTH_TEST = 3,
+    ALPHA_TO_COVERAGE = 4,
+}
+
+export enum FILTER {
+    NONE = 0,
+    LINEAR = 1,
+    MIPMAP = 2,
+    NONE_MIPMAP = 3,
+}
+
+export enum TYPE {
+    UINT8 = 0,
+    UINT16 = 1,
+    UINT32 = 2,
+    FLOAT16 = 3,
+    FLOAT32 = 4,
+    FLOAT64 = 5,
+}
+
+export type Texture = {
+    id: WebGLTexture
+    xres: number
+    yres: number
+    format: TEXFMT
+    type: TEXTYPE
+    filter: FILTER
+    wrap: TEXWRP
+    vFlip: boolean
+    Destroy(): void
+}
+
+export type RenderTarget = {
+    id: WebGLFramebuffer
+    tex0: Texture
+    Destroy(): void
+}
+
+export type Sampler = {
+    filter: string
+    wrap: string
+    vflip: boolean
+}
+
+export type RenderSampler = {
+    filter: FILTER
+    wrap: TEXWRP
+    vflip: boolean
+}
+
+export type TextureInfo = {
+    failed: boolean
+    needsShaderCompile?: boolean
+}
+
+export type CreateShaderResolveSucc = {
+    succ: true
+    program: WebGLProgram
+    time: number
+    Destroy(): void
+}
+
+export type CreateShaderResolveFail = {
+    succ: false
+    errorType: number
+    errorStr: string
+}
+
+export type CreateShaderResolve = {
+    (state: CreateShaderResolveSucc | CreateShaderResolveFail): void
+}
+
+export type WebGLInfo = {
+    float32Textures: boolean
+    float32Filter?: OES_texture_float_linear
+    float16Textures: boolean
+    float16Filter?: OES_texture_half_float_linear
+    derivatives: boolean
+    drawBuffers: boolean
+    depthTextures: boolean
+    shaderTextureLOD: boolean
+    anisotropic?: EXT_texture_filter_anisotropic
+    renderToFloat32F?: EXT_color_buffer_float
+    debugShader?: WEBGL_debug_shaders
+    asynchCompile?: KHR_parallel_shader_compile
+
+    maxTexSize: number
+    maxCubeSize: number
+    maxRenderbufferSize: number
+    extensions: string[]
+    textureUnits: number
+}
+
+export type PaintParam = {
+    vrData?: any
+    wa?: any
+    da?: any
+    time?: any
+    dtime?: any
+    fps?: any
+    mouseOriX?: any
+    mouseOriY?: any
+    mousePosX?: any
+    mousePosY?: any
+    xres?: any
+    yres?: any
+    isPaused?: any
+    bufferID?: any
+    bufferNeedsMimaps?: any
+    buffers?: any
+    cubeBuffers?: any
+    keyboard?: any
+    effect?: any
+}
+
+export type EffectBuffer = {
+    texture: (Texture | null)[]
+    target: any[]
+    resolution: { [0]: number; [1]: number }
+    lastRenderDone: number
 }

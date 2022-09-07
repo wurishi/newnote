@@ -104,6 +104,37 @@ void main() {
 }
 `
 
+export const COPY_FRAGMENT1 = `#version 300 es
+#ifdef GL_ES
+precision {PRECISION} float;
+precision {PRECISION} int;
+precision mediump sampler3D;
+#endif
+
+uniform vec4 v;
+uniform sampler2D t;
+out vec4 outColor;
+void main() {
+  vec2 uv = gl_FragCoord.xy / v.zw;
+  outColor = texture(t, vec2(uv.x, 1.0 - uv.y));
+}
+`
+
+export const COPY_FRAGMENT = `#version 300 es
+#ifdef GL_ES
+precision {PRECISION} float;
+precision {PRECISION} int;
+precision mediump sampler3D;
+#endif
+
+uniform vec4 v;
+uniform sampler2D t;
+out vec4 outColor;
+void main() {
+  outColor = textureLod(t, gl_FragCoord.xy / v.zw, 0.0);
+}
+`
+
 export const DEFAULT_SOUND = `
 vec2 mainSound( int samp, float time )
 {

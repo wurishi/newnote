@@ -2,17 +2,23 @@ import {
     AttribLocation,
     CanvasMouseHandler,
     CanvasMouseMetadata,
+    CopyRender,
+    FILTER,
     Format,
     GLFormat,
     GPUDraw,
     Image2D,
     ImageTextureSetting,
     MyWebGLFramebuffer,
+    RenderSampler,
+    Sampler,
     TextureSetting,
     TextureType,
+    TEXWRP,
     UniformLocation,
 } from './type'
 import ImageList from './image'
+import { COPY_FRAGMENT, newVertex } from './shaderTemplate'
 
 export function createProgram(
     gl: WebGL2RenderingContext,
@@ -82,6 +88,32 @@ export function createDrawFullScreenTriangle(
         gl.vertexAttribPointer(vpos, 2, gl.FLOAT, false, 0, 0)
         gl.enableVertexAttribArray(vpos)
         gl.drawArrays(gl.TRIANGLES, 0, 3)
+        gl.disableVertexAttribArray(vpos)
+        gl.bindBuffer(gl.ARRAY_BUFFER, null)
+    }
+}
+
+export function createDrawUnitQuad(
+    gl: WebGL2RenderingContext,
+    program: WebGLProgram
+): GPUDraw {
+    const vpos = gl.getAttribLocation(program, 'pos')
+    let buffer: WebGLBuffer = gl.createBuffer() as WebGLBuffer
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+    gl.bufferData(
+        gl.ARRAY_BUFFER,
+        new Float32Array([
+            -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0,
+        ]),
+        gl.STATIC_DRAW
+    )
+    gl.bindBuffer(gl.ARRAY_BUFFER, null)
+
+    return () => {
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+        gl.vertexAttribPointer(vpos, 2, gl.FLOAT, false, 0, 0)
+        gl.enableVertexAttribArray(vpos)
+        gl.drawArrays(gl.TRIANGLES, 0, 6)
         gl.disableVertexAttribArray(vpos)
         gl.bindBuffer(gl.ARRAY_BUFFER, null)
     }
@@ -232,6 +264,10 @@ export function createFramebuffer(
     level: number,
     setting: TextureSetting = DEFAULT_TEXTURE_SETTING
 ): MyWebGLFramebuffer {
+    const v = newVertex
+    let f = COPY_FRAGMENT
+    f = f.replaceAll('{PRECISION}', 'mediump')
+
     function createFBO() {
         const texture = createTexture(gl, 'T2D', setting, 'C4I8', 400, 300)
         const framebuffer = gl.createFramebuffer() as WebGLFramebuffer
@@ -244,11 +280,31 @@ export function createFramebuffer(
             texture,
             0
         )
+
+        const copyProgram = createProgram(gl, v, f)
+        const copyDraw = createDrawUnitQuad(gl, copyProgram)
+        const copyPos = getUniformLocation(gl, copyProgram, 'v')
+
         return {
             texture,
             framebuffer,
+            copy: (pos: number[], source: WebGLTexture) => {
+                gl.useProgram(copyProgram)
+
+                copyPos.uniform4fv([0, 0, 400, 300])
+
+                const t = gl.getUniformLocation(copyProgram, 't')
+                gl.uniform1i(t, 0)
+                gl.activeTexture(gl.TEXTURE0)
+                gl.bindTexture(gl.TEXTURE_2D, source)
+
+                gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer)
+
+                copyDraw()
+            },
         }
     }
+
     const fbo1 = createFBO()
     const fbo2 = createFBO()
 
@@ -259,19 +315,27 @@ export function createFramebuffer(
     return {
         renderFramebuffer: () => {
             gl.bindFramebuffer(gl.FRAMEBUFFER, useFramebuffer)
-            flag = !flag
-            if (flag) {
-                useFramebuffer = fbo1.framebuffer
-                useTexture = fbo2.texture
-            } else {
-                useFramebuffer = fbo2.framebuffer
-                useTexture = fbo1.texture
-            }
+            // flag = !flag
+            // if (flag) {
+            //     useFramebuffer = fbo1.framebuffer
+            //     useTexture = fbo2.texture
+            // } else {
+            //     useFramebuffer = fbo2.framebuffer
+            //     useTexture = fbo1.texture
+            // }
         },
         bindChannel: (id: WebGLUniformLocation, index: number) => {
             gl.uniform1i(id, index)
             gl.activeTexture(gl.TEXTURE0 + index)
             gl.bindTexture(gl.TEXTURE_2D, useTexture)
+        },
+        drawCopy: (pos: number[]) => {
+            // if (flag) {
+            //     fbo1.copy(pos, fbo2.texture)
+            // } else {
+            //     fbo2.copy(pos, fbo1.texture)
+            // }
+            fbo2.copy(pos, fbo1.texture)
         },
     }
 }
@@ -456,5 +520,35 @@ export function format2GL(format: Format): GLFormat {
                 external: GL.RGBA,
                 type: GL.FLOAT,
             }
+    }
+}
+
+export function isMobile() {
+    return navigator.userAgent.match(/Android/i) ||
+        navigator.userAgent.match(/webOS/i) ||
+        navigator.userAgent.match(/iPhone/i) ||
+        navigator.userAgent.match(/iPad/i) ||
+        navigator.userAgent.match(/iPod/i) ||
+        navigator.userAgent.match(/BlackBerry/i) ||
+        navigator.userAgent.match(/Windows Phone/i)
+        ? true
+        : false
+}
+
+export function sampler2Renderer(sampler: Sampler): RenderSampler {
+    let filter = FILTER.NONE
+    if (sampler.filter === 'linear') {
+        filter = FILTER.LINEAR
+    } else if (sampler.filter === 'mipmap') {
+        filter = FILTER.MIPMAP
+    }
+    let wrap = TEXWRP.REPEAT
+    if (sampler.wrap === 'clamp') {
+        wrap = TEXWRP.CLAMP
+    }
+    return {
+        filter,
+        wrap,
+        vflip: sampler.vflip,
     }
 }

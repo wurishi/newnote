@@ -22,6 +22,7 @@ import {
     newVertex,
     buffFragment,
 } from './shaderTemplate'
+import MyEffectPass from './myEffectPass'
 
 enum PRECISION {
     MEDIUMP = 'mediump',
@@ -133,9 +134,10 @@ export function resizeCanvasToDisplaySize(
     return false
 }
 
+const wh = { width: 0, height: 0 }
+
 export function render(iTime: number, iFrame: number, iTimeDelta: number) {
     let resize = false
-    const wh = { width: 0, height: 0 }
     if (rootCanvas) {
         resize = resizeCanvasToDisplaySize(rootCanvas, false)
     }
@@ -232,7 +234,6 @@ function renderListRun(props: any, first = false) {
             bind(id, channelIdx)
         })
 
-        // props.a_position.bindBuffer()
         if (resize) {
             props.iResolution.uniform3f(wh.width, wh.height, 1)
         }
@@ -250,6 +251,10 @@ function renderListRun(props: any, first = false) {
         }
 
         r.draw()
+
+        if (framebuffer) {
+            framebuffer.drawCopy([0, 0, wh.width, wh.height])
+        }
     })
 }
 
@@ -265,6 +270,48 @@ function init() {
     canvasMouseHandler = handleMouseEvent(rootCanvas)
 
     firstRender = true
+
+    const pass0 = new MyEffectPass(rootGL!, 0)
+    pass0.Create('image')
+    pass0.NewTexture(null, 0, {
+        channel: 0,
+        type: 'texture',
+        src: '/textures/Abstract1.jpeg',
+        sampler: {
+            filter: 'linear',
+            wrap: 'clamp',
+            vflip: true,
+        },
+    })
+    setTimeout(() => {
+        pass0.NewTexture(null, 0, {
+            channel: 0,
+            type: 'texture',
+            src: '/textures/Abstract1.jpeg',
+            sampler: {
+                filter: 'linear',
+                wrap: 'clamp',
+                vflip: true,
+            },
+        })
+    }, 1000)
+    const pass1 = new MyEffectPass(rootGL!, 1)
+    pass1.Create('sound')
+    pass1.NewTexture(null, 0, {
+        channel: 0,
+        type: 'volume',
+        src: '/textures/GreyNoise3D.bin',
+        sampler: {
+            filter: 'linear',
+            wrap: 'clamp',
+            vflip: true,
+        },
+    })
+    new MyEffectPass(rootGL!, 2).Create('buffer')
+    new MyEffectPass(rootGL!, 3).Create('common')
+    new MyEffectPass(rootGL!, 4).Create('cubemap')
+
+    pass0.NewShader([], true)
 }
 
 function destory() {

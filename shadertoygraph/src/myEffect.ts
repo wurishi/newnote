@@ -1,10 +1,25 @@
-import { CLEAR, EffectBuffer } from './type'
+import MyEffectPass from './myEffectPass'
+import {
+    CLEAR,
+    EffectBuffer,
+    FILTER,
+    PaintParam,
+    ShaderConfig,
+    TEXFMT,
+    TEXTYPE,
+    TEXWRP,
+} from './type'
 import { clear, createMipmaps } from './utils/index'
-import { setRenderTarget, setRenderTargetCubeMap } from './utils/renderTarget'
+import {
+    createRenderTarget,
+    setRenderTarget,
+    setRenderTargetCubeMap,
+} from './utils/renderTarget'
+import { createTexture } from './utils/texture'
 
 export default class MyEffect {
-    private xres
-    private yres
+    public xres
+    public yres
     private glContext
 
     private maxBuffers
@@ -12,6 +27,8 @@ export default class MyEffect {
     private maxCubeBuffers
     private cubeBuffers
     private frame
+
+    private mPasses: MyEffectPass[]
 
     constructor(
         vr: any,
@@ -31,6 +48,7 @@ export default class MyEffect {
         this.maxCubeBuffers = 1
         this.cubeBuffers = new Array<EffectBuffer>()
         this.frame = 0
+        this.mPasses = []
 
         this.glContext = createGlContext(canvas, false, false, true, false)
 
@@ -94,7 +112,7 @@ export default class MyEffect {
         if (this.frame === 0) {
             this.buffers.forEach((buffer) => {
                 if (buffer.texture[0]) {
-                    setRenderTarget(buffer.target[0])
+                    setRenderTarget(this.glContext, buffer.target[0])
                     clear(
                         this.glContext,
                         CLEAR.Color,
@@ -102,7 +120,7 @@ export default class MyEffect {
                         1.0,
                         0
                     )
-                    setRenderTarget(buffer.target[1])
+                    setRenderTarget(this.glContext, buffer.target[1])
                     clear(
                         this.glContext,
                         CLEAR.Color,
@@ -147,14 +165,168 @@ export default class MyEffect {
                     }
                 }
             })
-            // 
-            
+            //
         }
+
+        const paintParam: PaintParam = {
+            time,
+            dtime,
+            fps,
+            mouseOriX,
+            mouseOriY,
+            mousePosX,
+            mousePosY,
+            isPaused,
+            buffers: this.buffers,
+            cubeBuffers: this.cubeBuffers,
+            da,
+            xres,
+            yres,
+        }
+
+        //
+        // render sound first
+        this.mPasses.forEach((pass) => {
+            if (pass.mType === 'sound' && pass.mProgram) {
+                pass.Paint(paintParam)
+            }
+        })
+
+        // render buffers
+        this.mPasses.forEach((pass) => {
+            if (pass.mType === 'buffer' && pass.mProgram) {
+                const bufferID = pass.mOutputs[0]
+                pass.Paint({ ...paintParam, bufferID })
+            }
+        })
+
+        // render cubemap buffers
+        this.mPasses.forEach((pass) => {
+            if (pass.mType === 'cubemap' && pass.mProgram) {
+                const bufferID = 0
+                pass.Paint({ ...paintParam, bufferID })
+            }
+        })
+
+        // render image last
+        this.mPasses.forEach((pass) => {
+            if (pass.mType === 'image' && pass.mProgram) {
+                pass.Paint(paintParam)
+            }
+        })
+
+        // erase keypresses
+        // TODO
 
         this.frame++
     }
 
-    // TODO: Load
+    public Load = (jobj: ShaderConfig) => {
+        const thisAudioContext = undefined
+        jobj.renderpass.forEach((rpass, j) => {
+            const wpass = new MyEffectPass(this.glContext, j, this)
+            wpass.Create(rpass.type, thisAudioContext)
+
+            for (let i = 0; i < 4; i++) {
+                wpass.NewTexture(thisAudioContext, i)
+            }
+            rpass.inputs.forEach((info) => {
+                wpass.NewTexture(
+                    thisAudioContext,
+                    info.channel,
+                    info,
+                    this.buffers,
+                    this.cubeBuffers,
+                    undefined
+                )
+            })
+
+            for (let i = 0; i < 4; i++) {
+                wpass.SetOutputs(i, -1)
+            }
+            
+            rpass.outputs.forEach((output) => {
+                wpass.SetOutputs(output.channel, output.id)
+            })
+
+            wpass.SetCode(rpass.code)
+
+            this.mPasses.push(wpass)
+        })
+    }
+
+    public Compile = () => {
+        this.mPasses.forEach((pass) => {
+            pass.NewShader([], false)
+        })
+    }
+
+    public ResizeBuffer = (
+        i: number,
+        xres: number,
+        yres: number,
+        skipIfNotExists: boolean
+    ) => {
+        if (skipIfNotExists) {
+            if (this.buffers[i].texture[0] === null) {
+                return
+            }
+        }
+
+        const oldXres = this.buffers[i]?.resolution[0]
+        const oldYres = this.buffers[i]?.resolution[1]
+
+        if (oldXres !== xres || oldYres !== yres) {
+            const needCopy = this.buffers[i]?.texture[0] !== null
+
+            const texture1 = createTexture(
+                this.glContext,
+                TEXTYPE.T2D,
+                xres,
+                yres,
+                TEXFMT.C4F32,
+                FILTER.NONE,
+                TEXWRP.CLAMP
+                // needCopy ? this.buffers[i].texture[0]!.filter : FILTER.NONE,
+                // needCopy ? this.buffers[i].texture[0]!.wrap : TEXWRP.CLAMP
+            )
+
+            const texture2 = createTexture(
+                this.glContext,
+                TEXTYPE.T2D,
+                xres,
+                yres,
+                TEXFMT.C4F32,
+                FILTER.NONE,
+                TEXWRP.CLAMP
+                // needCopy ? this.buffers[i].texture[1]!.filter : FILTER.NONE,
+                // needCopy ? this.buffers[i].texture[1]!.wrap : TEXWRP.CLAMP
+            )
+
+            const target1 = createRenderTarget(
+                this.glContext,
+                texture1,
+                null,
+                false
+            )
+            const target2 = createRenderTarget(
+                this.glContext,
+                texture2,
+                null,
+                false
+            )
+
+            if (needCopy) {
+                // TODO
+            }
+
+            this.buffers[i].texture = [texture1, texture2]
+            this.buffers[i].target = [target1, target2]
+            this.buffers[i].lastRenderDone = 0
+            this.buffers[i].resolution[0] = xres
+            this.buffers[i].resolution[1] = yres
+        }
+    }
 }
 
 function createGlContext(

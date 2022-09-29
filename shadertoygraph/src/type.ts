@@ -330,7 +330,7 @@ export type WebGLInfo = {
 export type PaintParam = {
     vrData?: any
     wa?: any
-    da?: any
+    da?: Date
     time?: any
     dtime?: any
     fps?: any
@@ -343,7 +343,7 @@ export type PaintParam = {
     isPaused?: any
     bufferID?: any
     bufferNeedsMimaps?: any
-    buffers?: any
+    buffers?: EffectBuffer[]
     cubeBuffers?: any
     keyboard?: any
     effect?: any
@@ -351,7 +351,21 @@ export type PaintParam = {
 
 export type EffectBuffer = {
     texture: (Texture | null)[]
-    target: any[]
+    target: (RenderTarget | null)[]
     resolution: { [0]: number; [1]: number }
     lastRenderDone: number
+}
+
+export type ShaderPassConfig = {
+    type: PassType
+    code: string
+    inputs: EffectPassInfo[]
+    outputs: {
+        id: number
+        channel: number
+    }[]
+}
+
+export type ShaderConfig = {
+    renderpass: ShaderPassConfig[]
 }

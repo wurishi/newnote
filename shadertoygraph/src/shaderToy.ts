@@ -1,5 +1,9 @@
 import MyEffect from './myEffect'
 import { getRealTime, requestAnimFrame } from './utils/index'
+// import Image from './shaders/glsl/4sf3Rn.glsl?raw'
+import Image from './shaders/glsl/MdG3Dd.glsl?raw'
+import A from './shaders/glsl/MdG3Dd_a.glsl?raw'
+import B from './shaders/glsl/MdG3Dd_b.glsl?raw'
 
 export default class ShaderToy {
     private canvas
@@ -35,6 +39,119 @@ export default class ShaderToy {
     }
 
     public startRendering = () => {
+        this.effect.Load({
+            renderpass: [
+                {
+                    type: 'image',
+                    code: Image,
+                    inputs: [
+                        {
+                            channel: 1,
+                            type: 'buffer',
+                            src: '',
+                            sampler: {
+                                filter: 'linear',
+                                wrap: 'clamp',
+                                vflip: false,
+                            },
+                        },
+                    ],
+                    outputs: [],
+                },
+                {
+                    type: 'buffer',
+                    code: A,
+                    inputs: [
+                        {
+                            channel: 0,
+                            type: 'buffer',
+                            src: '',
+                            sampler: {
+                                filter: 'linear',
+                                wrap: 'clamp',
+                                vflip: false,
+                            },
+                        },
+                        {
+                            channel: 1,
+                            type: 'texture',
+                            src: '/textures/RGBANoiseMedium.png',
+                            sampler: {
+                                filter: 'linear',
+                                wrap: '',
+                                vflip: true,
+                            },
+                        },
+                    ],
+                    outputs: [
+                        {
+                            channel: 0,
+                            id: 0,
+                        },
+                    ],
+                },
+                {
+                    type: 'buffer',
+                    code: B,
+                    inputs: [
+                        {
+                            channel: 0,
+                            type: 'buffer',
+                            src: '',
+                            sampler: {
+                                filter: 'linear',
+                                wrap: 'clamp',
+                                vflip: false,
+                            },
+                        },
+                        {
+                            channel: 1,
+                            type: 'buffer',
+                            src: '',
+                            sampler: {
+                                filter: 'linear',
+                                wrap: 'clamp',
+                                vflip: false,
+                            },
+                        },
+                    ],
+                    outputs: [
+                        {
+                            channel: 0,
+                            id: 1,
+                        },
+                    ],
+                },
+                // {
+                //     type: 'image',
+                //     code: Image,
+                //     inputs: [
+                //         {
+                //             channel: 0,
+                //             type: 'texture',
+                //             src: '/textures/Organic4.jpeg',
+                //             sampler: {
+                //                 filter: 'linear',
+                //                 wrap: '',
+                //                 vflip: false,
+                //             },
+                //         },
+                //         {
+                //             channel: 1,
+                //             type: 'texture',
+                //             src: '/textures/Organic2.jpeg',
+                //             sampler: {
+                //                 filter: 'linear',
+                //                 wrap: '',
+                //                 vflip: false,
+                //             },
+                //         },
+                //     ],
+                //     outputs: [],
+                // },
+            ],
+        })
+        this.effect.Compile()
         this.renderLoop()
     }
 

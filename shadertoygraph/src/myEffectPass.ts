@@ -4,20 +4,35 @@ import {
     EffectPassInput,
     EffectPassSoundProps,
     FILTER,
+    GPUDraw,
     PaintParam,
     PassType,
     TEXFMT,
+    Texture,
     TextureInfo,
     TEXTYPE,
     TEXWRP,
 } from './type'
-import { isMobile } from './utils'
+import { createDrawFullScreenTriangle, isMobile } from './utils'
 import { createRenderTarget, setRenderTarget } from './utils/renderTarget'
-import { createTexture } from './utils/texture'
+import { attachTextures, createTexture, dettachTextures } from './utils/texture'
 import NewImageTexture from './effectpass/newImageTexture'
 import NewVolumeTexture from './effectpass/newVolumeTexture'
 import NewBufferTexture from './effectpass/newBufferTexture'
 import createShader from './utils/createShader'
+import MyEffect from './myEffect'
+import {
+    attachShader,
+    getAttribLocation,
+    setShaderConstant1F,
+    setShaderConstant1FV,
+    setShaderConstant1I,
+    setShaderConstant3F,
+    setShaderConstant3FV,
+    setShaderConstant4FV,
+    setShaderTextureUnit,
+    setViewport,
+} from './utils/attr'
 
 type DestroyCall = {
     (wa: AudioContext): void
@@ -28,30 +43,32 @@ export default class MyEffectPass {
 
     private mGL
     private mID
-    private mType?: PassType
-    private mProgram?: CreateShaderResolveSucc | null
+    public mType?: PassType
+    public mProgram?: CreateShaderResolveSucc | null
 
     private mHeader
     private mSource
     private mInputs: EffectPassInput[]
-    private mOutputs: any[]
+    public mOutputs: number[]
     private destroyCall: DestroyCall | null
 
     private soundProps: EffectPassSoundProps | null
 
     private mFrame
+    private mEffect
 
-    constructor(gl: WebGL2RenderingContext, id: number) {
+    constructor(gl: WebGL2RenderingContext, id: number, effect: MyEffect) {
         this.mGL = gl
         this.mID = id
         this.mHeader = ''
         this.mSource = ''
         this.mInputs = [null, null, null, null]
-        this.mOutputs = [null, null, null, null]
+        this.mOutputs = []
         this.destroyCall = null
         this.soundProps = null
 
         this.mFrame = 0
+        this.mEffect = effect
     }
 
     public Destroy(wa: any) {
@@ -537,6 +554,8 @@ export default class MyEffectPass {
                     this.mProgram?.Destroy()
 
                     this.mProgram = state
+                } else {
+                    console.log(state)
                 }
             }
         )
@@ -620,12 +639,13 @@ export default class MyEffectPass {
             }
             this.mFrame++
         } else if (this.mType === 'image') {
-            setRenderTarget(this.mGL)
+            setRenderTarget(this.mGL, null)
             this.Paint_Image(param)
             this.mFrame++
         } else if (this.mType === 'common') {
         } else if (this.mType === 'buffer') {
-            // resizebuffer
+            this.Paint_Buffer(param)
+            this.mFrame++
         }
     }
 
@@ -633,7 +653,176 @@ export default class MyEffectPass {
         // TODO
     }
 
+    private Paint_Buffer = (param: PaintParam) => {
+        const { buffers, bufferNeedsMimaps, bufferID } = param
+
+        // TODO:有问题
+        this.mEffect.ResizeBuffer(
+            bufferID,
+            this.mEffect.xres,
+            this.mEffect.yres,
+            false
+        )
+
+        const buffer = buffers![bufferID]
+        if (!buffer) {
+            return
+        }
+        const dstID = 1 - buffer.lastRenderDone
+
+        setRenderTarget(this.mGL, buffer.target[dstID])
+        this.Paint_Image(param)
+
+        if (bufferNeedsMimaps) {
+            // TODO
+        }
+
+        buffer.lastRenderDone = 1 - buffer.lastRenderDone
+    }
+
     private Paint_Image = (param: PaintParam) => {
-        // TODO
+        const {
+            time,
+            mousePosX,
+            mousePosY,
+            mouseOriX,
+            mouseOriY,
+            buffers,
+            cubeBuffers,
+            xres,
+            yres,
+            dtime,
+            fps,
+        } = param
+        const d = param.da!
+        const times = [0.0, 0.0, 0.0, 0.0]
+        const dates = [
+            d?.getFullYear(),
+            d?.getMonth(),
+            d?.getDate(),
+            d?.getHours() * 60.0 * 60.0 +
+                d?.getMinutes() * 60 +
+                d.getSeconds() +
+                d.getMilliseconds() / 1000.0,
+        ]
+        const mouse = [mousePosX, mousePosY, mouseOriX, mouseOriY]
+
+        const resos = [
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        ]
+        const texIsLoaded = [0, 0, 0, 0]
+        const texID: Texture[] = []
+
+        this.mInputs.forEach((inp, i) => {
+            if (inp) {
+                if (inp.mInfo.type === 'texture') {
+                    if (inp.loaded) {
+                        texID[i] = inp.globject!
+                        texIsLoaded[i] = 1
+                        resos[3 * i + 0] = inp.texture!.image.width
+                        resos[3 * i + 1] = inp.texture!.image.height
+                        resos[3 * i + 2] = 1
+                    }
+                } else if (inp.mInfo.type === 'volume') {
+                    if (inp.loaded) {
+                        texID[i] = inp.globject!
+                        texIsLoaded[i] = 1
+                        resos[3 * i + 0] = inp.volume!.image.xres
+                        resos[3 * i + 1] = inp.volume!.image.yres
+                        resos[3 * i + 2] = inp.volume!.image.zres
+                    }
+                } else if (inp.mInfo.type === 'keyboard') {
+                    // TODO
+                } else if (inp.mInfo.type === 'cubemap') {
+                    if (inp.loaded) {
+                        // TODO
+                    }
+                } else if (inp.mInfo.type === 'webcam') {
+                    // TODO
+                } else if (inp.mInfo.type === 'video') {
+                    // TODO
+                } else if (
+                    inp.mInfo.type === 'music' ||
+                    inp.mInfo.type === 'musicstream'
+                ) {
+                    // TODO
+                } else if (inp.mInfo.type === 'mic') {
+                    // TODO
+                } else if (inp.mInfo.type === 'buffer') {
+                    const id = inp.buffer?.id
+                    const buffer = id ? buffers![id] : undefined
+                    if (inp.loaded && buffer) {
+                        texID[i] = buffer.texture[buffer.lastRenderDone]!
+                        texIsLoaded[i] = 1
+                        resos[3 * i + 0] = xres
+                        resos[3 * i + 1] = yres
+                        resos[3 * i + 2] = 1
+                    }
+                }
+            }
+        })
+
+        attachTextures(this.mGL, texID)
+
+        const prog = this.mProgram!
+
+        attachShader(this.mGL, prog)
+
+        setShaderConstant1F(this.mGL, 'iTime', time)
+        setShaderConstant3F(this.mGL, 'iResolution', xres, yres, 1.0)
+        setShaderConstant4FV(this.mGL, 'iMouse', mouse)
+        setShaderConstant1FV(this.mGL, 'iChannelTime', times)
+        setShaderConstant4FV(this.mGL, 'iDate', dates)
+        setShaderConstant3FV(this.mGL, 'iChannelResolution', resos)
+        setShaderConstant1F(this.mGL, 'iSampleRate', 44100)
+        setShaderTextureUnit(this.mGL, 'iChannel0', 0)
+        setShaderTextureUnit(this.mGL, 'iChannel1', 1)
+        setShaderTextureUnit(this.mGL, 'iChannel2', 2)
+        setShaderTextureUnit(this.mGL, 'iChannel3', 3)
+        setShaderConstant1I(this.mGL, 'iFrame', this.mFrame)
+        setShaderConstant1F(this.mGL, 'iTimeDelta', dtime)
+        setShaderConstant1F(this.mGL, 'iFrameRate', fps)
+
+        setShaderConstant1F(this.mGL, 'iCh0.time', times[0])
+        setShaderConstant1F(this.mGL, 'iCh1.time', times[1])
+        setShaderConstant1F(this.mGL, 'iCh2.time', times[2])
+        setShaderConstant1F(this.mGL, 'iCh3.time', times[3])
+        setShaderConstant3F(this.mGL, 'iCh0.size', resos[0], resos[1], resos[2])
+        setShaderConstant3F(this.mGL, 'iCh1.size', resos[3], resos[4], resos[5])
+        setShaderConstant3F(this.mGL, 'iCh2.size', resos[6], resos[7], resos[8])
+        setShaderConstant3F(
+            this.mGL,
+            'iCh3.size',
+            resos[9],
+            resos[10],
+            resos[11]
+        )
+        setShaderConstant1I(this.mGL, 'iCh0.loaded', texIsLoaded[0])
+        setShaderConstant1I(this.mGL, 'iCh1.loaded', texIsLoaded[1])
+        setShaderConstant1I(this.mGL, 'iCh2.loaded', texIsLoaded[2])
+        setShaderConstant1I(this.mGL, 'iCh3.loaded', texIsLoaded[3])
+
+        // const l1 = getAttribLocation(this.mGL, prog, 'pos')
+
+        // TODO: vr
+
+        setViewport(this.mGL, [0, 0, xres, yres])
+
+        if (!this.gpu) {
+            this.gpu = createDrawFullScreenTriangle(this.mGL, prog.program)
+        }
+        this.gpu()
+
+        dettachTextures(this.mGL)
+    }
+
+    private gpu?: GPUDraw
+
+    public SetOutputs = (slot: number, id: number) => {
+        this.mOutputs[slot] = id
+    }
+
+    public SetCode = (src: string) => {
+        this.mSource = src
     }
 }

@@ -56,7 +56,7 @@ export function createRenderTarget(
 
 export function setRenderTarget(
     gl: WebGL2RenderingContext,
-    target?: RenderTarget
+    target: RenderTarget | null
 ) {
     if (target) {
         gl.bindFramebuffer(gl.FRAMEBUFFER, target.id)

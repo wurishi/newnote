@@ -1,4 +1,8 @@
-import { CreateShaderResolve, WebGLInfo } from '../type'
+import {
+    CreateShaderResolve,
+    CreateShaderResolveSucc,
+    WebGLInfo,
+} from '../type'
 import { getRealTime, randomStr } from './index'
 
 const VERTEX_SHADER_HEADER = `#version 300 es

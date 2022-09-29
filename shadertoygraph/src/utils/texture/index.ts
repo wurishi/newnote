@@ -83,3 +83,44 @@ export function CreateTextureFromImage(
         },
     }
 }
+
+function getActive(num: number) {
+    if (num === 0) {
+        return WebGL2RenderingContext.TEXTURE0
+    } else if (num === 1) {
+        return WebGL2RenderingContext.TEXTURE1
+    } else if (num === 2) {
+        return WebGL2RenderingContext.TEXTURE1
+    } else if (num === 3) {
+        return WebGL2RenderingContext.TEXTURE1
+    }
+    return WebGL2RenderingContext.TEXTURE0
+}
+
+export function attachTextures(
+    gl: WebGL2RenderingContext,
+    textures: (Texture | null)[]
+) {
+    textures.forEach((t, i) => {
+        let active = getActive(i)
+        if (t) {
+            gl.activeTexture(active)
+            if (t.type === TEXTYPE.T2D) {
+                gl.bindTexture(gl.TEXTURE_2D, t.id)
+            } else if (t.type === TEXTYPE.T3D) {
+                gl.bindTexture(gl.TEXTURE_3D, t.id)
+            } else if (t.type === TEXTYPE.CUBEMAP) {
+                gl.bindTexture(gl.TEXTURE_CUBE_MAP, t.id)
+            }
+        }
+    })
+}
+
+export function dettachTextures(gl: WebGL2RenderingContext) {
+    ;[gl.TEXTURE0, gl.TEXTURE1, gl.TEXTURE2, gl.TEXTURE3].forEach((tex) => {
+        gl.activeTexture(tex)
+        gl.bindTexture(gl.TEXTURE_2D, null)
+        gl.bindTexture(gl.TEXTURE_3D, null)
+        gl.bindTexture(gl.TEXTURE_CUBE_MAP, null)
+    })
+}

@@ -5,7 +5,7 @@ export default function NewBufferTexture(url: EffectPassInfo): EffectPassInput {
         mInfo: url,
         loaded: true,
         buffer: {
-            id: url.channel,
+            id: Number(url.src) || 0,
             destroy: () => {},
         },
     }

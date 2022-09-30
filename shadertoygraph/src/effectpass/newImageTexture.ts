@@ -1,4 +1,3 @@
-import MyEffectPass from '../myEffectPass'
 import { EffectPassInfo, EffectPassInput, TEXFMT, TEXTYPE } from '../type'
 import { sampler2Renderer } from '../utils'
 import { CreateTextureFromImage } from '../utils/texture'

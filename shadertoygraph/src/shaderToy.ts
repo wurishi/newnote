@@ -1,9 +1,13 @@
 import MyEffect from './myEffect'
 import { getRealTime, requestAnimFrame } from './utils/index'
 // import Image from './shaders/glsl/4sf3Rn.glsl?raw'
-import Image from './shaders/glsl/MdG3Dd.glsl?raw'
+
+import Image1 from './shaders/glsl/MdG3Dd.glsl?raw'
 import A from './shaders/glsl/MdG3Dd_a.glsl?raw'
 import B from './shaders/glsl/MdG3Dd_b.glsl?raw'
+
+import Image from './shaders/glsl/WlKXRR.glsl?raw'
+import BufferA from './shaders/glsl/WlKXRR_a.glsl?raw'
 
 export default class ShaderToy {
     private canvas
@@ -41,35 +45,83 @@ export default class ShaderToy {
     public startRendering = () => {
         this.effect.Load({
             renderpass: [
+                // WlKXRR
+                // {
+                //     type: 'image',
+                //     code: Image,
+                //     inputs: [
+                //         // {
+                //         //     channel: 1,
+                //         //     type: 'texture',
+                //         //     src: '/textures/RGBANoiseMedium.png',
+                //         //     sampler: {
+                //         //         filter: 'linear',
+                //         //         wrap: 'clamp',
+                //         //         vflip: false,
+                //         //     },
+                //         // },
+                //         {
+                //             channel: 0,
+                //             type: 'buffer',
+                //             src: '',
+                //             sampler: {
+                //                 filter: 'linear',
+                //                 wrap: 'clamp',
+                //                 vflip: false,
+                //             },
+                //         },
+                //     ],
+                //     outputs: [],
+                // },
+                // {
+                //     type: 'buffer',
+                //     code: BufferA,
+                //     inputs: [],
+                //     outputs: [
+                //         {
+                //             channel: 0,
+                //             id: 0,
+                //         },
+                //     ],
+                // },
+
+                // MdG3Dd
                 {
+                    name: 'main',
                     type: 'image',
-                    code: Image,
+                    code: Image1,
                     inputs: [
                         {
-                            channel: 1,
+                            channel: 0,
                             type: 'buffer',
-                            src: '',
+                            src: '1',
                             sampler: {
                                 filter: 'linear',
                                 wrap: 'clamp',
-                                vflip: false,
+                                vflip: true,
                             },
                         },
                     ],
-                    outputs: [],
+                    outputs: [
+                        // {
+                        //     channel: 0,
+                        //     id: 0,
+                        // },
+                    ],
                 },
                 {
+                    name: 'buffA',
                     type: 'buffer',
                     code: A,
                     inputs: [
                         {
                             channel: 0,
                             type: 'buffer',
-                            src: '',
+                            src: '0',
                             sampler: {
-                                filter: 'linear',
+                                filter: 'nearest',
                                 wrap: 'clamp',
-                                vflip: false,
+                                vflip: true,
                             },
                         },
                         {
@@ -77,8 +129,8 @@ export default class ShaderToy {
                             type: 'texture',
                             src: '/textures/RGBANoiseMedium.png',
                             sampler: {
-                                filter: 'linear',
-                                wrap: '',
+                                filter: 'mipmap',
+                                wrap: 'repeat',
                                 vflip: true,
                             },
                         },
@@ -91,27 +143,28 @@ export default class ShaderToy {
                     ],
                 },
                 {
+                    name: 'buffB',
                     type: 'buffer',
                     code: B,
                     inputs: [
                         {
                             channel: 0,
                             type: 'buffer',
-                            src: '',
+                            src: '0',
                             sampler: {
-                                filter: 'linear',
+                                filter: 'nearest',
                                 wrap: 'clamp',
-                                vflip: false,
+                                vflip: true,
                             },
                         },
                         {
                             channel: 1,
                             type: 'buffer',
-                            src: '',
+                            src: '1',
                             sampler: {
-                                filter: 'linear',
+                                filter: 'nearest',
                                 wrap: 'clamp',
-                                vflip: false,
+                                vflip: true,
                             },
                         },
                     ],
@@ -122,6 +175,7 @@ export default class ShaderToy {
                         },
                     ],
                 },
+
                 // {
                 //     type: 'image',
                 //     code: Image,

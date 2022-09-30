@@ -33,6 +33,7 @@ import {
     setShaderTextureUnit,
     setViewport,
 } from './utils/attr'
+import { createMipmaps } from './utils/index'
 
 type DestroyCall = {
     (wa: AudioContext): void
@@ -56,6 +57,8 @@ export default class MyEffectPass {
 
     private mFrame
     private mEffect
+
+    public name: string = ''
 
     constructor(gl: WebGL2RenderingContext, id: number, effect: MyEffect) {
         this.mGL = gl
@@ -150,6 +153,7 @@ export default class MyEffectPass {
         } else if (url.type === 'buffer') {
             input = NewBufferTexture(url)
 
+            // result.failed = false
             result.needsShaderCompile =
                 this.mInputs[slot] === null ||
                 (this.mInputs[slot]?.mInfo.type !== 'texture' &&
@@ -656,7 +660,6 @@ export default class MyEffectPass {
     private Paint_Buffer = (param: PaintParam) => {
         const { buffers, bufferNeedsMimaps, bufferID } = param
 
-        // TODO:有问题
         this.mEffect.ResizeBuffer(
             bufferID,
             this.mEffect.xres,
@@ -673,9 +676,14 @@ export default class MyEffectPass {
         setRenderTarget(this.mGL, buffer.target[dstID])
         this.Paint_Image(param)
 
-        if (bufferNeedsMimaps) {
-            // TODO
-        }
+        // if (bufferNeedsMimaps) {
+        //     // TODO
+        //     // buffer.texture[dstID]
+        //     createmip
+        // }
+        // if (true) {
+        //     createMipmaps(this.mGL, buffer.texture[dstID]!)
+        // }
 
         buffer.lastRenderDone = 1 - buffer.lastRenderDone
     }
@@ -694,14 +702,14 @@ export default class MyEffectPass {
             dtime,
             fps,
         } = param
-        const d = param.da!
+        const d = param.da || new Date()
         const times = [0.0, 0.0, 0.0, 0.0]
         const dates = [
-            d?.getFullYear(),
-            d?.getMonth(),
-            d?.getDate(),
-            d?.getHours() * 60.0 * 60.0 +
-                d?.getMinutes() * 60 +
+            d.getFullYear(),
+            d.getMonth(),
+            d.getDate(),
+            d.getHours() * 60.0 * 60.0 +
+                d.getMinutes() * 60 +
                 d.getSeconds() +
                 d.getMilliseconds() / 1000.0,
         ]
@@ -750,13 +758,15 @@ export default class MyEffectPass {
                     // TODO
                 } else if (inp.mInfo.type === 'buffer') {
                     const id = inp.buffer?.id
-                    const buffer = id ? buffers![id] : undefined
+                    // const id = i
+                    const buffer = id !== undefined ? buffers![id] : undefined
                     if (inp.loaded && buffer) {
                         texID[i] = buffer.texture[buffer.lastRenderDone]!
                         texIsLoaded[i] = 1
                         resos[3 * i + 0] = xres
                         resos[3 * i + 1] = yres
                         resos[3 * i + 2] = 1
+                        // TODO: setSampler
                     }
                 }
             }

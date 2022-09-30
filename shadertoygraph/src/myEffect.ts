@@ -192,7 +192,7 @@ export default class MyEffect {
             }
         })
 
-        // render buffers
+        // render buffers second
         this.mPasses.forEach((pass) => {
             if (pass.mType === 'buffer' && pass.mProgram) {
                 const bufferID = pass.mOutputs[0]
@@ -225,6 +225,7 @@ export default class MyEffect {
         const thisAudioContext = undefined
         jobj.renderpass.forEach((rpass, j) => {
             const wpass = new MyEffectPass(this.glContext, j, this)
+            wpass.name = rpass.name || ''
             wpass.Create(rpass.type, thisAudioContext)
 
             for (let i = 0; i < 4; i++) {
@@ -244,7 +245,7 @@ export default class MyEffect {
             for (let i = 0; i < 4; i++) {
                 wpass.SetOutputs(i, -1)
             }
-            
+
             rpass.outputs.forEach((output) => {
                 wpass.SetOutputs(output.channel, output.id)
             })
@@ -278,6 +279,12 @@ export default class MyEffect {
 
         if (oldXres !== xres || oldYres !== yres) {
             const needCopy = this.buffers[i]?.texture[0] !== null
+            let filter = needCopy
+                ? this.buffers[i].texture[0]!.filter
+                : FILTER.NONE
+            let wrap = needCopy
+                ? this.buffers[i].texture[0]!.wrap
+                : TEXWRP.CLAMP
 
             const texture1 = createTexture(
                 this.glContext,
@@ -285,11 +292,12 @@ export default class MyEffect {
                 xres,
                 yres,
                 TEXFMT.C4F32,
-                FILTER.NONE,
-                TEXWRP.CLAMP
-                // needCopy ? this.buffers[i].texture[0]!.filter : FILTER.NONE,
-                // needCopy ? this.buffers[i].texture[0]!.wrap : TEXWRP.CLAMP
+                filter,
+                wrap
             )
+
+            filter = needCopy ? this.buffers[i].texture[1]!.filter : FILTER.NONE
+            wrap = needCopy ? this.buffers[i].texture[1]!.wrap : TEXWRP.CLAMP
 
             const texture2 = createTexture(
                 this.glContext,
@@ -297,10 +305,8 @@ export default class MyEffect {
                 xres,
                 yres,
                 TEXFMT.C4F32,
-                FILTER.NONE,
-                TEXWRP.CLAMP
-                // needCopy ? this.buffers[i].texture[1]!.filter : FILTER.NONE,
-                // needCopy ? this.buffers[i].texture[1]!.wrap : TEXWRP.CLAMP
+                filter,
+                wrap
             )
 
             const target1 = createRenderTarget(
@@ -318,6 +324,7 @@ export default class MyEffect {
 
             if (needCopy) {
                 // TODO
+                console.log('needcopy')
             }
 
             this.buffers[i].texture = [texture1, texture2]

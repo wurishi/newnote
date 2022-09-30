@@ -357,6 +357,7 @@ export type EffectBuffer = {
 }
 
 export type ShaderPassConfig = {
+    name?: string
     type: PassType
     code: string
     inputs: EffectPassInfo[]

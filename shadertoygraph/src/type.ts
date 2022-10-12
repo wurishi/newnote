@@ -370,3 +370,47 @@ export type ShaderPassConfig = {
 export type ShaderConfig = {
     renderpass: ShaderPassConfig[]
 }
+
+export type ConfigChannel = {
+    type: string
+    filter?: string
+    wrap?: string
+    noFlip?: boolean
+}
+export type ConfigChannel_Buffer = ConfigChannel & {
+    type: 'buffer'
+    id: number
+}
+export type ConfigChannel_Texture = ConfigChannel & {
+    type: 'texture'
+    src:
+        | 'Abstract1'
+        | 'Abstract2'
+        | 'Abstract3'
+        | 'Bayer'
+        | 'BlueNoise'
+        | 'Font1'
+        | 'GrayNoiseMedium'
+        | 'GrayNoiseSmall'
+        | 'Lichen'
+        | 'London'
+        | 'Nyancat'
+        | 'Organic1'
+        | 'Organic2'
+        | 'Organic3'
+        | 'Organic4'
+        | 'Pebbles'
+        | 'RGBANoiseMedium'
+        | 'RGBANoiseSmall'
+        | 'RockTiles'
+        | 'RustyMetal'
+        | 'Stars'
+        | 'Wood'
+}
+
+export type Config = {
+    name: string
+    type: 'image' | 'buffer'
+    fragment: string
+    channels?: (ConfigChannel_Buffer | ConfigChannel_Texture)[]
+}

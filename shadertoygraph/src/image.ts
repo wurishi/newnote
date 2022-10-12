@@ -33,6 +33,7 @@ export default [
     createImageConfig('Organic1.jpeg', 3),
     createImageConfig('Organic2.jpeg', 3),
     createImageConfig('Organic3.jpeg', 3),
+    createImageConfig('Organic4.jpeg', 3),
     createImageConfig('Pebbles.png', 1),
     createImageConfig('RGBANoiseMedium.png', 4),
     createImageConfig('RGBANoiseSmall.png', 4),

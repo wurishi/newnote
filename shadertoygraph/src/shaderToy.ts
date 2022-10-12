@@ -8,6 +8,7 @@ import B from './shaders/glsl/MdG3Dd_b.glsl?raw'
 
 import Image from './shaders/glsl/WlKXRR.glsl?raw'
 import BufferA from './shaders/glsl/WlKXRR_a.glsl?raw'
+import { ShaderPassConfig } from './type'
 
 export default class ShaderToy {
     private canvas
@@ -42,170 +43,16 @@ export default class ShaderToy {
         )
     }
 
-    public startRendering = () => {
+    public load = (renderpass: ShaderPassConfig[]) => {
         this.effect.Load({
-            renderpass: [
-                // WlKXRR
-                // {
-                //     type: 'image',
-                //     code: Image,
-                //     inputs: [
-                //         // {
-                //         //     channel: 1,
-                //         //     type: 'texture',
-                //         //     src: '/textures/RGBANoiseMedium.png',
-                //         //     sampler: {
-                //         //         filter: 'linear',
-                //         //         wrap: 'clamp',
-                //         //         vflip: false,
-                //         //     },
-                //         // },
-                //         {
-                //             channel: 0,
-                //             type: 'buffer',
-                //             src: '',
-                //             sampler: {
-                //                 filter: 'linear',
-                //                 wrap: 'clamp',
-                //                 vflip: false,
-                //             },
-                //         },
-                //     ],
-                //     outputs: [],
-                // },
-                // {
-                //     type: 'buffer',
-                //     code: BufferA,
-                //     inputs: [],
-                //     outputs: [
-                //         {
-                //             channel: 0,
-                //             id: 0,
-                //         },
-                //     ],
-                // },
-
-                // MdG3Dd
-                {
-                    name: 'main',
-                    type: 'image',
-                    code: Image1,
-                    inputs: [
-                        {
-                            channel: 0,
-                            type: 'buffer',
-                            src: '1',
-                            sampler: {
-                                filter: 'linear',
-                                wrap: 'clamp',
-                                vflip: true,
-                            },
-                        },
-                    ],
-                    outputs: [
-                        // {
-                        //     channel: 0,
-                        //     id: 0,
-                        // },
-                    ],
-                },
-                {
-                    name: 'buffA',
-                    type: 'buffer',
-                    code: A,
-                    inputs: [
-                        {
-                            channel: 0,
-                            type: 'buffer',
-                            src: '0',
-                            sampler: {
-                                filter: 'nearest',
-                                wrap: 'clamp',
-                                vflip: true,
-                            },
-                        },
-                        {
-                            channel: 1,
-                            type: 'texture',
-                            src: '/textures/RGBANoiseMedium.png',
-                            sampler: {
-                                filter: 'mipmap',
-                                wrap: 'repeat',
-                                vflip: true,
-                            },
-                        },
-                    ],
-                    outputs: [
-                        {
-                            channel: 0,
-                            id: 0,
-                        },
-                    ],
-                },
-                {
-                    name: 'buffB',
-                    type: 'buffer',
-                    code: B,
-                    inputs: [
-                        {
-                            channel: 0,
-                            type: 'buffer',
-                            src: '0',
-                            sampler: {
-                                filter: 'nearest',
-                                wrap: 'clamp',
-                                vflip: true,
-                            },
-                        },
-                        {
-                            channel: 1,
-                            type: 'buffer',
-                            src: '1',
-                            sampler: {
-                                filter: 'nearest',
-                                wrap: 'clamp',
-                                vflip: true,
-                            },
-                        },
-                    ],
-                    outputs: [
-                        {
-                            channel: 0,
-                            id: 1,
-                        },
-                    ],
-                },
-
-                // {
-                //     type: 'image',
-                //     code: Image,
-                //     inputs: [
-                //         {
-                //             channel: 0,
-                //             type: 'texture',
-                //             src: '/textures/Organic4.jpeg',
-                //             sampler: {
-                //                 filter: 'linear',
-                //                 wrap: '',
-                //                 vflip: false,
-                //             },
-                //         },
-                //         {
-                //             channel: 1,
-                //             type: 'texture',
-                //             src: '/textures/Organic2.jpeg',
-                //             sampler: {
-                //                 filter: 'linear',
-                //                 wrap: '',
-                //                 vflip: false,
-                //             },
-                //         },
-                //     ],
-                //     outputs: [],
-                // },
-            ],
+            renderpass,
         })
         this.effect.Compile()
+    }
+
+    private loopCallback?: () => any
+    public start = (callback?: () => any) => {
+        this.loopCallback = callback
         this.renderLoop()
     }
 
@@ -221,5 +68,7 @@ export default class ShaderToy {
         this.tf = ltime
 
         this.effect.Paint(ltime / 1000.0, dtime / 1000.0, 60, 0, 0, 0, 0, false)
+
+        this.loopCallback && this.loopCallback()
     }
 }

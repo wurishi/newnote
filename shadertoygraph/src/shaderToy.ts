@@ -1,13 +1,9 @@
 import MyEffect from './myEffect'
-import { getRealTime, requestAnimFrame } from './utils/index'
-// import Image from './shaders/glsl/4sf3Rn.glsl?raw'
-
-import Image1 from './shaders/glsl/MdG3Dd.glsl?raw'
-import A from './shaders/glsl/MdG3Dd_a.glsl?raw'
-import B from './shaders/glsl/MdG3Dd_b.glsl?raw'
-
-import Image from './shaders/glsl/WlKXRR.glsl?raw'
-import BufferA from './shaders/glsl/WlKXRR_a.glsl?raw'
+import {
+    createAudioContext,
+    getRealTime,
+    requestAnimFrame,
+} from './utils/index'
 import { ShaderPassConfig } from './type'
 
 export default class ShaderToy {
@@ -16,6 +12,11 @@ export default class ShaderToy {
     private tOffset
     private to
     private tf
+    private isPaused = false
+    private forceFrame = false
+    private restarted = true
+    private audioContext
+    private destoryed = false
 
     constructor() {
         this.tOffset = 0
@@ -31,9 +32,15 @@ export default class ShaderToy {
         canvas.width = canvas.offsetWidth
         canvas.height = canvas.offsetHeight
 
+        canvas.addEventListener('mousedown', this.mouseDown)
+        canvas.addEventListener('mouseup', this.mouseUp)
+        canvas.addEventListener('mousemove', this.mouseMove)
+
+        this.audioContext = createAudioContext()
+
         this.effect = new MyEffect(
             null,
-            null,
+            this.audioContext,
             canvas,
             null,
             null,
@@ -41,6 +48,16 @@ export default class ShaderToy {
             null,
             null
         )
+
+        window.addEventListener('focus', this.onfocus)
+    }
+
+    private onfocus = () => {
+        if (!this.isPaused) {
+            this.tOffset = this.tf
+            this.to = getRealTime()
+            this.restarted = true
+        }
     }
 
     public load = (renderpass: ShaderPassConfig[]) => {
@@ -48,6 +65,7 @@ export default class ShaderToy {
             renderpass,
         })
         this.effect.Compile()
+        this.resetTime(true)
     }
 
     private loopCallback?: () => any
@@ -56,19 +74,153 @@ export default class ShaderToy {
         this.renderLoop()
     }
 
+    public setGainValue = (value: number) => {
+        this.effect.setGainValue(value)
+    }
+
+    private mouseOriX: number = 0
+    private mouseOriY: number = 0
+    private mousePosX: number = 0
+    private mousePosY: number = 0
+    private mouseIsDown = false
+    private mouseSignalDown = false
+    private mouseDown = (ev: MouseEvent) => {
+        const rect = this.canvas.getBoundingClientRect()
+        this.mouseOriX = Math.floor(
+            ((ev.clientX - rect.left) / (rect.right - rect.left)) *
+                this.canvas.width
+        )
+        this.mouseOriY = Math.floor(
+            this.canvas.height -
+                ((ev.clientY - rect.top) / (rect.bottom - rect.top)) *
+                    this.canvas.height
+        )
+        this.mousePosX = this.mouseOriX
+        this.mousePosY = this.mouseOriY
+        this.mouseIsDown = true
+        this.mouseSignalDown = true
+        if (this.isPaused) {
+            this.forceFrame = true
+        }
+    }
+
+    private mouseMove = (ev: MouseEvent) => {
+        if (this.mouseIsDown) {
+            const rect = this.canvas.getBoundingClientRect()
+            this.mousePosX = Math.floor(
+                ((ev.clientX - rect.left) / (rect.right - rect.left)) *
+                    this.canvas.width
+            )
+            this.mousePosY = Math.floor(
+                this.canvas.height -
+                    ((ev.clientY - rect.top) / (rect.bottom - rect.top)) *
+                        this.canvas.height
+            )
+            if (this.isPaused) {
+                this.forceFrame = true
+            }
+        }
+    }
+
+    private mouseUp = (ev: MouseEvent) => {
+        this.mouseIsDown = false
+        if (this.isPaused) {
+            this.forceFrame = true
+        }
+    }
+
     private renderLoop = () => {
+        if (this.destoryed) {
+            return
+        }
         requestAnimFrame(this.renderLoop)
+
+        if (this.isPaused && !this.forceFrame) {
+            // update inputs
+            return
+        }
+        this.forceFrame = false
 
         const time = getRealTime()
 
         let ltime = 0.0,
             dtime = 0.0
-        ltime = this.tOffset + time - this.to
-        dtime = ltime - this.tf
-        this.tf = ltime
 
-        this.effect.Paint(ltime / 1000.0, dtime / 1000.0, 60, 0, 0, 0, 0, false)
+        if (this.isPaused) {
+            ltime = this.tf
+            dtime = 1000.0 / 60.0
+        } else {
+            ltime = this.tOffset + time - this.to
+            if (this.restarted) {
+                dtime = 1000.0 / 60.0
+            } else {
+                dtime = ltime - this.tf
+            }
+
+            this.tf = ltime
+        }
+        this.restarted = false
+
+        const newFPS = 60
+        let mouseOriX = Math.abs(this.mouseOriX)
+        let mouseOriY = Math.abs(this.mouseOriY)
+        if (!this.mouseIsDown) {
+            mouseOriX = -mouseOriX
+        }
+        if (!this.mouseSignalDown) {
+            mouseOriY = -mouseOriY
+        }
+        this.mouseSignalDown = false
+
+        this.effect.Paint(
+            ltime / 1000.0,
+            dtime / 1000.0,
+            newFPS,
+            mouseOriX,
+            mouseOriY,
+            this.mousePosX,
+            this.mousePosY,
+            this.isPaused
+        )
 
         this.loopCallback && this.loopCallback()
     }
+
+    public pauseTime = (doFocusCanvas?: boolean) => {
+        if (!this.isPaused) {
+            this.isPaused = true
+            // effect stopOutputs
+        } else {
+            this.tOffset = this.tf
+            this.to = getRealTime()
+            this.isPaused = false
+            this.restarted = true
+            // effect resumeoutputs
+            if (doFocusCanvas) {
+                this.canvas.focus()
+            }
+        }
+    }
+
+    public resetTime = (doFocusCanvas?: boolean) => {
+        this.tOffset = 0
+        this.to = getRealTime()
+        this.tf = 0
+        this.restarted = true
+        this.forceFrame = true
+        this.effect.ResetTime()
+        if (doFocusCanvas) {
+            this.canvas.focus()
+        }
+    }
+
+    // public destory = () => {
+    //     this.destoryed = true
+
+    //     this.canvas.removeEventListener('mousedown', this.mouseDown)
+    //     this.canvas.removeEventListener('mouseup', this.mouseUp)
+    //     this.canvas.removeEventListener('mousemove', this.mouseMove)
+
+    //     document.body.removeChild(this.canvas)
+    // }
 }

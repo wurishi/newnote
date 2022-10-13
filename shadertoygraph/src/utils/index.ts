@@ -145,3 +145,20 @@ export function createMipmaps(gl: WebGL2RenderingContext, te: Texture) {
         gl.bindTexture(gl.TEXTURE_CUBE_MAP, null)
     }
 }
+
+export function createAudioContext() {
+    let res = null
+    try {
+        if (window.AudioContext) {
+            res = new AudioContext()
+        }
+        const w: any = window
+        if (res === null && w.webkitAudioContext) {
+            const WAC = w.webkitAudioContext
+            res = new WAC()
+        }
+    } catch (error) {
+        res = null
+    }
+    return res
+}

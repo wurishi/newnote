@@ -7,13 +7,18 @@ import {
     GPUDraw,
     PaintParam,
     PassType,
+    RenderSoundCallback,
     TEXFMT,
     Texture,
     TextureInfo,
     TEXTYPE,
     TEXWRP,
 } from './type'
-import { createDrawFullScreenTriangle, isMobile } from './utils'
+import {
+    createDrawFullScreenTriangle,
+    createDrawUnitQuad,
+    isMobile,
+} from './utils'
 import { createRenderTarget, setRenderTarget } from './utils/renderTarget'
 import { attachTextures, createTexture, dettachTextures } from './utils/texture'
 import NewImageTexture from './effectpass/newImageTexture'
@@ -23,7 +28,11 @@ import createShader from './utils/createShader'
 import MyEffect from './myEffect'
 import {
     attachShader,
+    detachShader,
     getAttribLocation,
+    getPixelData,
+    getShaderConstantLocation,
+    setBlend,
     setShaderConstant1F,
     setShaderConstant1FV,
     setShaderConstant1I,
@@ -55,7 +64,7 @@ export default class MyEffectPass {
 
     private soundProps: EffectPassSoundProps | null
 
-    private mFrame
+    public mFrame
     private mEffect
 
     public name: string = ''
@@ -228,6 +237,7 @@ export default class MyEffectPass {
             mTmpBufferSamples: mTextureDimensions * mTextureDimensions,
             mPlaying: false,
             mSoundShaderCompiled: false,
+            mGainNode: this.mEffect.gainNode,
         }
         this.soundProps.mBuffer = wa.createBuffer(2, mPlaySamples, mSampleRate)
         this.soundProps.mRenderTexture = createTexture(
@@ -638,8 +648,24 @@ export default class MyEffectPass {
                 this.Paint_Sound(param)
                 this.soundProps.mSoundShaderCompiled = false
             }
-            if (this.mFrame === 0) {
-                // TODO:
+            if (this.soundProps && this.mFrame === 0) {
+                if (this.soundProps.mPlaying && this.soundProps.mPlayNode) {
+                    this.soundProps.mPlayNode.disconnect()
+                    this.soundProps.mPlayNode.stop()
+                    this.soundProps.mPlayNode = null
+                }
+                if (param.wa) {
+                    this.soundProps.mPlaying = true
+
+                    const playNode: AudioBufferSourceNode =
+                        param.wa.createBufferSource()
+                    this.soundProps.mPlayNode = playNode
+                    playNode.buffer = this.soundProps.mBuffer!
+                    if (this.soundProps.mGainNode) {
+                        playNode.connect(this.soundProps.mGainNode)
+                    }
+                    playNode.start(0)
+                }
             }
             this.mFrame++
         } else if (this.mType === 'image') {
@@ -654,7 +680,119 @@ export default class MyEffectPass {
     }
 
     private Paint_Sound = (param: PaintParam) => {
-        // TODO
+        if (this.soundProps) {
+            const { da } = param
+            const { mBuffer } = this.soundProps
+            const bufL = mBuffer!.getChannelData(0)
+            const bufR = mBuffer!.getChannelData(1)
+
+            this.renderSound(da!, (off, data, numSamples) => {
+                for (let i = 0; i < numSamples; i++) {
+                    bufL[off + i] =
+                        -1.0 +
+                        (2.0 * (data[4 * i + 0] + 256.0 * data[4 * i + 1])) /
+                            65535.0
+                    bufR[off + i] =
+                        -1.0 +
+                        (2.0 * (data[4 * i + 2] + 256.0 * data[4 * i + 3])) /
+                            65535.0
+                }
+            })
+        }
+    }
+
+    private renderSound = (d: Date, callback: RenderSoundCallback) => {
+        const {
+            mRenderFBO,
+            mTextureDimensions,
+            mTmpBufferSamples,
+            mPlaySamples,
+            mSampleRate,
+            mData,
+        } = this.soundProps!
+        const dates = [
+            d.getFullYear(), // the year (four digits)
+            d.getMonth(), // the month (from 0-11)
+            d.getDate(), // the day of the month (from 1-31)
+            d.getHours() * 60.0 * 60 + d.getMinutes() * 60 + d.getSeconds(),
+        ]
+        const resos = [
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        ]
+
+        setRenderTarget(this.mGL, mRenderFBO!)
+
+        setViewport(this.mGL, [0, 0, mTextureDimensions, mTextureDimensions])
+        attachShader(this.mGL, this.mProgram!)
+        setBlend(this.mGL, false)
+
+        //
+        const texID: Texture[] = []
+        this.mInputs.forEach((inp, i) => {
+            if (inp === null) {
+            } else if (inp.mInfo.type === 'texture') {
+                if (inp.loaded) {
+                    texID[i] = inp.globject!
+                    resos[3 * i + 0] = inp.texture!.image.width
+                    resos[3 * i + 1] = inp.texture!.image.height
+                    resos[3 * i + 2] = 1
+                }
+            } else if (inp.mInfo.type === 'volume') {
+                if (inp.loaded) {
+                    texID[i] = inp.globject!
+                    resos[3 * i + 0] = inp.volume!.image.xres
+                    resos[3 * i + 1] = inp.volume!.image.yres
+                    resos[3 * i + 2] = inp.volume!.image.zres
+                }
+            }
+        })
+
+        attachTextures(this.mGL, texID)
+
+        // const l2 = getShaderConstantLocation(
+        //     this.mGL,
+        //     this.mProgram!,
+        //     'iTimeOffset'
+        // )
+        // const l3 = getShaderConstantLocation(
+        //     this.mGL,
+        //     this.mProgram!,
+        //     'iSampleOffset'
+        // )
+
+        setShaderConstant4FV(this.mGL, 'iDate', dates)
+        setShaderConstant3FV(this.mGL, 'iChannelResolution', resos)
+        setShaderConstant1F(this.mGL, 'iSampleRate', mSampleRate)
+        setShaderTextureUnit(this.mGL, 'iChannel0', 0)
+        setShaderTextureUnit(this.mGL, 'iChannel1', 1)
+        setShaderTextureUnit(this.mGL, 'iChannel2', 2)
+        setShaderTextureUnit(this.mGL, 'iChannel3', 3)
+
+        const quad = createDrawUnitQuad(this.mGL, this.mProgram!.program)
+
+        const numSamples = mTmpBufferSamples
+        const numBlocks = mPlaySamples / numSamples
+        for (let j = 0; j < numBlocks; j++) {
+            const off = j * numSamples
+
+            setShaderConstant1F(this.mGL, 'iTimeOffset', off / mSampleRate)
+            setShaderConstant1I(this.mGL, 'iSampleOffset', off)
+            quad()
+
+            getPixelData(
+                this.mGL,
+                mData!,
+                0,
+                mTextureDimensions,
+                mTextureDimensions
+            )
+
+            callback(off, mData!, numSamples)
+        }
+
+        detachShader(this.mGL)
+        dettachTextures(this.mGL)
+        setRenderTarget(this.mGL, null)
     }
 
     private Paint_Buffer = (param: PaintParam) => {

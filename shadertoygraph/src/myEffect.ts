@@ -9,6 +9,7 @@ import {
     TEXTYPE,
     TEXWRP,
 } from './type'
+import { setBlend } from './utils/attr'
 import { clear, createMipmaps } from './utils/index'
 import {
     createRenderTarget,
@@ -29,6 +30,9 @@ export default class MyEffect {
     private frame
 
     private mPasses: MyEffectPass[]
+
+    private audioContext?
+    public gainNode?
 
     constructor(
         vr: any,
@@ -66,7 +70,10 @@ export default class MyEffect {
         // this.mScreenshotSytem = Screenshots()
 
         if (ac) {
-            // TODO:
+            this.audioContext = ac
+            this.gainNode = ac.createGain()
+            this.gainNode.connect(ac.destination)
+            this.gainNode.gain.value = 0.0
         }
 
         // mProgramCopy
@@ -169,6 +176,7 @@ export default class MyEffect {
         }
 
         const paintParam: PaintParam = {
+            wa: this.audioContext,
             time,
             dtime,
             fps,
@@ -222,18 +230,17 @@ export default class MyEffect {
     }
 
     public Load = (jobj: ShaderConfig) => {
-        const thisAudioContext = undefined
         jobj.renderpass.forEach((rpass, j) => {
             const wpass = new MyEffectPass(this.glContext, j, this)
             wpass.name = rpass.name || ''
-            wpass.Create(rpass.type, thisAudioContext)
+            wpass.Create(rpass.type, this.audioContext)
 
             for (let i = 0; i < 4; i++) {
-                wpass.NewTexture(thisAudioContext, i)
+                wpass.NewTexture(this.audioContext, i)
             }
             rpass.inputs.forEach((info) => {
                 wpass.NewTexture(
-                    thisAudioContext,
+                    this.audioContext,
                     info.channel,
                     info,
                     this.buffers,
@@ -259,6 +266,22 @@ export default class MyEffect {
     public Compile = () => {
         this.mPasses.forEach((pass) => {
             pass.NewShader([], false)
+        })
+    }
+
+    public ResizeBuffers = (xres: number, yres: number) => {
+        for (let i = 0; i < this.maxBuffers; i++) {
+            this.ResizeBuffer(i, xres, yres, true)
+        }
+    }
+
+    public ResetTime = () => {
+        this.frame = 0
+        this.audioContext?.resume()
+
+        this.mPasses.forEach((pass) => {
+            pass.mFrame = 0
+            // TODO: pass rewind input
         })
     }
 
@@ -324,6 +347,7 @@ export default class MyEffect {
 
             if (needCopy) {
                 // TODO
+                setBlend(this.glContext, false)
                 console.log('needcopy')
             }
 
@@ -332,6 +356,12 @@ export default class MyEffect {
             this.buffers[i].lastRenderDone = 0
             this.buffers[i].resolution[0] = xres
             this.buffers[i].resolution[1] = yres
+        }
+    }
+
+    public setGainValue = (value: number) => {
+        if (this.gainNode) {
+            this.gainNode.gain.value = value
         }
     }
 }

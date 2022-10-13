@@ -181,7 +181,8 @@ export type EffectPassSoundProps = {
     mRenderTexture?: Texture
     mRenderFBO?: RenderTarget
     mData?: Uint8Array
-    mPlayNode?: AudioBufferSourceNode
+    mPlayNode?: AudioBufferSourceNode | null
+    mGainNode?: GainNode
 
     mSoundShaderCompiled?: boolean
 }
@@ -410,7 +411,11 @@ export type ConfigChannel_Texture = ConfigChannel & {
 
 export type Config = {
     name: string
-    type: 'image' | 'buffer'
+    type: 'image' | 'buffer' | 'sound'
     fragment: string
     channels?: (ConfigChannel_Buffer | ConfigChannel_Texture)[]
+}
+
+export type RenderSoundCallback = {
+    (off: number, mData: Uint8Array, numSamples: number): void
 }

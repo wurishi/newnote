@@ -8,6 +8,14 @@ export function getAttribLocation(
     return gl.getAttribLocation(shader.program, name)
 }
 
+export function getShaderConstantLocation(
+    gl: WebGL2RenderingContext,
+    shader: CreateShaderResolveSucc,
+    name: string
+) {
+    return gl.getUniformLocation(shader.program, name)
+}
+
 let bindedShader: CreateShaderResolveSucc | null
 export function attachShader(
     gl: WebGL2RenderingContext,
@@ -135,4 +143,29 @@ export function setShaderConstant1I(
 
 export function setViewport(gl: WebGL2RenderingContext, vp: number[]) {
     gl.viewport(vp[0], vp[1], vp[2], vp[3])
+}
+
+export function setBlend(gl: WebGL2RenderingContext, enabled: boolean) {
+    if (enabled) {
+        gl.enable(gl.BLEND)
+        gl.blendEquationSeparate(gl.FUNC_ADD, gl.FUNC_ADD)
+        gl.blendFuncSeparate(
+            gl.SRC_ALPHA,
+            gl.ONE_MINUS_SRC_ALPHA,
+            gl.ONE,
+            gl.ONE_MINUS_SRC_ALPHA
+        )
+    } else {
+        gl.disable(gl.BLEND)
+    }
+}
+
+export function getPixelData(
+    gl: WebGL2RenderingContext,
+    data: ArrayBufferView,
+    offset: number,
+    xres: number,
+    yres: number
+) {
+    gl.readPixels(0, 0, xres, yres, gl.RGBA, gl.UNSIGNED_BYTE, data, offset)
 }

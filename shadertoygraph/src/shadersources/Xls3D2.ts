@@ -14,4 +14,9 @@ export default [
             },
         ],
     },
+    {
+        name: 'Sound',
+        type: 'sound',
+        fragment: Sound,
+    },
 ] as Config[]

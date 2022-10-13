@@ -7,4 +7,5 @@ export default {
     WlKXRR: 'Day 61',
     XdXXz4: 'Motion Blur Visualization',
     Xls3D2: 'Frozen wasteland',
+    flGyDd: 'Refraction + post proc',
 }

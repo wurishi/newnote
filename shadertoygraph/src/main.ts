@@ -2,110 +2,154 @@ import ShaderToy from './shaderToy'
 import Stats from 'stats.js'
 import { GUI } from 'dat.gui'
 import NameConfig from './name'
-import { Config, EffectPassInfo, Sampler, ShaderPassConfig } from './type'
+import { Config, ShaderPassConfig } from './type'
 import Image from './image'
+import { fact, removeFolders } from './factGui'
 
 const shaders = import.meta.glob('./shadersources/*.ts')
 
-// new ShaderToy().startRendering()
-let shaderToy: ShaderToy
+function init() {
+    let shaderToy: ShaderToy
 
-function parseConfig(configs: Config[]) {
-    const shaderPassConfig: ShaderPassConfig[] = []
-
-    let buffId = 0
-    configs.forEach((c, idx) => {
-        const sInputs = c.channels
-            ? c.channels.map<EffectPassInfo>((ch, chIdx) => {
-                  let src = ''
-                  const sampler: Sampler = {
-                      filter: ch.filter || 'linear',
-                      wrap: ch.wrap || 'clamp',
-                      vflip: ch.noFlip ? false : true,
-                  }
-                  if (ch.type === 'buffer') {
-                      src = ch.id + ''
-                  } else if (ch.type === 'texture') {
-                      const img = Image.find((it) => it.name === ch.src)
-                      if (img) {
-                          src = img.url
-                      }
-                      sampler.filter = ch.filter || 'mipmap'
-                      sampler.wrap = ch.wrap || 'repeat'
-                  }
-                  return {
-                      channel: chIdx,
-                      type: ch.type,
-                      src: src,
-                      sampler,
-                  }
-              })
-            : []
-        const sOutputs: { channel: number; id: number }[] = []
-        if (c.type === 'buffer') {
-            sOutputs.push({
-                channel: 0,
-                id: buffId++,
-            })
-        }
-        shaderPassConfig.push({
-            name: c.name,
-            type: c.type,
-            code: c.fragment,
-            inputs: sInputs,
-            outputs: sOutputs,
-        })
-    })
-
-    return shaderPassConfig
-}
-
-function init(): ShaderToy {
     const stats = new Stats()
     document.body.appendChild(stats.dom)
     stats.dom.style.left = ''
     stats.dom.style.right = '0'
 
+    const keyToShaderKey = new Map<string, string>()
     const guiData = {
         current: '',
+        paused: false,
+        goto: () => {
+            const key = keyToShaderKey.get(guiData.current)
+            if (key) {
+                window.open(`https://www.shadertoy.com/view/${key}`, '_blank')
+            }
+        },
+        gainValue: 0.0,
+        showTextures: false,
     }
 
     const keyToUrlMap = new Map<string, string>()
+
     const nameRecord = NameConfig as Record<string, string>
     const shaderNameList = Object.keys(shaders).map((url) => {
         let arr = url.split('/')
         arr = arr[arr.length - 1].split('.')
         let key = arr[0]
+
         if (nameRecord[key]) {
             key = `${nameRecord[key]} (${key})`
         }
         keyToUrlMap.set(key, url)
+        keyToShaderKey.set(key, arr[0])
         return key
     })
 
     const gui = new GUI()
     const mainFolder = gui.addFolder('主菜单')
-    mainFolder.add(guiData, 'current', shaderNameList).onChange((key) => {
-        const url = keyToUrlMap.get(key)
-        if (url) {
-            const fn = shaders[url]
-            fn().then((m) => {
-                const c = m.default as Config[]
-                const renderpass = parseConfig(c)
-                shaderToy.load(renderpass)
-            })
-        }
-    })
-    mainFolder.open()
+    const folderMap = new Map<string, GUI>()
 
-    const imageFolder = gui.addFolder('Image')
-    const buffAFolder = gui.addFolder('Buffer A')
+    let soundFolder: GUI | null
+
+    const changeConfigCallback = (renderpass: ShaderPassConfig[]) => {
+        shaderToy.load(renderpass)
+        shaderToy.resetTime(true)
+    }
+
+    mainFolder
+        .add(guiData, 'current', shaderNameList)
+        .name('当前 ShaderToy')
+        .onChange((key) => {
+            const url = keyToUrlMap.get(key)
+            if (url) {
+                removeFolders(gui, folderMap)
+                const fn = shaders[url]
+                if (soundFolder) {
+                    gui.removeFolder(soundFolder)
+                    soundFolder = null
+                }
+                shaderToy.setGainValue(0)
+                fn().then((m) => {
+                    const c = m.default as Config[]
+                    const { config: renderpass } = fact(
+                        gui,
+                        folderMap,
+                        c,
+                        changeConfigCallback
+                    )
+                    shaderToy.load(renderpass)
+                    shaderToy.resetTime(true)
+                    if (renderpass.some((r) => r.type === 'sound')) {
+                        soundFolder = gui.addFolder('WebGL 音乐')
+                        soundFolder
+                            .add(guiData, 'gainValue', 0.0, 1.0, 0.01)
+                            .onChange((val) => {
+                                shaderToy.setGainValue(Number(val))
+                            })
+                        soundFolder.open()
+                        shaderToy.setGainValue(guiData.gainValue)
+                    }
+                })
+            }
+        })
+    mainFolder
+        .add(guiData, 'paused')
+        .name('暂停播放')
+        .onChange(() => {
+            shaderToy.pauseTime(true)
+        })
+    mainFolder
+        .add(guiData, 'showTextures')
+        .name('显示材质列表')
+        .onChange((show: boolean) => {
+            showTextures(show)
+        })
+    mainFolder.add(guiData, 'goto').name('跳转到 ShaderToy')
+    mainFolder.open()
 
     const st = new ShaderToy()
     st.start(() => {
         stats.update()
     })
-    return st
+    shaderToy = st
 }
 
-shaderToy = init()
+init()
+
+function showTextures(show: boolean) {
+    let list: HTMLDivElement = document.querySelector('#textures')!
+    if (!list) {
+        list = document.createElement('div')
+        list.id = 'textures'
+        list.style.display = 'flex'
+        list.style.flexDirection = 'row'
+        list.style.flexWrap = 'wrap'
+        document.body.appendChild(list)
+
+        Image.forEach((img) => {
+            const div = document.createElement('div')
+            div.style.width = '80px'
+            div.style.textAlign = 'center'
+            div.style.overflow = 'hidden'
+            div.style.padding = '0 5px'
+
+            const imgEl = document.createElement('img')
+            imgEl.src = img.url
+            imgEl.style.width = '100%'
+            imgEl.style.height = '60px'
+            div.appendChild(imgEl)
+
+            const labelEl = document.createElement('div')
+            labelEl.innerHTML = img.name
+            div.appendChild(labelEl)
+
+            list.appendChild(div)
+        })
+    }
+    if (show) {
+        list.style.display = 'flex'
+    } else {
+        list.style.display = 'none'
+    }
+}

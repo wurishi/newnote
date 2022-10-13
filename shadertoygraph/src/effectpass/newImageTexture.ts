@@ -1,3 +1,4 @@
+import { getImageConfigByUrl } from '../image'
 import { EffectPassInfo, EffectPassInput, TEXFMT, TEXTYPE } from '../type'
 import { sampler2Renderer } from '../utils'
 import { CreateTextureFromImage } from '../utils/texture'
@@ -14,7 +15,12 @@ export default function NewImageTexture(
     const imageLoadHandler = () => {
         const rti = sampler2Renderer(url.sampler)
         let channels = TEXFMT.C4I8
-        // TODO: C1I8
+        const imgCfg = getImageConfigByUrl(url.src)
+        if (imgCfg) {
+            if (imgCfg.format === 'C1I8') {
+                channels = TEXFMT.C1I8
+            }
+        }
         input.globject = CreateTextureFromImage(
             gl,
             TEXTYPE.T2D,

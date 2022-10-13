@@ -162,3 +162,48 @@ export function createAudioContext() {
     }
     return res
 }
+
+export function download(name: string, blob: Blob) {
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.target = '_self'
+    a.download = name
+    a.click()
+}
+
+export function exportToWav(
+    numSamples: number,
+    rate: number,
+    bits: number,
+    numChannels: number,
+    words: Int16Array
+) {
+    const numBytes = (numSamples * numChannels * bits) / 8
+
+    const buffer = new ArrayBuffer(44 + numBytes)
+    const data = new DataView(buffer)
+
+    data.setUint32(0, 0x46464952, true) // RIFF
+    data.setUint32(4, numBytes + 36, true)
+
+    data.setUint32(8, 0x45564157, true) // WAV_WAVE
+    data.setUint32(12, 0x20746d66, true) // WAV_FMT
+
+    data.setUint32(16, 16, true)
+    data.setUint16(20, 1, true) // WAV_FORMAT_PCM
+    data.setUint16(22, numChannels, true)
+    data.setUint32(24, rate, true)
+    data.setUint32(28, (rate * numChannels * bits) / 8, true)
+    data.setUint32(32, (numChannels * bits) / 8, true)
+    data.setUint16(34, bits, true)
+
+    data.setUint32(36, 0x61746164, true) // WAV_DATA
+    data.setUint32(40, numBytes, true)
+    const numWords = numSamples * numChannels
+    for (let i = 0; i < numWords; i++) {
+        data.setInt16(44 + i * 2, words[i], true)
+    }
+
+    return new Blob([buffer], { type: 'application/octet-stream' })
+}

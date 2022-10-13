@@ -1,4 +1,4 @@
-import { CreateShaderResolveSucc } from '../type'
+import { CreateShaderResolveSucc, RenderTarget } from '../type'
 
 export function getAttribLocation(
     gl: WebGL2RenderingContext,
@@ -168,4 +168,17 @@ export function getPixelData(
     yres: number
 ) {
     gl.readPixels(0, 0, xres, yres, gl.RGBA, gl.UNSIGNED_BYTE, data, offset)
+}
+
+export function getPixelDataRenderTarget(
+    gl: WebGL2RenderingContext,
+    target: RenderTarget,
+    data: ArrayBufferView,
+    xres: number,
+    yres: number
+) {
+    gl.bindFramebuffer(gl.FRAMEBUFFER, target.id)
+    gl.readBuffer(gl.COLOR_ATTACHMENT0)
+    gl.readPixels(0, 0, xres, yres, gl.RGBA, gl.FLOAT, data, 0)
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null)
 }

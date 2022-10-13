@@ -364,6 +364,29 @@ export default class MyEffect {
             this.gainNode.gain.value = value
         }
     }
+
+    public exportToWav = () => {
+        const pass = this.mPasses.find((p) => p.mType === 'sound')
+        if (pass) {
+            pass.exportToWav()
+        }
+    }
+
+    public exportToExr = (id: number) => {
+        let tmp = 0
+        const pass = this.mPasses.find((p) => {
+            if (p.mType === 'buffer') {
+                if (tmp === id) {
+                    return true
+                }
+                tmp++
+            }
+            return false
+        })
+        if (pass) {
+            pass.exportToExr(this.buffers)
+        }
+    }
 }
 
 function createGlContext(

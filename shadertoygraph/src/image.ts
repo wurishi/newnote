@@ -18,7 +18,7 @@ function createImageConfig(file: string, channel: number): ImageConfig {
     }
 }
 
-export default [
+const imageList = [
     createImageConfig('Abstract1.jpeg', 3),
     createImageConfig('Abstract2.jpeg', 3),
     createImageConfig('Abstract3.jpeg', 3),
@@ -42,3 +42,9 @@ export default [
     createImageConfig('Stars.jpeg', 3),
     createImageConfig('Wood.jpeg', 3),
 ]
+
+export default imageList
+
+export function getImageConfigByUrl(url: string) {
+    return imageList.find((img) => img.url === url)
+}

@@ -1,6 +1,7 @@
 import { GUI } from 'dat.gui'
 import { Config, EffectPassInfo, Sampler, ShaderPassConfig } from './type'
 import Image from './image'
+import ShaderToy from './shaderToy'
 
 export function removeFolders(rootGUI: GUI, folderMap: Map<string, GUI>) {
     for (const folder of folderMap.values()) {
@@ -11,6 +12,8 @@ export function removeFolders(rootGUI: GUI, folderMap: Map<string, GUI>) {
 
 const BUFFER_IDS = [0, 1, 2, 3]
 const IMAGES = Image.map((img) => img.name)
+const FILTERS = ['nearest', 'linear', 'mipmap']
+const WRAPS = ['clamp', 'repeat']
 
 function getImageName(url: string) {
     return Image.find((img) => img.url === url)?.name
@@ -24,7 +27,8 @@ export function fact(
     rootGUI: GUI,
     folderMap: Map<string, GUI>,
     configs: Config[],
-    callback: any
+    callback: any,
+    shaderToy: ShaderToy
 ) {
     const guiData: any = {}
     const c: ShaderPassConfig[] = []
@@ -45,17 +49,30 @@ export function fact(
             ;(title as HTMLElement).style.color = 'green'
         }
 
+        if (cfg.type === 'buffer') {
+            const id = cfg.outputs[0] ? cfg.outputs[0].id : 0
+            const key = 'export_buffer_' + id
+            guiData[key] = () => {
+                shaderToy.effect.exportToExr(id)
+            }
+            folder.add(guiData, key).name('截图 ' + folderName)
+            folder.open()
+        }
+
         cfg.inputs.forEach((inp, j) => {
             const fName = 'Channel ' + inp.channel
             const path = `${i}.${fName}`
             let tmpPath = path
 
             const subFolder = folder.addFolder(fName)
+            let addSampler = false
             if (inp.type === 'buffer') {
+                addSampler = true
                 tmpPath = path + '_src'
                 guiData[tmpPath] = inp.src
                 subFolder.add(guiData, tmpPath, BUFFER_IDS).name('Buffer ID')
             } else if (inp.type === 'texture') {
+                addSampler = true
                 tmpPath = path + '_src'
                 guiData[tmpPath] = getImageName(inp.src)
                 subFolder
@@ -68,9 +85,44 @@ export function fact(
                             callback && callback(c)
                         }
                     })
+            }
+            if (addSampler) {
+                tmpPath = path + '_filter'
+                guiData[tmpPath] = inp.sampler.filter
+                subFolder
+                    .add(guiData, tmpPath, FILTERS)
+                    .name('filter')
+                    .onChange((newFilter) => {
+                        c[i].inputs[j].sampler.filter = newFilter
+                        callback && callback(c)
+                    })
+
+                tmpPath = path + '_wrap'
+                guiData[tmpPath] = inp.sampler.wrap
+                subFolder
+                    .add(guiData, tmpPath, WRAPS)
+                    .name('wrap')
+                    .onChange((newWrap) => {
+                        c[i].inputs[j].sampler.wrap = newWrap
+                        callback && callback(c)
+                    })
+
+                // if(inp.type === 'texture') {
+                tmpPath = path + '_vflip'
+                guiData[tmpPath] = inp.sampler.vflip
+                subFolder
+                    .add(guiData, tmpPath)
+                    .name('vflip')
+                    .onChange((newFlip) => {
+                        c[i].inputs[j].sampler.vflip = newFlip
+                        callback && callback(c)
+                    })
+                // }
+
                 subFolder.open()
             }
         })
+
         if (cfg.inputs.length > 0) {
             folder.open()
         }

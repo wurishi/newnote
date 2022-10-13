@@ -1,10 +1,11 @@
 import ShaderToy from './shaderToy'
 import Stats from 'stats.js'
-import { GUI } from 'dat.gui'
+import { GUI, GUIController } from 'dat.gui'
 import NameConfig from './name'
 import { Config, ShaderPassConfig } from './type'
 import Image from './image'
 import { fact, removeFolders } from './factGui'
+import createMediaRecorder from './utils/mediaRecorder'
 
 const shaders = import.meta.glob('./shadersources/*.ts')
 
@@ -17,6 +18,7 @@ function init() {
     stats.dom.style.right = '0'
 
     const keyToShaderKey = new Map<string, string>()
+
     const guiData = {
         current: '',
         paused: false,
@@ -69,14 +71,15 @@ function init() {
                     gui.removeFolder(soundFolder)
                     soundFolder = null
                 }
-                shaderToy.setGainValue(0)
+                shaderToy.effect.setGainValue(0)
                 fn().then((m) => {
                     const c = m.default as Config[]
                     const { config: renderpass } = fact(
                         gui,
                         folderMap,
                         c,
-                        changeConfigCallback
+                        changeConfigCallback,
+                        shaderToy
                     )
                     shaderToy.load(renderpass)
                     shaderToy.resetTime(true)
@@ -85,10 +88,15 @@ function init() {
                         soundFolder
                             .add(guiData, 'gainValue', 0.0, 1.0, 0.01)
                             .onChange((val) => {
-                                shaderToy.setGainValue(Number(val))
+                                shaderToy.effect.setGainValue(Number(val))
                             })
+                        ;(guiData as any).exportWav = () => {
+                            shaderToy.effect.exportToWav()
+                        }
+                        soundFolder.add(guiData, 'exportWav').name('导出音效')
+
                         soundFolder.open()
-                        shaderToy.setGainValue(guiData.gainValue)
+                        shaderToy.effect.setGainValue(guiData.gainValue)
                     }
                 })
             }
@@ -106,6 +114,29 @@ function init() {
             showTextures(show)
         })
     mainFolder.add(guiData, 'goto').name('跳转到 ShaderToy')
+
+    let mediaRecorder: MediaRecorder
+    let recordGUI: GUIController
+    ;(guiData as any).record = () => {
+        if (mediaRecorder === undefined) {
+            mediaRecorder = createMediaRecorder((isRecording) => {
+                if (isRecording) {
+                    recordGUI.name('结束录制')
+                } else {
+                    recordGUI.name('开始录制')
+                }
+            }, shaderToy.canvas)!
+        }
+        if (mediaRecorder) {
+            if (mediaRecorder.state === 'inactive') {
+                mediaRecorder.start()
+            } else {
+                mediaRecorder.stop()
+            }
+        }
+    }
+    recordGUI = mainFolder.add(guiData, 'record').name('开始录制')
+
     mainFolder.open()
 
     const st = new ShaderToy()

@@ -7,8 +7,8 @@ import {
 import { ShaderPassConfig } from './type'
 
 export default class ShaderToy {
-    private canvas
-    private effect
+    public canvas
+    public effect
     private tOffset
     private to
     private tf
@@ -72,10 +72,6 @@ export default class ShaderToy {
     public start = (callback?: () => any) => {
         this.loopCallback = callback
         this.renderLoop()
-    }
-
-    public setGainValue = (value: number) => {
-        this.effect.setGainValue(value)
     }
 
     private mouseOriX: number = 0

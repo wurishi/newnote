@@ -1,5 +1,6 @@
 import {
     CreateShaderResolveSucc,
+    EffectBuffer,
     EffectPassInfo,
     EffectPassInput,
     EffectPassSoundProps,
@@ -31,6 +32,7 @@ import {
     detachShader,
     getAttribLocation,
     getPixelData,
+    getPixelDataRenderTarget,
     getShaderConstantLocation,
     setBlend,
     setShaderConstant1F,
@@ -42,7 +44,8 @@ import {
     setShaderTextureUnit,
     setViewport,
 } from './utils/attr'
-import { createMipmaps } from './utils/index'
+import { createMipmaps, download, exportToWav } from './utils/index'
+import exportToExr from './utils/exportToExr'
 
 type DestroyCall = {
     (wa: AudioContext): void
@@ -698,6 +701,56 @@ export default class MyEffectPass {
                             65535.0
                 }
             })
+        }
+    }
+
+    public exportToWav = (duration = 60) => {
+        if (this.mType === 'sound' && this.soundProps) {
+            let offset = 0
+            const bits = 16
+            const numChannels = 2
+            const words = new Int16Array(
+                duration * this.soundProps.mSampleRate * numChannels
+            )
+
+            this.renderSound(new Date(), (off, data, numSamples) => {
+                for (let i = 0; i < numSamples; i++) {
+                    words[offset++] =
+                        data[4 * i + 0] + 256.0 * data[4 * i + 1] - 32767
+                    words[offset++] =
+                        data[4 * i + 2] + 256.0 * data[4 * i + 3] - 32767
+                }
+            })
+
+            const blob = exportToWav(
+                duration * this.soundProps.mSampleRate,
+                this.soundProps.mSampleRate,
+                bits,
+                numChannels,
+                words
+            )
+
+            download('sound.wav', blob)
+        }
+    }
+
+    public exportToExr = (buffers: EffectBuffer[]) => {
+        if (this.mType === 'buffer') {
+            const bufferID = this.mOutputs[0]
+            const buffer = buffers[bufferID]
+            const texture = buffer.target[buffer.lastRenderDone]!
+
+            const numComponents = 3
+            const width = texture.tex0.xres
+            const height = texture.tex0.yres
+            const type = 'Float'
+            const bytes = new Float32Array(width * height * 4)
+
+            getPixelDataRenderTarget(this.mGL, texture, bytes, width, height)
+
+            const blob = exportToExr(width, height, numComponents, type, bytes)
+
+            download('image.exr', blob)
         }
     }
 

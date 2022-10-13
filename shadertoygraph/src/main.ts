@@ -55,8 +55,7 @@ function init() {
     let soundFolder: GUI | null
 
     const changeConfigCallback = (renderpass: ShaderPassConfig[]) => {
-        shaderToy.load(renderpass)
-        shaderToy.resetTime(true)
+        shaderToy.newEffect(renderpass)
     }
 
     mainFolder
@@ -71,7 +70,7 @@ function init() {
                     gui.removeFolder(soundFolder)
                     soundFolder = null
                 }
-                shaderToy.effect.setGainValue(0)
+                shaderToy.setGainValue(0)
                 fn().then((m) => {
                     const c = m.default as Config[]
                     const { config: renderpass } = fact(
@@ -81,22 +80,21 @@ function init() {
                         changeConfigCallback,
                         shaderToy
                     )
-                    shaderToy.load(renderpass)
-                    shaderToy.resetTime(true)
+                    shaderToy.newEffect(renderpass)
                     if (renderpass.some((r) => r.type === 'sound')) {
                         soundFolder = gui.addFolder('WebGL 音乐')
                         soundFolder
                             .add(guiData, 'gainValue', 0.0, 1.0, 0.01)
                             .onChange((val) => {
-                                shaderToy.effect.setGainValue(Number(val))
+                                shaderToy.setGainValue(Number(val))
                             })
                         ;(guiData as any).exportWav = () => {
-                            shaderToy.effect.exportToWav()
+                            shaderToy.exportToWav()
                         }
                         soundFolder.add(guiData, 'exportWav').name('导出音效')
 
                         soundFolder.open()
-                        shaderToy.effect.setGainValue(guiData.gainValue)
+                        shaderToy.setGainValue(guiData.gainValue)
                     }
                 })
             }

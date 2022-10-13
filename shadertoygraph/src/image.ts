@@ -48,3 +48,22 @@ export default imageList
 export function getImageConfigByUrl(url: string) {
     return imageList.find((img) => img.url === url)
 }
+
+type Volume = {
+    name: string
+    url: string
+}
+const volumeList: Volume[] = [
+    {
+        name: 'GreyNoise3D',
+        url: FOLDER + 'GreyNoise3D.bin',
+    },
+    {
+        name: 'RGBANoise3D',
+        url: FOLDER + 'RGBANoise3D.bin',
+    },
+]
+
+export function getVolume(name: string) {
+    return volumeList.find((v) => v.name === name)
+}

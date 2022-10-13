@@ -86,11 +86,6 @@ export default class MyEffectPass {
         this.mEffect = effect
     }
 
-    public Destroy(wa: any) {
-        this.destroyCall && this.destroyCall(wa)
-        this.destroyCall = null
-    }
-
     public Create = (passType: PassType, wa?: AudioContext) => {
         this.mType = passType
         switch (passType) {
@@ -224,7 +219,7 @@ export default class MyEffectPass {
         this.destroyCall = this.Destroy_Image
     }
 
-    private Destroy_Image: DestroyCall = (wa) => {}
+    private Destroy_Image: DestroyCall = (wa: AudioContext) => {}
 
     private Create_Sound = (wa: AudioContext) => {
         this.MakeHeader()
@@ -1025,5 +1020,10 @@ export default class MyEffectPass {
 
     public SetCode = (src: string) => {
         this.mSource = src
+    }
+
+    public Destroy = (wa: AudioContext) => {
+        this.destroyCall && this.destroyCall(wa)
+        this.destroyCall = null
     }
 }

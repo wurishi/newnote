@@ -111,7 +111,6 @@ export default class MyEffect {
         mousePosY: number,
         isPaused: boolean
     ) => {
-        const wa = null
         const da = new Date()
         const vrData = null
         let xres = this.xres / 1
@@ -283,6 +282,29 @@ export default class MyEffect {
             pass.mFrame = 0
             // TODO: pass rewind input
         })
+    }
+
+    public Destroy = () => {
+        this.mPasses.forEach((pass) => pass.Destroy(this.audioContext!))
+
+        this.buffers.forEach((buffer) => {
+            buffer.texture[0]?.Destroy()
+            buffer.texture[1]?.Destroy()
+            buffer.target[0]?.Destroy()
+            buffer.target[1]?.Destroy()
+        })
+        this.cubeBuffers.forEach((buffer) => {
+            buffer.texture[0]?.Destroy()
+            buffer.texture[1]?.Destroy()
+            buffer.target[0]?.Destroy()
+            buffer.target[1]?.Destroy()
+        })
+
+        this.buffers = []
+        this.cubeBuffers = []
+        this.mPasses = []
+        this.audioContext = undefined
+        this.gainNode = undefined
     }
 
     public ResizeBuffer = (

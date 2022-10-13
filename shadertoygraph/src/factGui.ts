@@ -1,6 +1,6 @@
 import { GUI } from 'dat.gui'
 import { Config, EffectPassInfo, Sampler, ShaderPassConfig } from './type'
-import Image from './image'
+import Image, { getVolume } from './image'
 import ShaderToy from './shaderToy'
 
 export function removeFolders(rootGUI: GUI, folderMap: Map<string, GUI>) {
@@ -40,6 +40,8 @@ export function fact(
             folderName += ` (id: ${
                 cfg.outputs[0] ? cfg.outputs[0].id : 'UNKNOW'
             })`
+        } else if (cfg.type === 'sound') {
+            folderName = 'Sound'
         }
         const folder = rootGUI.addFolder(folderName)
         folderMap.set(folderName, folder)
@@ -53,7 +55,7 @@ export function fact(
             const id = cfg.outputs[0] ? cfg.outputs[0].id : 0
             const key = 'export_buffer_' + id
             guiData[key] = () => {
-                shaderToy.effect.exportToExr(id)
+                shaderToy.exportToExr(id)
             }
             folder.add(guiData, key).name('截图 ' + folderName)
             folder.open()
@@ -152,6 +154,13 @@ function parseConfig(configs: Config[]) {
                       const img = Image.find((it) => it.name === ch.src)
                       if (img) {
                           src = img.url
+                      }
+                      sampler.filter = ch.filter || 'mipmap'
+                      sampler.wrap = ch.wrap || 'repeat'
+                  } else if (ch.type === 'volume') {
+                      const volume = getVolume(ch.volume)
+                      if (volume) {
+                          src = volume.url
                       }
                       sampler.filter = ch.filter || 'mipmap'
                       sampler.wrap = ch.wrap || 'repeat'

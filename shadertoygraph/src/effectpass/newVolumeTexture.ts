@@ -54,6 +54,7 @@ export default function NewVolumeTexture(
             rti.wrap,
             buffer
         )
+        input.loaded = true
     }
     input.volume = {
         image: {

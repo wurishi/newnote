@@ -8,4 +8,7 @@ export default {
     XdXXz4: 'Motion Blur Visualization',
     Xls3D2: 'Frozen wasteland',
     flGyDd: 'Refraction + post proc',
+    llj3Rz: '[NV15] Space Curvature',
+    Ms2SD1: 'Seascape',
+    XslGRr: 'Clouds',
 }

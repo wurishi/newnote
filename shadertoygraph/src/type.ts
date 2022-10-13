@@ -330,7 +330,7 @@ export type WebGLInfo = {
 
 export type PaintParam = {
     vrData?: any
-    wa?: any
+    wa?: AudioContext
     da?: Date
     time?: any
     dtime?: any
@@ -409,11 +409,20 @@ export type ConfigChannel_Texture = ConfigChannel & {
         | 'Wood'
 }
 
+export type ConfigChannel_Volume = ConfigChannel & {
+    type: 'volume'
+    volume: 'GreyNoise3D' | 'RGBANoise3D'
+}
+
 export type Config = {
     name: string
     type: 'image' | 'buffer' | 'sound'
     fragment: string
-    channels?: (ConfigChannel_Buffer | ConfigChannel_Texture)[]
+    channels?: (
+        | ConfigChannel_Buffer
+        | ConfigChannel_Texture
+        | ConfigChannel_Volume
+    )[]
 }
 
 export type RenderSoundCallback = {

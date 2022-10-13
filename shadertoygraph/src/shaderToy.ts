@@ -8,7 +8,7 @@ import { ShaderPassConfig } from './type'
 
 export default class ShaderToy {
     public canvas
-    public effect
+    private effect
     private tOffset
     private to
     private tf
@@ -60,13 +60,13 @@ export default class ShaderToy {
         }
     }
 
-    public load = (renderpass: ShaderPassConfig[]) => {
-        this.effect.Load({
-            renderpass,
-        })
-        this.effect.Compile()
-        this.resetTime(true)
-    }
+    // public load = (renderpass: ShaderPassConfig[]) => {
+    //     this.effect.Load({
+    //         renderpass,
+    //     })
+    //     this.effect.Compile()
+    //     this.resetTime(true)
+    // }
 
     private loopCallback?: () => any
     public start = (callback?: () => any) => {
@@ -198,7 +198,7 @@ export default class ShaderToy {
         }
     }
 
-    public resetTime = (doFocusCanvas?: boolean) => {
+    private resetTime = (doFocusCanvas?: boolean) => {
         this.tOffset = 0
         this.to = getRealTime()
         this.tf = 0
@@ -210,13 +210,37 @@ export default class ShaderToy {
         }
     }
 
-    // public destory = () => {
-    //     this.destoryed = true
+    public newEffect = (renderpass: ShaderPassConfig[]) => {
+        if (this.effect) {
+            this.effect.Destroy()
+        }
 
-    //     this.canvas.removeEventListener('mousedown', this.mouseDown)
-    //     this.canvas.removeEventListener('mouseup', this.mouseUp)
-    //     this.canvas.removeEventListener('mousemove', this.mouseMove)
+        this.effect = new MyEffect(
+            null,
+            this.audioContext,
+            this.canvas,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
+        this.effect.Load({
+            renderpass,
+        })
+        this.effect.Compile()
+        this.resetTime(true)
+    }
 
-    //     document.body.removeChild(this.canvas)
-    // }
+    public setGainValue = (value: number) => {
+        this.effect.setGainValue(value)
+    }
+
+    public exportToWav = () => {
+        this.effect.exportToWav()
+    }
+
+    public exportToExr = (id: number) => {
+        this.effect.exportToExr(id)
+    }
 }

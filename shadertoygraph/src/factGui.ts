@@ -1,6 +1,6 @@
 import { GUI } from 'dat.gui'
 import { Config, EffectPassInfo, Sampler, ShaderPassConfig } from './type'
-import Image, { getVolume } from './image'
+import Image, { getVolume, getVolumeByUrl, getVolumeNames } from './image'
 import ShaderToy from './shaderToy'
 
 export function removeFolders(rootGUI: GUI, folderMap: Map<string, GUI>) {
@@ -14,6 +14,7 @@ const BUFFER_IDS = [0, 1, 2, 3]
 const IMAGES = Image.map((img) => img.name)
 const FILTERS = ['nearest', 'linear', 'mipmap']
 const WRAPS = ['clamp', 'repeat']
+const VOLUMES = getVolumeNames()
 
 function getImageName(url: string) {
     return Image.find((img) => img.url === url)?.name
@@ -87,6 +88,23 @@ export function fact(
                             callback && callback(c)
                         }
                     })
+            } else if (inp.type === 'volume') {
+                addSampler = true
+                tmpPath = path + '_src'
+                const v = getVolumeByUrl(inp.src)
+                if (v) {
+                    guiData[tmpPath] = v.name
+                    subFolder
+                        .add(guiData, tmpPath, VOLUMES)
+                        .name('Texture')
+                        .onChange((newVolume) => {
+                            const url = getVolume(newVolume)
+                            if (url) {
+                                c[i].inputs[j].src = url.url
+                                callback && callback(c)
+                            }
+                        })
+                }
             }
             if (addSampler) {
                 tmpPath = path + '_filter'

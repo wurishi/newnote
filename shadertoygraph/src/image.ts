@@ -67,3 +67,11 @@ const volumeList: Volume[] = [
 export function getVolume(name: string) {
     return volumeList.find((v) => v.name === name)
 }
+
+export function getVolumeByUrl(url: string) {
+    return volumeList.find((v) => v.url === url)
+}
+
+export function getVolumeNames() {
+    return volumeList.map((v) => v.name)
+}

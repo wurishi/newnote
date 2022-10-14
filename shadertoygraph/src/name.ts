@@ -11,4 +11,7 @@ export default {
     llj3Rz: '[NV15] Space Curvature',
     Ms2SD1: 'Seascape',
     XslGRr: 'Clouds',
+    '3l23Rh': 'Protean clouds',
+    Xds3zN: 'Raymarching - Primitives',
+    '4ttSWf': 'Rainforest',
 }

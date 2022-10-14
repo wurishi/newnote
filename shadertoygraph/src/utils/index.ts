@@ -207,3 +207,19 @@ export function exportToWav(
 
     return new Blob([buffer], { type: 'application/octet-stream' })
 }
+
+export function requestFullScreen(ele: any) {
+    if (ele === null) {
+        ele = document.documentElement
+    }
+
+    if (ele.requestFullscreen) {
+        ele.requestFullscreen()
+    } else if (ele.msRequestFullscreen) {
+        ele.msRequestFullscreen()
+    } else if (ele.mozRequestFullScreen) {
+        ele.mozRequestFullScreen()
+    } else if (ele.webkitRequestFullscreen) {
+        ele.webkitRequestFullscreen((Element as any).ALLOW_KEYBOARD_INPUT)
+    }
+}

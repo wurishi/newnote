@@ -6,6 +6,7 @@ import { Config, ShaderPassConfig } from './type'
 import Image from './image'
 import { fact, removeFolders } from './factGui'
 import createMediaRecorder from './utils/mediaRecorder'
+import { requestFullScreen } from './utils/index'
 
 const shaders = import.meta.glob('./shadersources/*.ts')
 
@@ -134,6 +135,21 @@ function init() {
         }
     }
     recordGUI = mainFolder.add(guiData, 'record').name('开始录制')
+    ;(guiData as any).zoom = () => {
+        if (shaderToy.canvas.style.width === '400px') {
+            shaderToy.canvas.style.width = '800px'
+            shaderToy.canvas.style.height = '600px'
+        } else {
+            shaderToy.canvas.style.width = '400px'
+            shaderToy.canvas.style.height = '300px'
+        }
+    }
+    mainFolder.add(guiData, 'zoom').name('放大缩小')
+    ;(guiData as any).fullScreen = () => {
+        requestFullScreen(shaderToy.canvas)
+        shaderToy.canvas.focus()
+    }
+    mainFolder.add(guiData, 'fullScreen').name('全屏')
 
     mainFolder.open()
 

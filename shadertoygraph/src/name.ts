@@ -14,4 +14,6 @@ export default {
     '3l23Rh': 'Protean clouds',
     Xds3zN: 'Raymarching - Primitives',
     '4ttSWf': 'Rainforest',
+    XlfGRj: 'Star Nest',
+    MdX3zr: 'Flame',
 }

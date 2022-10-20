@@ -21,4 +21,7 @@ export default {
     XsBXWt: 'Fractal Land',
     '4dcGW2': '(FAIL) expansive reaction-diffusion',
     MdX3Rr: 'Elevated',
+    '4dfGzs': 'Voxel Edges',
+    '3lsSzf': 'Happy Jumping',
+    ltffzl: 'Heartfelt',
 }

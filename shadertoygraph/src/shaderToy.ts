@@ -4,7 +4,7 @@ import {
     getRealTime,
     requestAnimFrame,
 } from './utils/index'
-import { ShaderPassConfig } from './type'
+import { RefreshTextureThumbail, ShaderPassConfig } from './type'
 
 export default class ShaderToy {
     public canvas
@@ -17,6 +17,7 @@ export default class ShaderToy {
     private restarted = true
     private audioContext
     private destoryed = false
+    private textureCallbackFun: RefreshTextureThumbail | null = null
 
     constructor() {
         this.tOffset = 0
@@ -42,7 +43,7 @@ export default class ShaderToy {
             null,
             this.audioContext,
             canvas,
-            null,
+            this.textureCallbackFun,
             null,
             null,
             null,
@@ -210,16 +211,22 @@ export default class ShaderToy {
         }
     }
 
-    public newEffect = (renderpass: ShaderPassConfig[]) => {
+    public newEffect = (
+        renderpass: ShaderPassConfig[],
+        callback?: RefreshTextureThumbail
+    ) => {
         if (this.effect) {
             this.effect.Destroy()
+        }
+        if (callback) {
+            this.textureCallbackFun = callback
         }
 
         this.effect = new MyEffect(
             null,
             this.audioContext,
             this.canvas,
-            null,
+            this.textureCallbackFun,
             null,
             null,
             null,

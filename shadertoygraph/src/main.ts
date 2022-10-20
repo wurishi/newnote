@@ -74,14 +74,14 @@ function init() {
                 shaderToy.setGainValue(0)
                 fn().then((m) => {
                     const c = m.default as Config[]
-                    const { config: renderpass } = fact(
+                    const { config: renderpass, musicCallback } = fact(
                         gui,
                         folderMap,
                         c,
                         changeConfigCallback,
                         shaderToy
                     )
-                    shaderToy.newEffect(renderpass)
+                    shaderToy.newEffect(renderpass, musicCallback!)
                     if (renderpass.some((r) => r.type === 'sound')) {
                         soundFolder = gui.addFolder('WebGL 音乐')
                         soundFolder

@@ -8,6 +8,7 @@ import {
     GPUDraw,
     PaintParam,
     PassType,
+    RefreshTextureThumbail,
     RenderSoundCallback,
     TEXFMT,
     Texture,
@@ -46,6 +47,8 @@ import {
 } from './utils/attr'
 import { createMipmaps, download, exportToWav } from './utils/index'
 import exportToExr from './utils/exportToExr'
+import NewMusicTexture from './effectpass/newMusicTexture'
+import updateTexture from './utils/texture/updateTexture'
 
 type DestroyCall = {
     (wa: AudioContext): void
@@ -71,8 +74,14 @@ export default class MyEffectPass {
     private mEffect
 
     public name: string = ''
+    private textureCallbackFun
 
-    constructor(gl: WebGL2RenderingContext, id: number, effect: MyEffect) {
+    constructor(
+        gl: WebGL2RenderingContext,
+        id: number,
+        effect: MyEffect,
+        callback: RefreshTextureThumbail | null
+    ) {
         this.mGL = gl
         this.mID = id
         this.mHeader = ''
@@ -84,6 +93,7 @@ export default class MyEffectPass {
 
         this.mFrame = 0
         this.mEffect = effect
+        this.textureCallbackFun = callback
     }
 
     public Create = (passType: PassType, wa?: AudioContext) => {
@@ -108,7 +118,7 @@ export default class MyEffectPass {
     }
 
     public NewTexture = (
-        wa: any,
+        wa: AudioContext | undefined,
         slot: number,
         url?: EffectPassInfo,
         buffers?: any,
@@ -154,7 +164,18 @@ export default class MyEffectPass {
         } else if (url.type === 'video') {
             // TODO: video
         } else if (url.type === 'music' || url.type === 'musicstream') {
-            // TODO: music
+            input = NewMusicTexture(wa!, this.mGL, url, this.mEffect.gainNode)
+            result.needsShaderCompile =
+                this.mInputs[slot] === null ||
+                (this.mInputs[slot]?.mInfo.type !== 'texture' &&
+                    this.mInputs[slot]?.mInfo.type !== 'webcam' &&
+                    this.mInputs[slot]?.mInfo.type !== 'mic' &&
+                    this.mInputs[slot]?.mInfo.type !== 'music' &&
+                    this.mInputs[slot]?.mInfo.type !== 'musicstream' &&
+                    this.mInputs[slot]?.mInfo.type !== 'keyboard' &&
+                    this.mInputs[slot]?.mInfo.type !== 'video')
+            this.resetTexture(slot, input)
+            result.failed = false
         } else if (url.type === 'keyboard') {
             // TODO: keyboard
         } else if (url.type === 'buffer') {
@@ -170,14 +191,17 @@ export default class MyEffectPass {
                     this.mInputs[slot]?.mInfo.type !== 'musicstream' &&
                     this.mInputs[slot]?.mInfo.type !== 'keyboard' &&
                     this.mInputs[slot]?.mInfo.type !== 'video')
-            this.DestroyInput(slot)
-            this.mInputs[slot] = input
 
-            // TODO: resetbuffer
-            // this.SetSamplerFilter(slot, url.sampler.filter, buffers, cubeBuffers)
-            // this.SetSamplerVFlip(slot, url.sampler.vflip)
-            // this.SetSamplerWrap(slot, url.sampler.wrap, buffers)
-            this.MakeHeader()
+            this.resetTexture(slot, input)
+            result.failed = false
+            // this.DestroyInput(slot)
+            // this.mInputs[slot] = input
+
+            // // TODO: resetbuffer
+            // // this.SetSamplerFilter(slot, url.sampler.filter, buffers, cubeBuffers)
+            // // this.SetSamplerVFlip(slot, url.sampler.vflip)
+            // // this.SetSamplerWrap(slot, url.sampler.wrap, buffers)
+            // this.MakeHeader()
         }
         return result
     }
@@ -939,7 +963,69 @@ export default class MyEffectPass {
                     inp.mInfo.type === 'music' ||
                     inp.mInfo.type === 'musicstream'
                 ) {
-                    // TODO
+                    if (inp.loaded && inp.audio && param.wa) {
+                        inp.audio.analyser?.getByteFrequencyData(
+                            inp.audio.freqData!
+                        )
+                        inp.audio.analyser?.getByteTimeDomainData(
+                            inp.audio.waveData!
+                        )
+
+                        if (this.textureCallbackFun) {
+                            this.textureCallbackFun(
+                                inp.audio.freqData!,
+                                this.mID
+                            )
+                        }
+
+                        // times[i] = inp.audio.currentTime
+                        texID[i] = inp.globject!
+                        texIsLoaded[i] = 1
+
+                        times[i] = 10.0 + time
+                        const num = inp.audio.freqData!.length
+                        for (let j = 0; j < num; j++) {
+                            const x = j / num
+                            let f =
+                                (0.75 +
+                                    0.25 * Math.sin(10.0 * j + 13.0 * time)) *
+                                Math.exp(-3.0 * x)
+                            if (j < 3) {
+                                f =
+                                    Math.pow(
+                                        0.5 + 0.5 * Math.sin(6.2831 * time),
+                                        4.0
+                                    ) *
+                                    (1.0 - j / 3.0)
+                            }
+                            inp.audio.freqData![j] = Math.floor(255.0 * f) | 0
+                        }
+
+                        for (let j = 0; j < num; j++) {
+                            const f =
+                                0.5 +
+                                0.15 *
+                                    Math.sin(
+                                        17.0 * time + (10.0 * 6.2831 * j) / num
+                                    ) *
+                                    Math.sin(23.0 * time + (1.9 * j) / num)
+                            inp.audio.waveData![j] = Math.floor(255.0 * f) | 0
+                        }
+
+                        updateTexture(
+                            this.mGL,
+                            inp.globject!,
+                            0,
+                            0,
+                            512,
+                            1,
+                            inp.audio.freqData!
+                        )
+
+                        resos[3 * i + 0] = 512
+                        resos[3 * i + 1] = 2
+                        resos[3 * i + 2] = 1
+                    }
                 } else if (inp.mInfo.type === 'mic') {
                     // TODO
                 } else if (inp.mInfo.type === 'buffer') {
@@ -1020,6 +1106,10 @@ export default class MyEffectPass {
 
     public SetCode = (src: string) => {
         this.mSource = src
+    }
+
+    public GetCode = (): string => {
+        return this.mSource
     }
 
     public Destroy = (wa: AudioContext) => {

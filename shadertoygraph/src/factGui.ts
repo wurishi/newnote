@@ -1,7 +1,14 @@
 import { GUI } from 'dat.gui'
-import { Config, EffectPassInfo, Sampler, ShaderPassConfig } from './type'
+import {
+    Config,
+    EffectPassInfo,
+    RefreshTextureThumbail,
+    Sampler,
+    ShaderPassConfig,
+} from './type'
 import Image, { getVolume, getVolumeByUrl, getVolumeNames } from './image'
 import ShaderToy from './shaderToy'
+import drawMusicWave from './utils/drawMusicWave'
 
 export function removeFolders(rootGUI: GUI, folderMap: Map<string, GUI>) {
     for (const folder of folderMap.values()) {
@@ -33,6 +40,7 @@ export function fact(
 ) {
     const guiData: any = {}
     const c: ShaderPassConfig[] = []
+    let musicCallback: RefreshTextureThumbail | null = null
     const raw = parseConfig(configs)
     raw.forEach((cfg, i) => {
         c[i] = cfg
@@ -105,6 +113,21 @@ export function fact(
                             }
                         })
                 }
+            } else if (inp.type === 'music') {
+                const canvas = document.createElement('canvas')
+                canvas.style.background = 'black'
+                canvas.width = subFolder.domElement.offsetWidth - 4
+                canvas.height = (canvas.width / 4) * 3
+
+                subFolder.domElement.appendChild(canvas)
+
+                subFolder.open()
+
+                musicCallback = (wave, passID) => {
+                    if (passID === inp.channel) {
+                        drawMusicWave(canvas, wave)
+                    }
+                }
             }
             if (addSampler) {
                 tmpPath = path + '_filter'
@@ -150,6 +173,7 @@ export function fact(
 
     return {
         config: c,
+        musicCallback,
     }
 }
 
@@ -182,10 +206,12 @@ function parseConfig(configs: Config[]) {
                       }
                       sampler.filter = ch.filter || 'mipmap'
                       sampler.wrap = ch.wrap || 'repeat'
+                  } else if (ch.type === 'music') {
+                      src = '/textures/audio.mp3'
                   }
                   return {
                       channel: chIdx,
-                      type: ch.type,
+                      type: ch.type as any,
                       src: src,
                       sampler,
                   }

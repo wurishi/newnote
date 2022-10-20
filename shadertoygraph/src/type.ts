@@ -167,6 +167,16 @@ export type EffectPassInput = {
         id: number
         destroy: () => void
     }
+    audio?: {
+        el: HTMLAudioElement
+        hasFalled: boolean
+
+        source?: MediaElementAudioSourceNode
+        analyser?: AnalyserNode
+        gain?: GainNode
+        freqData?: Uint8Array
+        waveData?: Uint8Array
+    }
 } | null
 
 export type EffectPassSoundProps = {
@@ -374,8 +384,8 @@ export type ShaderConfig = {
 
 export type ConfigChannel = {
     type: string
-    filter?: string
-    wrap?: string
+    filter?: 'nearest' | 'linear' | 'mipmap'
+    wrap?: 'clamp' | 'repeat'
     noFlip?: boolean
 }
 export type ConfigChannel_Buffer = ConfigChannel & {
@@ -414,17 +424,31 @@ export type ConfigChannel_Volume = ConfigChannel & {
     volume: 'GreyNoise3D' | 'RGBANoise3D'
 }
 
+export type ConfigChannel_Empty = ConfigChannel & {
+    type: 'Empty'
+}
+
+export type ConfigChannel_Music = ConfigChannel & {
+    type: 'music'
+}
+
 export type Config = {
     name: string
-    type: 'image' | 'buffer' | 'sound'
+    type: 'image' | 'buffer' | 'sound' | 'common'
     fragment: string
     channels?: (
         | ConfigChannel_Buffer
         | ConfigChannel_Texture
         | ConfigChannel_Volume
+        | ConfigChannel_Empty
+        | ConfigChannel_Music
     )[]
 }
 
 export type RenderSoundCallback = {
     (off: number, mData: Uint8Array, numSamples: number): void
+}
+
+export type RefreshTextureThumbail = {
+    (wave: Uint8Array, passID: number): void
 }

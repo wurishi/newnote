@@ -16,4 +16,9 @@ export default {
     '4ttSWf': 'Rainforest',
     XlfGRj: 'Star Nest',
     MdX3zr: 'Flame',
+    fsjyR3: '(FAIL) Lover',
+    XsXXDn: 'Creation by Silexars',
+    XsBXWt: 'Fractal Land',
+    '4dcGW2': '(FAIL) expansive reaction-diffusion',
+    MdX3Rr: 'Elevated',
 }

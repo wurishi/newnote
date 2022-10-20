@@ -4,6 +4,7 @@ import {
     EffectBuffer,
     FILTER,
     PaintParam,
+    RefreshTextureThumbail,
     ShaderConfig,
     TEXFMT,
     TEXTYPE,
@@ -33,12 +34,13 @@ export default class MyEffect {
 
     private audioContext?
     public gainNode?
+    private textureCallbackFun
 
     constructor(
         vr: any,
         ac: AudioContext | null,
         canvas: HTMLCanvasElement,
-        callback: any,
+        callback: RefreshTextureThumbail | null,
         obj: any,
         forceMuted: any,
         forcePaused: any,
@@ -53,6 +55,7 @@ export default class MyEffect {
         this.cubeBuffers = new Array<EffectBuffer>()
         this.frame = 0
         this.mPasses = []
+        this.textureCallbackFun = callback
 
         this.glContext = createGlContext(canvas, false, false, true, false)
 
@@ -230,7 +233,12 @@ export default class MyEffect {
 
     public Load = (jobj: ShaderConfig) => {
         jobj.renderpass.forEach((rpass, j) => {
-            const wpass = new MyEffectPass(this.glContext, j, this)
+            const wpass = new MyEffectPass(
+                this.glContext,
+                j,
+                this,
+                this.textureCallbackFun
+            )
             wpass.name = rpass.name || ''
             wpass.Create(rpass.type, this.audioContext)
 
@@ -263,8 +271,14 @@ export default class MyEffect {
     }
 
     public Compile = () => {
+        const commonSourceCodes: string[] = []
         this.mPasses.forEach((pass) => {
-            pass.NewShader([], false)
+            if (pass.mType === 'common') {
+                commonSourceCodes.push(pass.GetCode())
+            }
+        })
+        this.mPasses.forEach((pass) => {
+            pass.NewShader(commonSourceCodes, false)
         })
     }
 

@@ -82,8 +82,14 @@ function init() {
                         shaderToy
                     )
                     shaderToy.newEffect(renderpass, musicCallback!)
-                    if (renderpass.some((r) => r.type === 'sound')) {
-                        soundFolder = gui.addFolder('WebGL 音乐')
+                    if (
+                        renderpass.some(
+                            (r) =>
+                                r.type === 'sound' ||
+                                r.inputs.some((tmpi) => tmpi.type === 'music')
+                        )
+                    ) {
+                        soundFolder = gui.addFolder('音乐音量')
                         soundFolder
                             .add(guiData, 'gainValue', 0.0, 1.0, 0.01)
                             .onChange((val) => {

@@ -900,17 +900,18 @@ export default class MyEffectPass {
 
     private Paint_Image = (param: PaintParam) => {
         const {
-            time,
-            mousePosX,
-            mousePosY,
-            mouseOriX,
-            mouseOriY,
+            time = 0,
+            mousePosX = 0,
+            mousePosY = 0,
+            mouseOriX = 0,
+            mouseOriY = 0,
             buffers,
             cubeBuffers,
-            xres,
-            yres,
-            dtime,
-            fps,
+            xres = 0,
+            yres = 0,
+            dtime = 0,
+            fps = 0,
+            isPaused = false,
         } = param
         const d = param.da || new Date()
         const times = [0.0, 0.0, 0.0, 0.0]
@@ -972,10 +973,7 @@ export default class MyEffectPass {
                         )
 
                         if (this.textureCallbackFun) {
-                            this.textureCallbackFun(
-                                inp.audio.freqData!,
-                                this.mID
-                            )
+                            this.textureCallbackFun(inp.audio.freqData!, i)
                         }
 
                         // times[i] = inp.audio.currentTime

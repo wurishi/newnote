@@ -342,16 +342,16 @@ export type PaintParam = {
     vrData?: any
     wa?: AudioContext
     da?: Date
-    time?: any
-    dtime?: any
-    fps?: any
-    mouseOriX?: any
-    mouseOriY?: any
-    mousePosX?: any
-    mousePosY?: any
-    xres?: any
-    yres?: any
-    isPaused?: any
+    time?: number
+    dtime?: number
+    fps?: number
+    mouseOriX?: number
+    mouseOriY?: number
+    mousePosX?: number
+    mousePosY?: number
+    xres?: number
+    yres?: number
+    isPaused?: boolean
     bufferID?: any
     bufferNeedsMimaps?: any
     buffers?: EffectBuffer[]

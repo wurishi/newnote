@@ -22,9 +22,12 @@ export default {
     '4dcGW2': '(FAIL) expansive reaction-diffusion',
     MdX3Rr: 'Elevated',
     '4dfGzs': 'Voxel Edges',
+    // https://www.shadertoy.com/results?query=&sort=love&from=12&num=12
     '3lsSzf': 'Happy Jumping',
     ltffzl: 'Heartfelt',
     ld3Gz2: 'Snail',
     llK3Dy: 'Rhodium liquid carbon',
     MdfBRX: 'The Drive Home',
+    XsjXRm: 'Plasma Globe',
+    MtX3Ws: 'Playing marble',
 }

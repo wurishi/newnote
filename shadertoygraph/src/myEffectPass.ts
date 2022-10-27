@@ -49,6 +49,7 @@ import { createMipmaps, download, exportToWav } from './utils/index'
 import exportToExr from './utils/exportToExr'
 import NewMusicTexture from './effectpass/newMusicTexture'
 import updateTexture from './utils/texture/updateTexture'
+import NewCubemapsTexture from './effectpass/newCubemapsTexture'
 
 type DestroyCall = {
     (wa: AudioContext): void
@@ -156,7 +157,11 @@ export default class MyEffectPass {
             this.resetTexture(slot, input)
             result.failed = false
         } else if (url.type === 'cubemap') {
-            // TODO: cubemap
+            input = NewCubemapsTexture(this.mGL, url)
+
+            result.needsShaderCompile = false // TODO
+            this.resetTexture(slot, input)
+            result.failed = false
         } else if (url.type === 'webcam') {
             // TODO: webcam
         } else if (url.type === 'mic') {
@@ -698,6 +703,8 @@ export default class MyEffectPass {
         } else if (this.mType === 'buffer') {
             this.Paint_Buffer(param)
             this.mFrame++
+        } else if (this.mType === 'cubemap') {
+            console.log('cubemap')
         }
     }
 
@@ -954,7 +961,9 @@ export default class MyEffectPass {
                     // TODO
                 } else if (inp.mInfo.type === 'cubemap') {
                     if (inp.loaded) {
-                        // TODO
+                        // TODO 如果是个cubemap shader 需要另外处理
+                        texID[i] = inp.globject!
+                        texIsLoaded[i] = 1
                     }
                 } else if (inp.mInfo.type === 'webcam') {
                     // TODO
@@ -1111,6 +1120,15 @@ export default class MyEffectPass {
     }
 
     public Destroy = (wa: AudioContext) => {
+        this.mInputs.forEach((inp) => {
+            if (inp) {
+                inp.buffer?.destroy()
+                inp.cubemaps?.destroy()
+                inp.globject?.Destroy()
+                inp.texture?.destroy()
+                inp.volume?.destroy()
+            }
+        })
         this.destroyCall && this.destroyCall(wa)
         this.destroyCall = null
     }

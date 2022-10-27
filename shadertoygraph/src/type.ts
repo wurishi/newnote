@@ -177,6 +177,10 @@ export type EffectPassInput = {
         freqData?: Uint8Array
         waveData?: Uint8Array
     }
+    cubemaps?: {
+        images: HTMLImageElement[]
+        destroy: () => void
+    }
 } | null
 
 export type EffectPassSoundProps = {
@@ -432,6 +436,11 @@ export type ConfigChannel_Music = ConfigChannel & {
     type: 'music'
 }
 
+export type ConfigChannel_Cubemap = ConfigChannel & {
+    type: 'cubemap'
+    map: 'Basilica' | 'Forest' | 'ForestBlur' | 'BasilicaBlur' | 'Gallery'
+}
+
 export type Config = {
     name: string
     type: 'image' | 'buffer' | 'sound' | 'common'
@@ -442,6 +451,7 @@ export type Config = {
         | ConfigChannel_Volume
         | ConfigChannel_Empty
         | ConfigChannel_Music
+        | ConfigChannel_Cubemap
     )[]
 }
 

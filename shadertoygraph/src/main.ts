@@ -3,7 +3,7 @@ import Stats from 'stats.js'
 import { GUI, GUIController } from 'dat.gui'
 import NameConfig from './name'
 import { Config, ShaderPassConfig } from './type'
-import Image from './image'
+import Image, { getCubemaps, getCubemapsList } from './image'
 import { fact, removeFolders } from './factGui'
 import createMediaRecorder from './utils/mediaRecorder'
 import { requestFullScreen } from './utils/index'
@@ -31,6 +31,7 @@ function init() {
         },
         gainValue: 0.0,
         showTextures: false,
+        showCubeMaps: false,
     }
 
     const keyToUrlMap = new Map<string, string>()
@@ -118,6 +119,12 @@ function init() {
         .onChange((show: boolean) => {
             showTextures(show)
         })
+    mainFolder
+        .add(guiData, 'showCubeMaps')
+        .name('显示CubeMap列表')
+        .onChange((show) => {
+            showCubeMaps(show)
+        })
     mainFolder.add(guiData, 'goto').name('跳转到 ShaderToy')
 
     let mediaRecorder: MediaRecorder
@@ -198,6 +205,44 @@ function showTextures(show: boolean) {
             list.appendChild(div)
         })
     }
+    if (show) {
+        list.style.display = 'flex'
+    } else {
+        list.style.display = 'none'
+    }
+}
+
+function showCubeMaps(show: boolean) {
+    let list: HTMLDivElement = document.querySelector('#cubemaps')!
+    if (!list) {
+        list = document.createElement('div')
+        list.id = 'cubemaps'
+        list.style.display = 'flex'
+        list.style.flexDirection = 'row'
+        list.style.flexWrap = 'wrap'
+        document.body.appendChild(list)
+
+        getCubemapsList().forEach((cubemap) => {
+            const div = document.createElement('div')
+            div.style.width = '80px'
+            div.style.textAlign = 'center'
+            div.style.overflow = 'hidden'
+            div.style.padding = '0 5px'
+
+            const imgEl = document.createElement('img')
+            imgEl.src = getCubemaps(cubemap)[0]
+            imgEl.style.width = '100%'
+            imgEl.style.height = '60px'
+            div.appendChild(imgEl)
+
+            const labelEl = document.createElement('div')
+            labelEl.innerHTML = cubemap
+            div.appendChild(labelEl)
+
+            list.appendChild(div)
+        })
+    }
+
     if (show) {
         list.style.display = 'flex'
     } else {

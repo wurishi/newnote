@@ -6,7 +6,12 @@ import {
     Sampler,
     ShaderPassConfig,
 } from './type'
-import Image, { getVolume, getVolumeByUrl, getVolumeNames } from './image'
+import Image, {
+    getCubemapsList,
+    getVolume,
+    getVolumeByUrl,
+    getVolumeNames,
+} from './image'
 import ShaderToy from './shaderToy'
 import drawMusicWave from './utils/drawMusicWave'
 
@@ -76,6 +81,30 @@ export function fact(
             let tmpPath = path
 
             const subFolder = folder.addFolder(fName)
+            const inputsMap = new Map<string, EffectPassInfo>()
+            const getInputs = (i: number, j: number) => {
+                const key = i + '_' + j
+                if (!inputsMap.has(key)) {
+                    inputsMap.set(key, c[i].inputs[j])
+                }
+                return inputsMap.get(key)!
+            }
+
+            tmpPath = path + '_empty'
+            guiData[tmpPath] = false
+            subFolder
+                .add(guiData, tmpPath)
+                .name('禁用')
+                .onChange((v) => {
+                    if (v) {
+                        const t = getInputs(i, j)
+                        c[i].inputs[j] = { channel: t.channel } as any
+                    } else {
+                        c[i].inputs[j] = getInputs(i, j)
+                    }
+                    callback && callback(c)
+                })
+
             let addSampler = false
             if (inp.type === 'buffer') {
                 addSampler = true
@@ -92,7 +121,7 @@ export function fact(
                     .onChange((newImgName) => {
                         const url = getImageUrl(newImgName)
                         if (url) {
-                            c[i].inputs[j].src = url
+                            getInputs(i, j).src = url
                             callback && callback(c)
                         }
                     })
@@ -108,7 +137,7 @@ export function fact(
                         .onChange((newVolume) => {
                             const url = getVolume(newVolume)
                             if (url) {
-                                c[i].inputs[j].src = url.url
+                                getInputs(i, j).src = url.url
                                 callback && callback(c)
                             }
                         })
@@ -128,6 +157,18 @@ export function fact(
                         drawMusicWave(canvas, wave)
                     }
                 }
+            } else if (inp.type === 'cubemap') {
+                // 目前只能首次生效
+                // addSampler = true
+                // tmpPath = path + '_src'
+                // guiData[tmpPath] = inp.src
+                // subFolder
+                //     .add(guiData, tmpPath, getCubemapsList())
+                //     .name('Cubemap')
+                //     .onChange((newCubemap) => {
+                //         getInputs(i, j).src = newCubemap
+                //         callback && callback(c)
+                //     })
             }
             if (addSampler) {
                 tmpPath = path + '_filter'
@@ -136,7 +177,7 @@ export function fact(
                     .add(guiData, tmpPath, FILTERS)
                     .name('filter')
                     .onChange((newFilter) => {
-                        c[i].inputs[j].sampler.filter = newFilter
+                        getInputs(i, j).sampler.filter = newFilter
                         callback && callback(c)
                     })
 
@@ -146,7 +187,7 @@ export function fact(
                     .add(guiData, tmpPath, WRAPS)
                     .name('wrap')
                     .onChange((newWrap) => {
-                        c[i].inputs[j].sampler.wrap = newWrap
+                        getInputs(i, j).sampler.wrap = newWrap
                         callback && callback(c)
                     })
 
@@ -157,7 +198,7 @@ export function fact(
                     .add(guiData, tmpPath)
                     .name('vflip')
                     .onChange((newFlip) => {
-                        c[i].inputs[j].sampler.vflip = newFlip
+                        getInputs(i, j).sampler.vflip = newFlip
                         callback && callback(c)
                     })
                 // }
@@ -208,6 +249,8 @@ function parseConfig(configs: Config[]) {
                       sampler.wrap = ch.wrap || 'repeat'
                   } else if (ch.type === 'music') {
                       src = '/textures/audio.mp3'
+                  } else if (ch.type === 'cubemap') {
+                      src = ch.map
                   }
                   return {
                       channel: chIdx,

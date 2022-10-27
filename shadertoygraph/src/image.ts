@@ -1,6 +1,7 @@
 import { Format } from './type'
 
 const FOLDER = '/textures/'
+const CUBEMAPS_FOLDER = FOLDER + 'cubemaps/'
 
 type ImageConfig = {
     name: string
@@ -74,4 +75,26 @@ export function getVolumeByUrl(url: string) {
 
 export function getVolumeNames() {
     return volumeList.map((v) => v.name)
+}
+
+const POSTFIX: Record<string, string> = {
+    Basilica: '.jpeg',
+    Forest: '.png',
+    ForestBlur: '.png',
+    BasilicaBlur: '.png',
+    Gallery: '.jpeg',
+}
+
+export function getCubemapsList() {
+    return Object.keys(POSTFIX)
+}
+
+export function getCubemaps(name: string) {
+    const maps: string[] = []
+    for (let i = 0; i < 6; i++) {
+        const tmp = i === 0 ? name : name + '_' + i
+        maps.push(CUBEMAPS_FOLDER + tmp + POSTFIX[name])
+    }
+
+    return maps
 }

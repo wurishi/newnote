@@ -22,6 +22,7 @@ function init() {
 
     const guiData = {
         current: '',
+        preview: false,
         paused: false,
         goto: () => {
             const key = keyToShaderKey.get(guiData.current)
@@ -32,6 +33,12 @@ function init() {
         gainValue: 0.0,
         showTextures: false,
         showCubeMaps: false,
+        clipboard: () => {
+            const key = keyToShaderKey.get(guiData.current)
+            if(key) {
+                navigator.clipboard.writeText(key)
+            }
+        }
     }
 
     const keyToUrlMap = new Map<string, string>()
@@ -60,7 +67,7 @@ function init() {
         shaderToy.newEffect(renderpass)
     }
 
-    mainFolder
+    const currentGUI = mainFolder
         .add(guiData, 'current', shaderNameList)
         .name('当前 ShaderToy')
         .onChange((key) => {
@@ -107,6 +114,13 @@ function init() {
                 })
             }
         })
+    const changeCurrent = (name:string) => {
+        currentGUI.setValue(name)
+    }
+    mainFolder.add(guiData, 'preview').name('预览列表').onChange(show => {
+        showPreviews(show, changeCurrent)
+    })
+    mainFolder.add(guiData, 'clipboard').name('复制key')
     mainFolder
         .add(guiData, 'paused')
         .name('暂停播放')
@@ -121,7 +135,7 @@ function init() {
         })
     mainFolder
         .add(guiData, 'showCubeMaps')
-        .name('显示CubeMap列表')
+        .name('显示CubeMap')
         .onChange((show) => {
             showCubeMaps(show)
         })
@@ -152,13 +166,9 @@ function init() {
         if (shaderToy.canvas.style.width === '400px') {
             shaderToy.canvas.style.width = '800px'
             shaderToy.canvas.style.height = '600px'
-            // shaderToy.canvas.width = 800
-            // shaderToy.canvas.height = 600
         } else {
             shaderToy.canvas.style.width = '400px'
             shaderToy.canvas.style.height = '300px'
-            // shaderToy.canvas.width = 400
-            // shaderToy.canvas.height = 300
         }
     }
 
@@ -180,15 +190,16 @@ function init() {
 
 init()
 
+const tools = document.querySelector('#tools')!
 function showTextures(show: boolean) {
-    let list: HTMLDivElement = document.querySelector('#textures')!
+    let list: HTMLDivElement = tools.querySelector('#textures')!
     if (!list) {
         list = document.createElement('div')
         list.id = 'textures'
         list.style.display = 'flex'
         list.style.flexDirection = 'row'
         list.style.flexWrap = 'wrap'
-        document.body.appendChild(list)
+        tools.appendChild(list)
 
         Image.forEach((img) => {
             const div = document.createElement('div')
@@ -218,14 +229,14 @@ function showTextures(show: boolean) {
 }
 
 function showCubeMaps(show: boolean) {
-    let list: HTMLDivElement = document.querySelector('#cubemaps')!
+    let list: HTMLDivElement = tools.querySelector('#cubemaps')!
     if (!list) {
         list = document.createElement('div')
         list.id = 'cubemaps'
         list.style.display = 'flex'
         list.style.flexDirection = 'row'
         list.style.flexWrap = 'wrap'
-        document.body.appendChild(list)
+        tools.appendChild(list)
 
         getCubemapsList().forEach((cubemap) => {
             const div = document.createElement('div')
@@ -251,6 +262,62 @@ function showCubeMaps(show: boolean) {
     if (show) {
         list.style.display = 'flex'
     } else {
+        list.style.display = 'none'
+    }
+}
+
+function showPreviews(show:boolean, changeCurrent:(name:string)=>void) {
+    let list:HTMLDivElement= document.querySelector('#previews')!
+    if(!list) {
+        list = document.createElement('div')
+        list.id = 'previews'
+        list.style.display = 'flex'
+        list.style.flexDirection = 'row'
+        list.style.flexWrap = 'wrap'
+        list.style.maxHeight = '300px'
+        list.style.overflow = 'auto'
+        list.style.width = 'calc(100vw - 270px)'
+
+        const nameRecord = NameConfig as Record<string, string>
+        Object.keys(shaders).forEach(url => {
+            let arr = url.split('/')
+            arr = arr[arr.length - 1].split('.')
+            const key = arr[0]
+            let key1 = key
+            if (nameRecord[key]) {
+                key1 = `${nameRecord[key]} (${key})`
+            }
+            const name = nameRecord[key]
+            const item = document.createElement('div')
+            item.style.width = '80px'
+            item.style.textAlign = 'center'
+            item.style.overflow = 'hidden'
+            item.style.padding = '0 5px'
+
+            const imgEl = document.createElement('img')
+            imgEl.src = '/screenshot/' + key + '.jpg'
+            imgEl.style.width = '100%'
+            imgEl.style.height = '60px'
+            item.appendChild(imgEl)
+
+            const labelEl = document.createElement('div')
+            labelEl.innerHTML = name
+            item.appendChild(labelEl)
+
+            item.onclick = () => {
+                changeCurrent(key1)
+            }
+
+            list.appendChild(item)
+        })
+
+        document.body.appendChild(list)
+    }
+
+    if(show) {
+        list.style.display = 'flex'
+    }
+    else {
         list.style.display = 'none'
     }
 }

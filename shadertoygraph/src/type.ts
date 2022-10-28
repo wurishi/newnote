@@ -183,6 +183,10 @@ export type EffectPassInput = {
         images: HTMLImageElement[]
         destroy: () => void
     }
+    video?: {
+        video: HTMLVideoElement
+        destroy: () => void
+    }
 } | null
 
 export type EffectPassSoundProps = {
@@ -443,6 +447,10 @@ export type ConfigChannel_Cubemap = ConfigChannel & {
     map: 'Basilica' | 'Forest' | 'ForestBlur' | 'BasilicaBlur' | 'Gallery'
 }
 
+export type ConfigChannel_Video = ConfigChannel & {
+    type: 'video'
+}
+
 export type Config = {
     name: string
     type: 'image' | 'buffer' | 'sound' | 'common'
@@ -454,6 +462,7 @@ export type Config = {
         | ConfigChannel_Empty
         | ConfigChannel_Music
         | ConfigChannel_Cubemap
+        | ConfigChannel_Video
     )[]
 }
 

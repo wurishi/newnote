@@ -50,6 +50,8 @@ import exportToExr from './utils/exportToExr'
 import NewMusicTexture from './effectpass/newMusicTexture'
 import updateTexture from './utils/texture/updateTexture'
 import NewCubemapsTexture from './effectpass/newCubemapsTexture'
+import NewVideoTexture from './effectpass/newVideoTexture'
+import { updateTextureFromImage } from './utils/texture/updateTextureFromImage'
 
 type DestroyCall = {
     (wa: AudioContext): void
@@ -167,7 +169,11 @@ export default class MyEffectPass {
         } else if (url.type === 'mic') {
             // TODO: mic
         } else if (url.type === 'video') {
-            // TODO: video
+            input = NewVideoTexture(this.mGL, url)
+
+            result.needsShaderCompile = false // TODO
+            this.resetTexture(slot, input)
+            result.failed = false
         } else if (url.type === 'music' || url.type === 'musicstream') {
             input = NewMusicTexture(wa!, this.mGL, url, this.mEffect.gainNode)
             result.needsShaderCompile =
@@ -968,7 +974,25 @@ export default class MyEffectPass {
                 } else if (inp.mInfo.type === 'webcam') {
                     // TODO
                 } else if (inp.mInfo.type === 'video') {
-                    // TODO
+                    if (inp.loaded && inp.video) {
+                        times[i] = inp.video.video.currentTime
+                        texID[i] = inp.globject!
+
+                        if (!inp.video.video.paused) {
+                            updateTextureFromImage(
+                                this.mGL,
+                                inp.globject!,
+                                inp.video.video
+                            )
+                            if (inp.mInfo.sampler.filter === 'mipmap') {
+                                createMipmaps(this.mGL, inp.globject!)
+                            }
+                        }
+
+                        resos[3 * i + 0] = inp.video.video.videoWidth
+                        resos[3 * i + 1] = inp.video.video.videoHeight
+                        resos[3 * i + 2] = 1
+                    }
                 } else if (
                     inp.mInfo.type === 'music' ||
                     inp.mInfo.type === 'musicstream'
@@ -1130,6 +1154,7 @@ export default class MyEffectPass {
                 if (inp.audio?.destroy) {
                     inp.audio.destroy()
                 }
+                inp.video?.destroy()
             }
         })
         this.destroyCall && this.destroyCall(wa)

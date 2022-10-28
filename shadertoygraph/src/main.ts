@@ -10,6 +10,8 @@ import { requestFullScreen } from './utils/index'
 
 const shaders = import.meta.glob('./shadersources/*.ts')
 
+let changeCurrent: ((key: string) => void) | null = null
+
 function init() {
     let shaderToy: ShaderToy
 
@@ -35,10 +37,10 @@ function init() {
         showCubeMaps: false,
         clipboard: () => {
             const key = keyToShaderKey.get(guiData.current)
-            if(key) {
+            if (key) {
                 navigator.clipboard.writeText(key)
             }
-        }
+        },
     }
 
     const keyToUrlMap = new Map<string, string>()
@@ -71,6 +73,7 @@ function init() {
         .add(guiData, 'current', shaderNameList)
         .name('当前 ShaderToy')
         .onChange((key) => {
+            window.localStorage.setItem('key_last', key)
             const url = keyToUrlMap.get(key)
             if (url) {
                 removeFolders(gui, folderMap)
@@ -114,12 +117,18 @@ function init() {
                 })
             }
         })
-    const changeCurrent = (name:string) => {
+    changeCurrent = (name: string) => {
         currentGUI.setValue(name)
     }
-    mainFolder.add(guiData, 'preview').name('预览列表').onChange(show => {
-        showPreviews(show, changeCurrent)
-    })
+    const previewGUI = mainFolder
+        .add(guiData, 'preview')
+        .name('预览列表')
+        .onChange((show) => {
+            showPreviews(show)
+        })
+    setTimeout(() => {
+        previewGUI.setValue(true)
+    }, 500)
     mainFolder.add(guiData, 'clipboard').name('复制key')
     mainFolder
         .add(guiData, 'paused')
@@ -199,6 +208,7 @@ function showTextures(show: boolean) {
         list.style.display = 'flex'
         list.style.flexDirection = 'row'
         list.style.flexWrap = 'wrap'
+        list.style.width = 'calc(100vw - 270px)'
         tools.appendChild(list)
 
         Image.forEach((img) => {
@@ -236,6 +246,7 @@ function showCubeMaps(show: boolean) {
         list.style.display = 'flex'
         list.style.flexDirection = 'row'
         list.style.flexWrap = 'wrap'
+        list.style.width = 'calc(100vw - 270px)'
         tools.appendChild(list)
 
         getCubemapsList().forEach((cubemap) => {
@@ -266,9 +277,9 @@ function showCubeMaps(show: boolean) {
     }
 }
 
-function showPreviews(show:boolean, changeCurrent:(name:string)=>void) {
-    let list:HTMLDivElement= document.querySelector('#previews')!
-    if(!list) {
+function showPreviews(show: boolean) {
+    let list: HTMLDivElement = document.querySelector('#previews')!
+    if (!list) {
         list = document.createElement('div')
         list.id = 'previews'
         list.style.display = 'flex'
@@ -279,7 +290,7 @@ function showPreviews(show:boolean, changeCurrent:(name:string)=>void) {
         list.style.width = 'calc(100vw - 270px)'
 
         const nameRecord = NameConfig as Record<string, string>
-        Object.keys(shaders).forEach(url => {
+        Object.keys(shaders).forEach((url) => {
             let arr = url.split('/')
             arr = arr[arr.length - 1].split('.')
             const key = arr[0]
@@ -305,7 +316,7 @@ function showPreviews(show:boolean, changeCurrent:(name:string)=>void) {
             item.appendChild(labelEl)
 
             item.onclick = () => {
-                changeCurrent(key1)
+                changeCurrent && changeCurrent(key1)
             }
 
             list.appendChild(item)
@@ -314,10 +325,43 @@ function showPreviews(show:boolean, changeCurrent:(name:string)=>void) {
         document.body.appendChild(list)
     }
 
-    if(show) {
+    if (show) {
         list.style.display = 'flex'
-    }
-    else {
+    } else {
         list.style.display = 'none'
     }
 }
+
+const lazyInit = () => {
+    const lastKey = window.localStorage.getItem('key_last')
+    const lastListStr = window.localStorage.getItem('key_list')
+    let lastList: string[] = []
+    if (lastListStr) {
+        lastList = JSON.parse(lastListStr)
+    }
+
+    let newKey = ''
+    const tmpList: string[] = []
+    const nameRecord = NameConfig as Record<string, string>
+    const arr = Object.keys(nameRecord)
+    const len = arr.length
+    for (let i = 0; i < len; i++) {
+        const key = `${nameRecord[arr[i]]} (${arr[i]})`
+        if (lastList.indexOf(key) < 0) {
+            newKey = key
+        }
+        tmpList.push(key)
+    }
+    window.localStorage.setItem('key_list', JSON.stringify(tmpList))
+
+    if (newKey && lastList.length > 0) {
+        changeCurrent && changeCurrent(newKey)
+        return
+    }
+
+    if (lastKey) {
+        changeCurrent && changeCurrent(lastKey)
+    }
+}
+
+setTimeout(lazyInit, 1000)

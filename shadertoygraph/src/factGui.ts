@@ -251,6 +251,8 @@ function parseConfig(configs: Config[]) {
                       src = '/textures/audio.mp3'
                   } else if (ch.type === 'cubemap') {
                       src = ch.map
+                  } else if (ch.type === 'video') {
+                      src = '/textures/video.webm'
                   }
                   return {
                       channel: chIdx,

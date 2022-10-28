@@ -37,4 +37,11 @@ export default {
     XsyGWV: 'Sirenian Dawn',
     // https://www.shadertoy.com/results?query=&sort=love&from=24&num=12
     Md23DV: 'GLSL 2D Tutorials',
+    ldlcRf: 'Tribute - Journey! ',
+    XtS3DD: 'Cloud Ten',
+    ldXXDj: 'Music - Pirates',
+    MdfGRX: 'Hell',
+    Msl3Rr: 'Cubescape',
+    XtGGRt: 'Auroras',
+    XtVGD1: 'notebook drawings',
 }

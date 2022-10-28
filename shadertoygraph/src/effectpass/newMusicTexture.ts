@@ -66,5 +66,14 @@ export default function NewMusicTexture(
         input.loaded = true
     })
 
+    if (input.audio) {
+        input.audio.destroy = () => {
+            audio.pause()
+            input.audio?.source?.disconnect()
+            input.audio?.analyser?.disconnect()
+            input.audio?.gain?.disconnect()
+        }
+    }
+
     return input
 }

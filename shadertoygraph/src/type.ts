@@ -176,6 +176,8 @@ export type EffectPassInput = {
         gain?: GainNode
         freqData?: Uint8Array
         waveData?: Uint8Array
+
+        destroy?: () => void
     }
     cubemaps?: {
         images: HTMLImageElement[]

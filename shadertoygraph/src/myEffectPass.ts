@@ -1127,6 +1127,9 @@ export default class MyEffectPass {
                 inp.globject?.Destroy()
                 inp.texture?.destroy()
                 inp.volume?.destroy()
+                if (inp.audio?.destroy) {
+                    inp.audio.destroy()
+                }
             }
         })
         this.destroyCall && this.destroyCall(wa)

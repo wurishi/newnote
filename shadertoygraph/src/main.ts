@@ -152,11 +152,16 @@ function init() {
         if (shaderToy.canvas.style.width === '400px') {
             shaderToy.canvas.style.width = '800px'
             shaderToy.canvas.style.height = '600px'
+            // shaderToy.canvas.width = 800
+            // shaderToy.canvas.height = 600
         } else {
             shaderToy.canvas.style.width = '400px'
             shaderToy.canvas.style.height = '300px'
+            // shaderToy.canvas.width = 400
+            // shaderToy.canvas.height = 300
         }
     }
+
     mainFolder.add(guiData, 'zoom').name('放大缩小')
     ;(guiData as any).fullScreen = () => {
         requestFullScreen(shaderToy.canvas)

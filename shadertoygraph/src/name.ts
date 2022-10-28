@@ -30,4 +30,11 @@ export default {
     MdfBRX: 'The Drive Home',
     XsjXRm: 'Plasma Globe',
     MtX3Ws: 'Playing marble',
+    MslGWN: 'Simplicity Galaxy',
+    XsX3RB: 'Volcanic',
+    '4dXGR4': 'Main Sequence Star',
+    '4tdSWr': '2D Clouds',
+    XsyGWV: 'Sirenian Dawn',
+    // https://www.shadertoy.com/results?query=&sort=love&from=24&num=12
+    Md23DV: 'GLSL 2D Tutorials',
 }

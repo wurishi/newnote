@@ -23,6 +23,7 @@ export default class MyEffect {
     public xres
     public yres
     private glContext
+    private canvas
 
     private maxBuffers
     private buffers
@@ -35,6 +36,7 @@ export default class MyEffect {
     private audioContext?
     public gainNode?
     private textureCallbackFun
+    private RO?
 
     constructor(
         vr: any,
@@ -58,7 +60,7 @@ export default class MyEffect {
         this.textureCallbackFun = callback
 
         this.glContext = createGlContext(canvas, false, false, true, false)
-
+        this.canvas = canvas
         canvas.addEventListener(
             'webglcontextlost',
             (event) => {
@@ -101,7 +103,47 @@ export default class MyEffect {
 
         // keyboard
 
-        // resize
+        if (!window.ResizeObserver) {
+            this.bestAttemptFallback()
+            window.addEventListener('resize', this.bestAttemptFallback)
+        } else {
+            this.RO = new ResizeObserver((entries, observer) => {
+                const entry = entries[0]
+                if (!entry.devicePixelContentBoxSize) {
+                    observer.unobserve(canvas)
+                    this.bestAttemptFallback()
+                    window.addEventListener('resize', this.bestAttemptFallback)
+                } else {
+                    const box = entry.devicePixelContentBoxSize[0]
+                    const xres = box.inlineSize
+                    const yres = box.blockSize
+                    this.iResize(xres, yres)
+                }
+            })
+            try {
+                this.RO.observe(canvas, {
+                    box: 'device-pixel-content-box',
+                })
+            } catch (error) {
+                this.bestAttemptFallback()
+                window.addEventListener('resize', this.bestAttemptFallback)
+            }
+        }
+    }
+
+    private iResize = (xres: number, yres: number) => {
+        this.canvas.width = xres
+        this.canvas.height = yres
+        this.xres = xres
+        this.yres = yres
+        this.ResizeBuffers(xres, yres)
+    }
+
+    private bestAttemptFallback = () => {
+        const devicePixelRatio = window.devicePixelRatio || 1
+        const xres = Math.round(this.canvas.offsetWidth * devicePixelRatio) | 0
+        const yres = Math.round(this.canvas.offsetHeight * devicePixelRatio) | 0
+        this.iResize(xres, yres)
     }
 
     public Paint = (
@@ -116,6 +158,7 @@ export default class MyEffect {
     ) => {
         const da = new Date()
         const vrData = null
+        // TODO: resize
         let xres = this.xres / 1
         let yres = this.yres / 1
         if (this.frame === 0) {
@@ -299,6 +342,13 @@ export default class MyEffect {
     }
 
     public Destroy = () => {
+        window.removeEventListener('resize', this.bestAttemptFallback)
+
+        if (this.RO) {
+            this.RO.unobserve(this.canvas)
+            this.RO.disconnect()
+        }
+
         this.mPasses.forEach((pass) => pass.Destroy(this.audioContext!))
 
         this.buffers.forEach((buffer) => {

@@ -3,6 +3,7 @@ import {
     EffectBuffer,
     EffectPassInfo,
     EffectPassInput,
+    EffectPassInput_Keyboard,
     EffectPassSoundProps,
     FILTER,
     GPUDraw,
@@ -52,6 +53,7 @@ import updateTexture from './utils/texture/updateTexture'
 import NewCubemapsTexture from './effectpass/newCubemapsTexture'
 import NewVideoTexture from './effectpass/newVideoTexture'
 import { updateTextureFromImage } from './utils/texture/updateTextureFromImage'
+import NewKeyboardTexture from './effectpass/newKeyboardTexture'
 
 type DestroyCall = {
     (wa: AudioContext): void
@@ -126,7 +128,7 @@ export default class MyEffectPass {
         url?: EffectPassInfo,
         buffers?: any,
         cubeBuffers?: any,
-        keyboard?: any
+        keyboard?: EffectPassInput_Keyboard
     ): TextureInfo => {
         const result: TextureInfo = {
             failed: true,
@@ -188,7 +190,10 @@ export default class MyEffectPass {
             this.resetTexture(slot, input)
             result.failed = false
         } else if (url.type === 'keyboard') {
-            // TODO: keyboard
+            input = NewKeyboardTexture(url, keyboard)
+
+            this.resetTexture(slot, input)
+            result.failed = false
         } else if (url.type === 'buffer') {
             input = NewBufferTexture(url)
 
@@ -964,7 +969,13 @@ export default class MyEffectPass {
                         resos[3 * i + 2] = inp.volume!.image.zres
                     }
                 } else if (inp.mInfo.type === 'keyboard') {
-                    // TODO
+                    if (inp.loaded && inp.keyboard) {
+                        texID[i] = inp.keyboard.texture
+                        texIsLoaded[i] = 1
+                        resos[3 * i + 0] = 256
+                        resos[3 * i + 1] = 3
+                        resos[3 * i + 2] = 1
+                    }
                 } else if (inp.mInfo.type === 'cubemap') {
                     if (inp.loaded) {
                         // TODO 如果是个cubemap shader 需要另外处理

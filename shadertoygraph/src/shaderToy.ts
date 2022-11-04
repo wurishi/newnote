@@ -36,6 +36,8 @@ export default class ShaderToy {
         canvas.addEventListener('mousedown', this.mouseDown)
         canvas.addEventListener('mouseup', this.mouseUp)
         canvas.addEventListener('mousemove', this.mouseMove)
+        document.body.addEventListener('keydown', this.keydown)
+        document.body.addEventListener('keyup', this.keyup)
 
         this.audioContext = createAudioContext()
 
@@ -124,6 +126,16 @@ export default class ShaderToy {
         if (this.isPaused) {
             this.forceFrame = true
         }
+    }
+
+    private keydown = (ev: KeyboardEvent) => {
+        this.effect.SetKeyDown(ev.keyCode)
+        ev.preventDefault()
+    }
+
+    private keyup = (ev: KeyboardEvent) => {
+        this.effect.SetKeyUp(ev.keyCode)
+        ev.preventDefault()
     }
 
     private renderLoop = () => {

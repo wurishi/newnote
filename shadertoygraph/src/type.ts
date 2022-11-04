@@ -187,7 +187,13 @@ export type EffectPassInput = {
         video: HTMLVideoElement
         destroy: () => void
     }
+    keyboard?: EffectPassInput_Keyboard
 } | null
+
+export type EffectPassInput_Keyboard = {
+    data: Uint8Array
+    texture: Texture
+}
 
 export type EffectPassSoundProps = {
     mSampleRate: number
@@ -451,6 +457,10 @@ export type ConfigChannel_Video = ConfigChannel & {
     type: 'video'
 }
 
+export type ConfigChannel_Keyboard = ConfigChannel & {
+    type: 'keyboard'
+}
+
 export type Config = {
     name: string
     type: 'image' | 'buffer' | 'sound' | 'common'
@@ -463,6 +473,7 @@ export type Config = {
         | ConfigChannel_Music
         | ConfigChannel_Cubemap
         | ConfigChannel_Video
+        | ConfigChannel_Keyboard
     )[]
 }
 

@@ -2,11 +2,13 @@ import MyEffectPass from './myEffectPass'
 import {
     CLEAR,
     EffectBuffer,
+    EffectPassInput_Keyboard,
     FILTER,
     PaintParam,
     RefreshTextureThumbail,
     ShaderConfig,
     TEXFMT,
+    Texture,
     TEXTYPE,
     TEXWRP,
 } from './type'
@@ -18,6 +20,7 @@ import {
     setRenderTargetCubeMap,
 } from './utils/renderTarget'
 import { createTexture } from './utils/texture'
+import updateTexture from './utils/texture/updateTexture'
 
 export default class MyEffect {
     public xres
@@ -37,6 +40,8 @@ export default class MyEffect {
     public gainNode?
     private textureCallbackFun
     private RO?
+
+    private keyboard: EffectPassInput_Keyboard
 
     constructor(
         vr: any,
@@ -101,7 +106,24 @@ export default class MyEffect {
             }
         }
 
-        // keyboard
+        let keyboardData = new Uint8Array(256 * 3)
+        for (let j = 0; j < 256 * 3; j++) {
+            keyboardData[j] = 0
+        }
+        const keyboardTexture = createTexture(
+            this.glContext,
+            TEXTYPE.T2D,
+            256,
+            3,
+            TEXFMT.C1I8,
+            FILTER.NONE,
+            TEXWRP.CLAMP,
+            null
+        )
+        this.keyboard = {
+            data: keyboardData,
+            texture: keyboardTexture,
+        }
 
         if (!window.ResizeObserver) {
             this.bestAttemptFallback()
@@ -295,7 +317,7 @@ export default class MyEffect {
                     info,
                     this.buffers,
                     this.cubeBuffers,
-                    undefined
+                    this.keyboard
                 )
             })
 
@@ -472,6 +494,35 @@ export default class MyEffect {
         if (pass) {
             pass.exportToExr(this.buffers)
         }
+    }
+
+    public SetKeyDown = (k: number) => {
+        this.keyboard.data[k + 0 * 256] = 255
+        this.keyboard.data[k + 1 * 256] = 255
+        this.keyboard.data[k + 2 * 256] = 255 - this.keyboard.data[k + 2 * 256]
+        updateTexture(
+            this.glContext,
+            this.keyboard.texture,
+            0,
+            0,
+            256,
+            3,
+            this.keyboard.data
+        )
+    }
+
+    public SetKeyUp = (k: number) => {
+        this.keyboard.data[k + 0 * 256] = 0
+        this.keyboard.data[k + 1 * 256] = 0
+        updateTexture(
+            this.glContext,
+            this.keyboard.texture,
+            0,
+            0,
+            256,
+            3,
+            this.keyboard.data
+        )
     }
 }
 

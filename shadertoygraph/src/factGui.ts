@@ -76,7 +76,7 @@ export function fact(
         }
 
         cfg.inputs.forEach((inp, j) => {
-            const fName = 'Channel ' + inp.channel
+            const fName = 'Channel ' + inp.channel + ' (' + inp.type + ')'
             const path = `${i}.${fName}`
             let tmpPath = path
 

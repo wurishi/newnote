@@ -44,4 +44,10 @@ export default {
     Msl3Rr: 'Cubescape',
     XtGGRt: 'Auroras',
     XtVGD1: 'notebook drawings',
+    MsGSRd: 'spilled',
+    '4djSRW': 'Hash without Sine',
+    tsKXR3: '(FAIL) Multiscale MIP Fluid',
+    //https://www.shadertoy.com/results?query=&sort=love&from=36&num=12
+    WsSBzh: '(FAIL) Selfie Girl',
+    lsl3RH: 'Warping - procedural 2',
 }

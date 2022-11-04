@@ -50,4 +50,7 @@ export default {
     //https://www.shadertoy.com/results?query=&sort=love&from=36&num=12
     WsSBzh: '(FAIL) Selfie Girl',
     lsl3RH: 'Warping - procedural 2',
+    'Mld3Rn': 'Perspex Web Lattice',
+    'XlBSRz': 'VolumetricIntegration',
+    'NslGRN': 'Cube lines'
 }

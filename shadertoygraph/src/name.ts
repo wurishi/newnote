@@ -52,5 +52,6 @@ export default {
     lsl3RH: 'Warping - procedural 2',
     'Mld3Rn': 'Perspex Web Lattice',
     'XlBSRz': 'VolumetricIntegration',
-    'NslGRN': 'Cube lines'
+    'NslGRN': 'Cube lines',
+    'lllBDM': 'Goo'
 }

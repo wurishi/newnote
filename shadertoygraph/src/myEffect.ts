@@ -291,7 +291,10 @@ export default class MyEffect {
         })
 
         // erase keypresses
-        // TODO
+        for(let k=0;k<256;k++) {
+            this.keyboard.data[k+1*256] = 0
+        }
+        updateTexture(this.glContext, this.keyboard.texture, 0, 0, 256, 3, this.keyboard.data)
 
         this.frame++
     }
@@ -497,6 +500,9 @@ export default class MyEffect {
     }
 
     public SetKeyDown = (k: number) => {
+        if(this.keyboard.data[k+0*256] == 255) {
+            return;
+        }
         this.keyboard.data[k + 0 * 256] = 255
         this.keyboard.data[k + 1 * 256] = 255
         this.keyboard.data[k + 2 * 256] = 255 - this.keyboard.data[k + 2 * 256]

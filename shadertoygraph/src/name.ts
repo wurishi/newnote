@@ -53,5 +53,7 @@ export default {
     'Mld3Rn': 'Perspex Web Lattice',
     'XlBSRz': 'VolumetricIntegration',
     'NslGRN': 'Cube lines',
-    'lllBDM': 'Goo'
+    'lllBDM': 'Goo',
+    'MdlGW7': 'Cloudy Terrain',
+    'lsySzd': 'Volumetric explosion'
 }

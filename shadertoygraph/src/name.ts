@@ -50,10 +50,12 @@ export default {
     //https://www.shadertoy.com/results?query=&sort=love&from=36&num=12
     WsSBzh: '(FAIL) Selfie Girl',
     lsl3RH: 'Warping - procedural 2',
-    'Mld3Rn': 'Perspex Web Lattice',
-    'XlBSRz': 'VolumetricIntegration',
-    'NslGRN': 'Cube lines',
-    'lllBDM': 'Goo',
-    'MdlGW7': 'Cloudy Terrain',
-    'lsySzd': 'Volumetric explosion'
+    Mld3Rn: 'Perspex Web Lattice',
+    XlBSRz: 'VolumetricIntegration',
+    NslGRN: 'Cube lines',
+    lllBDM: 'Goo',
+    MdlGW7: 'Cloudy Terrain',
+    lsySzd: 'Volumetric explosion',
+    XtlSD7: '[SIG15] Mario World 1-1',
+    ldlXRS: 'Noise animation - Electric',
 }

@@ -36,7 +36,7 @@ function readJSON(path) {
                         )
                         tsObjArr.push(`
                         {
-                            name: '${id}',
+                            name: '${id}', // ${pass.name}
                             type: 'image',
                             fragment,
                             channels: []
@@ -46,20 +46,60 @@ function readJSON(path) {
                             pass.code,
                             { encoding: 'utf-8' },
                             (err) => {
-                                console.log(err)
+                                err && console.log(err)
+                            }
+                        )
+                    } else if (pass.type === 'buffer') {
+                        const name = pass.name[pass.name.length - 1]
+                        tsFileArr.push(
+                            `import ${name} from './glsl/${id}_${name}.glsl?raw'`
+                        )
+                        tsObjArr.push(`
+                        {
+                            name: '${pass.name}',
+                            type: 'buffer',
+                            fragment: ${name},
+                            channels: []
+                        },`)
+                        fs.writeFile(
+                            pt.join(GLSL_TARGET, `${id}_${name}.glsl`),
+                            pass.code,
+                            { encoding: 'utf-8' },
+                            (err) => {
+                                err && console.log(err)
+                            }
+                        )
+                    } else if (pass.type === 'sound') {
+                        tsFileArr.push(
+                            `import Sound from './glsl/${id}_sound.glsl?raw'`
+                        )
+                        tsObjArr.push(`
+                        {
+                            name: '${pass.name}',
+                            type: 'sound',
+                            fragment: Sound,
+                            
+                        },`)
+                        fs.writeFile(
+                            pt.join(GLSL_TARGET, `${id}_sound.glsl`),
+                            pass.code,
+                            { encoding: 'utf-8' },
+                            (err) => {
+                                err && console.log(err)
                             }
                         )
                     }
                 })
                 tsObjArr.push('] as Config[]')
 
-                const tsFile = tsFileArr.join('\n') + tsObjArr.join('\n')
+                const tsFile = tsFileArr.join('\n') + '\n' + tsObjArr.join('\n')
                 fs.writeFile(
-                    path.join(TARGET, `${id}.ts`),
+                    pt.join(TARGET, `${id}.ts`),
                     tsFile,
                     { encoding: 'utf-8' },
                     (err) => {
-                        console.log(err)
+                        err && console.log(err)
+                        console.log('create succ', id)
                     }
                 )
             }

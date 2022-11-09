@@ -58,4 +58,6 @@ export default {
     lsySzd: 'Volumetric explosion',
     XtlSD7: '[SIG15] Mario World 1-1',
     ldlXRS: 'Noise animation - Electric',
+    '4sSfzK': '[SH17C] Physically Based Shading',
+    '4ts3z2': 'Xyptonjtroz',
 }

@@ -63,4 +63,16 @@ export default {
     // https://www.shadertoy.com/results?query=&sort=love&from=48&num=12
     ldl3W8: 'Voronoi - distances',
     llsGW7: '[2TC 15] Mystery Mountains',
+    MsjSW3: 'Ether',
+    MdlXz8: 'Tileable Water Caustic',
+    llVXRd: 'Geodesic tiling',
+    ll2GD3: 'Palettes',
+    '4slGz4': 'Demo - Volumetric Lines',
+    WtfyDj: 'Paint streams',
+    MdXyzX: 'Very fast procedural ocean',
+    MddGzf: 'Bricks Game',
+    XdsGDB: 'Buoy',
+    WdVXWy: '(FAIL) molten bismuth',
+    // https://www.shadertoy.com/results?query=&sort=love&from=60&num=12
+    
 }

@@ -52,8 +52,13 @@ function readJSON(path) {
                                     obj.noFlip = true
                                 }
                             }
-                            if (inp.type === 'musicstream') {
+                            if (
+                                inp.type === 'musicstream' ||
+                                inp.type === 'music'
+                            ) {
                                 obj = { type: 'music' }
+                            } else if (inp.type === 'keyboard') {
+                                obj = { type: 'keyboard' }
                             }
                             if (obj) {
                                 channels.push(obj)
@@ -112,6 +117,24 @@ function readJSON(path) {
                         },`)
                         fs.writeFile(
                             pt.join(GLSL_TARGET, `${id}_sound.glsl`),
+                            pass.code,
+                            { encoding: 'utf-8' },
+                            (err) => {
+                                err && console.log(err)
+                            }
+                        )
+                    } else if (pass.type === 'common') {
+                        tsFileArr.push(
+                            `import Common from './glsl/${id}_common.glsl?raw'`
+                        )
+                        tsObjArr.push(`
+                        {
+                            name: '${pass.name}',
+                            type: 'common',
+                            fragment: Common
+                        },`)
+                        fs.writeFile(
+                            pt.join(GLSL_TARGET, `${id}_common.glsl`),
                             pass.code,
                             { encoding: 'utf-8' },
                             (err) => {

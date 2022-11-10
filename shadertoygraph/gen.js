@@ -30,16 +30,47 @@ function readJSON(path) {
                 const tsFileArr = ["import { Config } from '../type'"]
                 const tsObjArr = ['export default [']
                 json.renderpass.forEach((pass) => {
+                    const channels = []
+                    if (Array.isArray(pass.inputs)) {
+                        pass.inputs.forEach((inp) => {
+                            let obj = null
+                            if (inp.type === 'buffer') {
+                                obj = { type: 'buffer', id: 0 }
+                            } else if (inp.type === 'cubemap') {
+                                obj = { type: 'cubemap', map: '' }
+                            } else if (inp.type === 'texture') {
+                                obj = { type: 'texture', src: '' }
+                            }
+                            if (obj) {
+                                if (inp.sampler.filter) {
+                                    obj.filter = inp.sampler.filter
+                                }
+                                if (inp.sampler.wrap) {
+                                    obj.wrap = inp.sampler.wrap
+                                }
+                                if (inp.sampler.vflip === 'false') {
+                                    obj.noFlip = true
+                                }
+                            }
+                            if (inp.type === 'musicstream') {
+                                obj = { type: 'music' }
+                            }
+                            if (obj) {
+                                channels.push(obj)
+                            }
+                        })
+                    }
                     if (pass.type === 'image') {
                         tsFileArr.push(
                             `import fragment from './glsl/${id}.glsl?raw'`
                         )
                         tsObjArr.push(`
                         {
-                            name: '${id}', // ${pass.name}
+                            // '${id}': '${json.info.name}',
+                            name: '${id}',
                             type: 'image',
                             fragment,
-                            channels: []
+                            channels: ${JSON.stringify(channels)}
                         },`)
                         fs.writeFile(
                             pt.join(GLSL_TARGET, `${id}.glsl`),
@@ -59,7 +90,7 @@ function readJSON(path) {
                             name: '${pass.name}',
                             type: 'buffer',
                             fragment: ${name},
-                            channels: []
+                            channels: ${JSON.stringify(channels)}
                         },`)
                         fs.writeFile(
                             pt.join(GLSL_TARGET, `${id}_${name}.glsl`),
@@ -78,7 +109,6 @@ function readJSON(path) {
                             name: '${pass.name}',
                             type: 'sound',
                             fragment: Sound,
-                            
                         },`)
                         fs.writeFile(
                             pt.join(GLSL_TARGET, `${id}_sound.glsl`),

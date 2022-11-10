@@ -130,12 +130,12 @@ export default class ShaderToy {
 
     private keydown = (ev: KeyboardEvent) => {
         this.effect.SetKeyDown(ev.keyCode)
-        ev.preventDefault()
+        // ev.preventDefault()
     }
 
     private keyup = (ev: KeyboardEvent) => {
         this.effect.SetKeyUp(ev.keyCode)
-        ev.preventDefault()
+        // ev.preventDefault()
     }
 
     private renderLoop = () => {

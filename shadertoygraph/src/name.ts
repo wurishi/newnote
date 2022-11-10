@@ -60,4 +60,7 @@ export default {
     ldlXRS: 'Noise animation - Electric',
     '4sSfzK': '[SH17C] Physically Based Shading',
     '4ts3z2': 'Xyptonjtroz',
+    // https://www.shadertoy.com/results?query=&sort=love&from=48&num=12
+    ldl3W8: 'Voronoi - distances',
+    llsGW7: '[2TC 15] Mystery Mountains',
 }

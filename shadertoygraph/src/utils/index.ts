@@ -1,6 +1,7 @@
 import { CLEAR, GLFormat, TEXFMT, Texture, TEXTYPE } from '../type'
 
 export function iFormatPI2GL(format: TEXFMT): GLFormat {
+    const log = (() => {}) as any
     const GL = WebGL2RenderingContext
     let glFormat: GLFormat = {
         format: 0,
@@ -9,6 +10,7 @@ export function iFormatPI2GL(format: TEXFMT): GLFormat {
     }
     switch (format) {
         case TEXFMT.C4I8:
+            log('C4I8')
             glFormat = {
                 format: GL.RGBA8,
                 external: GL.RGBA,
@@ -16,6 +18,7 @@ export function iFormatPI2GL(format: TEXFMT): GLFormat {
             }
             break
         case TEXFMT.C1I8:
+            log('C1I8')
             glFormat = {
                 format: GL.R8,
                 external: GL.RED,
@@ -72,6 +75,7 @@ export function iFormatPI2GL(format: TEXFMT): GLFormat {
             }
             break
         case TEXFMT.Z32:
+            log('Z32')
             glFormat = {
                 format: GL.DEPTH_COMPONENT32F,
                 external: GL.DEPTH_COMPONENT,

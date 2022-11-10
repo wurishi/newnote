@@ -69,7 +69,7 @@ export default class MyEffectPass {
 
     private mHeader
     private mSource
-    private mInputs: EffectPassInput[]
+    public mInputs: EffectPassInput[]
     public mOutputs: number[]
     private destroyCall: DestroyCall | null
 
@@ -715,7 +715,8 @@ export default class MyEffectPass {
             this.Paint_Buffer(param)
             this.mFrame++
         } else if (this.mType === 'cubemap') {
-            console.log('cubemap')
+            this.Paint_Cubemap_Fn(param)
+            this.mFrame++
         }
     }
 
@@ -885,6 +886,15 @@ export default class MyEffectPass {
         setRenderTarget(this.mGL, null)
     }
 
+    private Paint_Cubemap_Fn = (param: PaintParam) => {
+        // TODO:
+        // const { bufferID, cubeBuffers } = param
+        // const buffer = cubeBuffers![bufferID]
+        // console.log(buffer)
+        // this.mEffect.ResizeBuffer
+        // const { bufferID, cubeBuffers } = param
+    }
+
     private Paint_Buffer = (param: PaintParam) => {
         const { buffers, bufferNeedsMimaps, bufferID } = param
 
@@ -904,14 +914,9 @@ export default class MyEffectPass {
         setRenderTarget(this.mGL, buffer.target[dstID])
         this.Paint_Image(param)
 
-        // if (bufferNeedsMimaps) {
-        //     // TODO
-        //     // buffer.texture[dstID]
-        //     createmip
-        // }
-        // if (true) {
-        //     createMipmaps(this.mGL, buffer.texture[dstID]!)
-        // }
+        if (bufferNeedsMimaps) {
+            createMipmaps(this.mGL, buffer.texture[dstID]!)
+        }
 
         buffer.lastRenderDone = 1 - buffer.lastRenderDone
     }

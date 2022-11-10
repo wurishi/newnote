@@ -369,9 +369,9 @@ export type PaintParam = {
     yres?: number
     isPaused?: boolean
     bufferID?: any
-    bufferNeedsMimaps?: any
+    bufferNeedsMimaps?: boolean
     buffers?: EffectBuffer[]
-    cubeBuffers?: any
+    cubeBuffers?: EffectBuffer[]
     keyboard?: any
     effect?: any
 }

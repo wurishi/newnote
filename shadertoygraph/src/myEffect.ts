@@ -271,7 +271,25 @@ export default class MyEffect {
         this.mPasses.forEach((pass) => {
             if (pass.mType === 'buffer' && pass.mProgram) {
                 const bufferID = pass.mOutputs[0]
-                pass.Paint({ ...paintParam, bufferID })
+                let needMipMaps = false
+                for (let j = 0; j < this.mPasses.length; j++) {
+                    for (let k = 0; k < this.mPasses[j].mInputs.length; k++) {
+                        const inp = this.mPasses[j].mInputs[k]
+                        if (
+                            inp?.mInfo.type === 'buffer' &&
+                            inp.mInfo.sampler.filter === 'mipmap' &&
+                            inp.buffer?.id === bufferID
+                        ) {
+                            needMipMaps = true
+                            console.log('need mipmap?')
+                        }
+                    }
+                }
+                pass.Paint({
+                    ...paintParam,
+                    bufferID,
+                    bufferNeedsMimaps: needMipMaps,
+                })
             }
         })
 
@@ -279,7 +297,24 @@ export default class MyEffect {
         this.mPasses.forEach((pass) => {
             if (pass.mType === 'cubemap' && pass.mProgram) {
                 const bufferID = 0
-                pass.Paint({ ...paintParam, bufferID })
+                let needMipMaps = false
+                for (let j = 0; j < this.mPasses.length; j++) {
+                    for (let k = 0; k < this.mPasses[j].mInputs.length; k++) {
+                        const inp = this.mPasses[j].mInputs[k]
+                        if (
+                            inp?.mInfo.type === 'cubemap' &&
+                            inp.mInfo.sampler.filter === 'mipmap'
+                        ) {
+                            needMipMaps = true
+                            console.log('need cube mipmap?')
+                        }
+                    }
+                }
+                pass.Paint({
+                    ...paintParam,
+                    bufferID,
+                    bufferNeedsMimaps: needMipMaps,
+                })
             }
         })
 
@@ -291,10 +326,18 @@ export default class MyEffect {
         })
 
         // erase keypresses
-        for(let k=0;k<256;k++) {
-            this.keyboard.data[k+1*256] = 0
+        for (let k = 0; k < 256; k++) {
+            this.keyboard.data[k + 1 * 256] = 0
         }
-        updateTexture(this.glContext, this.keyboard.texture, 0, 0, 256, 3, this.keyboard.data)
+        updateTexture(
+            this.glContext,
+            this.keyboard.texture,
+            0,
+            0,
+            256,
+            3,
+            this.keyboard.data
+        )
 
         this.frame++
     }
@@ -500,8 +543,8 @@ export default class MyEffect {
     }
 
     public SetKeyDown = (k: number) => {
-        if(this.keyboard.data[k+0*256] == 255) {
-            return;
+        if (this.keyboard.data[k + 0 * 256] == 255) {
+            return
         }
         this.keyboard.data[k + 0 * 256] = 255
         this.keyboard.data[k + 1 * 256] = 255

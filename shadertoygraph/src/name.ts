@@ -74,5 +74,12 @@ export default {
     XdsGDB: 'Buoy',
     WdVXWy: '(FAIL) molten bismuth',
     // https://www.shadertoy.com/results?query=&sort=love&from=60&num=12
-    
+    '4tjGRh': 'Planet Shadertoy',
+    '4dfXDn': '2d signed distance functions',
+    '4tGfDW': "Chimera's Breath",
+    XtsSWs: 'Skyline',
+    XsfGWN: 'furball',
+    lt3XDM: '(选择buff0效果会更好)Tiny Planet: Earth',
+    '4sl3Dr': 'Digital Brain',
+    lscczl: 'The Universe Within',
 }

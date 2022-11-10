@@ -110,7 +110,13 @@ export function fact(
                 addSampler = true
                 tmpPath = path + '_src'
                 guiData[tmpPath] = inp.src
-                subFolder.add(guiData, tmpPath, BUFFER_IDS).name('Buffer ID')
+                subFolder
+                    .add(guiData, tmpPath, BUFFER_IDS)
+                    .name('Buffer ID')
+                    .onChange((newBID) => {
+                        getInputs(i, j).src = newBID
+                        callback && callback(c)
+                    })
             } else if (inp.type === 'texture') {
                 addSampler = true
                 tmpPath = path + '_src'

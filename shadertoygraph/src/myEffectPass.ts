@@ -22,7 +22,11 @@ import {
     createDrawUnitQuad,
     isMobile,
 } from './utils'
-import { createRenderTarget, setRenderTarget } from './utils/renderTarget'
+import {
+    createRenderTarget,
+    setRenderTarget,
+    setRenderTargetCubeMap,
+} from './utils/renderTarget'
 import { attachTextures, createTexture, dettachTextures } from './utils/texture'
 import NewImageTexture from './effectpass/newImageTexture'
 import NewVolumeTexture from './effectpass/newVolumeTexture'
@@ -126,8 +130,8 @@ export default class MyEffectPass {
         wa: AudioContext | undefined,
         slot: number,
         url?: EffectPassInfo,
-        buffers?: any,
-        cubeBuffers?: any,
+        buffers?: EffectBuffer[],
+        cubeBuffers?: EffectBuffer[],
         keyboard?: EffectPassInput_Keyboard
     ): TextureInfo => {
         const result: TextureInfo = {
@@ -208,6 +212,12 @@ export default class MyEffectPass {
                     this.mInputs[slot]?.mInfo.type !== 'keyboard' &&
                     this.mInputs[slot]?.mInfo.type !== 'video')
 
+            // this.mEffect.ResizeBuffer(
+            //     slot,
+            //     this.mEffect.xres,
+            //     this.mEffect.yres,
+            //     false
+            // )
             this.resetTexture(slot, input)
             result.failed = false
             // this.DestroyInput(slot)
@@ -562,8 +572,7 @@ export default class MyEffectPass {
                     mix(unCorners[0], unCorners[1], uv.x),
                     mix(unCorners[3], unCorners[2], uv.x),
                     uv.y
-                )
-            ) - ro);
+                ) - ro);
             mainCubemap(color, gl_FragCoord.xy - unViewport.xy, ro, rd);
             outColor = color;
         }
@@ -887,13 +896,109 @@ export default class MyEffectPass {
     }
 
     private Paint_Cubemap_Fn = (param: PaintParam) => {
+        // console.log('cubemap')
+        const { bufferID, cubeBuffers } = param
+        const buffer = cubeBuffers![bufferID]
         // TODO:
-        // const { bufferID, cubeBuffers } = param
-        // const buffer = cubeBuffers![bufferID]
-        // console.log(buffer)
-        // this.mEffect.ResizeBuffer
-        // const { bufferID, cubeBuffers } = param
+        this.mEffect.ResizeCubemapBuffer(bufferID, 1024, 1024)
+
+        let dstID = 1 - buffer.lastRenderDone
+        for (let face = 0; face < 6; face++) {
+            setRenderTargetCubeMap(this.mGL, buffer.target[dstID], face)
+            this.Paint_Cubemap(param, face)
+        }
+        setRenderTargetCubeMap(this.mGL, null, 0)
+
+        // bufferNeedsMimaps
+
+        buffer.lastRenderDone = 1 - buffer.lastRenderDone
     }
+
+    private Paint_Cubemap = (param: PaintParam, face: number) => {
+        const { xres = 0, yres = 0 } = param
+
+        // ProcessInputs
+        // SetUniforms
+        this.Paint_Image(param, true)
+
+        const vp = [0, 0, xres, yres]
+        setViewport(this.mGL, vp)
+
+        let corA = [-1.0, -1.0, -1.0]
+        let corB = [1.0, -1.0, -1.0]
+        let corC = [1.0, 1.0, -1.0]
+        let corD = [-1.0, 1.0, -1.0]
+        let apex = [0.0, 0.0, 0.0]
+
+        if (face === 0) {
+            corA = [1.0, 1.0, 1.0]
+            corB = [1.0, 1.0, -1.0]
+            corC = [1.0, -1.0, -1.0]
+            corD = [1.0, -1.0, 1.0]
+        } else if (face === 1) {
+            // -X
+            corA = [-1.0, 1.0, -1.0]
+            corB = [-1.0, 1.0, 1.0]
+            corC = [-1.0, -1.0, 1.0]
+            corD = [-1.0, -1.0, -1.0]
+        } else if (face === 2) {
+            // +Y
+            corA = [-1.0, 1.0, -1.0]
+            corB = [1.0, 1.0, -1.0]
+            corC = [1.0, 1.0, 1.0]
+            corD = [-1.0, 1.0, 1.0]
+        } else if (face === 3) {
+            // -Y
+            corA = [-1.0, -1.0, 1.0]
+            corB = [1.0, -1.0, 1.0]
+            corC = [1.0, -1.0, -1.0]
+            corD = [-1.0, -1.0, -1.0]
+        } else if (face === 4) {
+            // +Z
+            corA = [-1.0, 1.0, 1.0]
+            corB = [1.0, 1.0, 1.0]
+            corC = [1.0, -1.0, 1.0]
+            corD = [-1.0, -1.0, 1.0]
+        } //if( face===5 ) // -Z
+        else {
+            corA = [1.0, 1.0, -1.0]
+            corB = [-1.0, 1.0, -1.0]
+            corC = [-1.0, -1.0, -1.0]
+            corD = [1.0, -1.0, -1.0]
+        }
+
+        const corners = [
+            corA[0],
+            corA[1],
+            corA[2],
+            corB[0],
+            corB[1],
+            corB[2],
+            corC[0],
+            corC[1],
+            corC[2],
+            corD[0],
+            corD[1],
+            corD[2],
+            apex[0],
+            apex[1],
+            apex[2],
+        ]
+
+        const prog = this.mProgram!
+
+        setShaderConstant3FV(this.mGL, 'unCorners', corners)
+        setShaderConstant4FV(this.mGL, 'unViewport', vp)
+
+        if (!this.cubeGPU) {
+            this.cubeGPU = createDrawUnitQuad(this.mGL, prog.program)
+        }
+        this.cubeGPU()
+
+        dettachTextures(this.mGL)
+    }
+
+    private cubeGPU?: GPUDraw
 
     private Paint_Buffer = (param: PaintParam) => {
         const { buffers, bufferNeedsMimaps, bufferID } = param
@@ -921,7 +1026,7 @@ export default class MyEffectPass {
         buffer.lastRenderDone = 1 - buffer.lastRenderDone
     }
 
-    private Paint_Image = (param: PaintParam) => {
+    private Paint_Image = (param: PaintParam, setUniform = false) => {
         const {
             time = 0,
             mousePosX = 0,
@@ -983,9 +1088,20 @@ export default class MyEffectPass {
                     }
                 } else if (inp.mInfo.type === 'cubemap') {
                     if (inp.loaded) {
-                        // TODO 如果是个cubemap shader 需要另外处理
-                        texID[i] = inp.globject!
-                        texIsLoaded[i] = 1
+                        if (inp.mInfo.src) {
+                            texID[i] = inp.globject!
+                            texIsLoaded[i] = 1
+                        } else {
+                            const buffer = cubeBuffers![0]
+                            if (buffer) {
+                                texID[i] =
+                                    buffer.texture[buffer.lastRenderDone]!
+                                resos[3 * i + 0] = buffer.resolution[0]
+                                resos[3 * i + 1] = buffer.resolution[1]
+                                resos[3 * i + 2] = 1
+                                texIsLoaded[i] = 1
+                            }
+                        }
                     }
                 } else if (inp.mInfo.type === 'webcam') {
                     // TODO
@@ -1130,6 +1246,10 @@ export default class MyEffectPass {
         setShaderConstant1I(this.mGL, 'iCh1.loaded', texIsLoaded[1])
         setShaderConstant1I(this.mGL, 'iCh2.loaded', texIsLoaded[2])
         setShaderConstant1I(this.mGL, 'iCh3.loaded', texIsLoaded[3])
+
+        if (setUniform) {
+            return
+        }
 
         // const l1 = getAttribLocation(this.mGL, prog, 'pos')
 

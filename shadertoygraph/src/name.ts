@@ -100,4 +100,6 @@ export default {
     Xd2GR3: 'Hexagons - distance',
     // https://www.shadertoy.com/results?query=&sort=love&from=84&num=12
     MscSzf: 'Noise Contour',
+    '4dlyWX': 'Meta CRT',
+    XlB3zV: 'Magnetismic',
 }

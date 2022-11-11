@@ -256,7 +256,7 @@ function parseConfig(configs: Config[]) {
                   } else if (ch.type === 'music') {
                       src = '/textures/audio.mp3'
                   } else if (ch.type === 'cubemap') {
-                      src = ch.map
+                      src = ch.map as any
                   } else if (ch.type === 'video') {
                       src = '/textures/video.webm'
                   }
@@ -273,6 +273,11 @@ function parseConfig(configs: Config[]) {
             sOutputs.push({
                 channel: 0,
                 id: buffId++,
+            })
+        } else if (c.type === 'cubemap') {
+            sOutputs.push({
+                channel: 0,
+                id: 0,
             })
         }
         shaderPassConfig.push({

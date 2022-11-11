@@ -450,7 +450,7 @@ export type ConfigChannel_Music = ConfigChannel & {
 
 export type ConfigChannel_Cubemap = ConfigChannel & {
     type: 'cubemap'
-    map: 'Basilica' | 'Forest' | 'ForestBlur' | 'BasilicaBlur' | 'Gallery'
+    map?: 'Basilica' | 'Forest' | 'ForestBlur' | 'BasilicaBlur' | 'Gallery'
 }
 
 export type ConfigChannel_Video = ConfigChannel & {
@@ -463,7 +463,7 @@ export type ConfigChannel_Keyboard = ConfigChannel & {
 
 export type Config = {
     name: string
-    type: 'image' | 'buffer' | 'sound' | 'common'
+    type: 'image' | 'buffer' | 'sound' | 'common' | 'cubemap'
     fragment: string
     channels?: (
         | ConfigChannel_Buffer

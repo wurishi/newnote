@@ -439,6 +439,8 @@ export default class MyEffect {
         this.gainNode = undefined
     }
 
+    public ResizeCubemapBuffer = (i: number, xres: number, yres: number) => {}
+
     public ResizeBuffer = (
         i: number,
         xres: number,

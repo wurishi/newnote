@@ -18,7 +18,7 @@ function init() {
     const stats = new Stats()
     document.body.appendChild(stats.dom)
     stats.dom.style.left = ''
-    stats.dom.style.right = '0'
+    stats.dom.style.right = '300px'
 
     const keyToShaderKey = new Map<string, string>()
 
@@ -73,7 +73,7 @@ function init() {
         .add(guiData, 'current', shaderNameList)
         .name('当前 ShaderToy')
         .onChange((key) => {
-            window.localStorage.setItem('key_last', key)
+            // window.localStorage.setItem('key_last', key)
             const url = keyToUrlMap.get(key)
             if (url) {
                 removeFolders(gui, folderMap)
@@ -118,7 +118,9 @@ function init() {
             }
         })
     changeCurrent = (name: string) => {
+        window.localStorage.setItem('key_last', name)
         currentGUI.setValue(name)
+        guiData.clipboard()
     }
     const previewGUI = mainFolder
         .add(guiData, 'preview')
@@ -195,9 +197,10 @@ function init() {
         stats.update()
     })
     shaderToy = st
+    return guiData
 }
 
-init()
+const guiData = init()
 
 const tools = document.querySelector('#tools')!
 function showTextures(show: boolean) {
@@ -304,6 +307,12 @@ function showPreviews(show: boolean) {
             item.style.textAlign = 'center'
             item.style.overflow = 'hidden'
             item.style.padding = '0 5px'
+            setTimeout(() => {
+                // 因为lazyInit是1秒后才执行的
+                if (key1 === guiData.current) {
+                    item.style.border = '1px solid red'
+                }
+            }, 1500)
 
             const imgEl = document.createElement('img')
             imgEl.src = '/screenshot/' + key + '.jpg'

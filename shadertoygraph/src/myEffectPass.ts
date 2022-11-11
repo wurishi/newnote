@@ -896,6 +896,7 @@ export default class MyEffectPass {
     }
 
     private Paint_Cubemap_Fn = (param: PaintParam) => {
+        return
         // console.log('cubemap')
         const { bufferID, cubeBuffers } = param
         const buffer = cubeBuffers![bufferID]

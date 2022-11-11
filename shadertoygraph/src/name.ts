@@ -102,4 +102,18 @@ export default {
     MscSzf: 'Noise Contour',
     '4dlyWX': 'Meta CRT',
     XlB3zV: 'Magnetismic',
+    '4sK3RD': '(FAIL) Rock-Paper-Scissor-4D',
+    lsKGDW: '(需要放大)oilArt',
+    lslXDr: 'Atmospheric Scattering Sample',
+    '4dSfRc': '(FAIL) [SH17C] Raymarching tutorial',
+    '4dSBDt': 'Enscape Cube',
+    ldSSzV: 'Wet stone',
+    XlsGRs: 'jetstream',
+    tsXBzS: 'fractal pyramid',
+    lstSRS: '(FAIL) Gargantua With HDR Bloom',
+    // https://www.shadertoy.com/results?query=&sort=love&from=96&num=12
+    XllGW4: 'HOWTO: Ray Marching',
+    '4sXBRn': 'Luminescence',
+    MdBGzG: '(FAIL) Canyon',
+    wtfBDf: 'Warped Extruded Skewed Grid',
 }

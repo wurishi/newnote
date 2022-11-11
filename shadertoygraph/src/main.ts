@@ -227,6 +227,16 @@ function showTextures(show: boolean) {
             imgEl.style.height = '60px'
             div.appendChild(imgEl)
 
+            imgEl.addEventListener('click', () => {
+                if (div.style.width === '80px') {
+                    div.style.width = '800px'
+                    imgEl.style.height = '600px'
+                } else {
+                    div.style.width = '80px'
+                    imgEl.style.height = '60px'
+                }
+            })
+
             const labelEl = document.createElement('div')
             labelEl.innerHTML = img.name
             div.appendChild(labelEl)
@@ -355,14 +365,18 @@ const lazyInit = () => {
     const arr = Object.keys(nameRecord)
     const len = arr.length
     for (let i = 0; i < len; i++) {
-        const key = `${nameRecord[arr[i]]} (${arr[i]})`
-        if (lastList.indexOf(key) < 0) {
-            newKey = key
+        if (nameRecord[arr[i]]) {
+            const key = `${nameRecord[arr[i]]} (${arr[i]})`
+            if (lastList.indexOf(key) < 0) {
+                newKey = key
+            }
+            tmpList.push(key)
         }
-        tmpList.push(key)
     }
     window.localStorage.setItem('key_list', JSON.stringify(tmpList))
 
+    // console.log('last', lastList)
+    // console.log('new', arr)
     if (newKey && lastList.length > 0) {
         changeCurrent && changeCurrent(newKey)
         return

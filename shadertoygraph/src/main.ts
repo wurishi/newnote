@@ -320,7 +320,7 @@ function showPreviews(show: boolean) {
             setTimeout(() => {
                 // 因为lazyInit是1秒后才执行的
                 if (key1 === guiData.current) {
-                    item.style.border = '1px solid red'
+                    item.style.border = '4px solid red'
                 }
             }, 1500)
 

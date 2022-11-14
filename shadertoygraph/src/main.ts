@@ -341,6 +341,7 @@ function showPreviews(show: boolean) {
             item.appendChild(labelEl)
 
             item.onclick = () => {
+                item.style.border = '4px solid green'
                 changeCurrent && changeCurrent(key1)
             }
 

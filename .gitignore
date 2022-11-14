@@ -23,6 +23,6 @@ learnu3d/*/*.csproj
 reactwebpack4cook/dist/*
 .DS_Store
 vertexshader/public/128.mp3
-shadertoygraph/textures/audio.mp3
+shadertoygraph/textures/*.mp3
 shadertoygraph/textures/video.webm
 shadertoygraph/e/*

@@ -149,6 +149,17 @@ export function fact(
                         })
                 }
             } else if (inp.type === 'music') {
+                tmpPath = path + '_audio'
+                guiData[tmpPath] = 'audio.mp3'
+                subFolder
+                    .add(guiData, tmpPath, ['audio.mp3', 'audio2.mp3'])
+                    .name('背景音乐')
+                    .onChange((u) => {
+                        const arr = inp.src.split('/')
+                        arr[arr.length - 1] = u
+                        getInputs(i, j).src = arr.join('/')
+                        callback && callback(c)
+                    })
                 const canvas = document.createElement('canvas')
                 canvas.style.background = 'black'
                 canvas.width = subFolder.domElement.offsetWidth - 4

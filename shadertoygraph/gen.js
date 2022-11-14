@@ -40,6 +40,8 @@ function readJSON(path) {
                                 obj = { type: 'cubemap', map: '' }
                             } else if (inp.type === 'texture') {
                                 obj = { type: 'texture', src: '' }
+                            } else if (inp.type === 'volumn') {
+                                obj = { type: 'volumn', volumn: '' }
                             }
                             if (obj) {
                                 if (inp.sampler.filter) {

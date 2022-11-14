@@ -152,4 +152,16 @@ export default {
     '4dlGDN': 'Noise blur',
     '4s2SRt': 'Oblivion radar',
     fsXXzX: 'English Lane',
+    MldXWX: '(FAIL) curtain and ball',
+    XsfGzH: 'Star Nursery',
+    wsByWV: '(FAIL) Voxel game Evolution',
+    WtfGDX: 'Triangle Grid Contouring',
+    Mdl3Rr: 'attic',
+    '3ddGzn': 'Then and Before - PC4k by Altair',
+    '4sS3zG': 'Dolphin',
+    MdlXRS: 'Noise animation - Flow',
+    // https://www.shadertoy.com/results?query=&sort=love&from=144&num=12
+    MsB3WR: 'Misty Lake',
+    llSyDh: 'Hexagonal Maze Flow',
+    lslGWr: 'Simplicity',
 }

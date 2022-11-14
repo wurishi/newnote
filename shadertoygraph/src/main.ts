@@ -290,6 +290,8 @@ function showCubeMaps(show: boolean) {
     }
 }
 
+const imgError = new Set<string>()
+
 function showPreviews(show: boolean) {
     let list: HTMLDivElement = document.querySelector('#previews')!
     if (!list) {
@@ -317,6 +319,7 @@ function showPreviews(show: boolean) {
             item.style.textAlign = 'center'
             item.style.overflow = 'hidden'
             item.style.padding = '0 5px'
+            item.setAttribute('data-name', name)
             setTimeout(() => {
                 // 因为lazyInit是1秒后才执行的
                 if (key1 === guiData.current) {
@@ -329,6 +332,9 @@ function showPreviews(show: boolean) {
             imgEl.style.width = '100%'
             imgEl.style.height = '60px'
             item.appendChild(imgEl)
+            imgEl.addEventListener('error', () => {
+                imgError.add(name)
+            })
 
             const labelEl = document.createElement('div')
             labelEl.innerHTML = name

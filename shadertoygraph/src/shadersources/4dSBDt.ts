@@ -30,7 +30,7 @@ export default [
                 wrap: 'repeat',
                 noFlip: true,
             },
-            { type: 'volume' },
+            { type: 'volume', volume: 'GreyNoise3D' },
             {
                 type: 'texture',
                 src: 'GrayNoiseSmall',

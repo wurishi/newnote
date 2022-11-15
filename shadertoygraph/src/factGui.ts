@@ -174,6 +174,20 @@ export function fact(
                         drawMusicWave(canvas, wave)
                     }
                 }
+            } else if (inp.type === 'video') {
+                tmpPath = path + '_video'
+                guiData[tmpPath] = 'video.webm'
+                subFolder
+                    .add(guiData, tmpPath, ['video.webm', 'video.ogm'])
+                    .name('视频')
+                    .onChange((u) => {
+                        const arr = inp.src.split('/')
+                        arr[arr.length - 1] = u
+                        getInputs(i, j).src = arr.join('/')
+                        callback && callback(c)
+                    })
+
+                subFolder.open()
             } else if (inp.type === 'cubemap') {
                 // 目前只能首次生效
                 // addSampler = true

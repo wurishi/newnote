@@ -61,6 +61,8 @@ function readJSON(path) {
                                 obj = { type: 'music' }
                             } else if (inp.type === 'keyboard') {
                                 obj = { type: 'keyboard' }
+                            } else if (inp.type === 'video') {
+                                obj = { type: 'video' }
                             }
                             if (obj) {
                                 channels.push(obj)

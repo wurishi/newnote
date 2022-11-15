@@ -24,5 +24,6 @@ reactwebpack4cook/dist/*
 .DS_Store
 vertexshader/public/128.mp3
 shadertoygraph/textures/*.mp3
-shadertoygraph/textures/video.webm
+shadertoygraph/textures/*.webm
 shadertoygraph/e/*
+shadertoygraph/textures/*.ogm

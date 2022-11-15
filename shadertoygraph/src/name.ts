@@ -201,7 +201,7 @@ export default {
     '4tl3RM': 'Robin ',
     MsfGRr: 'Julia - Quaternion 1',
     // https://www.shadertoy.com/results?query=&sort=love&from=180&num=12
-    MscXzn: '(FAIL) IcePrimitives',
+    MscXzn: '(ERROR并禁用buffer) IcePrimitives',
     '4slGzn': 'Rasterizer - Object',
     MslGRn: 'electron',
     '4sfGzS': 'Noise - value - 3D',

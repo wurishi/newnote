@@ -145,6 +145,24 @@ function readJSON(path) {
                                 err && console.log(err)
                             }
                         )
+                    } else if (pass.type === 'cubemap') {
+                        tsFileArr.push(
+                            `import Cube from './glsl/${id}_cube.glsl?raw'`
+                        )
+                        tsObjArr.push(`
+                        {
+                            name: '${pass.name}',
+                            type: 'cubemap',
+                            fragment: Cube
+                        },`)
+                        fs.writeFile(
+                            pt.join(GLSL_TARGET, `${id}_cube.glsl`),
+                            pass.code,
+                            { encoding: 'utf-8' },
+                            (err) => {
+                                err && console.log(err)
+                            }
+                        )
                     }
                 })
                 tsObjArr.push('] as Config[]')
@@ -156,7 +174,7 @@ function readJSON(path) {
                     { encoding: 'utf-8' },
                     (err) => {
                         err && console.log(err)
-                        console.log('create succ', id)
+                        console.log('create succ', pt.join(TARGET, `${id}.ts`))
                     }
                 )
             }

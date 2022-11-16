@@ -548,8 +548,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     c = pow(c,vec3(0.4545)); //2.2 Gamma compensation
     
     //Apply slider overlay
-    //ERROR
-    //c = mix(c,cSlider.rgb,cSlider.a);
+    c = mix(c,cSlider.rgb,cSlider.a);
     
     fragColor = vec4(c,1.0);
 }

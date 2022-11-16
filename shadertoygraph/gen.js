@@ -24,6 +24,10 @@ const textureMap = {
     'XsXGRn': 'Organic1',
     '4dX3Rn': 'Abstract2',
     '4dXGRn': 'RockTiles',
+    'Xsf3Rn': 'Nyancat',
+    'XsX3Rn': 'Organic2',
+    'Xsf3zn': 'RGBANoiseMedium',
+    'XsfGRn': 'Wood'
 }
 
 function readJSON(path) {

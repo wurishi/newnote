@@ -13,6 +13,7 @@ export default function NewImageTexture(
     }
     const image = new Image()
     const imageLoadHandler = () => {
+        // console.log(image.src, url)
         const rti = sampler2Renderer(url.sampler)
         let channels = TEXFMT.C4I8
         const imgCfg = getImageConfigByUrl(url.src)
@@ -30,6 +31,7 @@ export default function NewImageTexture(
             rti.wrap,
             rti.vflip
         )
+        // ;(input.globject as any).url = url.src
         input.loaded = true
     }
     const imageDestroy = () => {

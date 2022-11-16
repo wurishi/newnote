@@ -90,9 +90,9 @@ function getActive(num: number) {
     } else if (num === 1) {
         return WebGL2RenderingContext.TEXTURE1
     } else if (num === 2) {
-        return WebGL2RenderingContext.TEXTURE1
+        return WebGL2RenderingContext.TEXTURE2
     } else if (num === 3) {
-        return WebGL2RenderingContext.TEXTURE1
+        return WebGL2RenderingContext.TEXTURE3
     }
     return WebGL2RenderingContext.TEXTURE0
 }

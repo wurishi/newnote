@@ -179,7 +179,7 @@ export function fact(
                 tmpPath = path + '_video'
                 guiData[tmpPath] = 'video.webm'
                 subFolder
-                    .add(guiData, tmpPath, ['video.webm', 'video.ogm'])
+                    .add(guiData, tmpPath, ['video.webm', 'video.ogm', 'video2.webm'])
                     .name('视频')
                     .onChange((u) => {
                         const arr = inp.src.split('/')

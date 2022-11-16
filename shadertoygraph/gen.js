@@ -17,6 +17,15 @@ fs.readdir(SEARCH, (err, files) => {
     })
 })
 
+const textureMap = {
+    XdX3Rn: 'Abstract1',
+    '4dfGRn': 'London',
+    'XdfGRn': 'Stars',
+    'XsXGRn': 'Organic1',
+    '4dX3Rn': 'Abstract2',
+    '4dXGRn': 'RockTiles',
+}
+
 function readJSON(path) {
     fs.readFile(path, { encoding: 'utf-8' }, (err, data) => {
         if (err) {
@@ -39,7 +48,7 @@ function readJSON(path) {
                             } else if (inp.type === 'cubemap') {
                                 obj = { type: 'cubemap', map: '' }
                             } else if (inp.type === 'texture') {
-                                obj = { type: 'texture', src: '' }
+                                obj = { type: 'texture', src: textureMap[inp.id] || '' }
                             } else if (inp.type === 'volumn') {
                                 obj = { type: 'volumn', volumn: '' }
                             } else if (inp.type === 'webcam') {

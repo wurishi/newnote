@@ -203,6 +203,19 @@ export function fact(
                 //     })
             } else if (inp.type === 'webcam') {
                 addSampler = true
+                tmpPath = path + '_type'
+                guiData[tmpPath] = false
+                subFolder.add(guiData,tmpPath)
+                .name('切换为视频').onChange(flag => {
+                    if(flag) {
+                        getInputs(i, j).type = 'video'
+                        getInputs(i, j).src = '/textures/video.webm'
+                    }
+                    else {
+                        getInputs(i, j).type = 'webcam'
+                    }
+                    callback && callback(c)
+                })
             }
             if (addSampler) {
                 tmpPath = path + '_filter'

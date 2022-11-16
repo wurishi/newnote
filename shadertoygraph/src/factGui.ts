@@ -175,6 +175,7 @@ export function fact(
                     }
                 }
             } else if (inp.type === 'video') {
+                addSampler = true
                 tmpPath = path + '_video'
                 guiData[tmpPath] = 'video.webm'
                 subFolder
@@ -190,7 +191,7 @@ export function fact(
                 subFolder.open()
             } else if (inp.type === 'cubemap') {
                 // 目前只能首次生效
-                // addSampler = true
+                addSampler = true
                 // tmpPath = path + '_src'
                 // guiData[tmpPath] = inp.src
                 // subFolder
@@ -200,6 +201,8 @@ export function fact(
                 //         getInputs(i, j).src = newCubemap
                 //         callback && callback(c)
                 //     })
+            } else if (inp.type === 'webcam') {
+                addSampler = true
             }
             if (addSampler) {
                 tmpPath = path + '_filter'

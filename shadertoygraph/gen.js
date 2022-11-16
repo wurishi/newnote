@@ -42,6 +42,8 @@ function readJSON(path) {
                                 obj = { type: 'texture', src: '' }
                             } else if (inp.type === 'volumn') {
                                 obj = { type: 'volumn', volumn: '' }
+                            } else if (inp.type === 'webcam') {
+                                obj = { type: 'webcam' }
                             }
                             if (obj) {
                                 if (inp.sampler.filter) {

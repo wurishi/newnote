@@ -52,6 +52,7 @@ export default function NewVideoTexture(
         destroy: () => {
             video.removeEventListener('canplay', canplay)
             video.removeEventListener('error', error)
+            input.globject?.Destroy()
         },
     }
 

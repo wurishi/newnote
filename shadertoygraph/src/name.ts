@@ -271,4 +271,20 @@ export default {
     MsdGzl: 'Basic Montecarlo',
     ldd3DB: 'Interactive Shoal of fish',
     ldjBW1: '[SH17A] Matrix rain',
+    // https://www.shadertoy.com/results?query=&sort=newest&filter=
+    DssSR4: 'circle Animation',
+    mdXXRN: '[phreax] higher intelligence',
+    wdfGW4: 'Descent 3D',
+    mdXXzN: 'Radiation',
+    mdfXRN: 'Unsharp Filter',
+    DdXXzN: '(FAIL) Test Erosion Algo',
+    cssXRH: 'circle with segments',
+    csfXzN: 'Sea and moon',
+    DdXSzN: 'Quake Palette experiments 6',
+    csfSzN: 'Silk 2.0',
+    DsfSzN: 'Silk 3.0',
+    cdlSRH: 'Webcam: Water',
+    slKfDt: 'Standard Operators (xy grids)',
+    // https://www.shadertoy.com/results?query=&sort=newest&from=66948&num=12
+    
 }

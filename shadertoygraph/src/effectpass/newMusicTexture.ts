@@ -72,6 +72,7 @@ export default function NewMusicTexture(
             input.audio?.source?.disconnect()
             input.audio?.analyser?.disconnect()
             input.audio?.gain?.disconnect()
+            input.globject?.Destroy()
         }
     }
 

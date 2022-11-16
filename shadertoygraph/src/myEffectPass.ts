@@ -58,6 +58,7 @@ import NewCubemapsTexture from './effectpass/newCubemapsTexture'
 import NewVideoTexture from './effectpass/newVideoTexture'
 import { updateTextureFromImage } from './utils/texture/updateTextureFromImage'
 import NewKeyboardTexture from './effectpass/newKeyboardTexture'
+import NewWebCamTexture from './effectpass/newWebCamTexture'
 
 type DestroyCall = {
     (wa: AudioContext): void
@@ -171,7 +172,10 @@ export default class MyEffectPass {
             this.resetTexture(slot, input)
             result.failed = false
         } else if (url.type === 'webcam') {
-            // TODO: webcam
+            input = NewWebCamTexture(this.mGL, url)
+            result.needsShaderCompile = false // TODO
+            this.resetTexture(slot, input)
+            result.failed = false
         } else if (url.type === 'mic') {
             // TODO: mic
         } else if (url.type === 'video') {
@@ -1105,11 +1109,31 @@ export default class MyEffectPass {
                         }
                     }
                 } else if (inp.mInfo.type === 'webcam') {
-                    // TODO
+                    if (inp.loaded && inp.video) {
+                        if (
+                            inp.video.video.readyState ===
+                            inp.video.video.HAVE_ENOUGH_DATA
+                        ) {
+                            texID[i] = inp.globject!
+                            updateTextureFromImage(
+                                this.mGL,
+                                inp.globject!,
+                                inp.video.video
+                            )
+                            if (inp.mInfo.sampler.filter === 'mipmap') {
+                                createMipmaps(this.mGL, inp.globject!)
+                            }
+                            resos[3 * i + 0] = inp.video.video.videoWidth
+                            resos[3 * i + 1] = inp.video.video.videoHeight
+                            resos[3 * i + 2] = 1
+                            texIsLoaded[i] = 1
+                        }
+                    }
                 } else if (inp.mInfo.type === 'video') {
                     if (inp.loaded && inp.video) {
                         times[i] = inp.video.video.currentTime
                         texID[i] = inp.globject!
+                        texIsLoaded[i] = 1
 
                         if (!inp.video.video.paused) {
                             updateTextureFromImage(

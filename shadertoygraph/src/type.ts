@@ -461,6 +461,10 @@ export type ConfigChannel_Keyboard = ConfigChannel & {
     type: 'keyboard'
 }
 
+export type ConfigChannel_WebCam = ConfigChannel & {
+    type: 'webcam'
+}
+
 export type Config = {
     name: string
     type: 'image' | 'buffer' | 'sound' | 'common' | 'cubemap'
@@ -474,6 +478,7 @@ export type Config = {
         | ConfigChannel_Cubemap
         | ConfigChannel_Video
         | ConfigChannel_Keyboard
+        | ConfigChannel_WebCam
     )[]
 }
 

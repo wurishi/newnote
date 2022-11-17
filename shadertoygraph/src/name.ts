@@ -364,4 +364,26 @@ export default {
     // https://www.shadertoy.com/results?query=&sort=newest&from=66924&num=12
     Xsl3zn: 'Warping - texture',
     lsl3Rr: 'IQ Clouds with beat',
+    'lslGzr': 'The Triforce',
+    'Mdl3zr': 'Round sound',
+    'Mdl3zn': 'depth',
+    'lsl3zr': 'codelifeclone@0:44',
+    'MssGzr': 'R.E.D. - final scene',
+    'MslGzr': 'Blueorange',
+    'Mds3Rr': 'Frosted Torus',
+    '4df3R8': 'Audio Fl0wer',
+    '4sX3R8': 'Magister',
+    'lds3zr': 'Ribbons',
+    'Msl3zr': 'led spectrum analyser',
+    'Xdf3R8': 'Fl0wer',
+    'Xsf3R8': 'Point light and Plane',
+    '4sXGR8': 'string',
+    'lss3zr': 'Volume raycasting',
+    'XdX3R8': 'totorman-test1',
+    'XdlGzr': 'Gameboy ',
+    'XdfGz8': 'pyroclastic explosion',
+    'XsfGR8': 'Mandelbulb',
+    'XsX3z8': 'Video filters',
+    // Video filters
+    // https://www.shadertoy.com/results?query=&sort=newest&from=66912&num=12
 }

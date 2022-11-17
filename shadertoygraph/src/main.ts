@@ -365,7 +365,7 @@ function showPreviews(show: boolean) {
       });
 
       const labelEl = document.createElement('div');
-      labelEl.innerHTML = name;
+      labelEl.innerHTML = name || 'NONAME: ' + key;
       item.appendChild(labelEl);
 
       item.onclick = () => {

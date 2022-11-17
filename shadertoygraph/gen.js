@@ -20,14 +20,20 @@ fs.readdir(SEARCH, (err, files) => {
 const textureMap = {
     XdX3Rn: 'Abstract1',
     '4dfGRn': 'London',
-    'XdfGRn': 'Stars',
-    'XsXGRn': 'Organic1',
+    XdfGRn: 'Stars',
+    XsXGRn: 'Organic1',
     '4dX3Rn': 'Abstract2',
     '4dXGRn': 'RockTiles',
-    'Xsf3Rn': 'Nyancat',
-    'XsX3Rn': 'Organic2',
-    'Xsf3zn': 'RGBANoiseMedium',
-    'XsfGRn': 'Wood'
+    Xsf3Rn: 'Nyancat',
+    XsX3Rn: 'Organic2',
+    Xsf3zn: 'RGBANoiseMedium',
+    XsfGRn: 'Wood',
+    XsBSR3: 'BlueNoise',
+    XdXGzn: 'RGBANoiseSmall',
+}
+
+const volumnMap = {
+    '4sfGRr': 'GreyNoise3D',
 }
 
 function readJSON(path) {
@@ -52,9 +58,15 @@ function readJSON(path) {
                             } else if (inp.type === 'cubemap') {
                                 obj = { type: 'cubemap', map: '' }
                             } else if (inp.type === 'texture') {
-                                obj = { type: 'texture', src: textureMap[inp.id] || '' }
+                                obj = {
+                                    type: 'texture',
+                                    src: textureMap[inp.id] || '',
+                                }
                             } else if (inp.type === 'volumn') {
-                                obj = { type: 'volumn', volumn: '' }
+                                obj = {
+                                    type: 'volumn',
+                                    volumn: volumnMap[inp.id] || '',
+                                }
                             } else if (inp.type === 'webcam') {
                                 obj = { type: 'webcam' }
                             }

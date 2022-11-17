@@ -384,6 +384,19 @@ export default {
     'XdfGz8': 'pyroclastic explosion',
     'XsfGR8': 'Mandelbulb',
     'XsX3z8': 'Video filters',
-    // Video filters
-    // https://www.shadertoy.com/results?query=&sort=newest&from=66912&num=12
+    '4dX3RH': 'Landscroller 1',
+    '4sf3RH': 'spectrum circle starter',
+    '4df3RH': 'jittering: Blur aliasing',
+    '4sf3zH': 'Goa Theme',
+    '4sfGRH': 'TextCandy',
+    '4sfGz8': 'wallpaper',
+    '4sXGzH': '4th Iteration',
+    '4sXGRH': 'Mirror Cube',
+    'XdXGzH': 'jit.gl.pix exporting study',
+    'XdfGRH': 'Dancing Metalights',
+    'Xsf3RH': 'jit.gl.pix exporting test',
+    'XdfGzH': 'post: Screen Distort',
+    'MdsGzr': 'Mostly Harmless',
+    '4sX3zH': "Blobs'n Goo",
+    // https://www.shadertoy.com/results?query=&sort=newest&from=66900&num=12
 }

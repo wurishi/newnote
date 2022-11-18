@@ -36,6 +36,7 @@ const textureMap = {
     '4sf3Rr': 'Pebbles',
     Xdf3zn: 'Bayer',
     '4sf3Rn': 'GrayNoiseSmall',
+    Xsf3Rr: 'Organic3',
 }
 
 const volumeMap = {
@@ -45,6 +46,7 @@ const volumeMap = {
 
 const cubeMap = {
     XdX3zn: 'Basilica',
+    XsX3zn: 'Forest',
 }
 
 function readJSON(path) {

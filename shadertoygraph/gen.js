@@ -30,10 +30,19 @@ const textureMap = {
     XsfGRn: 'Wood',
     XsBSR3: 'BlueNoise',
     XdXGzn: 'RGBANoiseSmall',
+    '4sfGRn': 'Lichen',
+    '4sXGRn': 'RustyMetal',
+    '4dXGzn': 'GrayNoiseMedium',
+    '4sf3Rr': 'Pebbles',
 }
 
-const volumnMap = {
+const volumeMap = {
     '4sfGRr': 'GreyNoise3D',
+    XdX3Rr: 'RGBANoise3D',
+}
+
+const cubeMap = {
+    XdX3zn: 'Basilica',
 }
 
 function readJSON(path) {
@@ -51,21 +60,27 @@ function readJSON(path) {
                 json.renderpass.forEach((pass) => {
                     const channels = []
                     if (Array.isArray(pass.inputs)) {
-                        pass.inputs.forEach((inp) => {
+                        pass.inputs.forEach((inp, inpIdx) => {
+                            if (inp.channel > channels.length) {
+                                channels.push({ type: 'Empty' })
+                            }
                             let obj = null
                             if (inp.type === 'buffer') {
                                 obj = { type: 'buffer', id: 0 }
                             } else if (inp.type === 'cubemap') {
-                                obj = { type: 'cubemap', map: '' }
+                                obj = {
+                                    type: 'cubemap',
+                                    map: cubeMap[inp.id] || '',
+                                }
                             } else if (inp.type === 'texture') {
                                 obj = {
                                     type: 'texture',
                                     src: textureMap[inp.id] || '',
                                 }
-                            } else if (inp.type === 'volumn') {
+                            } else if (inp.type === 'volume') {
                                 obj = {
-                                    type: 'volumn',
-                                    volumn: volumnMap[inp.id] || '',
+                                    type: 'volume',
+                                    volume: volumeMap[inp.id] || '',
                                 }
                             } else if (inp.type === 'webcam') {
                                 obj = { type: 'webcam' }

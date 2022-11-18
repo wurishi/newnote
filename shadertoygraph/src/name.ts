@@ -430,7 +430,20 @@ export default {
     MtfGR8: 'Snowglobe_v2',
     '7tVSDh': 'Little Fibonacci Sphere',
     sldXWX: 'Snowman and The Tree',
-
     '4dl3z8': 'Radial Chroma Blur',
-    // https://www.shadertoy.com/results?query=&sort=newest&from=66876&num=12
+    lslGR8: 'Grassy',
+    Xsl3z8: 'Color Zebra',
+    MslGR8: 'dithering: Color Banding Removal',
+    XslGzH: 'interference',
+    '4slGRH': 'Primes',
+    XdsGzH: 'Basic Deform Shader',
+    XdX3z8: 'Weirdness',
+    MssGR8: 'Basic Edge Detection',
+    XdlGz8: 'Emboss',
+    Xdl3zH: 'Bubbling Puls',
+    '4ssGzH': 'Hysto',
+    '4sl3RH': 'Ray*Bert',
+    'Msl3R8': 'Mandel Fire',
+    // https://www.shadertoy.com/results?query=&sort=newest&from=66864&num=12
+
 }

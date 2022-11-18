@@ -34,6 +34,8 @@ const textureMap = {
     '4sXGRn': 'RustyMetal',
     '4dXGzn': 'GrayNoiseMedium',
     '4sf3Rr': 'Pebbles',
+    Xdf3zn: 'Bayer',
+    '4sf3Rn': 'GrayNoiseSmall',
 }
 
 const volumeMap = {

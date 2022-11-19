@@ -480,4 +480,14 @@ export default {
     '4df3R4': 'Ocean on Fire',
     // https://www.shadertoy.com/results?query=&sort=newest&from=66828&num=12
     '4dfGz8': 'Androids',
+    'Xdf3z4': '3D Spheres !',
+    'XsX3R4': 'Cells',
+    'XdX3z4': 'Simple Modulation Example',
+    'XdXGz4': 'separateRGB',
+    'Xdf3RN': 'Contrast',
+    'Xsf3RN': 'Night vision device',
+    'XsfGz4': 'Sky in the Pi',
+    '4dfGz4': 'Voxel Tyre',
+    'MsXGz8': 'Isolines',
+    '4sX3RN': 'NoiseWarp',
 }

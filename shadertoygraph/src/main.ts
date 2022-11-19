@@ -50,7 +50,7 @@ function init() {
   const shaderNameList = Object.keys(shaders).map((url) => {
     let arr = url.split('/');
     arr = arr[arr.length - 1].split('.');
-    let key = arr[0];
+    let key = arr[0].split('_')[0];
 
     if (nameRecord[key]) {
       key = `${nameRecord[key]} (${key})`;
@@ -336,7 +336,7 @@ function showPreviews(show: boolean) {
     Object.keys(shaders).forEach((url) => {
       let arr = url.split('/');
       arr = arr[arr.length - 1].split('.');
-      const key = arr[0];
+      const key = arr[0].split('_')[0];
       let key1 = key;
       if (nameRecord[key]) {
         key1 = `${nameRecord[key]} (${key})`;

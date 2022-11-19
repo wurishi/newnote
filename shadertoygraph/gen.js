@@ -58,7 +58,8 @@ function readJSON(path) {
         try {
             const json = JSON.parse(data)
             const id = json.info.id
-            if (!fs.existsSync(pt.join(TARGET, `${id}.ts`))) {
+            const fileName = id + '_' +  id.split('').map(str => str.charCodeAt(0).toString(16)).join('_')
+            if (!fs.existsSync(pt.join(TARGET, fileName + '.ts'))) {
                 const tsFileArr = ["import { Config } from '../type'"]
                 const tsObjArr = ['export default [']
                 json.renderpass.forEach((pass) => {
@@ -117,7 +118,7 @@ function readJSON(path) {
                     }
                     if (pass.type === 'image') {
                         tsFileArr.push(
-                            `import fragment from './glsl/${id}.glsl?raw'`
+                            `import fragment from './glsl/${fileName}.glsl?raw'`
                         )
                         tsObjArr.push(`
                         {
@@ -128,7 +129,7 @@ function readJSON(path) {
                             channels: ${JSON.stringify(channels)}
                         },`)
                         fs.writeFile(
-                            pt.join(GLSL_TARGET, `${id}.glsl`),
+                            pt.join(GLSL_TARGET, `${fileName}.glsl`),
                             pass.code,
                             { encoding: 'utf-8' },
                             (err) => {
@@ -138,7 +139,7 @@ function readJSON(path) {
                     } else if (pass.type === 'buffer') {
                         const name = pass.name[pass.name.length - 1]
                         tsFileArr.push(
-                            `import ${name} from './glsl/${id}_${name}.glsl?raw'`
+                            `import ${name} from './glsl/${fileName}_${name}.glsl?raw'`
                         )
                         tsObjArr.push(`
                         {
@@ -148,7 +149,7 @@ function readJSON(path) {
                             channels: ${JSON.stringify(channels)}
                         },`)
                         fs.writeFile(
-                            pt.join(GLSL_TARGET, `${id}_${name}.glsl`),
+                            pt.join(GLSL_TARGET, `${fileName}_${name}.glsl`),
                             pass.code,
                             { encoding: 'utf-8' },
                             (err) => {
@@ -157,7 +158,7 @@ function readJSON(path) {
                         )
                     } else if (pass.type === 'sound') {
                         tsFileArr.push(
-                            `import Sound from './glsl/${id}_sound.glsl?raw'`
+                            `import Sound from './glsl/${fileName}_sound.glsl?raw'`
                         )
                         tsObjArr.push(`
                         {
@@ -166,7 +167,7 @@ function readJSON(path) {
                             fragment: Sound,
                         },`)
                         fs.writeFile(
-                            pt.join(GLSL_TARGET, `${id}_sound.glsl`),
+                            pt.join(GLSL_TARGET, `${fileName}_sound.glsl`),
                             pass.code,
                             { encoding: 'utf-8' },
                             (err) => {
@@ -175,7 +176,7 @@ function readJSON(path) {
                         )
                     } else if (pass.type === 'common') {
                         tsFileArr.push(
-                            `import Common from './glsl/${id}_common.glsl?raw'`
+                            `import Common from './glsl/${fileName}_common.glsl?raw'`
                         )
                         tsObjArr.push(`
                         {
@@ -184,7 +185,7 @@ function readJSON(path) {
                             fragment: Common
                         },`)
                         fs.writeFile(
-                            pt.join(GLSL_TARGET, `${id}_common.glsl`),
+                            pt.join(GLSL_TARGET, `${fileName}_common.glsl`),
                             pass.code,
                             { encoding: 'utf-8' },
                             (err) => {
@@ -193,7 +194,7 @@ function readJSON(path) {
                         )
                     } else if (pass.type === 'cubemap') {
                         tsFileArr.push(
-                            `import Cube from './glsl/${id}_cube.glsl?raw'`
+                            `import Cube from './glsl/${fileName}_cube.glsl?raw'`
                         )
                         tsObjArr.push(`
                         {
@@ -202,7 +203,7 @@ function readJSON(path) {
                             fragment: Cube
                         },`)
                         fs.writeFile(
-                            pt.join(GLSL_TARGET, `${id}_cube.glsl`),
+                            pt.join(GLSL_TARGET, `${fileName}_cube.glsl`),
                             pass.code,
                             { encoding: 'utf-8' },
                             (err) => {
@@ -215,12 +216,12 @@ function readJSON(path) {
 
                 const tsFile = tsFileArr.join('\n') + '\n' + tsObjArr.join('\n')
                 fs.writeFile(
-                    pt.join(TARGET, `${id}.ts`),
+                    pt.join(TARGET, fileName + '.ts'),
                     tsFile,
                     { encoding: 'utf-8' },
                     (err) => {
                         err && console.log(err)
-                        console.log('create succ', pt.join(TARGET, `${id}.ts`))
+                        console.log('create succ', pt.join(TARGET, fileName + '.ts'))
                     }
                 )
             }

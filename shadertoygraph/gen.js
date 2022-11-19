@@ -46,7 +46,10 @@ const volumeMap = {
 
 const cubeMap = {
     XdX3zn: 'Basilica',
+    '4dX3zn': 'BasilicaBlur',
     XsX3zn: 'Forest',
+    XsfGzn: 'Gallery',
+    '4sfGzn': 'GalleryB',
 }
 
 function readJSON(path) {

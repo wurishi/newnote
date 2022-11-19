@@ -83,6 +83,7 @@ const POSTFIX: Record<string, string> = {
     ForestBlur: '.png',
     BasilicaBlur: '.png',
     Gallery: '.jpeg',
+    GalleryB: '.png',
 }
 
 export function getCubemapsList() {

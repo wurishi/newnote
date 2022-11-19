@@ -450,7 +450,7 @@ export type ConfigChannel_Music = ConfigChannel & {
 
 export type ConfigChannel_Cubemap = ConfigChannel & {
     type: 'cubemap'
-    map?: 'Basilica' | 'Forest' | 'ForestBlur' | 'BasilicaBlur' | 'Gallery'
+    map?: 'Basilica' | 'Forest' | 'ForestBlur' | 'BasilicaBlur' | 'Gallery' | 'GalleryB'
 }
 
 export type ConfigChannel_Video = ConfigChannel & {

@@ -7,6 +7,7 @@ import Image, { getCubemaps, getCubemapsList } from './image';
 import { fact, removeFolders } from './factGui';
 import createMediaRecorder from './utils/mediaRecorder';
 import { requestFullScreen } from './utils/index';
+import PreviewConfig from './preview'
 
 const shaders = import.meta.glob('./shadersources/*.ts');
 
@@ -29,7 +30,7 @@ function init() {
     goto: () => {
       const key = keyToShaderKey.get(guiData.current);
       if (key) {
-        window.open(`https://www.shadertoy.com/view/${key}`, '_blank');
+        window.open(`https://www.shadertoy.com/view/${key.split('_')[0]}`, '_blank');
       }
     },
     gainValue: 0.0,
@@ -307,9 +308,9 @@ function previewError(err:boolean) {
         for(let i=0;i<len;i++) {
             const div = list.children.item(i) as HTMLDivElement
             if(div) {
-                const name = div.getAttribute('data-name') ?? ''
+                const key = div.getAttribute('data-key') ?? ''
                 if(err) {
-                    if(!imgError.has(name)) {
+                    if(!imgError.has(key)) {
                         div.style.display = 'none'
                     }
                 } else {
@@ -319,6 +320,23 @@ function previewError(err:boolean) {
         }
     }
 }
+
+const cfSet = new Set<string>()
+
+;(() => {
+  const nameRecord = NameConfig as Record<string, string>
+  const tmp:any = {}
+  Reflect.ownKeys(nameRecord).forEach(key => {
+    const lowKey = key.toString().toLocaleLowerCase()
+    if(tmp[lowKey]) {
+      cfSet.add(lowKey)
+    }
+    else {
+      tmp[lowKey] = true
+    }
+  })
+  
+})()
 
 function showPreviews(show: boolean) {
   let list: HTMLDivElement = document.querySelector('#previews')!;
@@ -332,6 +350,13 @@ function showPreviews(show: boolean) {
     list.style.overflow = 'auto';
     list.style.width = 'calc(100vw - 270px)';
 
+    const infoEl = document.createElement('div')
+    infoEl.innerHTML = `
+    重复: ${cfSet.size} <br />
+    ※预览图已修复: ${Reflect.ownKeys(PreviewConfig).length}
+    `
+    list.appendChild(infoEl)
+
     const nameRecord = NameConfig as Record<string, string>;
     Object.keys(shaders).forEach((url) => {
       let arr = url.split('/');
@@ -343,11 +368,12 @@ function showPreviews(show: boolean) {
       }
       const name = nameRecord[key];
       const item = document.createElement('div');
+      item.className = 'item'
       item.style.width = '80px';
       item.style.textAlign = 'center';
       item.style.overflow = 'hidden';
       item.style.padding = '0 5px';
-      item.setAttribute('data-name', name);
+      item.setAttribute('data-key', key);
       setTimeout(() => {
         // 因为lazyInit是1秒后才执行的
         if (key1 === guiData.current) {
@@ -361,7 +387,12 @@ function showPreviews(show: boolean) {
       imgEl.style.height = '60px';
       item.appendChild(imgEl);
       imgEl.addEventListener('error', () => {
-        imgError.add(name);
+        const tmpSrc = '/screenshot/' + arr[0] + '.jpg'
+        if(imgEl.src.endsWith(tmpSrc)) {
+          imgError.add(key)
+        } else {
+          imgEl.src = tmpSrc
+        }
       });
 
       const labelEl = document.createElement('div');
@@ -372,6 +403,18 @@ function showPreviews(show: boolean) {
         item.style.border = '4px solid green';
         changeCurrent && changeCurrent(key1);
       };
+
+      const pConfig:any = PreviewConfig
+      if(key in pConfig) {
+        imgEl.src = '/screenshot/' + pConfig[key] + '.jpg';
+      }
+
+      if(cfSet.has(key.toLocaleLowerCase())) {
+        const warnEl = document.createElement('div')
+        warnEl.className = 'cm'
+        warnEl.innerHTML = '※'
+        item.appendChild(warnEl)
+      }
 
       list.appendChild(item);
     });

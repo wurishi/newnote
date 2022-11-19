@@ -18,7 +18,6 @@ export default {
     fsjyR3: 'Lover',
     XsXXDn: 'Creation by Silexars',
     XsBXWt: 'Fractal Land',
-    '4dcGW2': '(FAIL) expansive reaction-diffusion',
     MdX3Rr: 'Elevated',
     '4dfGzs': 'Voxel Edges',
     // https://www.shadertoy.com/results?query=&sort=love&from=12&num=12
@@ -132,7 +131,7 @@ export default {
     Mdf3z7: 'Menger Journey',
     XdlSDs: '[SIG2014] - Total Noob',
     Xt3SR4: 'Interactive thinks',
-    Md3yRB: '(FAIL) Wythoff explorer',
+    Md3yRB: 'Wythoff explorer',
     // https://www.shadertoy.com/results?query=&sort=love&from=120&num=12
     Ms3XWN: 'Pacman Game',
     ldj3Dm: 'Fish swimming',
@@ -221,7 +220,7 @@ export default {
     wtVyWK: 'Neural Stanford Bunny (5 kb)',
     ltlSWf: 'Flux Core',
     XtdGR7: '[SH16B] WIP: Warp Tunnel',
-    MtcGDH: '(FAIL) [SH16C] Voxel Game',
+    MtcGDH: '[SH16C] Voxel Game',
     // https://www.shadertoy.com/results?query=&sort=love&from=204&num=12
     MdSczK: 'Multistep Fluid Simulation',
     XtX3Rr: 'Neptune Racing',
@@ -531,6 +530,7 @@ export default {
     '4slGzN': 'My SpotLight',
     '4sl3zN': 'RINGS',
     '4ds3RN': 'Cubemap Shading',
+    '4dcGW2': '(FAIL) expansive reaction-diffusion',
     'MdlGz4': 'Minecraft Blocks',
     // https://www.shadertoy.com/results?query=&sort=newest&from=66816&num=12
     

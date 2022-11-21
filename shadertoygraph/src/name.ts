@@ -586,7 +586,20 @@ export default {
     Msf3R7: 'rubber goo of pastel',
     MdX3R7: 'julia explorer',
     Mdf3z7: 'Menger Journey',
-    'Msf3z7': 'Metameatballs',
-    // https://www.shadertoy.com/results?query=&sort=newest&from=66840&num=12
+    Msf3z7: 'Metameatballs',
+    lsXGzM: 'Auralights',
+    '4slGRM': 'Water',
+    XslGRM: 'Halftone',
+    XdsGR7: 'Colors2',
+    Mdf3zM: "Escher's prentententoonstelling",
+    '4dlGR7': 'WaveMotion',
+    '4sXGz7': 'Evil',
+    '4df3R7': 'Circular Blur',
+    '4dlGzM': 'triple shape',
+    '4ss3zM': 'Trial2',
+    '4ds3RM': 'flipbrot',
+    '4dlGRM': 'Starburst',
+    'Xds3zM': 'Stack',
+    // https://www.shadertoy.com/results?query=&sort=newest&from=66816&num=12
 
 }

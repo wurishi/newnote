@@ -1,5 +1,6 @@
 const pt = require('path')
 const fs = require('fs')
+const crc32 = require('crc32')
 
 const TARGET = pt.join(__dirname, 'src', 'shadersources')
 const GLSL_TARGET = pt.join(TARGET, 'glsl')
@@ -61,7 +62,8 @@ function readJSON(path) {
         try {
             const json = JSON.parse(data)
             const id = json.info.id
-            const fileName = id + '_' +  id.split('').map(str => str.charCodeAt(0).toString(16)).join('_')
+            // const fileName = id + '_' +  id.split('').map(str => str.charCodeAt(0).toString(16)).join('_')
+            const fileName = id + '_' + crc32(id)
             if (!fs.existsSync(pt.join(TARGET, fileName + '.ts'))) {
                 const tsFileArr = ["import { Config } from '../type'"]
                 const tsObjArr = ['export default [']

@@ -382,7 +382,7 @@ function showPreviews(show: boolean) {
       }, 1500);
 
       const imgEl = document.createElement('img');
-      imgEl.src = '/screenshot/' + key + '.jpg';
+      imgEl.src = '/screenshot/' + arr[0] + '.jpg';
       imgEl.style.width = '100%';
       imgEl.style.height = '60px';
       item.appendChild(imgEl);

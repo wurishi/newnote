@@ -537,7 +537,7 @@ export default {
     lds3RN: 'Mercury',
     MslGz4: '3d blobs',
     '4sl3zn': 'Siggraph logo',
-    '4sl3z8': 'The Endless Track',
+    '4sl3z8': '(FAIL) The Endless Track',
     lsl3zN: 'State of the Art',
     XsXGRM: '2d blobs',
     Xss3zN: 'Minefield',

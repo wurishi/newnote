@@ -126,7 +126,6 @@ export default {
     MdKXzc: 'Supernova remnant',
     ldScDh: 'Greek Temple',
     MlKSWm: 'Sparks drifting',
-    Mdf3z7: 'Menger Journey',
     XdlSDs: '[SIG2014] - Total Noob',
     Xt3SR4: 'Interactive thinks',
     Md3yRB: 'Wythoff explorer',
@@ -575,6 +574,19 @@ export default {
     MsX3RM: '2d distort',
     '4sfGz7': 'Trumpet',
     lsl3RH: 'Warping - procedural 2',
-    // https://www.shadertoy.com/results?query=&sort=newest&from=66852&num=12
-    
+    lsXGR7: 'audiobrot',
+    ldXGz7: '2d water shader',
+    XsfGR7: 'The Cross',
+    MsXGzM: 'Voronoi - rocks',
+    MsXGz7: 'soundbrot',
+    MsfGzN: 'Glass Cubes',
+    Msf3zM: 'brot',
+    MsfGz7: 'Shatter',
+    MsfGR7: 'Foggy Fields',
+    Msf3R7: 'rubber goo of pastel',
+    MdX3R7: 'julia explorer',
+    Mdf3z7: 'Menger Journey',
+    'Msf3z7': 'Metameatballs',
+    // https://www.shadertoy.com/results?query=&sort=newest&from=66840&num=12
+
 }

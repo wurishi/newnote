@@ -71,7 +71,8 @@ function readJSON(path) {
                     const channels = []
                     if (Array.isArray(pass.inputs)) {
                         pass.inputs.forEach((inp, inpIdx) => {
-                            if (inp.channel > channels.length) {
+                            const emptyCount = inp.channel - channels.length
+                            for (let i = 0; i < emptyCount; i++) {
                                 channels.push({ type: 'Empty' })
                             }
                             let obj = null
@@ -226,7 +227,10 @@ function readJSON(path) {
                     { encoding: 'utf-8' },
                     (err) => {
                         err && console.log(err)
-                        console.log('create succ', pt.join(TARGET, fileName + '.ts'))
+                        console.log(
+                            'create succ',
+                            pt.join(TARGET, fileName + '.ts')
+                        )
                     }
                 )
             }

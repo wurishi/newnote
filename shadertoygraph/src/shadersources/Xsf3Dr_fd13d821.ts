@@ -1,9 +1,9 @@
 import { Config } from '../type'
-import fragment from './glsl/XsfGDn.glsl?raw'
+import fragment from './glsl/Xsf3Dr_fd13d821.glsl?raw'
 export default [
     {
-        // 'XsfGDn': 'Texture - Better Filtering',
-        name: 'XsfGDn',
+        // 'Xsf3Dr': 'Texture - HW interpolation',
+        name: 'Xsf3Dr',
         type: 'image',
         fragment,
         channels: [

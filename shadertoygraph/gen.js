@@ -38,6 +38,7 @@ const textureMap = {
     Xdf3zn: 'Bayer',
     '4sf3Rn': 'GrayNoiseSmall',
     Xsf3Rr: 'Organic3',
+    XdXGzr: 'Abstract3',
 }
 
 const volumeMap = {

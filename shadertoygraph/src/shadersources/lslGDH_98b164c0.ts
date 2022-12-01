@@ -1,16 +1,16 @@
 import { Config } from '../type'
-import fragment from './glsl/ldl3W8.glsl?raw'
+import fragment from './glsl/lslGDH_98b164c0.glsl?raw'
 export default [
     {
-        // 'ldl3W8': 'Voronoi - distances',
-        name: 'ldl3W8',
+        // 'lslGDH': 'Bump to normal',
+        name: 'lslGDH',
         type: 'image',
         fragment,
         channels: [
             {
                 type: 'texture',
-                src: 'RGBANoiseMedium',
-                filter: 'nearest',
+                src: 'GrayNoiseSmall',
+                filter: 'mipmap',
                 wrap: 'repeat',
                 noFlip: true,
             },

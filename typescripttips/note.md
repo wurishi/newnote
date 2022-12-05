@@ -333,3 +333,81 @@ objectKeys(myObject).forEach((key) => {
     console.log(myObject[key])
 })
 ```
+
+# 08. 泛型在 React 中的使用
+
+在 React 的日常开发中，经常会碰到以下这种情况，即提供一系列数据 (items)，并指定每个数据的渲染方法 (renderItem)。
+
+在这种情况下，往往提供的数据类型会被用在渲染方法中。
+
+```typescript
+interface TableProps {
+    items: { id: string }[]
+    renderItem: (item: { id: string }) => React.ReactNode
+}
+
+export const Table = (props: TableProps) => {
+    return null
+}
+
+const Component = () => {
+    return (
+        <Table
+            items={[{ id: '1' }]}
+            renderItem={(item) => <div>{item.id}</div>}
+        ></Table>
+    )
+}
+```
+
+此时，如果要为 items 的数据类型添加一个属性，则需要同时修改 items 和 renderItem 二处。更加优雅的方法是使用泛型：
+
+```typescript
+interface TableProps<TItem> {
+    items: TItem[]
+    renderItem: (item: TItem) => React.ReactNode
+}
+
+export function Table<TItem>(props: TableProps<TItem>) {
+    return null
+}
+
+const Component = () => {
+    return (
+        <Table<{ id: string }> // 此时把 items 的类型定义的权利交给了使用者
+            items={[{ id: '1' }]}
+            renderItem={(item) => <div>{item.id}</div>}
+        ></Table>
+    )
+}
+```
+
+# 09. `Omit`的使用
+
+如果想要实现一个删除对象中指定 key 的方法生成器，如下：
+
+```typescript
+export const makeKeyRemover = (keys: string[]) => (obj: any) => {}
+
+const keyRemover = makeKeyRemover(['a', 'b'])
+
+const newObject = keyRemover({ a: 1, b: 2, c: 3 })
+```
+
+怎样能够让 `newObject` 拥有正确的类型提示？（在这里应该标识它只有 `c` 这个属性）
+
+可以使用 `TypeScript 3.5` 开始支持的 `Omit`:
+
+```typescript
+export const makeKeyRemover = 
+<Key extends string>(keys: Key[]) => 
+<Obj extends object>(obj: Obj): Omit<Obj, Key> => {
+    return {} as any
+}
+
+const keyRemover = makeKeyRemover(['a', 'b'])
+
+const newObject = keyRemover({ a: 1, b: 2, c: 3 })
+
+// 此时 newObject 的类型提示中只会有 c 一个属性。
+```

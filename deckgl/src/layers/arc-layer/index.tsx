@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import DeckGL from '@deck.gl/react' // eslint-disable-line
 import { scaleQuantile } from 'd3-scale'
 import StaticMap from 'react-map-gl'
@@ -105,14 +105,16 @@ const MyArcLayer: React.FC = () => {
         }),
     ]
     return (
-        <DeckGL
-            layers={layers}
-            initialViewState={INITIAL_VIEW_STATE}
-            controller
-            getTooltip={getTooltip}
-        >
-            <StaticMap reuseMaps mapStyle={MAP_STYLE} />
-        </DeckGL>
+        <>
+            <DeckGL
+                layers={layers}
+                initialViewState={INITIAL_VIEW_STATE}
+                controller
+                getTooltip={getTooltip}
+            >
+                <StaticMap reuseMaps mapStyle={MAP_STYLE} />
+            </DeckGL>
+        </>
     )
 }
 

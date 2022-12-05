@@ -262,3 +262,74 @@ export const getDeepValue = <
 ```
 
 此时, `getDeepValue`函数的第二个参数会自动被限制为 'foo | bar', 第三个参数也会自动根据第二个参数变化. 并且返回值也会有正确的类型.
+
+# 06. React 根据组件使用的属性反推类型
+
+```typescript
+const MyComponent = (props: { enabled: boolean }) => {
+    return null
+}
+
+type PropsFrom<T> = any
+
+const props: PropsFrom<typeof MyComponent> = {
+    enabled: true,
+}
+```
+
+期望 PropsFrom 类型可以正确的反应出 `MyComponent`的 Props 的类型。
+
+可以这样做：
+
+```typescript
+type PropsFrom<TComponent> = TComponent extends React.FC<infer Props>
+    ? Props
+    : never
+```
+
+当然如果还需要兼容 class 形式的 React 组件，还需要多做一步：
+
+```typescript
+class MyOtherComponent extends React.Component<{
+    enabled: boolean
+}> {}
+
+type PropsFrom<TComponent> = TComponent extends React.FC<infer Props>
+    ? Props
+    : TComponent extends React.Component<infer Props>
+    ? Props
+    : never
+
+const props: PropsFrom<MyOtherComponent> = {
+    enabled: true,
+}
+```
+
+# 07. 在 TypeScript 中优雅的使用 `Object.keys` 遍历
+
+```typescript
+export const myObject = {
+    a: 1,
+    b: 2,
+    c: 3,
+}
+
+// 当有一个 object 我们需要遍历它所有的键值对时，最普遍的做法是：
+
+Object.keys(myObject).forEach((key) => {
+    console.log(myObject[key]) // 在 typescript 中这里会提示错误，表示 key 这个 string 类型并不在 myObject 的 key 签名 "a" | "b" | "c" 中
+})
+```
+
+可以这样做：
+
+```typescript
+const objectKeys = <Obj extends Object>(obj: Obj): (keyof Obj)[] => {
+    return Object.keys(obj) as (keyof Obj)[]
+}
+
+objectKeys(myObject).forEach((key) => {
+  // 这里的 key 的类型会是更适合的 "a" | "b" | "c"
+    console.log(myObject[key])
+})
+```

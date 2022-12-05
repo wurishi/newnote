@@ -4,12 +4,11 @@ import './App.css'
 import ArcLayer from './layers/arc-layer'
 
 function App() {
-
-  return (
-    <div className="App">
-      <ArcLayer />
-    </div>
-  )
+    return (
+        <div className="App">
+            <ArcLayer />
+        </div>
+    )
 }
 
 export default App

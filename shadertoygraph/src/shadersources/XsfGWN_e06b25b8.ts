@@ -1,5 +1,5 @@
 import { Config } from '../type'
-import fragment from './glsl/XsfGWN.glsl?raw'
+import fragment from './glsl/XsfGWN_e06b25b8.glsl?raw'
 export default [
     {
         // 'XsfGWN': 'furball',
@@ -9,14 +9,14 @@ export default [
         channels: [
             {
                 type: 'texture',
-                src: 'RGBANoiseMedium',
+                src: 'RGBANoiseSmall',
                 filter: 'mipmap',
                 wrap: 'repeat',
                 noFlip: true,
             },
             {
                 type: 'texture',
-                src: 'RGBANoiseMedium',
+                src: 'RGBANoiseSmall',
                 filter: 'mipmap',
                 wrap: 'repeat',
                 noFlip: true,

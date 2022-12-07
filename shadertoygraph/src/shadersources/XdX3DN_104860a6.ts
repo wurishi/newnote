@@ -1,15 +1,15 @@
 import { Config } from '../type'
-import fragment from './glsl/4dlGDN.glsl?raw'
+import fragment from './glsl/XdX3DN_104860a6.glsl?raw'
 export default [
     {
-        // '4dlGDN': 'Noise blur',
-        name: '4dlGDN',
+        // 'XdX3DN': 'Black Hole',
+        name: 'XdX3DN',
         type: 'image',
         fragment,
         channels: [
             {
                 type: 'texture',
-                src: 'Organic1',
+                src: 'London',
                 filter: 'mipmap',
                 wrap: 'repeat',
                 noFlip: true,

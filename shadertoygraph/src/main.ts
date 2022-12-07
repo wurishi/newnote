@@ -349,6 +349,7 @@ function showPreviews(show: boolean) {
     list.style.maxHeight = '300px';
     list.style.overflow = 'auto';
     list.style.width = 'calc(100vw - 270px)';
+    list.style.scrollBehavior = 'smooth'
 
     const infoEl = document.createElement('div')
     infoEl.innerHTML = `

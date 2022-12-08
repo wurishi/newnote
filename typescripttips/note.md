@@ -382,7 +382,7 @@ const Component = () => {
 }
 ```
 
-# 09. `Omit`的使用
+# 09. `Omit`的使用1
 
 如果想要实现一个删除对象中指定 key 的方法生成器，如下：
 
@@ -410,4 +410,161 @@ const keyRemover = makeKeyRemover(['a', 'b'])
 const newObject = keyRemover({ a: 1, b: 2, c: 3 })
 
 // 此时 newObject 的类型提示中只会有 c 一个属性。
+```
+
+# 10. TypeScript 错误提示
+
+当我们设计一个函数时，往往会对传入的参数作一些类型判断，并在参数不合法时抛出一个异常，比如这样：
+
+```typescript
+export const deepEqualCompare = <Arg>(a: Arg, b: Arg): boolean => {
+    if (Array.isArray(a) || Array.isArray(b)) {
+        throw new Error('无法使用 deepEqualCompare 判断数组是否相同')
+    }
+    return a === b
+}
+
+deepEqualCompare(1, 1)
+deepEqualCompare([], ['a']) // 运行时抛出异常
+```
+
+我们可以通过以下的方式，让第二个 `deepEqualCompare` 在运行前就提示参数不合法。
+
+```typescript
+type CheckForBadArgs<Arg> = Arg extends any[]
+    ? '无法使用 deepEqualCompare 判断数组是否相同'
+    : Arg
+
+export const deepEqualCompare = <Arg>(
+    a: CheckForBadArgs<Arg>,
+    b: CheckForBadArgs<Arg>
+): boolean => {
+    if (Array.isArray(a) || Array.isArray(b)) {
+        throw new Error('无法使用 deepEqualCompare 判断数组是否相同')
+    }
+    return a === b
+}
+
+deepEqualCompare(1, 1)
+deepEqualCompare([], ['a']) // 此时会直接提示参数不正确，并报一个问题
+```
+
+# 11. 部分类
+
+当我们有这样一个 `interface` 时：
+
+```typescript
+export interface Post {
+    id: string
+    comments: { value: string }[]
+    meta: {
+        name: string
+        description: string
+    }
+}
+
+const post: Post = {
+    id: '1',
+}
+```
+
+此时 `post` 必须填入所有的属性，如果我们只想填入部分属性，并且在不能使用 `?` 改动 `Post` 接口时，可以使用 `Partial` 关键字：
+
+```typescript
+const post: Partial<Post> = {
+    id: '1',
+    meta: { // 提示错误
+        description: '123',
+    },
+}
+```
+
+但 `Partial` 只能应用到类型的第一级参数中，如上，如果我还想只填入 `meta` 的部分属性，仍然会提示错误。所以下面这个 `DeepPartial` 工具类型会更加有用：
+
+```typescript
+type DeepPartial<Thing> = Thing extends Function
+    ? Thing
+    : Thing extends Array<infer InferredArrayMember>
+    ? DeepPartialArray<InferredArrayMember>
+    : Thing extends Object
+    ? DeepPartialObject<Thing>
+    : Thing | undefined
+
+interface DeepPartialArray<Thing> extends Array<DeepPartial<Thing>> {}
+
+type DeepPartialObject<Thing> = {
+    [Key in keyof Thing]?: DeepPartial<Thing[Key]>
+}
+
+const post: DeepPartial<Post> = {
+    meta: { // meta 是 DeepPartialObject, 可以缺省部分属性
+        description: '123',
+    },
+    comments: [{}], // comments 是 DeepPartialArray, 里面的每个对象都可以缺少部分属性
+}
+```
+
+# 12. `Omit` 的使用2
+
+```typescript
+type IconSize = 'sm' | 'xs'
+
+interface IconProps {
+    size: IconSize
+}
+
+export const Icon = (props: IconProps) => {
+    return <></>
+}
+
+const Comp1 = () => {
+    return (
+        <>
+            <Icon size="sm" />
+            <Icon size="sth" />
+        </>
+    )
+}
+```
+
+如上，当 `IconSize` 需要使用其他自定义值时，为了 `sth` 这里不报错，可以简单的将 `IconSize` 修改为：`type IconSize = 'sm' | 'xs' | string`。
+
+但是此时，`IconSize` 将失去类型提示，因为 `string` 将覆盖 `'sm' | 'xs'`。 此时更合理的做法是使用 `Omit`。
+
+```typescript
+type IconSize = 'sm' | 'xs' | Omit<string, 'sm' | 'xs'>
+```
+
+但是这样写仍然不够优雅，比方说 `'sm'` 在这里出现了二次。所以可以提供一个更优雅的工具类型：
+
+```typescript
+type IconSize = LooseAutoComplete<'sm' | 'xs'>
+
+export type LooseAutoComplete<T extends string> = T | Omit<string, T>
+```
+
+这样一来如果需要添加或修改关键字，只需要修改一处即可。
+
+# 13. 在 `reducer` 中的应用
+
+在使用 `Redux` 或者 `useReducer` 时，经常会有一个专门为 `Action` 的类型定义的常量文件，一般长这样：
+
+```typescript
+export const ADD_TODO = 'ADD_TODO'
+export const REMOVE_TODO = 'REMOVE_TODO'
+export const EDIT_TODO = 'EDIT_TODO'
+```
+
+那么如果需要给他们定义一个类型时，往往会这样写：
+
+```typescript
+export type Action = 'ADD_TODO' | 'EDIT_TODO' | 'REMOVE_TODO'
+```
+
+可以利用 `keyof` 更优雅的定义 `Action` 类型：
+
+```typescript
+export type ActionModule = typeof import('./13_constants')
+
+export type Action = ActionModule[keyof ActionModule]
 ```

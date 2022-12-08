@@ -6,16 +6,52 @@ const TARGET = pt.join(__dirname, 'src', 'shadersources')
 const GLSL_TARGET = pt.join(TARGET, 'glsl')
 const SEARCH = pt.join(__dirname, 'e')
 
+function createTotalObj() {
+    let total = 0
+    let comp = 0
+    const nameArr = []
+    let testFlag = false
+
+    const testFinish = (flag = false) => {
+        if(flag) {
+            testFlag = true
+        }
+        if(testFlag && (comp >= total)) {
+            console.log('总共生成: ' + comp)
+            console.log(nameArr.join('\n'))
+        }
+    }
+
+    return {
+        saveName: (str) => {
+            nameArr.push(str)
+        },
+        index: () => {
+            total++
+        },
+        complate: () => {
+            comp++
+            testFinish()
+        },
+        testFinish
+    }
+}
+
+let total = new createTotalObj()
+
 fs.readdir(SEARCH, (err, files) => {
     if (err) {
         console.log(err)
         return
     }
+    total = createTotalObj()
     files.forEach((name) => {
         if (name.endsWith('.json')) {
+            total.index()
             readJSON(pt.join(SEARCH, name))
         }
     })
+    total.testFinish(true)
 })
 
 const textureMap = {
@@ -135,6 +171,7 @@ function readJSON(path) {
                             fragment,
                             channels: ${JSON.stringify(channels)}
                         },`)
+                        total.saveName(`// '${id}': '${json.info.name}',`)
                         fs.writeFile(
                             pt.join(GLSL_TARGET, `${fileName}.glsl`),
                             pass.code,
@@ -232,11 +269,15 @@ function readJSON(path) {
                             'create succ',
                             pt.join(TARGET, fileName + '.ts')
                         )
+                        total.complate()
                     }
                 )
+            } else {
+                total.complate()
             }
         } catch (error) {
             console.log(error)
+            total.complate()
         }
     })
 }

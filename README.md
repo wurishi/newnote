@@ -175,6 +175,12 @@ Rust
 https://shadertoyunofficial.wordpress.com/
 
 # shadertoygraph
+重构 shadertoy 的渲染代码（极大部分的多 buffer 可以正常显示了），通过官方扩展下载的 json 文件可以通过工具生成对应的配置。
+
+
+# sveltejs
+
+参考网站: [sveltejs](https://www.sveltejs.cn/)
 
 # svg
 

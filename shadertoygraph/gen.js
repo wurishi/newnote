@@ -9,15 +9,16 @@ const SEARCH = pt.join(__dirname, 'e')
 function createTotalObj() {
     let total = 0
     let comp = 0
+    let finish = 0
     const nameArr = []
     let testFlag = false
 
     const testFinish = (flag = false) => {
-        if(flag) {
+        if (flag) {
             testFlag = true
         }
-        if(testFlag && (comp >= total)) {
-            console.log('总共生成: ' + comp)
+        if (testFlag && comp >= total) {
+            console.log('总共生成: ' + finish, ' 跳过: ' + (comp - finish))
             console.log(nameArr.join('\n'))
         }
     }
@@ -29,11 +30,14 @@ function createTotalObj() {
         index: () => {
             total++
         },
-        complate: () => {
+        complate: (f = false) => {
             comp++
+            if (f) {
+                finish++
+            }
             testFinish()
         },
-        testFinish
+        testFinish,
     }
 }
 
@@ -101,6 +105,7 @@ function readJSON(path) {
             const id = json.info.id
             // const fileName = id + '_' +  id.split('').map(str => str.charCodeAt(0).toString(16)).join('_')
             const fileName = id + '_' + crc32(id)
+            // total.saveName(`// '${id}': '${json.info.name}',`)
             if (!fs.existsSync(pt.join(TARGET, fileName + '.ts'))) {
                 const tsFileArr = ["import { Config } from '../type'"]
                 const tsObjArr = ['export default [']
@@ -269,7 +274,7 @@ function readJSON(path) {
                             'create succ',
                             pt.join(TARGET, fileName + '.ts')
                         )
-                        total.complate()
+                        total.complate(true)
                     }
                 )
             } else {

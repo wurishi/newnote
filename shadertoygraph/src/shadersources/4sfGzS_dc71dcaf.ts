@@ -1,5 +1,5 @@
 import { Config } from '../type'
-import fragment from './glsl/4sfGzS.glsl?raw'
+import fragment from './glsl/4sfGzS_dc71dcaf.glsl?raw'
 export default [
     {
         // '4sfGzS': 'Noise - value - 3D',

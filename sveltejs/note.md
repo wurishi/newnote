@@ -323,6 +323,117 @@ $: console.log('所有传递过来的属性：', $$props)
 {/if}
 ```
 
+## d. each 块
+
+使用 `each` 块遍历数据列表
+
+```typescript
+<script lang="ts">
+    const cats = [
+        { id: '1', name: 'Keyboard Cat' },
+        { id: '2', name: 'Maru' },
+    ]
+</script>
+
+<ul>
+    {#each cats as cat}
+        <li>
+            {cat.name}
+        </li>
+    {/each}
+</ul>
+```
+
+所有的 `iterable` 对象都可以通过 `each` 遍历
+
+另外可以指定 `index` 作为第二个参数（key）。
+
+```html
+{#each cats as cat, index}
+        <li>
+            {index} : {cat.name}
+        </li>
+{/each}
+```
+
+## e. 为 each 添加 key 值
+
+一般情况下，当修改了 `each` 块中的值是，`svelte` 会在尾端进行添加或删除条目，并更新所有变化。但这可能不是你想要的结果。
+
+```html
+<script lang="ts">
+    import Component from './4.e_comp.svelte'
+
+    let list = [
+        { id: 1, color: '#0d0887' },
+        { id: 2, color: '#6a00a8' },
+        { id: 3, color: '#b12a90' },
+        { id: 4, color: '#e16462' },
+        { id: 5, color: '#fca636' },
+    ]
+
+    function handleClick() {
+        list = list.slice(1)
+    }
+</script>
+
+<button on:click={handleClick}>Remove first thing</button>
+
+{#each list as item (item.id)}
+    <Component current={item.color} />
+{/each}
+```
+
+如果在 `each` 块不指定 `(item.id)` 作为 `key`，则列表会从底部删除元素来响应 `list = list.slice(1)` 造成的更新。但这会导致其他所有元素都重新渲染。添加了 `key` 之后等于是告诉了 `svelte` 什么地方需要改变。此时列表中只有被更新/删除的数据对应的元素才会被重新渲染。
+
+另外你可以使用任何对象用作 `key`。这意味着在上面代码中，你也可以直接使用 `(item)` 来代替 `(item.id)` 作为 `key` 值。但是一般使用数字或字符串作为 key 值更安全。例如，使用来自 API 服务器的新数据进行更新时。
+
+## f. await 块
+
+在 `svelte` 中可以直接使用 `await 块` 在 HTML 标签中处理 `promise`。
+
+```html
+<script lang="ts">
+    async function getRandomNumber() {
+        return new Promise<number>((resolve, reject) => {
+            setTimeout(() => {
+                resolve(Math.random())
+            }, 1000)
+        })
+    }
+
+    let promise = getRandomNumber()
+
+    function handleClick() {
+        promise = getRandomNumber()
+    }
+</script>
+
+<button on:click={handleClick}>generate random number</button>
+
+{#await promise}
+    <p>...waiting</p>
+{:then number}
+    <p>The number is {number}</p>
+{:catch error}
+    <p style="color: red;">{error.message}</p>
+{/await}
+```
+
+另外 `wait` 阶段和 `cache` 块是可以被忽略的，所以如果只想在 `promise` 正确返回时执行操作，可以简写成这样：
+
+```html
+{#await promise then num}
+    <p>The number is {num}</p>
+{/await}
+```
+
+# 5. 事件
+
+## a. DOM 事件
+
+大之前的例子中其实已经出现过了，我们可以使用 `on:事件名` 的方式监听 DOM 元素的所有事件。
+
 ```末尾空白
 末尾空白
 

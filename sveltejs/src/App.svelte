@@ -30,7 +30,7 @@
     <div class="menu">
         <ul>
             {#each componentList as component}
-                <li on:click={() => clickHandler(component.value)}>
+                <li on:mouseup={() => clickHandler(component.value)}>
                     {component.key
                         .split('/')[2]
                         .split('.')
@@ -59,5 +59,8 @@
     .content {
         float: right;
         width: 80%;
+    }
+    .menu li {
+        cursor: pointer;
     }
 </style>

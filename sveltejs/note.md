@@ -1,6 +1,6 @@
 # 1. 简介
 
-## a. 基础知识
+## 1.a. 基础知识
 
 svelte 把客户端渲染的工作更多的放在了编译阶段，因此可以抛弃 `虚拟DOM` 直接对 DOM 作精确修改。
 
@@ -12,7 +12,7 @@ svelte 也是基于组件开发的，每一个组件就是一个包含了 `html`
 <h1>Hello world!</h1>
 ```
 
-## b. 添加数据
+## 1.b. 添加数据
 
 在 html 中引入动态内容的方式是，首先添加一个 `script` 标签，并在里面写代码。然后在 `html` 中，使用 `{}` 即可引用代码标签的变量，方法等。并且在 `{}` 中也可以执行一些语句。
 
@@ -24,7 +24,7 @@ svelte 也是基于组件开发的，每一个组件就是一个包含了 `html`
 <h1>Hello {name.toLocaleUpperCase()}!</h1>
 ```
 
-## c. 动态属性
+## 1.c. 动态属性
 
 同样的也可以使用 `{}` 用来给元素属性设置动态值。
 
@@ -36,7 +36,7 @@ svelte 也是基于组件开发的，每一个组件就是一个包含了 `html`
 <img src="{src}" />
 ```
 
-##### c1: 双引号内使用 `{}`
+##### 1.c.1: 双引号内使用 `{}`
 
 也可以在属性值的内部使用 `{}`，如：
 
@@ -44,7 +44,7 @@ svelte 也是基于组件开发的，每一个组件就是一个包含了 `html`
 <img src="{src}" title="link is {src}" />
 ```
 
-##### c2: 速记属性
+##### 1.c.2: 速记属性
 
 当属性名与变量名相同是，`svelte` 提供了一个速记法：
 
@@ -52,7 +52,7 @@ svelte 也是基于组件开发的，每一个组件就是一个包含了 `html`
 <img {src} />
 ```
 
-## d. CSS 样式
+## 1.d. CSS 样式
 
 与 `HTML` 一样，在组件中添加一个 `<style>` 标签，即可在该标签内添加 CSS 样式了。
 
@@ -70,7 +70,7 @@ svelte 也是基于组件开发的，每一个组件就是一个包含了 `html`
 
 要注意的是，添加的样式作用域将被限定在当前组件中。
 
-## e. 嵌套组件
+## 1.e. 嵌套组件
 
 将整个应用程序都放在一个组件中是不切实际的。`svelte` 允许你在 `script` 标签中 `import` 其他文件中的组件，并直接以 `<Component />` 的形式在 `html` 中使用。
 
@@ -87,7 +87,7 @@ svelte 也是基于组件开发的，每一个组件就是一个包含了 `html`
 
 另外组件首字母大写是一种普遍的约定，主要是为了能够区分自定义组件和普通的 `html` 标签。
 
-## f. HTML 标签
+## 1.f. `HTML` 标签
 
 通常情况下，字符串是以纯文本的形式插入的，这意味着像 `<` `>` 这样的字符会原样输出。
 
@@ -105,11 +105,11 @@ svelte 也是基于组件开发的，每一个组件就是一个包含了 `html`
 
 第一行会原样输出字符串的内容，而第二行会将 `<strong>` 作为一个 html 标签，显示加粗的 `HTML!!!`。
 
-要<b>注意</b>的是，`svelte` 并不会对 `{@html }` 内的输出做任何清理。所以要使用此功能时，切记要手动转换来自不信任源的 `html` 代码，以防止 `XSS` 攻击的风险。
+要**注意**的是，`svelte` 并不会对 `{@html }` 内的输出做任何清理。所以要使用此功能时，切记要手动转换来自不信任源的 `html` 代码，以防止 `XSS` 攻击的风险。
 
 # 2. 反应性 (reactive) 能力
 
-## a. 赋值
+## 2.a. 赋值
 
 `svelte` 的内核是一个强大的 `reactivity` 系统。能够让 DOM 和程序状态保持同步，比如事件响应。
 
@@ -133,7 +133,7 @@ svelte 也是基于组件开发的，每一个组件就是一个包含了 `html`
 </button>
 ```
 
-## b. 反应性声明
+## 2.b. 反应性声明
 
 当组件的某些状态是需要其他部分计算出来时（例如，`fullname` 就是由 `firstname` 和 `lastname` 组成的），并且一旦其他部分发生更改，自身也需要重新计算时。
 
@@ -151,7 +151,7 @@ svelte 也是基于组件开发的，每一个组件就是一个包含了 `html`
 
 当然我们也可以在 `html` 标签中写类似的 `{ count === 1 ? 'time' : 'times' }` 而不必非得使用反应式声明。但如果你需要多个地方多次引用到它，使用反应式声明就会变得更有用。（可以理解为反应式声明会缓存结果，对于一次改变，代码只需要执行一次）。
 
-## c. 反应式语句
+## 2.c. 反应式语句
 
 在 `$:` 之后不仅可以提供 `反应式声明` 的值，还可以运行 `反应式语句`。例如，当某个变量的值发生改变时，就输出日志：
 
@@ -177,7 +177,7 @@ $: if (count >= 10) {
 }
 ```
 
-## d. 更新数组和对象
+## 2.d. 更新数组和对象
 
 由于 `svelte` 的反应性是由赋值语句触发的，因此使用数组的诸如 `push` 和 `splice` 之类的方法就不会触发自动更新，要解决这个问题的一种方法是添加一个多余的赋值语句：
 
@@ -228,7 +228,7 @@ foo.bar = 'baz'
 
 # 3. 属性
 
-## a. 声明属性
+## 3.a. 声明属性
 
 目前为止，我们只是处理了内部状态 - 即，这些值都只能在当前的组件中被访问到。
 
@@ -253,7 +253,7 @@ foo.bar = 'baz'
 
 与 `$:` 类似，在标准的 `JavaScript` 中 `export` 并不是这样工作的，它是 `svelte` 特有的语法。
 
-## b. 默认值
+## 3.b. 默认值
 
 我们可以在子组件中很轻松的给属性设置默认值：
 
@@ -263,7 +263,7 @@ export let answer = 'a mystery'
 
 此时，如果父组件没有指定 `answer` 属性的值，就将显示默认值。
 
-## c. 属性传递
+## 3.c. 属性传递
 
 如果有一组属性需要传递（spread）到一个组件上，可以使用 `...` 语法而不用逐一指定：
 
@@ -279,7 +279,7 @@ $: console.log('所有传递过来的属性：', $$props)
 
 # 4. 逻辑
 
-## a. if 块
+## 4.a. if 块
 
 在 HTML 标签中是没有表达逻辑的方式的，比如判断，循环等。
 
@@ -295,7 +295,7 @@ $: console.log('所有传递过来的属性：', $$props)
 
 如上，在 `svelte` 中使用 `{#if 条件表达式} {/if}` 来实现在 HTML 中的 `if` 语句块。
 
-## b. else 块
+## 4.b. else 块
 
 在上一个例子中我们使用了二个 `if` 语句块，但实际上在这里，第二个 `if` 语句块我们更习惯于用 `else` 语句块来实现，在 `svelte` 中是这样实现 `else` 语句的：
 
@@ -309,7 +309,7 @@ $: console.log('所有传递过来的属性：', $$props)
 
 在 `svelte` 中，特殊标记总是以 `#` 开头的标记，并以 `/` 开头的标记作为结尾。像是 `else` 这种在中间出现的标记则是以 `:` 开头。
 
-## c. else-if 块
+## 4.c. else-if 块
 
 将多个条件链接在一起请使用 `else if`:
 
@@ -323,7 +323,7 @@ $: console.log('所有传递过来的属性：', $$props)
 {/if}
 ```
 
-## d. each 块
+## 4.d. each 块
 
 使用 `each` 块遍历数据列表
 
@@ -356,7 +356,7 @@ $: console.log('所有传递过来的属性：', $$props)
 {/each}
 ```
 
-## e. 为 each 添加 key 值
+## 4.e. 为 each 添加 key 值
 
 一般情况下，当修改了 `each` 块中的值是，`svelte` 会在尾端进行添加或删除条目，并更新所有变化。但这可能不是你想要的结果。
 
@@ -388,7 +388,7 @@ $: console.log('所有传递过来的属性：', $$props)
 
 另外你可以使用任何对象用作 `key`。这意味着在上面代码中，你也可以直接使用 `(item)` 来代替 `(item.id)` 作为 `key` 值。但是一般使用数字或字符串作为 key 值更安全。例如，使用来自 API 服务器的新数据进行更新时。
 
-## f. await 块
+## 4.f. await 块
 
 在 `svelte` 中可以直接使用 `await 块` 在 HTML 标签中处理 `promise`。
 
@@ -430,9 +430,276 @@ $: console.log('所有传递过来的属性：', $$props)
 
 # 5. 事件
 
-## a. DOM 事件
+## 5.a. DOM 事件
 
 大之前的例子中其实已经出现过了，我们可以使用 `on:事件名` 的方式监听 DOM 元素的所有事件。
+
+## 5.b. 内联事件处理
+
+你可以在 `svelte` 的 `html` 中直接定义事件处理函数，就像这样：
+
+```html
+<div on:mousemove={(evt) => { m.x = evt.clientX }}>
+    The mouse position is {m.x} - {m.y}
+</div>
+```
+
+注意，你也可以给 `mousemove` 的值加上双引号，就像这样：
+
+```html
+<div on:mousemove="{(evt) => { m.x = evt.clientX }}">
+    The mouse position is {m.x} - {m.y}
+</div>
+```
+
+二种方式都是允许的。但在某些环境下，使用双引号对语法突显会有帮助。
+
+注意：在一些其他框架中，会有一些出于性能原因而提出避免使用内联事件处理的建议，特别是在循环中。不过这个建议不适用于 `svelte`，无论你使用哪种形式。`svelte` 的编译器总能够正确的处理。
+
+## 5.c. 事件修饰符
+
+DOM 事件具有额外的修饰符。例如，带 `once` 修饰符表示该事件只处理一次。
+
+```html
+<script lang="ts">
+    function handleClick() {
+        alert('no more alerts')
+    }
+</script>
+
+<button on:click|once={handleClick}>Click me</button>
+```
+
+所有的修饰符列表：
+
+* `preventDefault`: 调用 `event.preventDefault()`，中止事件的默认处理程序被调用。
+
+* `stopPropagation`: 调用 `event.stopPropagation`，防止事件影响到下一级元素。
+
+* `passive`: 优化了对 `touch` / `wheel` 事件的滚动表现。（`svelte` 会在合适的地方自动添加滚动条）
+
+* `capture`: 在 `capture` 阶段而非 `bubbling` 阶段触发事件处理程序。
+
+* `once`: 运行一次事件处理程序后删除监听。
+
+* `self`: 仅当 `event.target` 是本身时才执行。
+
+以上修饰符可以组合在一起使用，即：`on:click|once|capture={...}`
+
+## 5.d. 组件事件
+
+组件也可以调度事件。
+
+```html
+<script lang="ts">
+    import { createEventDispatcher } from 'svelte'
+
+    const dispatch = createEventDispatcher()
+
+    function sayHello() {
+        dispatch('message', { text: 'Hello!' })
+    }
+</script>
+
+<button on:click={sayHello}> Click to say hello </button>
+```
+
+然后使用这个组件的父组件就可以通过 `on:{type}` 接收到 `CustomEvent` 了。
+
+```html
+<script lang="ts">
+    import Inner from './5.d_inner.svelte'
+
+    function handleMessage(event: CustomEvent<{ text: string }>) {
+        alert(event.detail.text)
+    }
+</script>
+
+<Inner on:message={handleMessage} />
+```
+
+要**注意**的是，`createEventDispatcher` 必须在首次实例化组件是就调用，并不支持如 `setTimeout` 之类的回调。否则就会收到一个错误：`Function called outside component initialization`
+
+```js
+let dispatch
+    setTimeout(() => {
+        dispatch = createEventDispatcher() // 运行时报错
+        console.log('time out finish')
+    }, 1000)
+```
+
+## 5.e. 事件转发
+
+与 DOM 事件不同，组件事件并不会冒泡。如果你想要在某个深层嵌套的组件上监听事件，则中间组件必须转发（forward）事件。
+
+```html
+<script lang="ts">
+    import Inner from './5.d_inner.svelte'
+    import { createEventDispatcher } from 'svelte'
+
+    const dispatch = createEventDispatcher()
+
+    function forward(event: CustomEvent) {
+        dispatch('message', event.detail)
+    }
+</script>
+
+<p>Outer Start</p>
+<Inner on:message={forward} />
+<p>Outer End</p>
+```
+
+但这样写显得太过繁琐，因此 `svelte` 设立了一个简写属性 `on:message`，只要没有给它赋予特定的值，则意味着转发所有 `message` 事件。
+
+```html
+<Inner on:message /> <!-- message 事件会被转发给父级 -->
+```
+
+## 5.f. DOM 事件转发
+
+事件转发也可以应用到 DOM 事件。
+
+```html
+<button on:click>Click me</button>
+```
+
+这样父组件就可以接收到子组件的事件并作出响应了。
+
+```html
+<script lang="ts">
+    import Button from './5.f_button.svelte'
+
+    function handleClick() {
+        alert('button clicked')
+    }
+</script>
+
+<Button on:click={handleClick} />
+```
+
+# 6. 绑定
+
+## 6.a. Text input
+
+通常情况下，`svelte` 的数据流是遵循自顶向下的模式的，即，父组件可以在子组件上设置属性，而组件可以在 `html` 元素标签上设置属性，但反过来就不行。
+
+但在某些情况下，打破这个规则会更好。举一个例子，如果要控制 `input` 标签的值，遵循自顶向下的模式会相当的繁琐，首先要在你的组件的 `input` 标签上添加 `on:input` 事件处理程序，并且在触发事件后将 `event.target.value` 设置一个变量，并将这个变量的值赋给标签的 `value` 属性。类似的元素标签还有不少。
+
+对此，在 `svelte` 中，我们可以使用 `bind:value` 来快速实现上述的需求：
+
+```html
+<script lang="ts">
+    let name = 'world'
+</script>
+
+<input bind:value={name} />
+
+<h1>Hello {name}!</h1>
+```
+
+这样就实现了双向绑定。
+
+## 6.b. Numeric input
+
+在 DOM 中，所有东西都是字符串类型的。这意味着对于 `input` 标签的 `type=number` 或 `type=range` 而言，在使用 `input.value` 之前，你需要将它们强制转换成数字类型。
+
+而在 `svelte` 中，`bind:value` 会自动帮你转换。
+
+```html
+<script lang="ts">
+    let a = 1,
+        b = 2
+</script>
+
+<label name="a">
+    <input type="number" bind:value={a} min="0" max="10" />
+    <input type="range" bind:value={a} min="0" max="10" />
+</label>
+
+<label name="b">
+    <input type="number" bind:value={b} min="0" max="10" />
+    <input type="range" bind:value={b} min="0" max="10" />
+</label>
+
+<!-- 数字计算而非字符串连接 -->
+<p>{a} + {b} = {a + b}</p>
+```
+
+## 6.c. checkbox
+
+不仅可以使用 `bind:value`，也可以将复选框的状态 `input.checked` 绑定起来。
+
+```html
+<script lang="ts">
+    let checked = false
+</script>
+
+<label>
+    <input type="checkbox" bind:checked />
+    Yes or No ?
+</label>
+
+{#if checked}
+    You selected yes!!!
+{/if}
+```
+
+## 6.d 组绑定
+
+如果需要绑定多个值，可以使用 `bind:group` 将 `value` 属性放在一起使用。
+
+在 `bind:group` 中，同一组的单选框的值是互斥的。同一组的复选框则会形成一个数组。
+
+```html
+<script lang="ts">
+    let scoops = 1
+    let flavours = ['Mint choc chip']
+
+    $: flavourStr = flavours.length === 1 ? flavours[0] : flavours.join(', ')
+</script>
+
+<h2>Sizes</h2>
+
+{#each ['One scoop', 'Two scoops', 'Three scoops'] as scoop, i (scoop)}
+    <label>
+        <input type="radio" bind:group={scoops} value={i + 1} />
+        {scoop}
+    </label>
+{/each}
+
+<h2>Flavours</h2>
+
+{#each ['Cookies and cream', 'Mint choc chip', 'Raspberry ripple'] as flavour (flavour)}
+    <label>
+        <input type="checkbox" bind:group={flavours} value={flavour} />
+        {flavour}
+    </label>
+{/each}
+
+<p>
+    You ordered {scoops}
+    {scoops === 1 ? 'scoop' : 'scoops'}
+    of {flavourStr}
+</p>
+```
+
+## 6.e textarea
+
+同样的 `<textarea>` 标签也可以使用 `bind:value` 进行绑定：
+
+```html
+<textarea bind:value={value}></textarea>
+```
+
+另外要注意的是，如果绑定的属性名与变量多相同，也可以使用简写形式：
+
+```html
+<textarea bind:value></textarea>
+```
+
+简写形式适用于所有标签的所有绑定，并不限于 `textarea`。
+
+
 
 ```末尾空白
 末尾空白

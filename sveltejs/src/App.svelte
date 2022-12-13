@@ -55,6 +55,8 @@
         width: 20%;
         display: flex;
         flex-direction: column;
+        height: 100vh;
+        overflow-y: auto;
     }
     .content {
         float: right;

@@ -699,7 +699,70 @@ let dispatch
 
 简写形式适用于所有标签的所有绑定，并不限于 `textarea`。
 
+## 6.e select
 
+同样的 `bind:value` 也可以对 `<select>` 标签进行绑定：
+
+```html
+<script lang="ts">
+    const questions = [
+        { id: 1, text: `Where did you go to school?` },
+        { id: 2, text: `What is your mother's name?` },
+        {
+            id: 3,
+            text: `What is another personal fact that an attacker could easily find with Google?`,
+        },
+    ]
+
+    let selected
+
+    let answer = ''
+
+    function handleSubmit() {
+        alert(
+            `answered question ${selected.id} (${selected.text}) with "${answer}"`
+        )
+    }
+</script>
+
+<h2>Insecurity questions</h2>
+
+<form on:submit|preventDefault={handleSubmit}>
+    <select bind:value={selected} on:change={() => (answer = '')}>
+        {#each questions as question (question.id)}
+            <option value={question}>
+                {question.text}
+            </option>
+        {/each}
+    </select>
+
+    <input bind:value={answer} />
+
+    <button disabled={!answer} type="submit"> Submit</button>
+</form>
+```
+
+即使 `<option>` 中的值是对象而非字符串，`svelte` 也可以轻松处理。
+
+## 6.g select multiple
+
+如果选择框有属性 `multiple`，则 `svelte` 也会自动将绑定的属性变为数组而非一个单一的值。
+
+## 6.h contenteditable
+
+支持 `contenteditable="true"` 属性的标签，可以使用 `textContent` 和 `innerHTML` 属性的绑定：
+
+```html
+<script lang="ts">
+    let html = `<p>Write some text!</p>`
+</script>
+
+<pre>{html}</pre>
+
+<div contenteditable="true" bind:textContent={html} />
+
+<div contenteditable="true" bind:innerHTML={html} />
+```
 
 ```末尾空白
 末尾空白

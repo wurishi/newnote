@@ -27,3 +27,4 @@ shadertoygraph/textures/*.mp3
 shadertoygraph/textures/*.webm
 shadertoygraph/e/*
 shadertoygraph/textures/*.ogm
+sveltejs/public/video.ogm

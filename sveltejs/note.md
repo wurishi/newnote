@@ -764,6 +764,154 @@ let dispatch
 <div contenteditable="true" bind:innerHTML={html} />
 ```
 
+## 6.i each
+
+甚至可以对 `each` 块添加绑定。
+
+```html
+<script lang="ts">
+    let todos = [
+        { done: false, text: 'finish Svelte tutorial' },
+        { done: false, text: 'build an app' },
+        { done: false, text: 'world domination' },
+    ]
+
+    function add() {
+        todos = todos.concat({ done: false, text: '' })
+    }
+
+    function clear() {
+        todos = todos.filter((t) => !t.done)
+    }
+
+    $: remaining = todos.filter((t) => !t.done).length
+</script>
+
+<h1>Todos</h1>
+
+{#each todos as todo}
+    <div class:done={todo.done}>
+        <input type="checkbox" bind:checked={todo.done} />
+        <input placeholder="What needs to be done?" bind:value={todo.text} />
+    </div>
+{/each}
+
+<p>{remaining} remaining</p>
+
+<button on:click={add}>Add new</button>
+
+<button on:click={clear}>Clear completed</button>
+```
+
+要注意的是，此时这些 `input` 标签上的属性已经和数组中对应项的数据绑定起来了，这意味着它们会随着数据的变化而变化。如果你需要使用固定的数据，应该避免这种做法，使用事件处理程序。
+
+另外因为 `done` 和 `text` 属性会随着用户操作而变化，所以不能用这二个值来做为 `each` 的 `key`。按情况，使用 `each` 的 `index` 或者 `todo` 值本身，或者添加一个不变的 `id` 做为 `key` 可以避免用户输入导致的整个元素重刷的问题。
+
+## 6.j audio / video
+
+`audio` 和 `video` 标签的部分属性同样支持绑定。
+
+```html
+<video
+    poster="/vite.svg"
+    src="/video.ogm"
+    on:mousemove={handleMousemove}
+    on:mousedown={handleMousedown}
+    bind:currentTime={time}
+    bind:duration
+    bind:paused
+/>
+```
+
+通常在网页中，`currentTime` 将被用于对 `timeupdate` 事件的监听与跟踪。但是这些事件很少触发，从而导致 UI 不稳定。 `svelte` 使用 `currentTime` 对 `requestAnimationFrame` 进行查验，进而避免了此问题。
+
+可以对 `audio` 和 `video` 的 6 个 `readonly` 属性进行绑定。
+
+* `duration`：视频的总时长，以秒为单位。
+
+* `buffered`：数组 `{start, end}` 的对象。
+
+* `seekable`：同上。
+
+* `played`：同上。
+
+* `seeking`：布尔值。
+
+* `ended`：布尔值。
+
+以及 4 个双向绑定。
+
+* `currentTime`：视频中的当前点，以秒为单位。
+
+* `playbackRate`：播放视频的倍速，`1` 为正常。
+
+* `paused`：暂停。
+
+* `volume`：音量，0到1之间的值。
+
+另外 `video` 还多出了2个具有 `readonly` 的属性 `videoWidth` 和 `videoHeight` 属性的绑定。
+
+## 6.k size
+
+每个块级标签都可以对 `clientWidth`, `clientHeight`, `offsetWidth` 以及 `offsetHeight` 属性进行绑定。
+
+```html
+<script lang="ts">
+    let w, h
+    let size = 42
+    let text = 'edit me'
+</script>
+
+<input type="range" bind:value={size} />
+<input bind:value={text} />
+
+<p>size: {w}px x {h}px</p>
+
+<div bind:clientWidth={w} bind:clientHeight={h}>
+    <span style="font-size: {size}px;">{text}</span>
+</div>
+```
+
+要注意的是，这些绑定是*只读*的，更改 `w` 和 `h` 的值并不会有任何效果。
+
+对标签的尺寸更改请 [阅读这里](http://www.backalleycoder.com/2013/03/18/cross-browser-event-based-element-resize-detection/)。由于涉及到额外的性能开销，因此不建议在页面中大量的使用。
+
+另外使用 `display: inline` 的标签是无法获得尺寸的。当然包含有其他有尺寸的标签（例如 `canvas`）也不会得到正常的显示。在这种情况下建议对该标签嵌套一层标签或者直接绑定它的父级标签。
+
+## 6.l this
+
+`this` 可以绑定到任何标签（或者组件）并允许你获取对渲染标签的引用。
+
+```html
+<canvas bind:this={canvas} width={32} height={32} />
+```
+
+要注意的是，`canvas`的值直到组件挂载完毕之前都会是 `undefined`。因此需要在 `onMount` 这个生命函数中才开始对 `canvas` 进行操作。
+
+## 6.m component
+
+正如可以绑定到 DOM 元素的属性一样。你也可以将组件的属性绑定。
+
+```html
+<script lang="ts">
+    import Keypad from './6.m_keypad.svelte'
+
+    let pin: string
+
+    $: view = pin ? pin.replace(/\d(?!$)/g, '*') : 'enter your pin'
+
+    function handleSubmit() {
+        alert(`submitted ${pin}`)
+    }
+</script>
+
+<h1 style="color: {pin ? '#333' : '#ccc'};">{view}</h1>
+
+<Keypad bind:value={pin} on:submit={handleSubmit} />
+```
+
+请谨慎使用组件绑定。如果你的程序中数据过多，并且是在没有一个统一的数据来源的情况下。此时将很难追踪应用程序的数据流。
+
 ```末尾空白
 末尾空白
 

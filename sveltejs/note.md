@@ -912,6 +912,36 @@ let dispatch
 
 请谨慎使用组件绑定。如果你的程序中数据过多，并且是在没有一个统一的数据来源的情况下。此时将很难追踪应用程序的数据流。
 
+# 7. 生命周期
+
+## 7.a onMount
+
+每个组件都有一个生命周期，它们会在组件创建后开始，并在组件销毁后结束。`svelte` 提供了一些钩子允许我们在生命周期的这几个关键时刻运行代码。
+
+最常见使用的是 `onMount`，它在组件首次渲染到 DOM 上后执行。
+
+```html
+<script lang="ts">
+    import { onMount } from 'svelte'
+
+    let photos = []
+
+    onMount(async () => {
+        const res = await fetch(
+            'https://jsonplaceholder.typicode.com/photos?_limit=20'
+        )
+
+        photos = await res.json()
+    })
+</script>
+```
+
+建议将 `fetch` 放在 `onMount` 中，而不是 `<script>` 的顶部是因为服务器端渲染（SSR）的原因。因为除了 `onDestroy` 之外的其他生命周期函数并不会在 SSR 期间运行。这意味着我们可以避免组件在装入 DOM 后去获取那些应该延迟加载的数据。
+
+生命周期函数必须在组件初始化时被调用，以便回调能够被绑定到组件实例上。所以生命周期函数不能在类似 `setTimeout` 中被调用。
+
+如果 `onMount` 的回调函数中返回了一个方法。那么这个方法将在组件销毁时被调用。
+
 ```末尾空白
 末尾空白
 

@@ -942,6 +942,25 @@ let dispatch
 
 如果 `onMount` 的回调函数中返回了一个方法。那么这个方法将在组件销毁时被调用。
 
+## 7.b onDestroy
+
+想在组件销毁时运行程序，可以使用 `onDestroy`。
+
+```html
+<script lang="ts">
+    import { onDestroy } from 'svelte'
+    export let second = 0
+
+    const interval = setInterval(() => {
+        second += 1
+    }, 1000)
+
+    onDestroy(() => {
+        interval && clearInterval(interval)
+    })
+</script>
+```
+
 ```末尾空白
 末尾空白
 

@@ -961,6 +961,34 @@ let dispatch
 </script>
 ```
 
+## 7.c beforeUpdate 和 afterUpdate
+
+顾名思义，`beforeUpdate` 函数会在 DOM 渲染完成前执行。`afterUpdate` 则相反，它一般会在你的异步数据加载完成后执行。
+
+它们一般用于一些需要以状态来驱动的地方，例如，渲染标签的滚动位置等。
+
+要注意的是，`beforeUpdate` 的第一次运行是在组件挂载前运行的。也就是意味着，如果我们进行了 `bind:this` 则需要判断标签是否已经绑定成功了。
+
+```html
+<script lang="ts">
+    import { onMount, beforeUpdate } from 'svelte'
+
+    let div: HTMLDivElement
+
+    onMount(() => {
+        console.log('onMount', div)
+    })
+
+    beforeUpdate(() => {
+        console.log('beforeUpdate', div)
+    })
+</script>
+
+<div bind:this={div} />
+```
+
+打印的顺序为 `beforeUpdate` -> `onMount` -> `beforeUpdate`。并且第一次 `beforeUpdate` 时，`div` 为 `undefined`。
+
 ```末尾空白
 末尾空白
 

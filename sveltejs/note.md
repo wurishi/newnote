@@ -989,6 +989,53 @@ let dispatch
 
 打印的顺序为 `beforeUpdate` -> `onMount` -> `beforeUpdate`。并且第一次 `beforeUpdate` 时，`div` 为 `undefined`。
 
+## 7.d tick
+
+`tick` 函数不同于其他生命周期函数，它可以被随时调用，而不用等待组件首次初始化。
+
+它返回一个带有 `resolve` 方法的 `Promise`。每当组件 `pending状态` 变化便会立即体现到 DOM 中。
+
+在 `svelte` 中，每当组件状态失效时，DOM 并不会立即更新。反而会等待下一个 `microtask` 以查看是否还有其他变化的状态或组件需要应用更新。
+
+```html
+<script lang="ts">
+    import { tick } from 'svelte'
+
+    let text = `Select some text and hit the tab key to toggle uppercase`
+
+    async function handleKeydown(event: KeyboardEvent) {
+        if (event.which !== 9) return
+
+        event.preventDefault()
+
+        const { selectionStart, selectionEnd, value } =
+            this as HTMLTextAreaElement
+
+        const selection = value.slice(selectionStart, selectionEnd)
+
+        const replacement = /[a-z]/.test(selection)
+            ? selection.toUpperCase()
+            : selection.toLowerCase()
+
+        text =
+            value.slice(0, selectionStart) +
+            replacement +
+            value.slice(selectionEnd)
+
+        await tick()
+
+        const that = this as HTMLTextAreaElement
+
+        that.selectionStart = selectionStart + 1
+        that.selectionEnd = selectionEnd
+    }
+</script>
+
+<textarea value={text} on:keydown={handleKeydown} />
+```
+
+如果没有 `await tick()` 则，当 `textarea` 的值发生改变后，浏览器会取消选中区域并将光标置于文本末尾。
+
 ```末尾空白
 末尾空白
 

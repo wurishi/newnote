@@ -1036,6 +1036,98 @@ let dispatch
 
 如果没有 `await tick()` 则，当 `textarea` 的值发生改变后，浏览器会取消选中区域并将光标置于文本末尾。
 
+# 8. Stores
+
+## 8.a Writable stores
+
+应用中有各种各样的状态，它们并非只局限于应用的组件中。有时候，也会有一些状态需要被多个组件，甚至纯的 JS 模块访问。
+
+在 `svelte` 中，使用 `store` 来解决上述这种情况。一个 `store` 是一个简单的 JS 对象，并且它拥有一个 `subscribe` 方法，该方法允许其他代码在 `store` 本身发生变化时收到通知。
+
+```typescript
+import { writable } from 'svelte/store'
+
+export const count = writable(0)
+```
+
+想要修改这个 `store` 的值，可以使用 `update` 或 `set` 方法。
+
+```typescript
+import { count } from './8.a_stores'
+
+function reset() {
+    count.set(0)
+}
+
+function increment() {
+    count.update((c) => c + 1)
+}
+```
+
+最后要显示该 `store` 的最新值可以这样做：
+
+```html
+<script lang="ts">
+    import { count } from './8.a_stores'
+    import Incre from './8.a_incre.svelte'
+    import Decre from './8.a_decre.svelte'
+    import Reset from './8.a_reset.svelte'
+
+    let count_value: number
+
+    const unsubscribe = count.subscribe((value) => {
+        count_value = value
+    })
+</script>
+
+<h1>The count is {count_value}</h1>
+
+<Incre />
+<Decre />
+<Reset />
+```
+
+上面的代码中，使用 `subscribe` 方法监听 `store` 的更新，并在更新时将最新的值赋给 `count_value`。并在 HTML 中显示。
+
+## 8.b auto subscriptions
+
+在前一节的代码中遗留下了一个 bug。即 `unsubscribe` 并没有被调用，如果该组件被多次初始化和销毁后，会导致内在泄漏。
+
+所以要注意的是在使用 `store.subscribe` 之后，它会返回一个取消订阅的方法，该方法需要在合适的时候去调用。在上一节的例子中，最简单的操作方法就是在组件的销毁生命周期函数中调用：
+
+```typescript
+import { onDestroy } from 'svelte'
+
+//...
+
+// const unsubscribe = count.subscribe(...
+
+onDestroy(unsubscribe)
+```
+
+但是这样一来其实就显得有些繁琐了，特别是如果要使用多个 `store` 时。`svelte` 提供了一个语法糖可以让你更轻松的使用 `store` 以及自动订阅和销毁 `store` 的监听。使用起来也很简单，就是在你要使用的 `store` 对象名前加一个前缀 `$`。
+
+```html
+<script lang="ts">
+    import { count } from './8.a_stores'
+    import Incre from './8.a_incre.svelte'
+    import Decre from './8.a_decre.svelte'
+    import Reset from './8.a_reset.svelte'
+</script>
+
+<h1>The count is {$count}</h1>
+
+<Incre />
+<Decre />
+<Reset />
+```
+
+要注意的是自动订阅仅仅只能工作在导入的 `store` 是最外层作用域的情况。
+
+另外，除了在 HTML 标签中使用 `$count` 以外，你也可以在 `script` 标签中。
+
+在 `svelte` 中，任何以 `$` 开头的变量名都会被认为是 `store` 的值。所以 `$` 对于 `svelte` 而言会是一个保留字，`svelte` 不允许你在定义普通的变量名时使用 `$` 字符作为开头。
+
 ```末尾空白
 末尾空白
 

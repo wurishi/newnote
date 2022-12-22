@@ -1038,7 +1038,7 @@ let dispatch
 
 # 8. Stores
 
-## 8.a Writable stores
+## 8.a writable stores
 
 应用中有各种各样的状态，它们并非只局限于应用的组件中。有时候，也会有一些状态需要被多个组件，甚至纯的 JS 模块访问。
 
@@ -1127,6 +1127,26 @@ onDestroy(unsubscribe)
 另外，除了在 HTML 标签中使用 `$count` 以外，你也可以在 `script` 标签中。
 
 在 `svelte` 中，任何以 `$` 开头的变量名都会被认为是 `store` 的值。所以 `$` 对于 `svelte` 而言会是一个保留字，`svelte` 不允许你在定义普通的变量名时使用 `$` 字符作为开头。
+
+## 8.c readable store
+
+并非所有的 `store` 都需要在其他地方进行写入操作。比如说用户的鼠标位置或者地理位置的 `stores`。这样的 `store` 除了在特定的地方会有写入操作外，在其他大部分使用它们的地方进行写入操作是没有意义的。对于这种情况，可以使用只读（readable）`store`。
+
+```typescript
+import { readable } from 'svelte/store'
+
+export const time = readable<Date>(null, function start(set) {
+    const interval = setInterval(() => {
+        set(new Date())
+    }, 1000)
+
+    return function stop() {
+        clearInterval(interval)
+    }
+})
+```
+
+当 `store` 被首次 `subscribe` 时，`start` 函数将被调用。当 `store` 最后被 `unsubscribe` 时则会调用返回的 `stop` 函数。
 
 ```末尾空白
 末尾空白

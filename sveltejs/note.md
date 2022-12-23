@@ -1148,6 +1148,55 @@ export const time = readable<Date>(null, function start(set) {
 
 当 `store` 被首次 `subscribe` 时，`start` 函数将被调用。当 `store` 最后被 `unsubscribe` 时则会调用返回的 `stop` 函数。
 
+## 8.d stores 派生
+
+你可以创建一个 `store`，其内的值可以派生（derived）于一个或多个其他 `stores`。
+
+```typescript
+const start = new Date()
+
+export const elapsed = derived([time], ([t]) => {
+    return Math.round((t.getTime() - start.getTime()) / 1000)
+})
+```
+
+## 8.e 自定义 stores
+
+只要一个对象正确的使用了 `subscribe`，它就可以被称为 `store`。因此要创建一个自定义的 `store` 也非常的简单。
+
+```typescript
+import { writable } from 'svelte/store'
+
+function createCount() {
+    const { subscribe, set, update } = writable(0)
+
+    return {
+        subscribe,
+        increment: () => update((n) => n + 1),
+        decrement: () => update((n) => n - 1),
+        reset: () => set(0),
+    }
+}
+
+export const count = createCount()
+```
+
+然后在 `svelte` 中就可以和原生的 `store` 一样使用了：
+
+```html
+<script lang="ts">
+    import { count } from './8.e_store'
+</script>
+
+<h1>The count is {$count}</h1>
+
+<button on:click={count.increment}>+</button>
+<button on:click={count.decrement}>-</button>
+<button on:click={count.reset}>reset</button>
+```
+
+注意，`$` 语法糖在这里依然生效。
+
 ```末尾空白
 末尾空白
 

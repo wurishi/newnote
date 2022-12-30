@@ -979,6 +979,26 @@ export default {
     ldX3zB: 'Forever Optimistic2',
     lsf3zB: 'Desert Morning',
     MdsGRS: 'Runner',
-    // https://www.shadertoy.com/results?query=&sort=newest&from=67188&num=12
-    // 5600/5662
+    '4ds3Rr': 'Sult Tunnel',
+    MsXGzS: 'T-cube fractal',
+    ldX3zS: 'Wavy',
+    MdsGzS: 'polyanka',
+    ldsGRS: 'Metro Tunnel',
+    MssGRS: 'Gamma & sRGB',
+    ldsGzS: 'I Want To Revert',
+    lssGzS: 'Stunnel',
+    '4sXGz2': 'Transparency and scattering test',
+    MdlGRB: 'Webcam CRT',
+    Msl3zB: 'cartoon video',
+    MssGRB: 'webcam roberts',
+    Xdf3Rj: 'Flapping Wings',
+    XdX3zj: 'emphasing textures',
+    XdfGzj: 'Spiral Repetition',
+    XsfGzj: 'Kaleidoscopic webcam IFS',
+    Xss3DH: 'Candlestick',
+    XssGD7: 'Webcam edge glow',
+    lsl3RB: 'My Mandelbrot Set',
+    XdfGz2: 'Distort',
+    //https://www.shadertoy.com/results?query=&sort=newest&from=67764&num=12
+    //5648/5713
 }

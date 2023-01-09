@@ -999,6 +999,23 @@ export default {
     XssGD7: 'Webcam edge glow',
     lsl3RB: 'My Mandelbrot Set',
     XdfGz2: 'Distort',
-    //https://www.shadertoy.com/results?query=&sort=newest&from=67764&num=12
-    //5648/5713
+    '4dX3z2': 'Distort Close',
+    XdX3z2: 'Annotated Reference Spectrum Vis',
+    XsX3R2: 'Grass',
+    MdfGzj: 'Flying Spheres',
+    '4ssGzS': 'The Cornell Box',
+    MdfGR2: 'TRIPPY',
+    MsXGR2: 'Dubstep my ass!',
+    XdX3R2: 'Image Flow',
+    XdfGzS: 'Structure',
+    XssGRj: 'Audio Reaktive',
+    ldX3R2: 'Worley noise',
+    ldXGz2: 'SGI Logo',
+    ldfGR2: 'scanline',
+    lsXGR2: 'Ground Test',
+    lsf3Rj: 'Scharr Filter',
+    lsf3z2: 'monnikukka',
+    '4dlGR2': 'fire fast',
+    // https://www.shadertoy.com/results?query=&sort=newest&from=68100&num=12
+    // 5676/5742
 }

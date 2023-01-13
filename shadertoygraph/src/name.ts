@@ -33,7 +33,6 @@ export default {
   ldlcRf: 'Tribute - Journey! ',
   XtS3DD: 'Cloud Ten',
   ldXXDj: 'Music - Pirates',
-  MdfGRX: 'Hell',
   Msl3Rr: 'Cubescape',
   XtGGRt: 'Auroras',
   XtVGD1: 'notebook drawings',
@@ -105,7 +104,6 @@ export default {
   XtyXzW: 'Glitch transform',
   ldfSW2: 'sound - acid jam',
   XlSSzK: 'Sun surface',
-  MsXGRf: 'Flames',
   MdKXzc: 'Supernova remnant',
   ldScDh: 'Greek Temple',
   MlKSWm: 'Sparks drifting',
@@ -1042,6 +1040,25 @@ export default {
   ldl3z2: 'lava drip',
   ldsGz2: 'kaleidoscope',
   Mds3z2: 'Bridge',
-  // https://www.shadertoy.com/results?query=&sort=newest&from=68136&num=12
-  //   5679 / 5747
+  '4dX3Rf': 'swirls2',
+  MdfGRX: 'Hell',
+  MdX3zX: 'Foggy Mountains',
+  MsX3Rf: 'Missile game',
+  Mdf3zX: 'bubbly sines',
+  MsXGRf: 'Flames',
+  MsXGzX: 'Fixed-Base Wave',
+  MsfGzX: 'Blurry Britney',
+  Mss3zj: 'Cellular Automata',
+  ldXGRX: 'Procedural Tech Rings',
+  ldXGRf: 'NTSC Codec',
+  ldXGzX: 'texture2d edge filter',
+  lsX3zX: '3 videos',
+  lsfGzX: 'Chroma key test',
+  MdfGzf: 'Digital clock',
+  Xss3R2: 'Circles And Lines',
+  lsXGzf: 'Input - Keyboard',
+  ldf3Rf: 'Full MAME/MESS Shader Pipe',
+  ldX3RX: 'Exterminate!',
+  // https://www.shadertoy.com/results?query=&sort=newest&from=68208&num=12
+  // 5685 / 5755
 }

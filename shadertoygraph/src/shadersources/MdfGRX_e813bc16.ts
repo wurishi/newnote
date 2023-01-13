@@ -1,9 +1,9 @@
-import { Config } from '../type';
-import fragment from './glsl/MsXGRf.glsl?raw';
+import { Config } from '../type'
+import fragment from './glsl/MdfGRX_e813bc16.glsl?raw'
 export default [
   {
-    // 'MsXGRf': 'Flames',
-    name: 'MsXGRf',
+    // 'MdfGRX': 'Hell',
+    name: 'MdfGRX',
     type: 'image',
     fragment,
     channels: [
@@ -16,4 +16,4 @@ export default [
       },
     ],
   },
-] as Config[];
+] as Config[]

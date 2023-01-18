@@ -1197,6 +1197,96 @@ export const count = createCount()
 
 注意，`$` 语法糖在这里依然生效。
 
+## 8.f 绑定 store
+
+如果 `store` 是可写入的（即具有 `set` 方法），则可以绑定该值。
+
+```html
+<script lang="ts">
+  import { name, greeting } from './8.f_store'
+</script>
+
+<h1>{$greeting}</h1>
+<input bind:value={$name} />
+```
+
+另外我们也可以直接修改 `store` 的值
+
+```html
+<button on:click={() => ($name += '!')}>Add exclamation mark!</button>
+```
+
+这里的 `$name += '!'` 相当于 `name.set($name + '!')`。
+
+# 9. 运动
+
+## 9.a Tweened
+
+设置一个值并观察 DOM 根据该值自动更新是一件非常有趣的事。如果能让该值的变化带有动画效果则会更好。`Svelte` 提供了一些工具让你在 UI 上创建动画。
+
+```html
+<script lang="ts">
+  import { tweened } from 'svelte/motion'
+
+  const progress = tweened(0)
+</script>
+
+<progress value={$progress} />
+
+<button on:click={() => progress.set(0)}>0%</button>
+<button on:click={() => progress.set(0.25)}>25%</button>
+<button on:click={() => progress.set(0.5)}>50%</button>
+<button on:click={() => progress.set(0.75)}>75%</button>
+<button on:click={() => progress.set(1)}>100%</button>
+
+<style>
+  progress {
+    display: block;
+    width: 100%;
+  }
+</style>
+```
+
+点击按钮可以看到进度条被设置了不同的进度值，并且有一个插值动画的效果。但这个效果目前还是有点死板，通过 `easing` 可以提供更好的动画效果。
+
+```typescript
+import { tweened } from 'svelte/motion'
+import { cubicOut } from 'svelte/easing'
+
+const progress = tweened(0, {
+    duration: 400,
+    easing: cubicOut,
+})
+```
+
+`svelte/easing` 模块中包含了 [Penner easing equations](http://robertpenner.com/easing/) 提供的缓动公式。当然你也可以自定义一个缓动方法 `p => t`，`t` 的返回值在 0 到 1 之间。
+
+`tweened` 的第二个参数的完整配置属性为：
+
+* `delay` - 多少毫秒之后开始补间动画。
+
+* `duration` - 动画的持续时间（毫秒为单位）。或者 `(from, to) => milliseconds` 方法来指定。
+
+* `easing` - `p => t` 缓动公式。
+
+* `interpolate` - 一个自定义的 `(from, to) => t => value` 的插值公式，默认情况下，`svelte`会自动对 `number, date` 类型，以及仅包含数字或日期类型的数组或对象进行插值。如果是其他的类型，比如颜色或变换矩阵，则需要提供自定义的插值公式。
+
+另外你可以传递第二个参数给到 `process.set` 和 `process.update`。他们会返回一个 `promise` 并在补间动画结束时 `resolve`。
+
+## 9.b Spring
+
+`spring` 方法和 `tweened` 类似，但一般它被用在值会频繁变化的地方。
+
+```typescript
+  import { spring } from 'svelte/motion'
+
+  let coords = spring({ x: 50, y: 50 }, { stiffness: 0.1, damping: 0.25 })
+  let size = spring(10)
+```
+每个 `spring` 都有二个默认参数 `stiffness` 和 `damping`。你也可以在初始化时改变这二个参数。
+
+
+
 ```末尾空白
 末尾空白
 

@@ -1285,7 +1285,181 @@ const progress = tweened(0, {
 ```
 每个 `spring` 都有二个默认参数 `stiffness` 和 `damping`。你也可以在初始化时改变这二个参数。
 
+# 10. 过渡
 
+## 10.a The transition directive
+
+我们可以通过 `transition` 让元素在 DOM 树中出现或消失时有着更有吸引力的表现。`Svelte` 通过 `transition` 模块可以很方便的实现这些效果。
+
+```html
+<script lang="ts">
+  import { fade } from 'svelte/transition'
+
+  let visible = true
+</script>
+
+<label>
+  <input type="checkbox" bind:checked={visible} /> visible
+</label>
+
+{#if visible}
+  <p transition:fade>Fades in and out</p>
+{/if}
+```
+
+首先引入包 `import { fade } from 'svelte/transition'`，
+然后在需要过渡效果的元素上添加 `<p transition:fade>...</p>`。
+
+## 10.b Adding parameters
+
+`transition` 可以接收一些参数控制过渡的效果，比如持续时间等。
+
+```html
+<script lang="ts">
+  import { fly } from 'svelte/transition'
+
+  let visible = true
+</script>
+
+<label>
+  <input type="checkbox" bind:checked={visible} />visible
+</label>
+
+{#if visible}
+  <p transition:fly={{ y: 200, duration: 2000 }}>Fades in and out</p>
+{/if}
+```
+
+要注意的是，`transition` 是可逆的，也就是说在上述例子中 out 时会移动到 `y: 200` 的位置，而在 in 时，会从这个位置移回初始位置。
+
+## 10.c 出入
+
+`transition` 属性可以替换为 `in` 或 `out` 属性，它们分别被用来指定过渡效果的入和出。可以只指定其中一个，或两个都指定。
+
+```html
+<script lang="ts">
+  import { fade, fly } from 'svelte/transition'
+  let visible = true
+</script>
+
+<label>
+  <input type="checkbox" bind:checked={visible} />
+</label>
+
+{#if visible}
+  <p in:fly={{ y: 200, duration: 2000 }} out:fade>Flies in, fades out</p>
+{/if}
+```
+
+要注意的是，在这种情况下过渡效果是不可逆的。
+
+## 10.d 自定义 CSS 过渡
+
+`svelte/transition` 模块含有一些内置的过渡效果，你也可以创建自己的过渡效果。这里以自定义一个 `fade` 过渡效果举例：
+
+```html
+<script lang="ts">
+  let visible = true
+
+  function fade(node, options?) {
+    const { delay = 0, duration = 400 } = options
+    const o = +getComputedStyle(node).opacity
+
+    return {
+      delay,
+      duration,
+      css: (t) => `opacity: ${t * o}`,
+    }
+  }
+</script>
+
+<label>
+  <input type="checkbox" bind:checked={visible} />visible
+</label>
+
+{#if visible}
+  <p transition:fade>transitions!</p>
+{/if}
+```
+
+自定义过渡函数接收两个参数（过渡应用到的节点以及传入的其他任何参数）并返回一个过渡对象，该对象可以具有以下属性：
+
+* `delay` : 过渡开始（毫秒）。
+
+* `duration` : 过渡时长（毫秒）。
+
+* `easing` : `p => t` easing 函数。
+
+* `css` : `(t, u) => css` 函数，`u === 1 - t`。
+
+* `tick` : `(t, u) => {...}` 对节点有一定影响的函数。
+
+当 `t` 为 0 时表示开始，值为 1 时表示结束，根据情况含义可能截然相反。
+
+大多数情况下，应该返回 `css` 而不是 `tick` 属性。因为 CSS animations 会运行在主线程中，以避免出现混淆。`svelte` 会模拟过渡效果并创建 CSS animation，然后才开始运行。
+
+例如，`fade` 过渡会生成如下的 CSS animation :
+
+```css
+0% { opacity: 0 }
+10% { opacity: 0.1 }
+20% { opacity: 0.2 }
+/* ... */
+100% { opacity: 1 }
+```
+
+当然更多的情况下我们可以做出更多定制化的过渡效果：
+
+```typescript
+function spin(node, options?) {
+    const { duration } = options
+    return {
+        duration,
+        css: (t) => {
+        const eased = elasticOut(t)
+
+        return `
+            transform: scale(${eased}) rotate(${eased * 1080}deg);
+            color: hsl(
+            ${~~(t * 360)},
+            ${Math.min(100, 1000 - 1000 * t)}%,
+            ${Math.min(50, 500 - 500 * t)}%
+            );
+        `
+        },
+    }
+}
+```
+
+## 10.e 自定义 JS 过渡
+
+通常情况下应该尽可能地使用 CSS 进行过渡，但是某些效果如果不借助 Javascript 是无法实现的，比如“逐字打印”效果：
+
+```typescript
+function typewriter(node, options?) {
+    const { speed = 50 } = options
+
+    const valid =
+        node.childNodes.length === 1 && node.childNodes[0].nodeType === 3
+
+    if (!valid) {
+        throw new Error(
+        `This transition only works on elements with a single text node child`
+        )
+    }
+
+    const text = node.textContent
+    const duration = text.length * speed
+
+    return {
+        duration,
+        tick: (t) => {
+        const i = ~~(text.length * t)
+        node.textContent = text.slice(0, i)
+        },
+    }
+}
+```
 
 ```末尾空白
 末尾空白

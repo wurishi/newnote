@@ -1461,6 +1461,34 @@ function typewriter(node, options?) {
 }
 ```
 
+## 10.f 过渡事件
+
+了解过渡事件的开始和结束可能会很有用，`Svelte` 调度监听事件和监听其他 DOM 事件是一样的。
+
+```html
+<p
+    transition:fly={{ y: 200, duration: 2000 }}
+    on:introstart={() => (status = 'intro started')}
+    on:introend={() => (status = 'intro ended')}
+    on:outrostart={() => (status = 'outro started')}
+    on:outroend={() => (status = 'outro ended')}
+>
+    Flies in and out
+</p>
+```
+
+## 10.g 局部过渡
+
+添加或销毁任何标签的容器块，过渡都会在标签上播放。举个例子，在一个列表中，针对列表项的过渡效果会在列表切换可见性时也播放过渡效果。如果仅想让过渡效果在标签本身发生切换时播放，可以通过局部（local）过渡来实现。
+
+```html
+{#if showItems}
+  {#each items.slice(0, i) as item}
+    <div transition:slide|local>{item}</div>
+  {/each}
+{/if}
+```
+
 ```末尾空白
 末尾空白
 

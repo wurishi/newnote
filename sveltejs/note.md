@@ -1489,6 +1489,36 @@ function typewriter(node, options?) {
 {/if}
 ```
 
+## 10.h 延时过渡
+
+Svelte 过渡引擎中有一项特别强大的功能就是可以设置延时(delay)过渡，以便多个效果之间协调。
+
+这里使用了 `crossfade` 函数来实现过渡效果，该函数会创建一对名为 `send` 和 `receive` 的函数。当一个标签被 `send` 时，它会寻找一个被 `receive` 的标签，并赋予一个过渡效果，反之亦然。如果没有对应的接收方，过渡效果将会设置为 `fallback`。
+
+# 11. Animations
+
+## 11.a 动画指令
+
+在上一节中，我们使用 `crossfade` 转换实现了元素从一个列表移动到另一个列表的过渡动画。
+
+但是仍然缺少元素在二个列表之间的过渡动画。为此，可以使用 `animate` 指令。
+
+```html
+import { flip } from 'svelte/animate'
+
+<label
+    in:receive={{ key: todo.id }}
+    out:send={{ key: todo.id }}
+    animate:flip={{ duration: 200 }}
+>
+```
+
+请注意，所有的过渡和动画都是使用 CSS 而不是 JavaScript 实现的，这意味着它们不会被主线程阻塞。
+
+# 12. Actions
+
+## 12.1 使用指令
+
 ```末尾空白
 末尾空白
 

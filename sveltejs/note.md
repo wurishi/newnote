@@ -1517,7 +1517,131 @@ import { flip } from 'svelte/animate'
 
 # 12. Actions
 
-## 12.1 使用指令
+## 12.a 使用指令
+
+`Actions` 本质上是用来操作元素生命周期的方法，一般在以下这些情况下非常有用：
+
+- 作为第三方库的接口。
+
+- 延迟加载图片。
+
+- tooltips。
+
+- 添加自定义事件处理。
+
+在接下来的例子中，我们会尝试让一个元素变成“可拖动”，并且实现三个非原生 DOM 的事件：`panstart`，`panmove` 和 `panend`。
+
+```html
+<div
+  class="box"
+  use:pannable
+  on:panstart={handlePanStart}
+  on:panmove={handlePanMove}
+  on:panend={handlePanEnd}
+  style="transform: translate({$coords.x}px,{$coords.y}px) rotate({$coords.x *
+    0.2}deg)"
+/>
+```
+
+要让 `div` 元素拥有 `panstart`，`panmove` 和 `panend` 事件，需要使用 `use:pannable` 指令。然后在 pannable 中在合适的地方派发这三个事件。
+
+```typescript
+function handleMousedown(event: MouseEvent) {
+    x = event.clientX
+    y = event.clientY
+
+    node.dispatchEvent(
+      new CustomEvent('panstart', {
+        detail: { x, y },
+      })
+    )
+
+    window.addEventListener('mousemove', handleMousemove)
+    window.addEventListener('mouseup', handleMouseup)
+}
+```
+
+上面的代码片断就是 pannable 库中实现的当元素触发原生 DOM 事件 `mousedown` 后，记录下 x, y 并派发 `CustomEvent`。
+
+## 12.b 添加参数
+
+同过渡和动画一样，`Action` 也可以包含参数。这些参数将会同元素一起被调用。
+
+要注意的是如果参数会在运行时被改变，`Action` 除了返回 `destroy` 方法以外，还需要提供一个更新参数的方法 `update`：
+
+```typescript
+export function longpress(node: HTMLElement, duration: number) {
+  // ...
+  return {
+    destroy() {
+      // ...
+    },
+    update(newDuration) {
+      duration = newDuration
+    },
+  }
+}
+```
+
+# 13. class
+
+## 13.a 样式指令
+
+和其他的属性一样，你也可以在指定样式属性时使用 JavaScript 属性：
+
+```html
+<button
+  class={current === 'foo' ? 'selected' : ''}
+  on:click={() => (current = 'foo')}
+>
+  foo
+</button>
+```
+
+这在 UI 开发中会被经常使用，所以 `Svelte` 提供了一个特殊的指令来简化上面的判断。
+
+```html
+<button
+    class:selected="{current === 'foo'}"
+    on:click="{() => (current = 'foo')}"
+>
+  foo
+</button>
+```
+
+## 13.b 简写指令
+
+通常情况下，样式的类名往往会和控制他们是否生效的变量名相同：
+
+```html
+<script lang="ts">
+  let big = false
+</script>
+
+<style>
+  .big {
+    font-size: 4em;
+  }
+</style>
+
+<label>
+  <input type="checkbox" bind:checked={big} />
+  big
+</label>
+
+<div class:big={big}>
+  some {big ? 'big' : 'small'} text
+</div>
+```
+
+这种情况下 `Svelte` 提供了一个和 JavaScript 类似的简写指令：
+
+```html
+<div class:big>
+  some {big ? 'big' : 'small'} text
+</div>
+```
+
 
 ```末尾空白
 末尾空白

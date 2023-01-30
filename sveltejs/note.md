@@ -1642,6 +1642,172 @@ export function longpress(node: HTMLElement, duration: number) {
 </div>
 ```
 
+# 14. 组件子级
+
+## 14.a Slots
+
+如果有这么一些元素：
+
+```html
+  <div>
+    <p>I'm a child of the div</p>
+  </div>
+```
+
+如果想将它们插入到自定义组件中时，可以在自定义组件中使用 `<slot>` 作为占位元素，像这样：
+
+```html
+<div class="box">
+  <slot />
+</div>
+```
+
+然后就可以这么使用：
+
+```html
+<script lang="ts">
+  import Box from './14.a_box.svelte'
+</script>
+
+<Box>
+  <div>
+    <p>I'm a child of the div</p>
+  </div>
+</Box>
+```
+
+## 14.b Slot fallbacks
+
+组件可以为没有内容的 `slot` 设置 fallback。具体作法就是在 `<slot>` 元素内插入内容：
+
+```html
+<div class="box">
+    <slot>
+        <em>no content was provided</em>
+    </slot>
+</div>
+```
+
+此时，如果使用这个 `Box` 自定义组件时，没有插入内容，则 `slot` 位置会用 `<em>` 作为 fallback 填充。
+
+## 14.c Named slots
+
+上二章节使用了一个默认插槽（default slot），有时候你可能需要对子级进行更细分的设置（即包含了多个不同层级的插槽），在这种情况下可以使用命名插槽（named slots）。
+
+在 `card` 组件中，给每一个 `slot` 添加 `name` 属性：
+
+```html
+<article class="contact-card">
+  <h2>
+    <slot name="name">
+      <span class="missing">Unknow name</span>
+    </slot>
+  </h2>
+
+  <div class="address">
+    <slot name="address">
+      <span class="missing">Unknow address</span>
+    </slot>
+  </div>
+
+  <div class="email">
+    <slot name="email">
+      <span class="missing">Unknow email</span>
+    </slot>
+  </div>
+</article>
+```
+
+然后在使用 `card` 组件的地方，为 `slot` 添加内容时也加上属性 `slot="..."`：
+
+```html
+<script lang="ts">
+  import ContactCard from './14.c_card.svelte'
+</script>
+
+<ContactCard>
+  <span slot="name">P. Sherman</span>
+  <span slot="address">
+    42 Wallaby Way <br />
+    Sydney
+  </span>
+  <span>Hello</span>
+</ContactCard>
+```
+
+注意你会在浏览器的 `Console` 面板收到一个警告，告诉你接收到了一个不符合预期的 `slot "default"`，此时 `<span>Hello</span>` 就是一个默认插槽的内容，并且它不会被显示。
+
+## 14.d 检查 slot 内容
+
+在某些情况下，我们希望控制组件中的某些部分仅在 slot 有内容的情况下才显示，或者某些样式仅在 slot 有内容的情况下才使用。这个时候我们就需要使用到 `$$slots` 变量。
+
+`$$slots` 是一个对象，它的键是 `slot name`，当父组件传入了指定的 `slot` 的内容时，该对象就会被设置为以 `slot name` 为 key，对应的 value 为 true。（默认插槽的 key 为 'default'）
+
+```html
+<article class:has-discussion={$$slots.comments}>
+  <div>
+    <h2>{title}</h2>
+    <p>{tasksCompleted}/{totalTasks} tasks completed</p>
+  </div>
+  {#if $$slots.comments}
+    <div class="discussion">
+      <h3>Comments</h3>
+      <slot name="comments" />
+    </div>
+  {/if}
+</article>
+```
+
+可以看到我们可以通过 `$$slots.comments` 是否有值来设置 `article` 的样式 `class:has-discussion`。另外我们也可以通过 `{#if $$slots.comments}` 来控制部分元素内容是否启用。
+
+## 14.e Slot 属性
+
+我们还可以将组件中的属性暴露给 `slot`。
+
+```html
+<script lang="ts">
+  let hovering: boolean
+
+  function enter() {
+    hovering = true
+  }
+
+  function leave() {
+    hovering = false
+  }
+</script>
+
+<div on:mouseenter={enter} on:mouseleave={leave}>
+  <slot {hovering} />
+</div>
+```
+
+首先在 `hoverable` 组件中，将 `hovering` 作为属性设置给 `slot`，注意这里的 `<slot {hovering} />` 是 `<slot hovering={hovering} />` 的简写。
+
+然后在使用该组件的地方，使用 `let` 来暴露 `<Hoverable>` 组件内的内容：
+
+```html
+<Hoverable let:hovering>
+  <div class:active={hovering}>
+    {#if hovering}
+      <p>I am being hovered upon.</p>
+    {:else}
+      <p>Hover over me!</p>
+    {/if}
+  </div>
+</Hoverable>
+```
+
+这里的 `<Hoverable let:hovering>` 是 `<Hoverable let:hovering={hovering}>` 的简写，另外如果你想给 `hovering` 属性起另一个名字，则可以这样写：`<Hoverable let:hovering={active}>`，这样一来变量名就被命名为 `active` 了。
+
+要注意的是，命名插槽也可以拥有插槽属性，但是 `let` 指令不在是写在组件上，而是写在有 `slot="..."` 的标签上，比如：
+
+```html
+<Hoverable let:hovering>
+  <!-- ... -->
+  <div slot="footer" let:footerID>FooterID: {footerID}</div>
+</Hoverable>
+```
 
 ```末尾空白
 末尾空白

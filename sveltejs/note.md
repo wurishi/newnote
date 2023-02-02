@@ -1815,7 +1815,19 @@ export function longpress(node: HTMLElement, duration: number) {
 
 `Context API` 提供了一种让多个组件之间互相通信的方式，该方式不需要传递属性或者函数，也不需要额外的事件。
 
-  
+在父组件调用 `setContext(key, data)` 后，父组件包含的所有子组件（放置在 `<slot>` 中的组件）都可以通过 `getContext(key)` 获得 `data`。
+
+## 15.b Context keys
+
+要注意的是 `setContext(key, data)` 中的 `key` 可以是任意属性。推荐是 `Object` 或 `Symbol` 类型，并不推荐使用字符串。因为 `context` 对于 `key` 的判断使用的是 `===` ，所以如果使用字符串，可能会因为重名的原因导致一些问题。
+
+## 15.c Contexts vs Stores
+
+二者的作用是非常类似的，它们的不同之处是，`store` 可以用于应用的任何部分，而 `context` 只能用于组件和它的子组件（`setContext` 和 `getContext` 只能在 `svelte` 文件中使用）。
+
+一般情况下，你应该结合二者一起使用，因为 `context` 是不具有反应性的，所以如果值会随时变化，你应该仍然使用 `store`。
+
+
 
 
 ```末尾空白

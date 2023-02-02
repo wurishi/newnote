@@ -1809,6 +1809,15 @@ export function longpress(node: HTMLElement, duration: number) {
 </Hoverable>
 ```
 
+# 15. Context API
+
+## 15.a setContext and getContext
+
+`Context API` 提供了一种让多个组件之间互相通信的方式，该方式不需要传递属性或者函数，也不需要额外的事件。
+
+  
+
+
 ```末尾空白
 末尾空白
 

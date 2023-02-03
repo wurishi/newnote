@@ -7,6 +7,11 @@
 
 <Component>
   <Child />
+  <div>Lazy:</div>
+  <hr />
+  {#if lazy}
+    <Child />
+  {/if}
 </Component>
 
 <button on:click={() => (lazy = true)}>Show Lazy Child</button>

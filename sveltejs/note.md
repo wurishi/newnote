@@ -18,7 +18,7 @@ svelte 也是基于组件开发的，每一个组件就是一个包含了 `html`
 
 ```html
 <script lang="ts">
-    const name = 'world'
+  const name = 'world'
 </script>
 
 <h1>Hello {name.toLocaleUpperCase()}!</h1>
@@ -30,7 +30,7 @@ svelte 也是基于组件开发的，每一个组件就是一个包含了 `html`
 
 ```html
 <script lang="ts">
-    const src = '/vite.svg'
+  const src = '/vite.svg'
 </script>
 
 <img src="{src}" />
@@ -60,11 +60,11 @@ svelte 也是基于组件开发的，每一个组件就是一个包含了 `html`
 <p>This is a paragraph.</p>
 
 <style>
-    p {
-        color: purple;
-        font-family: 'Comic Sans MS', cursive;
-        font-size: 2em;
-    }
+  p {
+    color: purple;
+    font-family: 'Comic Sans MS', cursive;
+    font-size: 2em;
+  }
 </style>
 ```
 
@@ -76,7 +76,7 @@ svelte 也是基于组件开发的，每一个组件就是一个包含了 `html`
 
 ```html
 <script lang="ts">
-    import DComponent from './1.d.svelte'
+  import DComponent from './1.d.svelte'
 </script>
 
 <p>This is my paragraph.</p>
@@ -95,7 +95,7 @@ svelte 也是基于组件开发的，每一个组件就是一个包含了 `html`
 
 ```html
 <script lang="ts">
-    const string = `this string contains some <strong>HTML!!!</strong>`
+  const string = `this string contains some <strong>HTML!!!</strong>`
 </script>
 
 <p>{string}</p>
@@ -117,11 +117,11 @@ svelte 也是基于组件开发的，每一个组件就是一个包含了 `html`
 
 ```html
 <script lang="ts">
-    let count = 0
+  let count = 0
 
-    function handleClick() {
-        count += 1
-    }
+  function handleClick() {
+    count += 1
+  }
 </script>
 ```
 
@@ -129,7 +129,7 @@ svelte 也是基于组件开发的，每一个组件就是一个包含了 `html`
 
 ```html
 <button on:click="{handleClick}">
-    Clicked {count}
+  Clicked {count}
 </button>
 ```
 
@@ -141,9 +141,9 @@ svelte 也是基于组件开发的，每一个组件就是一个包含了 `html`
 
 ```html
 <script lang="ts">
-    let count = 0
+  let count = 0
 
-    $: timeStr = count === 1 ? 'time' : 'times'
+  $: timeStr = count === 1 ? 'time' : 'times'
 </script>
 ```
 
@@ -163,8 +163,8 @@ $: console.log(`the count is ${count}`)
 
 ```typescript
 $: {
-    const doubleCount = count * 2
-    console.log(`the doubleCount is ${doubleCount}`)
+  const doubleCount = count * 2
+  console.log(`the doubleCount is ${doubleCount}`)
 }
 ```
 
@@ -172,8 +172,8 @@ $: {
 
 ```typescript
 $: if (count >= 10) {
-    alert('count is dangerously high!')
-    count = 9
+  alert('count is dangerously high!')
+  count = 9
 }
 ```
 
@@ -203,7 +203,7 @@ $: if (count >= 10) {
 
 ```typescript
 function addNumber() {
-    numbers = [...numbers, number.length + 1]
+  numbers = [...numbers, number.length + 1]
 }
 ```
 
@@ -350,9 +350,9 @@ $: console.log('所有传递过来的属性：', $$props)
 
 ```html
 {#each cats as cat, index}
-        <li>
-            {index} : {cat.name}
-        </li>
+<li>
+  {index} : {cat.name}
+</li>
 {/each}
 ```
 
@@ -362,25 +362,25 @@ $: console.log('所有传递过来的属性：', $$props)
 
 ```html
 <script lang="ts">
-    import Component from './4.e_comp.svelte'
+  import Component from './4.e_comp.svelte'
 
-    let list = [
-        { id: 1, color: '#0d0887' },
-        { id: 2, color: '#6a00a8' },
-        { id: 3, color: '#b12a90' },
-        { id: 4, color: '#e16462' },
-        { id: 5, color: '#fca636' },
-    ]
+  let list = [
+    { id: 1, color: '#0d0887' },
+    { id: 2, color: '#6a00a8' },
+    { id: 3, color: '#b12a90' },
+    { id: 4, color: '#e16462' },
+    { id: 5, color: '#fca636' },
+  ]
 
-    function handleClick() {
-        list = list.slice(1)
-    }
+  function handleClick() {
+    list = list.slice(1)
+  }
 </script>
 
-<button on:click={handleClick}>Remove first thing</button>
+<button on:click="{handleClick}">Remove first thing</button>
 
 {#each list as item (item.id)}
-    <Component current={item.color} />
+<Component current="{item.color}" />
 {/each}
 ```
 
@@ -394,29 +394,29 @@ $: console.log('所有传递过来的属性：', $$props)
 
 ```html
 <script lang="ts">
-    async function getRandomNumber() {
-        return new Promise<number>((resolve, reject) => {
-            setTimeout(() => {
-                resolve(Math.random())
-            }, 1000)
-        })
-    }
+  async function getRandomNumber() {
+    return new Promise<number>((resolve, reject) => {
+      setTimeout(() => {
+        resolve(Math.random())
+      }, 1000)
+    })
+  }
 
-    let promise = getRandomNumber()
+  let promise = getRandomNumber()
 
-    function handleClick() {
-        promise = getRandomNumber()
-    }
+  function handleClick() {
+    promise = getRandomNumber()
+  }
 </script>
 
-<button on:click={handleClick}>generate random number</button>
+<button on:click="{handleClick}">generate random number</button>
 
 {#await promise}
-    <p>...waiting</p>
+<p>...waiting</p>
 {:then number}
-    <p>The number is {number}</p>
+<p>The number is {number}</p>
 {:catch error}
-    <p style="color: red;">{error.message}</p>
+<p style="color: red;">{error.message}</p>
 {/await}
 ```
 
@@ -424,7 +424,7 @@ $: console.log('所有传递过来的属性：', $$props)
 
 ```html
 {#await promise then num}
-    <p>The number is {num}</p>
+<p>The number is {num}</p>
 {/await}
 ```
 
@@ -448,7 +448,7 @@ $: console.log('所有传递过来的属性：', $$props)
 
 ```html
 <div on:mousemove="{(evt) => { m.x = evt.clientX }}">
-    The mouse position is {m.x} - {m.y}
+  The mouse position is {m.x} - {m.y}
 </div>
 ```
 
@@ -462,27 +462,27 @@ DOM 事件具有额外的修饰符。例如，带 `once` 修饰符表示该事�
 
 ```html
 <script lang="ts">
-    function handleClick() {
-        alert('no more alerts')
-    }
+  function handleClick() {
+    alert('no more alerts')
+  }
 </script>
 
-<button on:click|once={handleClick}>Click me</button>
+<button on:click|once="{handleClick}">Click me</button>
 ```
 
 所有的修饰符列表：
 
-* `preventDefault`: 调用 `event.preventDefault()`，中止事件的默认处理程序被调用。
+- `preventDefault`: 调用 `event.preventDefault()`，中止事件的默认处理程序被调用。
 
-* `stopPropagation`: 调用 `event.stopPropagation`，防止事件影响到下一级元素。
+- `stopPropagation`: 调用 `event.stopPropagation`，防止事件影响到下一级元素。
 
-* `passive`: 优化了对 `touch` / `wheel` 事件的滚动表现。（`svelte` 会在合适的地方自动添加滚动条）
+- `passive`: 优化了对 `touch` / `wheel` 事件的滚动表现。（`svelte` 会在合适的地方自动添加滚动条）
 
-* `capture`: 在 `capture` 阶段而非 `bubbling` 阶段触发事件处理程序。
+- `capture`: 在 `capture` 阶段而非 `bubbling` 阶段触发事件处理程序。
 
-* `once`: 运行一次事件处理程序后删除监听。
+- `once`: 运行一次事件处理程序后删除监听。
 
-* `self`: 仅当 `event.target` 是本身时才执行。
+- `self`: 仅当 `event.target` 是本身时才执行。
 
 以上修饰符可以组合在一起使用，即：`on:click|once|capture={...}`
 
@@ -492,40 +492,40 @@ DOM 事件具有额外的修饰符。例如，带 `once` 修饰符表示该事�
 
 ```html
 <script lang="ts">
-    import { createEventDispatcher } from 'svelte'
+  import { createEventDispatcher } from 'svelte'
 
-    const dispatch = createEventDispatcher()
+  const dispatch = createEventDispatcher()
 
-    function sayHello() {
-        dispatch('message', { text: 'Hello!' })
-    }
+  function sayHello() {
+    dispatch('message', { text: 'Hello!' })
+  }
 </script>
 
-<button on:click={sayHello}> Click to say hello </button>
+<button on:click="{sayHello}">Click to say hello</button>
 ```
 
 然后使用这个组件的父组件就可以通过 `on:{type}` 接收到 `CustomEvent` 了。
 
 ```html
 <script lang="ts">
-    import Inner from './5.d_inner.svelte'
+  import Inner from './5.d_inner.svelte'
 
-    function handleMessage(event: CustomEvent<{ text: string }>) {
-        alert(event.detail.text)
-    }
+  function handleMessage(event: CustomEvent<{ text: string }>) {
+    alert(event.detail.text)
+  }
 </script>
 
-<Inner on:message={handleMessage} />
+<Inner on:message="{handleMessage}" />
 ```
 
 要**注意**的是，`createEventDispatcher` 必须在首次实例化组件是就调用，并不支持如 `setTimeout` 之类的回调。否则就会收到一个错误：`Function called outside component initialization`
 
 ```js
 let dispatch
-    setTimeout(() => {
-        dispatch = createEventDispatcher() // 运行时报错
-        console.log('time out finish')
-    }, 1000)
+setTimeout(() => {
+  dispatch = createEventDispatcher() // 运行时报错
+  console.log('time out finish')
+}, 1000)
 ```
 
 ## 5.e. 事件转发
@@ -534,25 +534,26 @@ let dispatch
 
 ```html
 <script lang="ts">
-    import Inner from './5.d_inner.svelte'
-    import { createEventDispatcher } from 'svelte'
+  import Inner from './5.d_inner.svelte'
+  import { createEventDispatcher } from 'svelte'
 
-    const dispatch = createEventDispatcher()
+  const dispatch = createEventDispatcher()
 
-    function forward(event: CustomEvent) {
-        dispatch('message', event.detail)
-    }
+  function forward(event: CustomEvent) {
+    dispatch('message', event.detail)
+  }
 </script>
 
 <p>Outer Start</p>
-<Inner on:message={forward} />
+<Inner on:message="{forward}" />
 <p>Outer End</p>
 ```
 
 但这样写显得太过繁琐，因此 `svelte` 设立了一个简写属性 `on:message`，只要没有给它赋予特定的值，则意味着转发所有 `message` 事件。
 
 ```html
-<Inner on:message /> <!-- message 事件会被转发给父级 -->
+<Inner on:message />
+<!-- message 事件会被转发给父级 -->
 ```
 
 ## 5.f. DOM 事件转发
@@ -567,14 +568,14 @@ let dispatch
 
 ```html
 <script lang="ts">
-    import Button from './5.f_button.svelte'
+  import Button from './5.f_button.svelte'
 
-    function handleClick() {
-        alert('button clicked')
-    }
+  function handleClick() {
+    alert('button clicked')
+  }
 </script>
 
-<Button on:click={handleClick} />
+<button on:click="{handleClick}" />
 ```
 
 # 6. 绑定
@@ -589,10 +590,10 @@ let dispatch
 
 ```html
 <script lang="ts">
-    let name = 'world'
+  let name = 'world'
 </script>
 
-<input bind:value={name} />
+<input bind:value="{name}" />
 
 <h1>Hello {name}!</h1>
 ```
@@ -607,18 +608,18 @@ let dispatch
 
 ```html
 <script lang="ts">
-    let a = 1,
-        b = 2
+  let a = 1,
+    b = 2
 </script>
 
 <label name="a">
-    <input type="number" bind:value={a} min="0" max="10" />
-    <input type="range" bind:value={a} min="0" max="10" />
+  <input type="number" bind:value="{a}" min="0" max="10" />
+  <input type="range" bind:value="{a}" min="0" max="10" />
 </label>
 
 <label name="b">
-    <input type="number" bind:value={b} min="0" max="10" />
-    <input type="range" bind:value={b} min="0" max="10" />
+  <input type="number" bind:value="{b}" min="0" max="10" />
+  <input type="range" bind:value="{b}" min="0" max="10" />
 </label>
 
 <!-- 数字计算而非字符串连接 -->
@@ -631,17 +632,15 @@ let dispatch
 
 ```html
 <script lang="ts">
-    let checked = false
+  let checked = false
 </script>
 
 <label>
-    <input type="checkbox" bind:checked />
-    Yes or No ?
+  <input type="checkbox" bind:checked />
+  Yes or No ?
 </label>
 
-{#if checked}
-    You selected yes!!!
-{/if}
+{#if checked} You selected yes!!! {/if}
 ```
 
 ## 6.d 组绑定
@@ -652,34 +651,33 @@ let dispatch
 
 ```html
 <script lang="ts">
-    let scoops = 1
-    let flavours = ['Mint choc chip']
+  let scoops = 1
+  let flavours = ['Mint choc chip']
 
-    $: flavourStr = flavours.length === 1 ? flavours[0] : flavours.join(', ')
+  $: flavourStr = flavours.length === 1 ? flavours[0] : flavours.join(', ')
 </script>
 
 <h2>Sizes</h2>
 
 {#each ['One scoop', 'Two scoops', 'Three scoops'] as scoop, i (scoop)}
-    <label>
-        <input type="radio" bind:group={scoops} value={i + 1} />
-        {scoop}
-    </label>
+<label>
+  <input type="radio" bind:group="{scoops}" value="{i" + 1} />
+  {scoop}
+</label>
 {/each}
 
 <h2>Flavours</h2>
 
-{#each ['Cookies and cream', 'Mint choc chip', 'Raspberry ripple'] as flavour (flavour)}
-    <label>
-        <input type="checkbox" bind:group={flavours} value={flavour} />
-        {flavour}
-    </label>
+{#each ['Cookies and cream', 'Mint choc chip', 'Raspberry ripple'] as flavour
+(flavour)}
+<label>
+  <input type="checkbox" bind:group="{flavours}" value="{flavour}" />
+  {flavour}
+</label>
 {/each}
 
 <p>
-    You ordered {scoops}
-    {scoops === 1 ? 'scoop' : 'scoops'}
-    of {flavourStr}
+  You ordered {scoops} {scoops === 1 ? 'scoop' : 'scoops'} of {flavourStr}
 </p>
 ```
 
@@ -688,7 +686,7 @@ let dispatch
 同样的 `<textarea>` 标签也可以使用 `bind:value` 进行绑定：
 
 ```html
-<textarea bind:value={value}></textarea>
+<textarea bind:value="{value}"></textarea>
 ```
 
 另外要注意的是，如果绑定的属性名与变量多相同，也可以使用简写形式：
@@ -754,14 +752,14 @@ let dispatch
 
 ```html
 <script lang="ts">
-    let html = `<p>Write some text!</p>`
+  let html = `<p>Write some text!</p>`
 </script>
 
 <pre>{html}</pre>
 
-<div contenteditable="true" bind:textContent={html} />
+<div contenteditable="true" bind:textContent="{html}" />
 
-<div contenteditable="true" bind:innerHTML={html} />
+<div contenteditable="true" bind:innerHTML="{html}" />
 ```
 
 ## 6.i each
@@ -770,37 +768,37 @@ let dispatch
 
 ```html
 <script lang="ts">
-    let todos = [
-        { done: false, text: 'finish Svelte tutorial' },
-        { done: false, text: 'build an app' },
-        { done: false, text: 'world domination' },
-    ]
+  let todos = [
+    { done: false, text: 'finish Svelte tutorial' },
+    { done: false, text: 'build an app' },
+    { done: false, text: 'world domination' },
+  ]
 
-    function add() {
-        todos = todos.concat({ done: false, text: '' })
-    }
+  function add() {
+    todos = todos.concat({ done: false, text: '' })
+  }
 
-    function clear() {
-        todos = todos.filter((t) => !t.done)
-    }
+  function clear() {
+    todos = todos.filter((t) => !t.done)
+  }
 
-    $: remaining = todos.filter((t) => !t.done).length
+  $: remaining = todos.filter((t) => !t.done).length
 </script>
 
 <h1>Todos</h1>
 
 {#each todos as todo}
-    <div class:done={todo.done}>
-        <input type="checkbox" bind:checked={todo.done} />
-        <input placeholder="What needs to be done?" bind:value={todo.text} />
-    </div>
+<div class:done="{todo.done}">
+  <input type="checkbox" bind:checked="{todo.done}" />
+  <input placeholder="What needs to be done?" bind:value="{todo.text}" />
+</div>
 {/each}
 
 <p>{remaining} remaining</p>
 
-<button on:click={add}>Add new</button>
+<button on:click="{add}">Add new</button>
 
-<button on:click={clear}>Clear completed</button>
+<button on:click="{clear}">Clear completed</button>
 ```
 
 要注意的是，此时这些 `input` 标签上的属性已经和数组中对应项的数据绑定起来了，这意味着它们会随着数据的变化而变化。如果你需要使用固定的数据，应该避免这种做法，使用事件处理程序。
@@ -813,13 +811,13 @@ let dispatch
 
 ```html
 <video
-    poster="/vite.svg"
-    src="/video.ogm"
-    on:mousemove={handleMousemove}
-    on:mousedown={handleMousedown}
-    bind:currentTime={time}
-    bind:duration
-    bind:paused
+  poster="/vite.svg"
+  src="/video.ogm"
+  on:mousemove="{handleMousemove}"
+  on:mousedown="{handleMousedown}"
+  bind:currentTime="{time}"
+  bind:duration
+  bind:paused
 />
 ```
 
@@ -827,29 +825,29 @@ let dispatch
 
 可以对 `audio` 和 `video` 的 6 个 `readonly` 属性进行绑定。
 
-* `duration`：视频的总时长，以秒为单位。
+- `duration`：视频的总时长，以秒为单位。
 
-* `buffered`：数组 `{start, end}` 的对象。
+- `buffered`：数组 `{start, end}` 的对象。
 
-* `seekable`：同上。
+- `seekable`：同上。
 
-* `played`：同上。
+- `played`：同上。
 
-* `seeking`：布尔值。
+- `seeking`：布尔值。
 
-* `ended`：布尔值。
+- `ended`：布尔值。
 
 以及 4 个双向绑定。
 
-* `currentTime`：视频中的当前点，以秒为单位。
+- `currentTime`：视频中的当前点，以秒为单位。
 
-* `playbackRate`：播放视频的倍速，`1` 为正常。
+- `playbackRate`：播放视频的倍速，`1` 为正常。
 
-* `paused`：暂停。
+- `paused`：暂停。
 
-* `volume`：音量，0到1之间的值。
+- `volume`：音量，0 到 1 之间的值。
 
-另外 `video` 还多出了2个具有 `readonly` 的属性 `videoWidth` 和 `videoHeight` 属性的绑定。
+另外 `video` 还多出了 2 个具有 `readonly` 的属性 `videoWidth` 和 `videoHeight` 属性的绑定。
 
 ## 6.k size
 
@@ -857,18 +855,18 @@ let dispatch
 
 ```html
 <script lang="ts">
-    let w, h
-    let size = 42
-    let text = 'edit me'
+  let w, h
+  let size = 42
+  let text = 'edit me'
 </script>
 
-<input type="range" bind:value={size} />
-<input bind:value={text} />
+<input type="range" bind:value="{size}" />
+<input bind:value="{text}" />
 
 <p>size: {w}px x {h}px</p>
 
-<div bind:clientWidth={w} bind:clientHeight={h}>
-    <span style="font-size: {size}px;">{text}</span>
+<div bind:clientWidth="{w}" bind:clientHeight="{h}">
+  <span style="font-size: {size}px;">{text}</span>
 </div>
 ```
 
@@ -883,7 +881,7 @@ let dispatch
 `this` 可以绑定到任何标签（或者组件）并允许你获取对渲染标签的引用。
 
 ```html
-<canvas bind:this={canvas} width={32} height={32} />
+<canvas bind:this="{canvas}" width="{32}" height="{32}" />
 ```
 
 要注意的是，`canvas`的值直到组件挂载完毕之前都会是 `undefined`。因此需要在 `onMount` 这个生命函数中才开始对 `canvas` 进行操作。
@@ -894,20 +892,20 @@ let dispatch
 
 ```html
 <script lang="ts">
-    import Keypad from './6.m_keypad.svelte'
+  import Keypad from './6.m_keypad.svelte'
 
-    let pin: string
+  let pin: string
 
-    $: view = pin ? pin.replace(/\d(?!$)/g, '*') : 'enter your pin'
+  $: view = pin ? pin.replace(/\d(?!$)/g, '*') : 'enter your pin'
 
-    function handleSubmit() {
-        alert(`submitted ${pin}`)
-    }
+  function handleSubmit() {
+    alert(`submitted ${pin}`)
+  }
 </script>
 
 <h1 style="color: {pin ? '#333' : '#ccc'};">{view}</h1>
 
-<Keypad bind:value={pin} on:submit={handleSubmit} />
+<Keypad bind:value="{pin}" on:submit="{handleSubmit}" />
 ```
 
 请谨慎使用组件绑定。如果你的程序中数据过多，并且是在没有一个统一的数据来源的情况下。此时将很难追踪应用程序的数据流。
@@ -922,17 +920,17 @@ let dispatch
 
 ```html
 <script lang="ts">
-    import { onMount } from 'svelte'
+  import { onMount } from 'svelte'
 
-    let photos = []
+  let photos = []
 
-    onMount(async () => {
-        const res = await fetch(
-            'https://jsonplaceholder.typicode.com/photos?_limit=20'
-        )
+  onMount(async () => {
+    const res = await fetch(
+      'https://jsonplaceholder.typicode.com/photos?_limit=20'
+    )
 
-        photos = await res.json()
-    })
+    photos = await res.json()
+  })
 </script>
 ```
 
@@ -948,16 +946,16 @@ let dispatch
 
 ```html
 <script lang="ts">
-    import { onDestroy } from 'svelte'
-    export let second = 0
+  import { onDestroy } from 'svelte'
+  export let second = 0
 
-    const interval = setInterval(() => {
-        second += 1
-    }, 1000)
+  const interval = setInterval(() => {
+    second += 1
+  }, 1000)
 
-    onDestroy(() => {
-        interval && clearInterval(interval)
-    })
+  onDestroy(() => {
+    interval && clearInterval(interval)
+  })
 </script>
 ```
 
@@ -971,20 +969,20 @@ let dispatch
 
 ```html
 <script lang="ts">
-    import { onMount, beforeUpdate } from 'svelte'
+  import { onMount, beforeUpdate } from 'svelte'
 
-    let div: HTMLDivElement
+  let div: HTMLDivElement
 
-    onMount(() => {
-        console.log('onMount', div)
-    })
+  onMount(() => {
+    console.log('onMount', div)
+  })
 
-    beforeUpdate(() => {
-        console.log('beforeUpdate', div)
-    })
+  beforeUpdate(() => {
+    console.log('beforeUpdate', div)
+  })
 </script>
 
-<div bind:this={div} />
+<div bind:this="{div}" />
 ```
 
 打印的顺序为 `beforeUpdate` -> `onMount` -> `beforeUpdate`。并且第一次 `beforeUpdate` 时，`div` 为 `undefined`。
@@ -999,39 +997,36 @@ let dispatch
 
 ```html
 <script lang="ts">
-    import { tick } from 'svelte'
+  import { tick } from 'svelte'
 
-    let text = `Select some text and hit the tab key to toggle uppercase`
+  let text = `Select some text and hit the tab key to toggle uppercase`
 
-    async function handleKeydown(event: KeyboardEvent) {
-        if (event.which !== 9) return
+  async function handleKeydown(event: KeyboardEvent) {
+    if (event.which !== 9) return
 
-        event.preventDefault()
+    event.preventDefault()
 
-        const { selectionStart, selectionEnd, value } =
-            this as HTMLTextAreaElement
+    const { selectionStart, selectionEnd, value } = this as HTMLTextAreaElement
 
-        const selection = value.slice(selectionStart, selectionEnd)
+    const selection = value.slice(selectionStart, selectionEnd)
 
-        const replacement = /[a-z]/.test(selection)
-            ? selection.toUpperCase()
-            : selection.toLowerCase()
+    const replacement = /[a-z]/.test(selection)
+      ? selection.toUpperCase()
+      : selection.toLowerCase()
 
-        text =
-            value.slice(0, selectionStart) +
-            replacement +
-            value.slice(selectionEnd)
+    text =
+      value.slice(0, selectionStart) + replacement + value.slice(selectionEnd)
 
-        await tick()
+    await tick()
 
-        const that = this as HTMLTextAreaElement
+    const that = this as HTMLTextAreaElement
 
-        that.selectionStart = selectionStart + 1
-        that.selectionEnd = selectionEnd
-    }
+    that.selectionStart = selectionStart + 1
+    that.selectionEnd = selectionEnd
+  }
 </script>
 
-<textarea value={text} on:keydown={handleKeydown} />
+<textarea value="{text}" on:keydown="{handleKeydown}" />
 ```
 
 如果没有 `await tick()` 则，当 `textarea` 的值发生改变后，浏览器会取消选中区域并将光标置于文本末尾。
@@ -1056,11 +1051,11 @@ export const count = writable(0)
 import { count } from './8.a_stores'
 
 function reset() {
-    count.set(0)
+  count.set(0)
 }
 
 function increment() {
-    count.update((c) => c + 1)
+  count.update((c) => c + 1)
 }
 ```
 
@@ -1068,16 +1063,16 @@ function increment() {
 
 ```html
 <script lang="ts">
-    import { count } from './8.a_stores'
-    import Incre from './8.a_incre.svelte'
-    import Decre from './8.a_decre.svelte'
-    import Reset from './8.a_reset.svelte'
+  import { count } from './8.a_stores'
+  import Incre from './8.a_incre.svelte'
+  import Decre from './8.a_decre.svelte'
+  import Reset from './8.a_reset.svelte'
 
-    let count_value: number
+  let count_value: number
 
-    const unsubscribe = count.subscribe((value) => {
-        count_value = value
-    })
+  const unsubscribe = count.subscribe((value) => {
+    count_value = value
+  })
 </script>
 
 <h1>The count is {count_value}</h1>
@@ -1109,10 +1104,10 @@ onDestroy(unsubscribe)
 
 ```html
 <script lang="ts">
-    import { count } from './8.a_stores'
-    import Incre from './8.a_incre.svelte'
-    import Decre from './8.a_decre.svelte'
-    import Reset from './8.a_reset.svelte'
+  import { count } from './8.a_stores'
+  import Incre from './8.a_incre.svelte'
+  import Decre from './8.a_decre.svelte'
+  import Reset from './8.a_reset.svelte'
 </script>
 
 <h1>The count is {$count}</h1>
@@ -1136,13 +1131,13 @@ onDestroy(unsubscribe)
 import { readable } from 'svelte/store'
 
 export const time = readable<Date>(null, function start(set) {
-    const interval = setInterval(() => {
-        set(new Date())
-    }, 1000)
+  const interval = setInterval(() => {
+    set(new Date())
+  }, 1000)
 
-    return function stop() {
-        clearInterval(interval)
-    }
+  return function stop() {
+    clearInterval(interval)
+  }
 })
 ```
 
@@ -1156,7 +1151,7 @@ export const time = readable<Date>(null, function start(set) {
 const start = new Date()
 
 export const elapsed = derived([time], ([t]) => {
-    return Math.round((t.getTime() - start.getTime()) / 1000)
+  return Math.round((t.getTime() - start.getTime()) / 1000)
 })
 ```
 
@@ -1168,14 +1163,14 @@ export const elapsed = derived([time], ([t]) => {
 import { writable } from 'svelte/store'
 
 function createCount() {
-    const { subscribe, set, update } = writable(0)
+  const { subscribe, set, update } = writable(0)
 
-    return {
-        subscribe,
-        increment: () => update((n) => n + 1),
-        decrement: () => update((n) => n - 1),
-        reset: () => set(0),
-    }
+  return {
+    subscribe,
+    increment: () => update((n) => n + 1),
+    decrement: () => update((n) => n - 1),
+    reset: () => set(0),
+  }
 }
 
 export const count = createCount()
@@ -1185,14 +1180,14 @@ export const count = createCount()
 
 ```html
 <script lang="ts">
-    import { count } from './8.e_store'
+  import { count } from './8.e_store'
 </script>
 
 <h1>The count is {$count}</h1>
 
-<button on:click={count.increment}>+</button>
-<button on:click={count.decrement}>-</button>
-<button on:click={count.reset}>reset</button>
+<button on:click="{count.increment}">+</button>
+<button on:click="{count.decrement}">-</button>
+<button on:click="{count.reset}">reset</button>
 ```
 
 注意，`$` 语法糖在这里依然生效。
@@ -1207,7 +1202,7 @@ export const count = createCount()
 </script>
 
 <h1>{$greeting}</h1>
-<input bind:value={$name} />
+<input bind:value="{$name}" />
 ```
 
 另外我们也可以直接修改 `store` 的值
@@ -1254,8 +1249,8 @@ import { tweened } from 'svelte/motion'
 import { cubicOut } from 'svelte/easing'
 
 const progress = tweened(0, {
-    duration: 400,
-    easing: cubicOut,
+  duration: 400,
+  easing: cubicOut,
 })
 ```
 
@@ -1263,13 +1258,13 @@ const progress = tweened(0, {
 
 `tweened` 的第二个参数的完整配置属性为：
 
-* `delay` - 多少毫秒之后开始补间动画。
+- `delay` - 多少毫秒之后开始补间动画。
 
-* `duration` - 动画的持续时间（毫秒为单位）。或者 `(from, to) => milliseconds` 方法来指定。
+- `duration` - 动画的持续时间（毫秒为单位）。或者 `(from, to) => milliseconds` 方法来指定。
 
-* `easing` - `p => t` 缓动公式。
+- `easing` - `p => t` 缓动公式。
 
-* `interpolate` - 一个自定义的 `(from, to) => t => value` 的插值公式，默认情况下，`svelte`会自动对 `number, date` 类型，以及仅包含数字或日期类型的数组或对象进行插值。如果是其他的类型，比如颜色或变换矩阵，则需要提供自定义的插值公式。
+- `interpolate` - 一个自定义的 `(from, to) => t => value` 的插值公式，默认情况下，`svelte`会自动对 `number, date` 类型，以及仅包含数字或日期类型的数组或对象进行插值。如果是其他的类型，比如颜色或变换矩阵，则需要提供自定义的插值公式。
 
 另外你可以传递第二个参数给到 `process.set` 和 `process.update`。他们会返回一个 `promise` 并在补间动画结束时 `resolve`。
 
@@ -1278,11 +1273,12 @@ const progress = tweened(0, {
 `spring` 方法和 `tweened` 类似，但一般它被用在值会频繁变化的地方。
 
 ```typescript
-  import { spring } from 'svelte/motion'
+import { spring } from 'svelte/motion'
 
-  let coords = spring({ x: 50, y: 50 }, { stiffness: 0.1, damping: 0.25 })
-  let size = spring(10)
+let coords = spring({ x: 50, y: 50 }, { stiffness: 0.1, damping: 0.25 })
+let size = spring(10)
 ```
+
 每个 `spring` 都有二个默认参数 `stiffness` 和 `damping`。你也可以在初始化时改变这二个参数。
 
 # 10. 过渡
@@ -1298,12 +1294,10 @@ const progress = tweened(0, {
   let visible = true
 </script>
 
-<label>
-  <input type="checkbox" bind:checked={visible} /> visible
-</label>
+<label> <input type="checkbox" bind:checked="{visible}" /> visible </label>
 
 {#if visible}
-  <p transition:fade>Fades in and out</p>
+<p transition:fade>Fades in and out</p>
 {/if}
 ```
 
@@ -1373,26 +1367,24 @@ const progress = tweened(0, {
   }
 </script>
 
-<label>
-  <input type="checkbox" bind:checked={visible} />visible
-</label>
+<label> <input type="checkbox" bind:checked="{visible}" />visible </label>
 
 {#if visible}
-  <p transition:fade>transitions!</p>
+<p transition:fade>transitions!</p>
 {/if}
 ```
 
 自定义过渡函数接收两个参数（过渡应用到的节点以及传入的其他任何参数）并返回一个过渡对象，该对象可以具有以下属性：
 
-* `delay` : 过渡开始（毫秒）。
+- `delay` : 过渡开始（毫秒）。
 
-* `duration` : 过渡时长（毫秒）。
+- `duration` : 过渡时长（毫秒）。
 
-* `easing` : `p => t` easing 函数。
+- `easing` : `p => t` easing 函数。
 
-* `css` : `(t, u) => css` 函数，`u === 1 - t`。
+- `css` : `(t, u) => css` 函数，`u === 1 - t`。
 
-* `tick` : `(t, u) => {...}` 对节点有一定影响的函数。
+- `tick` : `(t, u) => {...}` 对节点有一定影响的函数。
 
 当 `t` 为 0 时表示开始，值为 1 时表示结束，根据情况含义可能截然相反。
 
@@ -1401,24 +1393,32 @@ const progress = tweened(0, {
 例如，`fade` 过渡会生成如下的 CSS animation :
 
 ```css
-0% { opacity: 0 }
-10% { opacity: 0.1 }
-20% { opacity: 0.2 }
+0% {
+  opacity: 0;
+}
+10% {
+  opacity: 0.1;
+}
+20% {
+  opacity: 0.2;
+}
 /* ... */
-100% { opacity: 1 }
+100% {
+  opacity: 1;
+}
 ```
 
 当然更多的情况下我们可以做出更多定制化的过渡效果：
 
 ```typescript
 function spin(node, options?) {
-    const { duration } = options
-    return {
-        duration,
-        css: (t) => {
-        const eased = elasticOut(t)
+  const { duration } = options
+  return {
+    duration,
+    css: (t) => {
+      const eased = elasticOut(t)
 
-        return `
+      return `
             transform: scale(${eased}) rotate(${eased * 1080}deg);
             color: hsl(
             ${~~(t * 360)},
@@ -1426,8 +1426,8 @@ function spin(node, options?) {
             ${Math.min(50, 500 - 500 * t)}%
             );
         `
-        },
-    }
+    },
+  }
 }
 ```
 
@@ -1437,27 +1437,27 @@ function spin(node, options?) {
 
 ```typescript
 function typewriter(node, options?) {
-    const { speed = 50 } = options
+  const { speed = 50 } = options
 
-    const valid =
-        node.childNodes.length === 1 && node.childNodes[0].nodeType === 3
+  const valid =
+    node.childNodes.length === 1 && node.childNodes[0].nodeType === 3
 
-    if (!valid) {
-        throw new Error(
-        `This transition only works on elements with a single text node child`
-        )
-    }
+  if (!valid) {
+    throw new Error(
+      `This transition only works on elements with a single text node child`
+    )
+  }
 
-    const text = node.textContent
-    const duration = text.length * speed
+  const text = node.textContent
+  const duration = text.length * speed
 
-    return {
-        duration,
-        tick: (t) => {
-        const i = ~~(text.length * t)
-        node.textContent = text.slice(0, i)
-        },
-    }
+  return {
+    duration,
+    tick: (t) => {
+      const i = ~~(text.length * t)
+      node.textContent = text.slice(0, i)
+    },
+  }
 }
 ```
 
@@ -1482,11 +1482,9 @@ function typewriter(node, options?) {
 添加或销毁任何标签的容器块，过渡都会在标签上播放。举个例子，在一个列表中，针对列表项的过渡效果会在列表切换可见性时也播放过渡效果。如果仅想让过渡效果在标签本身发生切换时播放，可以通过局部（local）过渡来实现。
 
 ```html
-{#if showItems}
-  {#each items.slice(0, i) as item}
-    <div transition:slide|local>{item}</div>
-  {/each}
-{/if}
+{#if showItems} {#each items.slice(0, i) as item}
+<div transition:slide|local>{item}</div>
+{/each} {/if}
 ```
 
 ## 10.h 延时过渡
@@ -1504,13 +1502,8 @@ Svelte 过渡引擎中有一项特别强大的功能就是可以设置延时(del
 但是仍然缺少元素在二个列表之间的过渡动画。为此，可以使用 `animate` 指令。
 
 ```html
-import { flip } from 'svelte/animate'
-
-<label
-    in:receive={{ key: todo.id }}
-    out:send={{ key: todo.id }}
-    animate:flip={{ duration: 200 }}
->
+import { flip } from 'svelte/animate' <label in:receive={{ key: todo.id }}
+out:send={{ key: todo.id }} animate:flip={{ duration: 200 }} >
 ```
 
 请注意，所有的过渡和动画都是使用 CSS 而不是 JavaScript 实现的，这意味着它们不会被主线程阻塞。
@@ -1535,9 +1528,9 @@ import { flip } from 'svelte/animate'
 <div
   class="box"
   use:pannable
-  on:panstart={handlePanStart}
-  on:panmove={handlePanMove}
-  on:panend={handlePanEnd}
+  on:panstart="{handlePanStart}"
+  on:panmove="{handlePanMove}"
+  on:panend="{handlePanEnd}"
   style="transform: translate({$coords.x}px,{$coords.y}px) rotate({$coords.x *
     0.2}deg)"
 />
@@ -1547,17 +1540,17 @@ import { flip } from 'svelte/animate'
 
 ```typescript
 function handleMousedown(event: MouseEvent) {
-    x = event.clientX
-    y = event.clientY
+  x = event.clientX
+  y = event.clientY
 
-    node.dispatchEvent(
-      new CustomEvent('panstart', {
-        detail: { x, y },
-      })
-    )
+  node.dispatchEvent(
+    new CustomEvent('panstart', {
+      detail: { x, y },
+    })
+  )
 
-    window.addEventListener('mousemove', handleMousemove)
-    window.addEventListener('mouseup', handleMouseup)
+  window.addEventListener('mousemove', handleMousemove)
+  window.addEventListener('mouseup', handleMouseup)
 }
 ```
 
@@ -1602,8 +1595,8 @@ export function longpress(node: HTMLElement, duration: number) {
 
 ```html
 <button
-    class:selected="{current === 'foo'}"
-    on:click="{() => (current = 'foo')}"
+  class:selected="{current === 'foo'}"
+  on:click="{() => (current = 'foo')}"
 >
   foo
 </button>
@@ -1625,11 +1618,11 @@ export function longpress(node: HTMLElement, duration: number) {
 </style>
 
 <label>
-  <input type="checkbox" bind:checked={big} />
+  <input type="checkbox" bind:checked="{big}" />
   big
 </label>
 
-<div class:big={big}>
+<div class:big="{big}">
   some {big ? 'big' : 'small'} text
 </div>
 ```
@@ -1649,9 +1642,9 @@ export function longpress(node: HTMLElement, duration: number) {
 如果有这么一些元素：
 
 ```html
-  <div>
-    <p>I'm a child of the div</p>
-  </div>
+<div>
+  <p>I'm a child of the div</p>
+</div>
 ```
 
 如果想将它们插入到自定义组件中时，可以在自定义组件中使用 `<slot>` 作为占位元素，像这样：
@@ -1682,9 +1675,9 @@ export function longpress(node: HTMLElement, duration: number) {
 
 ```html
 <div class="box">
-    <slot>
-        <em>no content was provided</em>
-    </slot>
+  <slot>
+    <em>no content was provided</em>
+  </slot>
 </div>
 ```
 
@@ -1744,16 +1737,16 @@ export function longpress(node: HTMLElement, duration: number) {
 `$$slots` 是一个对象，它的键是 `slot name`，当父组件传入了指定的 `slot` 的内容时，该对象就会被设置为以 `slot name` 为 key，对应的 value 为 true。（默认插槽的 key 为 'default'）
 
 ```html
-<article class:has-discussion={$$slots.comments}>
+<article class:has-discussion="{$$slots.comments}">
   <div>
     <h2>{title}</h2>
     <p>{tasksCompleted}/{totalTasks} tasks completed</p>
   </div>
   {#if $$slots.comments}
-    <div class="discussion">
-      <h3>Comments</h3>
-      <slot name="comments" />
-    </div>
+  <div class="discussion">
+    <h3>Comments</h3>
+    <slot name="comments" />
+  </div>
   {/if}
 </article>
 ```
@@ -1777,7 +1770,7 @@ export function longpress(node: HTMLElement, duration: number) {
   }
 </script>
 
-<div on:mouseenter={enter} on:mouseleave={leave}>
+<div on:mouseenter="{enter}" on:mouseleave="{leave}">
   <slot {hovering} />
 </div>
 ```
@@ -1788,11 +1781,11 @@ export function longpress(node: HTMLElement, duration: number) {
 
 ```html
 <Hoverable let:hovering>
-  <div class:active={hovering}>
+  <div class:active="{hovering}">
     {#if hovering}
-      <p>I am being hovered upon.</p>
+    <p>I am being hovered upon.</p>
     {:else}
-      <p>Hover over me!</p>
+    <p>Hover over me!</p>
     {/if}
   </div>
 </Hoverable>
@@ -1827,18 +1820,194 @@ export function longpress(node: HTMLElement, duration: number) {
 
 一般情况下，你应该结合二者一起使用，因为 `context` 是不具有反应性的，所以如果值会随时变化，你应该仍然使用 `store`。
 
+# 16. 特殊标签
 
+## 16.a `<svelte:self>`
 
+Svelte 包含了多种特殊标签。
 
-```末尾空白
-末尾空白
+`<svelte:self>` 允许组件访问自己。
 
+举个例子来说明该标签的使用场景，假设有一个文件树的应用，文件夹组件可能会包含其他的文件夹。所以对于文件夹组件而言，可能会出现这样的代码：
 
-
-
-
-
-
-
-
+```html
+{#if file.type === 'folder'}
+<Folder {...file} />
+{:else}
+<File {...file} />
+{/if}
 ```
+
+但是由于组件不能 `import` 自己，所以应该使用 `<svelte:self>` 来代替：
+
+```html
+{#if file.type === 'folder'}
+<svelte:self {...file} />
+{:else}
+<File {...file} />
+{/if}
+```
+
+## 16.b `<svelte:component>`
+
+我们可以通过 `if` 块实现同一位置使用不同类型的组件。
+
+```html
+{#if selected.color === 'red'}
+<RedThing />
+{:else if selected.color === 'green'}
+<GreenThing />
+{:else if selected.color === 'blue'}
+<BlueThing />
+{/if}
+```
+
+以上代码也可以通过 `<svelte:component>` 来实现。
+
+```html
+<svelte:component this="{selected.component}" />
+```
+
+`this` 的值可以是任意组件的构造函数，或者假值（falsy）。如果是假值，则该组件将不会渲染。
+
+## 16.c `<svelte:window>`
+
+可以通过 `<svelte:window>` 标签像其他 DOM 标签一样为 `window` 对象添加监听事件。 与 DOM 标签一样也可以添加事件修饰符，比如 `preventDefault`。
+
+```html
+<svelte:window on:keydown="{handleKeydown}" />
+```
+
+## 16.d `<svelte:window>` 属性绑定
+
+我们还可以将 `window` 事件的某些属性绑定到变量上，比如 `scrollY`。
+
+```html
+<svelte:window bind:scrollY="{y}" />
+```
+
+可以绑定以下属性：
+
+- `innerWidth`
+
+- `innerHeight`
+
+- `outerWidth`
+
+- `outerHeight`
+
+- `scrollX`
+
+- `scrollY`
+
+- `online` : `window.navigator.onLine` 的别名。
+
+除了 `scrollX` 和 `scrollY` 以外，其他的属性都是只读的。
+
+## 16.e `<svelte:body>`
+
+和 `<svelte:window>` 类似，`<svelte:body>` 标签允许你添加事件监听到 `document.body`。该标签与 `mouseenter` 和 `mouseleave` 事件一起使用时，不会触发 `window` 事件。
+
+```html
+<img
+  class:curious="{hereKitty}"
+  alt="Kitten wants to know what's going on"
+  src="vite.svg"
+/>
+```
+
+## 16.f `<svelte:head>`
+
+`<svelte:head>` 允许你在页面的 `head` 标签内插入内容：
+
+```html
+<svelte:head>
+  <link rel="stylesheet" href="theme.css" />
+</svelte:head>
+```
+
+## 16.g `<svelte:options>`
+
+`<svelte:options>` 标签允许你指定编译器选项。
+
+```html
+<svelte:options immutable />
+```
+
+该标签可以设置的选项有:
+
+- `immutable={true}` : 承诺不会使用可变数据，因此编译器可以通过简单的引用对比检查来确定值是否已经改变了。
+
+- `immutable={false}` : 默认值。
+
+- `accessors={true}` : 为组件的属性添加 `getter` 和 `setter`。
+
+- `accessors={false}` : 默认值。
+
+- `namespace="..."` : 将使用 `namespace` 的组件，最常见的是 `"svg"`。
+
+- `tag="..."` : 指定将此组件编译为自定义标签时使用的名称。
+
+# 17. module context
+
+## 17.a Sharing code
+
+在之前的例子中，所有组件中都是使用的 `<script>` 标签，每个组件实例开始运行时都会执行标签内的代码进行初始化，这对于绝大部分的组件来讲都是合适的。
+
+但在某些情况下，你可能需要在每个组件实例之外运行一些额外的代码。比如说你有五个音频播放器组件实例，如果其中某个实例开始播放了，那最好是能让其他音频播放器实例停止播放。
+
+```html
+<script lang="ts" context="module">
+  let current: HTMLAudioElement
+</script>
+```
+
+因为添加的 `current` 是在 `<script context="module">` 中的，所以该变量无论创建了多少个组件实例，`current` 只会有一个。
+
+```html
+<audio bind:this="{audio}" bind:paused on:play="{stopOthers}" controls {src} />
+```
+
+```typescript
+function stopOthers() {
+  if (current && current !== audio) {
+    current.pause()
+  }
+  current = audio
+}
+```
+
+此时可以在音频开始播放的事件中调用 `stopOthers`，用来暂停其他的播放器。
+
+## 17.b Exports
+
+所有从 `context="module"` 的 `script` 标签中导出的内容，都会成为该组件模块导出的一部分。
+
+```html
+<script lang="ts" context="module">
+  let current: HTMLAudioElement
+
+  const elements = new Set<HTMLAudioElement>()
+
+  export function stopAll() {
+    elements.forEach((element) => {
+      element.pause()
+    })
+  }
+</script>
+```
+
+在其他地方可以导入 `stopAll` 方法：
+
+```typescript
+import AudioPlayer, { stopAll } from './17.a_audio.svelte'
+```
+
+要注意的是你不能在 `context="module"` 的标签中 `export default`。因为组件本身就是作为 `default` 导出的。
+
+# 18. 调试
+
+## 18.a The @debug tag
+
+一般情况下你可以使用 `console.log(...)` 进行调试。但如果你需要在某一步停止程序运行，则可以使用 `{@debug ...}` 标签。`...` 为你想要查看的变量的列表（以 `,` 分隔）。
+

@@ -1,9 +1,10 @@
 import * as THREE from 'three'
-import Example, { iInitParams } from '../../../libs/example'
+import Example, { iInitParams } from '@/libs/example'
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import DracoUrl from 'three/examples/jsm/libs/draco/gltf/draco_decoder.js?url'
 
 export default class E_Keyframes extends Example {
   
@@ -29,7 +30,8 @@ export default class E_Keyframes extends Example {
     this.controls = controls
 
     const dracoLoader = new DRACOLoader()
-    dracoLoader.setDecoderPath('/assets/draco/gltf/')
+    // dracoLoader.setDecoderPath('/assets/draco/gltf/')
+    dracoLoader.setDecoderPath(DracoUrl.substring(0, DracoUrl.lastIndexOf('/') + 1))
 
     const loader = new GLTFLoader();
     loader.setDRACOLoader(dracoLoader)

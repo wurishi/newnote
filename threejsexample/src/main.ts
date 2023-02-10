@@ -16,8 +16,9 @@ const mainLoop = () => {
 mainLoop()
 
 import E_Keyframes from './examples/webgl/animation/keyframes'
+import E_Blending from './examples/webgl/animation/skinning/blending'
 
-const test = new E_Keyframes()
+const test = new E_Blending()
 
 test.startRun({ container: app })
 

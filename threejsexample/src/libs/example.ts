@@ -57,7 +57,14 @@ export default class Example {
   }
 
   protected onResize = () => {
-    this.renderer?.setSize(window.innerWidth, innerHeight)
+    if(this.camera) {
+      if(this.camera instanceof THREE.PerspectiveCamera) {
+        this.camera.aspect = window.innerWidth / window.innerHeight
+        this.camera.updateProjectionMatrix()
+      }
+    }
+
+    this.renderer?.setSize(window.innerWidth, window.innerHeight)
   }
 
   // protected init = (params: iInitParams): iInitDestroy | void => {}

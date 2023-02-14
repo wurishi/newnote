@@ -37,10 +37,8 @@ export default class E_Blending extends Example {
   protected init(params: iInitParams): void | iInitDestroy {
     super.init(params)
 
-    const scene = new THREE.Scene()
+    const scene = this.utils.createScene(null, [])
     this.scene = scene
-    scene.background = new THREE.Color(0xa0a0a0)
-    scene.fog = new THREE.Fog(0xa0a0a0, 10, 50)
 
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444)
     hemiLight.position.set(0, 20, 0)
@@ -114,14 +112,8 @@ export default class E_Blending extends Example {
       uiDestroy = this.createPanel(params.ui)
     })
 
-    const camera = new THREE.PerspectiveCamera(
-      45,
-      window.innerWidth / window.innerHeight,
-      1,
-      100
-    )
+    const camera = this.utils.createPerspectiveCamera(null, [-1, 2, 3])
     this.camera = camera
-    camera.position.set(-1, 2, 3)
 
     const controls = new OrbitControls(camera, this.renderer.domElement)
     this.controls = controls

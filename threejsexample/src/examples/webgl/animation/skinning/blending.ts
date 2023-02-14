@@ -16,19 +16,14 @@ export default class E_Blending extends Example {
   protected init(params: iInitParams): void | iInitDestroy {
     super.init(params)
 
-    const camera = new THREE.PerspectiveCamera(
-      45,
-      window.innerWidth / window.innerHeight,
-      1,
-      1000
+    const camera = this.utils.createPerspectiveCamera(
+      { far: 1000 },
+      [1, 2, -3],
+      [0, 1, 0]
     )
-    camera.position.set(1, 2, -3)
-    camera.lookAt(0, 1, 0)
     this.camera = camera
 
-    const scene = new THREE.Scene()
-    scene.background = new THREE.Color(0xa0a0a0)
-    scene.fog = new THREE.Fog(0xa0a0a0, 10, 50)
+    const scene = this.utils.createScene(null, [])
     this.scene = scene
 
     const hemLight = new THREE.HemisphereLight(0xffffff, 0x444444)

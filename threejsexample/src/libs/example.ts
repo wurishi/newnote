@@ -98,4 +98,83 @@ export default class Example {
       this.renderer?.render(this.scene, this.camera)
     }
   }
+
+  public utils = {
+    /**
+     * 创建一个近大远小的相机
+     * @param cameraP.fov 45
+     * @param cameraP.aspect window.innerWidth / window.innerHeight
+     * @param cameraP.near 1
+     * @param cameraP.far 100
+     * @returns
+     */
+    createPerspectiveCamera(
+      cameraParam?: {
+        fov?: number
+        aspect?: number
+        near?: number
+        far?: number
+      } | null,
+      cameraPos?: Array<number> | null,
+      cameraLook?: Array<number> | null
+    ) {
+      const {
+        fov = 45,
+        aspect = window.innerWidth / window.innerHeight,
+        near = 1,
+        far = 100,
+      } = cameraParam || {}
+      const camera = new THREE.PerspectiveCamera(fov, aspect, near, far)
+      if (cameraPos) {
+        const [x = 0, y = 0, z = 0] = cameraPos || {}
+        camera.position.set(x, y, z)
+      }
+      if (cameraLook) {
+        const [x = 0, y = 0, z = 0] = cameraLook || {}
+        camera.lookAt(x, y, z)
+      }
+      return camera
+    },
+
+    /**
+     * 
+     * @param background 0xa0a0a0
+     * @param fog.color 0xa0a0a0
+     * @param fog.near 10
+     * @param fog.far 50
+     * @param fog2.hex 0xffffff
+     * @param fog2.density undefined
+     * @returns 
+     */
+    createScene(
+      background?: THREE.ColorRepresentation | null,
+      fog?: iFog | null,
+      fog2?: iFog2 | null
+    ) {
+      const scene = new THREE.Scene()
+      scene.background = new THREE.Color(background || 0xa0a0a0)
+      if (fog) {
+        const [color = 0xa0a0a0, near = 10, far = 50] = fog
+        // console.log(color, near, far)
+        scene.fog = new THREE.Fog(color, near, far)
+      }
+      if (fog2) {
+        const [hex = 0xffffff, density] = fog2
+        // console.log(hex, density)
+        scene.fog = new THREE.FogExp2(hex, density)
+      }
+      return scene
+    },
+  }
+}
+
+type iFog = Array<any> & {
+  [0]?: THREE.ColorRepresentation
+  [1]?: number
+  [2]?: number
+}
+
+type iFog2 = Array<any> & {
+  [0]?: string | number
+  [1]?: number
 }

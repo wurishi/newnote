@@ -25,24 +25,19 @@ export default class E_Ik extends Example {
   protected init(params: iInitParams): void | iInitDestroy {
     super.init(params)
 
-    const scene = new THREE.Scene()
+    const scene = this.utils.createScene(0xdddddd, null, [0xffffff, 0.17])
     this.scene = scene
-    scene.fog = new THREE.FogExp2(0xffffff, 0.17)
-    scene.background = new THREE.Color(0xdddddd)
 
-    const camera = new THREE.PerspectiveCamera(
-      55,
-      window.innerWidth / window.innerHeight,
-      0.001,
-      5000
+    const camera = this.utils.createPerspectiveCamera(
+      {
+        fov: 55,
+        near: 0.001,
+        far: 5000,
+      },
+      [0.9728517749133652, 1.1044765132727201, 0.7316689528482836],
+      scene.position.toArray()
     )
     this.camera = camera
-    camera.position.set(
-      0.9728517749133652,
-      1.1044765132727201,
-      0.7316689528482836
-    )
-    camera.lookAt(scene.position)
 
     const ambientLight = new THREE.AmbientLight(0xffffff, 8)
     scene.add(ambientLight)
@@ -192,6 +187,11 @@ export default class E_Ik extends Example {
       this.OOI.sphere.getWorldPosition(this.mirrorSphereCamera.position)
       this.mirrorSphereCamera.update(this.renderer, this.scene!)
       this.OOI.sphere.visible = true
+    }
+
+    if (this.conf.followSphere) {
+      this.OOI.sphere.getWorldPosition(this.v0)
+      ;(this.controls as OrbitControls).target.lerp(this.v0, 0.1)
     }
 
     if (this.conf.turnHead) {

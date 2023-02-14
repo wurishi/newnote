@@ -11,20 +11,13 @@ export default class E_Keyframes extends Example {
     super.init(params)
     const pmremGenerator = new THREE.PMREMGenerator(this.renderer)
 
-    const scene = new THREE.Scene()
-    scene.background = new THREE.Color(0xbfe3dd)
+    const scene = this.utils.createScene(0xbfe3dd)
     scene.environment = pmremGenerator.fromScene(
       new RoomEnvironment(),
       0.04
     ).texture
 
-    const camera = new THREE.PerspectiveCamera(
-      40,
-      window.innerWidth / window.innerHeight,
-      1,
-      100
-    )
-    camera.position.set(5, 2, 8)
+    const camera = this.utils.createPerspectiveCamera({ fov: 40 }, [5, 2, 8])
 
     const controls = new OrbitControls(camera, this.renderer.domElement)
     controls.target.set(0, 0.5, 0)

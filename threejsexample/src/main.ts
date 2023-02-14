@@ -54,6 +54,7 @@ function buildMenu(examples: Record<string, () => Promise<unknown>>) {
         const parentFolder = folderMap[folderKey]
         menuSettings[path] = () => {
           startExample(examples[path])
+          saveLoc(path)
         }
         parentFolder
           .add(menuSettings, path)
@@ -81,8 +82,27 @@ async function startExample(fn: () => Promise<unknown>) {
   currentExampleDestroy = currentExample!.startRun({ ui, container: app })
 }
 
+function saveLoc(path: string) {
+  window.localStorage.setItem('_histroy_path', path)
+}
+
+function loadLoc() {
+  const path = window.localStorage.getItem('_histroy_path')
+  if (path) {
+    ;[lv3Examples, lv4Examples, lv5Examples].find((examples) => {
+      const fn = examples[path]
+      if (!!fn) {
+        startExample(fn)
+        return true
+      }
+    })
+  }
+}
+
 const run = () => {
   requestAnimationFrame(run)
   currentExample?.run()
 }
 run()
+
+loadLoc()

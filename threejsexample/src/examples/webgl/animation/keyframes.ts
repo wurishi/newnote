@@ -7,16 +7,23 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import DracoUrl from 'three/examples/jsm/libs/draco/gltf/draco_decoder.js?url'
 
 export default class E_Keyframes extends Example {
-  
-  protected override init(params:iInitParams) {
+  protected init(params: iInitParams) {
     super.init(params)
     const pmremGenerator = new THREE.PMREMGenerator(this.renderer)
 
     const scene = new THREE.Scene()
     scene.background = new THREE.Color(0xbfe3dd)
-    scene.environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture
+    scene.environment = pmremGenerator.fromScene(
+      new RoomEnvironment(),
+      0.04
+    ).texture
 
-    const camera = new THREE.PerspectiveCamera(40, window.innerWidth/window.innerHeight, 1, 100)
+    const camera = new THREE.PerspectiveCamera(
+      40,
+      window.innerWidth / window.innerHeight,
+      1,
+      100
+    )
     camera.position.set(5, 2, 8)
 
     const controls = new OrbitControls(camera, this.renderer.domElement)
@@ -31,20 +38,26 @@ export default class E_Keyframes extends Example {
 
     const dracoLoader = new DRACOLoader()
     // dracoLoader.setDecoderPath('/assets/draco/gltf/')
-    dracoLoader.setDecoderPath(DracoUrl.substring(0, DracoUrl.lastIndexOf('/') + 1))
+    dracoLoader.setDecoderPath(
+      DracoUrl.substring(0, DracoUrl.lastIndexOf('/') + 1)
+    )
 
-    const loader = new GLTFLoader();
+    const loader = new GLTFLoader()
     loader.setDRACOLoader(dracoLoader)
-    loader.load('/assets/models/gltf/LittlestTokyo.glb', gltf => {
-      const model = gltf.scene
-      model.position.set(1, 1, 0)
-      model.scale.set(0.01, 0.01, 0.01)
-      scene.add(model)
+    loader.load(
+      '/assets/models/gltf/LittlestTokyo.glb',
+      (gltf) => {
+        const model = gltf.scene
+        model.position.set(1, 1, 0)
+        model.scale.set(0.01, 0.01, 0.01)
+        scene.add(model)
 
-      const mixer = new THREE.AnimationMixer(model)
-      this.mixer = mixer
-      mixer.clipAction(gltf.animations[0]).play()
-
-    },undefined,err => console.error(err))
+        const mixer = new THREE.AnimationMixer(model)
+        this.mixer = mixer
+        mixer.clipAction(gltf.animations[0]).play()
+      },
+      undefined,
+      (err) => console.error(err)
+    )
   }
 }

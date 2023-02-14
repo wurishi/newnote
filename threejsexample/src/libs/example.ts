@@ -6,6 +6,7 @@ interface iControls {
 
 export interface iInitParams {
   container: Element
+  ui: Element
 }
 
 export interface iInitDestroy {
@@ -57,8 +58,8 @@ export default class Example {
   }
 
   protected onResize = () => {
-    if(this.camera) {
-      if(this.camera instanceof THREE.PerspectiveCamera) {
+    if (this.camera) {
+      if (this.camera instanceof THREE.PerspectiveCamera) {
         this.camera.aspect = window.innerWidth / window.innerHeight
         this.camera.updateProjectionMatrix()
       }
@@ -80,10 +81,14 @@ export default class Example {
     return () => {
       d?.call(this)
       window.removeEventListener('resize', this.onResize)
+      this.renderer?.dispose()
+      this.renderer?.domElement.parentElement?.removeChild(
+        this.renderer?.domElement
+      )
     }
   }
 
-  public run = () => {
+  public run = (): void => {
     const delta = this.clock.getDelta()
 
     this.mixer?.update(delta)

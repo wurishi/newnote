@@ -70,3 +70,14 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+#preview {
+  position: absolute;
+  left: 320px;
+  top: 0;
+  background-color: black;
+  width: calc(100vw - 400px);
+  height: calc(100vh - 50px);
+  overflow: auto;
+  padding: 20px;
+}

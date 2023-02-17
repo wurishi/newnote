@@ -40,6 +40,8 @@ export default class E_Blending extends Example {
     const scene = this.utils.createScene(null, [])
     this.scene = scene
 
+    this.renderer.shadowMap.enabled = true
+
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444)
     hemiLight.position.set(0, 20, 0)
     scene.add(hemiLight)

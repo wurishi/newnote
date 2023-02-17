@@ -141,6 +141,7 @@ export async function loadMarkdown(path: string) {
               return true
             }
           }
+          return false
         })
         if (idx >= 0) {
           const list = fileTree[idx]
@@ -148,6 +149,8 @@ export async function loadMarkdown(path: string) {
           fileTree.splice(0, idx + 1)
           showTree.push(...fileTree)
           if (Array.isArray(list[1][2])) {
+            showTree.push(['header', {level: 1}, '附A:'])
+            showTree.push(['para', '本例中使用到的'])
             list[1][2].forEach((item) => {
               if (Array.isArray(item) && item[0] === 'listitem') {
                 const num = Number(item[1])
@@ -157,6 +160,8 @@ export async function loadMarkdown(path: string) {
             })
           }
         }
+        showTree.push(['header', {level: 1}, '附B:'])
+        showTree.push(['para', '常用类'])
         for (let i = 1; i <= 100; i++) {
           const partTree = allTreeMap.get(i)
           partTree && showTree.push(...partTree)

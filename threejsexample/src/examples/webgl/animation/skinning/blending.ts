@@ -41,6 +41,8 @@ export default class E_Blending extends Example {
     dirLight.shadow.camera.far = 40
     scene.add(dirLight)
 
+    this.renderer.shadowMap.enabled = true
+
     // scene.add(new THREE.CameraHelper(dirLight.shadow.camera))
 
     const mesh = new THREE.Mesh(
@@ -282,7 +284,7 @@ export default class E_Blending extends Example {
     duration: number
   ) => {
     this.setWeight(endAction, 1)
-    endAction.time = 0
+    endAction.time = 1
 
     startAction.crossFadeTo(endAction, duration, true)
   }

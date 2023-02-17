@@ -5,6 +5,8 @@
   - 104
   - 105
 
+在本例中：
+
 ```js
 scene.environment = pmremGenerator.fromScene(
   new RoomEnvironment(),

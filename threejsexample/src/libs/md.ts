@@ -42,6 +42,13 @@ function highlightMarkdown() {
       return html
     },
     preprocessTreeNode(tree: any) {
+      if (Array.isArray(tree) && tree[0] === 'code_block') {
+        if (codeStart) {
+          codeArray = codeArray.concat('    ' + (tree[1] + '').split('\n') + '    ')
+          return ''
+        }
+        return tree
+      }
       if (Array.isArray(tree) && tree[0] === 'para') {
         if (codeStart) {
           if (tree[1]) {
@@ -125,6 +132,7 @@ export async function loadMarkdown(path: string) {
     const raw = await (await fetch('/' + arr.join('/'))).text()
     if (raw) {
       const fileTree = markdown.parse(raw)
+      // console.log(fileTree)
       // 查找link
       if (Array.isArray(fileTree)) {
         const idx = fileTree.findIndex((item) => {
@@ -193,24 +201,3 @@ function splitMarkdownTree(tree: any, level = 1) {
   }
   return splitTreeMap
 }
-
-// fetch('/note.md').then((resp) => {
-//   resp.text().then((raw) => {
-//     const tn = highlightMarkdown()
-//     const tree = markdown.parse(raw)
-//     const toTree = markdown.toHTMLTree(
-//       tree,
-//       {},
-//       {
-//         preprocessTreeNode: tn.preprocessTreeNode,
-//       }
-//     )
-//     const html = markdown.renderJsonML(toTree)
-//     const div = document.createElement('div')
-//     div.innerHTML = tn.replaceCode(html)
-//     document.body.appendChild(div)
-//     console.log(tree)
-//     // console.log(toTree)
-//     // console.log(html)
-//   })
-// })

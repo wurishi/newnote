@@ -51,7 +51,9 @@ export default class E_Morph extends Example {
       destroy = this.createGUI(params.ui, gltf.animations)
     })
 
-    return destroy!
+    return () => {
+      destroy && destroy()
+    }
   }
 
   private createGUI(root: Element, animations: THREE.AnimationClip[]) {

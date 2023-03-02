@@ -307,9 +307,9 @@ export default class E_Blending extends Example {
   private walkWeight = 0
   private runWeight = 0
 
-  public run = () => {
+  public run() {
     if (!this.start) {
-      return
+      return 0
     }
     this.idleWeight = this.idleAction?.getEffectiveWeight()!
     this.walkWeight = this.walkAction?.getEffectiveWeight()!
@@ -331,6 +331,8 @@ export default class E_Blending extends Example {
     if (this.scene && this.camera) {
       this.renderer?.render(this.scene, this.camera)
     }
+
+    return mixerUpdateDelta
   }
 
   private updateWeightSliders = () => {

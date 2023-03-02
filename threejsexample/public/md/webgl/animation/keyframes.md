@@ -5,9 +5,9 @@
   - 104
   - 105
 
-在本例中：
+## 环境纹理
 
-```js
+```typescript
 scene.environment = pmremGenerator.fromScene(
   new RoomEnvironment(),
   0.04

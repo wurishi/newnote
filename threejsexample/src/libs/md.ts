@@ -74,7 +74,7 @@ function highlightMarkdown() {
             codeArray = (tree[1][1] + '').split('\n')
             codeType = codeArray.splice(0, 1).join('') || 'html'
             if (supportLan.indexOf(codeType) < 0) {
-              console.log('不支持' + codeType)
+              // console.log('不支持' + codeType)
               return tree
             }
             const code = hljs.highlight(codeArray.join('\n'), {

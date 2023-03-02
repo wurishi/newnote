@@ -10,13 +10,28 @@
   - 115
   - 116
 
+## 控制手臂
+
 本例中，使用 `TransformControls` 让用户可以自己在一定范围内容控制场景中人物的左手。 然后利用 `CCDIKSolver`，模拟了整条手臂骨骼的运动。
 
-## turn head
+```typescript
+const transformControls = new TransformControls(
+  camera,
+  this.renderer.domElement
+)
+this.transformControls = transformControls
+transformControls.size = 0.75
+transformControls.showX = false
+transformControls.space = 'world'
+transformControls.attach(this.OOI.target_hand_l)
+scene.add(transformControls)
+```
+
+## 头部朝向
 
 以下代码保证头部始终朝向了场景中的水晶球：
 
-```js
+```typescript
 if (this.conf.turnHead) {
   this.OOI.sphere.getWorldPosition(this.v0)
   this.OOI.head.lookAt(this.v0)

@@ -6,7 +6,7 @@
   - 108
   - 109
 
-本例中:
+## 动画之间的过渡
 
 ```typescript
 private setWeight = (action: THREE.AnimationAction, weight: number) => {
@@ -29,9 +29,9 @@ private executeCrossFade = (
 
 通过 `crossFadeTo` 平滑地调整前后二个动画的 `effectiveWeight` 值来实现动画的平滑过渡。
 
-另外通过：
+## 单步播放
 
-```js
+```typescript
 if (this.singleStepMode) {
   mixerUpdateDelta = this.sizeOfNextStep
   this.sizeOfNextStep = 0

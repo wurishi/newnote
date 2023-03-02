@@ -177,9 +177,9 @@ export default class E_Ik extends Example {
 
   private v0 = new THREE.Vector3()
 
-  public run = () => {
+  public run() {
     if (!this.start) {
-      return
+      return 0
     }
 
     if (this.mirrorSphereCamera) {
@@ -210,5 +210,7 @@ export default class E_Ik extends Example {
 
     this.controls?.update()
     this.renderer.render(this.scene!, this.camera!)
+
+    return 0
   }
 }

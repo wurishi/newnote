@@ -1059,6 +1059,7 @@ export default {
   lsXGzf: 'Input - Keyboard',
   ldf3Rf: 'Full MAME/MESS Shader Pipe',
   ldX3RX: 'Exterminate!',
+  '7dSGW1': 'Green Field Diorama'
   // https://www.shadertoy.com/results?query=&sort=newest&from=68208&num=12
   // 5685 / 5755
 }

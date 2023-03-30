@@ -69,6 +69,10 @@ electron
 
 [参考资料](https://github.com/chokcoco/iCSS)
 
+# icss-svelte (基于 icss 重制，使用 vite + svelte 使得能够在 vscode online 上直接运行)
+
+[参考资料](https://github.com/chokcoco/iCSS)
+
 # javascriptbook
 
 参考资料: 《你所不知道的 Javascript》_(进行中)_

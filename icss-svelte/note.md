@@ -419,7 +419,7 @@ display: -webkit-box;
 }
 ```
 
-## 6.2 借助伪元素及 `text-align: justify`
+## 6.2 `text-align: justify`
 
 `text-align: justify`可以用来实现两端对齐文本效果：
 
@@ -433,7 +433,7 @@ display: -webkit-box;
 >
 > 虽然 `text-align: justify`属性是全兼容的，但是要使用它实现两端对齐，需要注意在模块之间添加 **【空格/换行符/制表符】**才能起作用。
 
-尝试给在 HTML 中添加换行换，但仍无效。
+尝试给在 HTML 中添加换行符，但仍无效。
 
 还需要修改 `text-align-last`属性，该属性规定如何对齐文本的最后一行，并且仅在 `text-align: justify`时才起作用。
 

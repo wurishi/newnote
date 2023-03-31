@@ -76,7 +76,7 @@ function init() {
     .add(guiData, 'current', shaderNameList)
     .name('当前 ShaderToy')
     .onChange((key) => {
-      // window.localStorage.setItem('key_last', key)
+      window.localStorage.setItem('key_last', key)
       const url = keyToUrlMap.get(key);
       if (url) {
         removeFolders(gui, folderMap);

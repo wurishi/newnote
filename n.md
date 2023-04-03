@@ -30,6 +30,8 @@ brmReducer: 左边第三个按钮
 popupReducer: 弹出框
 propertiesReducer: 
 
+galaxiuinodeweb
+
 
 # GIT
 

@@ -9,6 +9,7 @@
       key,
     });
   });
+  componentList.sort((a, b) => Number(a.name)-Number(b.name));
 
   const selectHandler = (evt) => {
     let target = document.getElementById('content');
@@ -22,7 +23,7 @@
       target.id = 'content';
       document.body.appendChild(target);
 
-      fn().then(Module => {
+      fn().then((Module: any) => {
         new Module.default({
           target
         })

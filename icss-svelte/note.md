@@ -1253,3 +1253,87 @@ body {
 3. 兼顾多操作系统：MAC OS 下的很多中文字体在 Windows 下都没有预装，所以要针对不同操作系统定义字体。
 
 4. 兼顾旧操作系统，以字体族系列 `serif` 和 `sans-serif` 结尾：当使用一些非常新的字体时，要考虑向下兼容，兼顾一些极旧的操作系统。使用字体族系列 `serif` 和 `sans-serif` 结尾总归是不错的选择。
+
+# 17. 再探究字体的渲染规则及fallback机制
+
+## 17.1 字体是如何渲染的
+
+### A：解码
+
+1. Web 服务器返回的 HTTP 头中的 `Content-Type: text/html; charset=` 信息，一般拥有最高的优先级。
+
+2. 网页本身 `meta header` 中的 `Context-Type` 信息的 `charset` 部分，当 HTTP 头中未指定编码或者本地文件时使用这部分判断。
+
+3. 如前两条都没有找到，浏览器菜单里一般允许用户强制指定编码。
+
+### B：分段
+
+编码确定后，网页就被解码成了 Unicode 字符流。因为得到的文本可能是很多种语言混杂的，里面可能有中文，英文等，它们可能要用不同的字体显示：
+
+为了统一处理所有这些复杂的情况，会将文本分为由不同语言组成的小段，在有的文本布局引擎里，这个步骤称为 "itemize"，分解后的文本段常被称作 "text run"，但是具体划分的规则可能根据不同的引擎有所区别。
+
+### C：字体匹配
+
+分段之后，则要根据设置的不同 `font-family` 对每一段文字进行字体匹配。这里遵循字体的 fallback 机制。
+
+fallback 机制：在操作系统介面和网页等现代排版环境下，如果指定用字体A来显示某字符X，但该字体并不支持这个字符（甚至该字体当前不可用），排版引擎通常不会直接放弃，它会根据一个预先记好的列表来尝试寻找能显示字符X的字体，如果找到字体B能够渲染，那就用字体B来显示字符X。字体B就是当前这个情况的 fallback。
+
+以 `font-family: Helvetica, Arial;` 为例，Arial 字体就是一种 fallback ，当指定的第一选择字体 Helvetica 不可用时，则尝试去寻找 Arial 是否可用。
+
+系统所包含字体不只和系统预装的字体有关，还和系统上安装的软件有关。
+
+### D：渲染
+
+当确定了字体以后，就可以将文本，字体等参数一起交给具体的排版引擎，生成字形和位置，然后根据不同的平台调用不同的字体 rasterizer 将字形转换成最后显示在屏幕上的图案。一般浏览器都会选择平台原生的 rasterizer。比如 Mac OS X 下用 Core Graphics，Linux/X11 下用 FreeType，Windows 下用 GDI/DirectWrite 等。
+
+## 17.2 影响字体渲染的因素
+
+影响字体的渲染因素有很多，总的来说：
+
+- Web 页面的 `lang`, `charset`和浏览器本身的设置都会对默认字体产生影响
+
+- 不同操作系统，不同浏览器的默认中文，英文字体的设置也都有区别
+
+### A：serif 和 sans-serif 不总是生效
+
+以 `font-family: sans-serif` 为例，虽然希望浏览器选择一款非衬线字体展示文字，但是可以通过修改浏览器的默认配置来使得 sans-serif 展示一款 serif 字体。在 Chrome 浏览中，可以通过设置->外观->自定义字体 来改变。
+
+# 18. 使用 `position: sticky` 实现粘性布局
+
+CSS 中 position 的取值大概有以下几个：
+
+```css
+{
+  position: static;
+  position: relative;
+  position: absolute;
+  position: fixed;
+  position: inherit;
+  position: initial;
+  position: unset;
+  position: sticky;
+}
+```
+
+sticky 英文字面意思是粘，粘贴，所以一般称之为粘性定位。这是一个结合了 `relative` 和 `fixed` 两种定位功能于一体的特殊定位，适用于一些特殊场景。
+
+首先元素会先按照普通文档流定位，然后相对于该元素在流中的 flow root(BFC) 和 containing block（最近的块级祖先元素）定位。
+
+而后，元素定位表现为在跨越特定阈值前为相对定位，之后为固定定位。
+
+这个特定阈值指的是 top, right, bottom, left 之一。
+
+## 18.1 生效规则
+
+`position: sticky` 的生效是有一定限制的：
+
+1. 必须指定 top, bottom, left, right 四个阈值中的一个，才可使粘性定位生效。
+
+当 `top` 和 `bottom` 同时设置时，`top` 生效的优先级高。`left` 和 `right` 同时设置时，`left` 的优先级高。
+
+2. 设定为 `position: sticky` 元素的任意父节点的 `overflow` 属性必须是 `visible`，否则 sticky 不会生效。
+
+如果元素的任意父节点定位设置为 `position: overflow`，则父容器无法进行滚动，所以 `position: sticky` 元素也不会有滚动然后固定的情况。
+
+3. 达到设置的阈值，就是元素表现为 `relative` 还是 `fixed` 是根据元素是否达到设定了的阈值决定的。
+

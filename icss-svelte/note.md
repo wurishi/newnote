@@ -1,3 +1,5 @@
+[参考资料](https://github.com/chokcoco/iCSS)
+
 # 1. 左边框的多种实现方式
 
 假设有一个单标签 `div`：
@@ -1012,7 +1014,41 @@ console.log(cssVariable)
 document.documentElement.style.setProperty('--bgColor', '#0f0')
 ```
 
-# 14. CSS 命名方式是否有必要规范
+# 14. CSS 命名方式是否有必要规范及 BEM
+
+遵循一套 CSS 命名规范能够在一定程度上避免修改 CSS 所产生的诸如这个样式是否在其他地方被引用？这个样式能否删除等问题。
+
+规范中需要注意到的几部分：
+
+- 布局：以`g`为命名空间，例如：`g-wrap`, `g-header`, `g-content`
+
+- 状态：以`s`为命名空间，表示动态的，具有交互性质的状态，例如：`s-current`, `s-selected`
+
+- 工具：以`u`为命名空间，表示不耦合业务逻辑的，可复用的工具，例如：`u-clearfix`, `u-ellipsis`
+
+- 组件：以`m`为命名空间，表示可复用，移植的组件模块，例如：`m-slider`, `m-dropMenu`
+
+- 钩子：以`j`为命名空间，表示特定给 Javascript 调用的类名，例如：`j-request`, `j-open`
+
+## 15.1 BEM
+
+BEM 的意思就是块（block），元素（element），修饰符（modifier），是由 Yandex 团队提出的一种 CSS Class 命名方法。
+
+类似于：
+
+```css
+.block {}
+.block__element {}
+.block--modifier {}
+```
+
+- 就一个页面来说，开发者其实知道它是由各类模块构成的。
+
+- 而元素就是块中的一部分，具有某种功能。元素是依赖上下文的。
+
+- 元素只有处于他们应该属于的块的上下文中时才有意义。修饰符则表示块或元素的一些状态，例如 hover, active, disabled 等。
+
+BEM 中，一个项目中的块名必须是唯一的，明确指出它所描述的是哪个块。相同块的实例可以有相同的名字。一个块范围内的一种元素的名字也必须是唯一的，一种元素也可以重复出现。
 
 # 15. 关于 `reset.css`
 

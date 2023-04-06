@@ -37,6 +37,7 @@ function init() {
         const info = createInfo(config);
         const renderpass = createShaderPassConfig(config);
 
+        showShaderInfo(info);
         shaderToy.newEffect(renderpass);
     };
     mainFolder.add(guiData, 'current', shaderNames).name('shader').onChange(name => {
@@ -82,7 +83,7 @@ function createShaderPassConfig(config: any): ShaderPassConfig[] {
             // TODO: 其他配置以及output
         });
     }
-    console.log(shaderPassConfigs)
+    // console.log(shaderPassConfigs)
     return shaderPassConfigs;
 }
 
@@ -115,6 +116,10 @@ function createInputs(inputs: any): EffectPassInfo[] {
         });
     }
     return infos;
+}
+
+function showShaderInfo(info:Info) {
+
 }
 
 const textureMap: any = {

@@ -11,7 +11,6 @@ export default {
   llj3Rz: '[NV15] Space Curvature',
   Ms2SD1: 'Seascape',
   XslGRr: 'Clouds',
-  '3l23Rh': 'Protean clouds',
   '4ttSWf': 'Rainforest',
   MdX3zr: 'Flame',
   fsjyR3: 'Lover',
@@ -1059,7 +1058,9 @@ export default {
   lsXGzf: 'Input - Keyboard',
   ldf3Rf: 'Full MAME/MESS Shader Pipe',
   ldX3RX: 'Exterminate!',
-  '7dSGW1': 'Green Field Diorama'
+  '7dSGW1': 'Green Field Diorama',
+  cdV3DW: 'Electric Eel Universe',
+  '3l23Rh': 'Protean clouds',
   // https://www.shadertoy.com/results?query=&sort=newest&from=68208&num=12
   // 5685 / 5755
-}
+};

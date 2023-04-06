@@ -8,6 +8,7 @@ import { fact, removeFolders } from './factGui';
 import createMediaRecorder from './utils/mediaRecorder';
 import { requestFullScreen } from './utils/index';
 import PreviewConfig from './preview'
+import base from './utils/proxy'
 
 const shaders = import.meta.glob('./shadersources/*.ts');
 
@@ -75,7 +76,7 @@ function init() {
     .add(guiData, 'current', shaderNameList)
     .name('当前 ShaderToy')
     .onChange((key) => {
-      // window.localStorage.setItem('key_last', key)
+      window.localStorage.setItem('key_last', key)
       const url = keyToUrlMap.get(key);
       if (url) {
         removeFolders(gui, folderMap);
@@ -339,6 +340,9 @@ const cfSet = new Set<string>()
 })()
 
 function showPreviews(show: boolean) {
+  if(base) {
+    return;
+  }
   let list: HTMLDivElement = document.querySelector('#previews')!;
   if (!list) {
     list = document.createElement('div');

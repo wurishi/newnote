@@ -1061,6 +1061,7 @@ export default {
   '7dSGW1': 'Green Field Diorama',
   cdV3DW: 'Electric Eel Universe',
   '3l23Rh': 'Protean clouds',
+  '4tl3W8': `[2TC 15]2 Tweets Challenge`,
   // https://www.shadertoy.com/results?query=&sort=newest&from=68208&num=12
   // 5685 / 5755
 };

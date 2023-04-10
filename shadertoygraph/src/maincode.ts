@@ -1,6 +1,6 @@
 import ShaderToy from './shaderToy';
 import Stats from 'stats.js';
-import { GUI } from 'dat.gui';
+import { GUI, GUIController } from 'dat.gui';
 import { EffectPassInfo, Sampler, ShaderPassConfig } from './type';
 import Names from './name';
 import Images from './image';
@@ -39,8 +39,9 @@ function init() {
 
         showShaderInfo(info);
         shaderToy.newEffect(renderpass);
+        recordViewedShader(config);
     };
-    mainFolder.add(guiData, 'current', shaderNames).name('shader').onChange(name => {
+    const current = mainFolder.add(guiData, 'current', shaderNames).name('shader').onChange(name => {
         const fn = shaders[name];
         fn().then((module: any) => {
             setCurrent(module.default);
@@ -48,6 +49,7 @@ function init() {
     });
 
     mainFolder.open();
+    lazyInit(current);
 }
 init();
 
@@ -118,7 +120,27 @@ function createInputs(inputs: any): EffectPassInfo[] {
     return infos;
 }
 
-function showShaderInfo(info:Info) {
+const KEY_当前选择 = '_current_shader';
+const KEY_已查看列表 = '_visited_list';
+
+function showShaderInfo(info: Info) {
+}
+
+function recordViewedShader(config: any) {
+    // console.log(config)
+    // // config.info.id
+    // console.log(configs)
+
+    const id = config.info.id;
+    window.localStorage.setItem(KEY_当前选择, id);
+
+    const listStr = window.localStorage.getItem(KEY_已查看列表) || '[]';
+    const vSet = new Set<string>(JSON.parse(listStr));
+    vSet.add(id);
+    window.localStorage.setItem(KEY_已查看列表, JSON.stringify([...vSet]));
+}
+
+function lazyInit(gui:GUIController) {
 
 }
 

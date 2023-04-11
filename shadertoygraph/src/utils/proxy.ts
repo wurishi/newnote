@@ -1,5 +1,5 @@
-// const base = '/proxy/22222';
-const base = '';
+const base = '/proxy/22222';
+// const base = '';
 
 export default base;
 

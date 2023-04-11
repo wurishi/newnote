@@ -9,12 +9,16 @@ import { getAssetsUrl } from './utils/proxy';
 const configs = import.meta.glob('../export/*.json');
 
 function init() {
+    const app = document.querySelector('#app')!;
+    const tools = document.querySelector('#tools')!;
+
     const stats = new Stats();
-    document.body.appendChild(stats.dom);
+    tools.appendChild(stats.dom);
     stats.dom.style.left = '';
     stats.dom.style.right = '300px';
 
     let shaderToy = new ShaderToy();
+    app.appendChild(shaderToy.canvas);
     shaderToy.start(() => {
         stats.update();
     });
@@ -40,6 +44,9 @@ function init() {
         showShaderInfo(info);
         shaderToy.newEffect(renderpass);
         recordViewedShader(config);
+
+        // TODO: sound controller
+        shaderToy.setGainValue(0.5);
     };
     const current = mainFolder.add(guiData, 'current', shaderNames).name('shader').onChange(name => {
         const fn = shaders[name];
@@ -49,7 +56,7 @@ function init() {
     });
 
     mainFolder.open();
-    lazyInit(current);
+    lazyInit(current, shaderNames, tools as HTMLElement);
 }
 init();
 
@@ -79,13 +86,41 @@ function createShaderPassConfig(config: any): ShaderPassConfig[] {
                     type: 'image',
                     code: pass.code,
                     inputs: createInputs(pass.inputs),
-                    outputs: []
+                    outputs: createOutputs(pass.outputs)
                 });
+            } else if (pass.type === 'common') {
+                shaderPassConfigs.push({
+                    name: pass.name,
+                    type: 'common',
+                    code: pass.code,
+                    inputs: createInputs(pass.inputs),
+                    outputs: createOutputs(pass.outputs)
+                })
+            } else if (pass.type === 'buffer') {
+                shaderPassConfigs.push({
+                    name: pass.name,
+                    type: 'buffer',
+                    code: pass.code,
+                    inputs: createInputs(pass.inputs),
+                    outputs: createOutputs(pass.outputs)
+                })
+            } else if (pass.type === 'sound') {
+                shaderPassConfigs.push({
+                    name: pass.name,
+                    type: 'sound',
+                    code: pass.code,
+                    inputs: createInputs(pass.inputs),
+                    outputs: createOutputs(pass.outputs)
+                })
             }
+            else {
+                console.warn('not do it');
+            }
+            console.log(pass);
             // TODO: 其他配置以及output
         });
     }
-    // console.log(shaderPassConfigs)
+    console.log(shaderPassConfigs)
     return shaderPassConfigs;
 }
 
@@ -120,6 +155,33 @@ function createInputs(inputs: any): EffectPassInfo[] {
     return infos;
 }
 
+function createOutputs(outputs: any) {
+    const outputArr = new Array<{
+        id: number
+        channel: number
+    }>();
+    if (Array.isArray(outputs)) {
+        if (outputs.length === 1) {
+            const oid = outputs[0].id;
+            if (oid === '4dXGR8') {
+                outputArr.push({
+                    channel: 0, id: 0
+                })
+            }
+            else if (oid === '4dfGRr') {
+                // main image 不需要
+            }
+            else {
+                console.warn('无法识别的 id:', outputs[0].id);
+            }
+        } else if (outputs.length > 0) {
+            console.warn('无法识别的 outputs:', outputs);
+        }
+    }
+
+    return outputArr;
+}
+
 const KEY_当前选择 = '_current_shader';
 const KEY_已查看列表 = '_visited_list';
 
@@ -127,10 +189,6 @@ function showShaderInfo(info: Info) {
 }
 
 function recordViewedShader(config: any) {
-    // console.log(config)
-    // // config.info.id
-    // console.log(configs)
-
     const id = config.info.id;
     window.localStorage.setItem(KEY_当前选择, id);
 
@@ -140,8 +198,42 @@ function recordViewedShader(config: any) {
     window.localStorage.setItem(KEY_已查看列表, JSON.stringify([...vSet]));
 }
 
-function lazyInit(gui:GUIController) {
+function lazyInit(gui: GUIController, nameToValue: Record<string, string>, dom: HTMLElement) {
+    const list = document.createElement('div');
+    dom.appendChild(list);
+    list.style.display = 'flex';
+    setTimeout(() => {
+        try {
+            const id = window.localStorage.getItem(KEY_当前选择);
+            if (id && !gui.getValue()) {
+                const name = (Names as any)[id] || id
+                const value = nameToValue[name];
+                if (value) {
+                    gui.setValue(value);
+                } else {
+                    console.warn('lazyinit error: ', id);
+                }
+            }
 
+            const listStr = window.localStorage.getItem(KEY_已查看列表) || '[]';
+            const visitList = JSON.parse(listStr);
+            const visitSet = new Set<string>();
+            visitList.forEach((id: any) => {
+                const name = (Names as any)[id] || id
+                visitSet.add(nameToValue[name]);
+            });
+            Object.keys(nameToValue).forEach(key => {
+                const value = nameToValue[key];
+                if(!visitSet.has(value)) {
+                    const div = document.createElement('button');
+                    div.innerHTML = key;
+                    list.appendChild(div);
+                }
+            })
+        } catch (exp) {
+
+        }
+    }, 1000)
 }
 
 const textureMap: any = {

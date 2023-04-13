@@ -3,7 +3,7 @@ import Stats from 'stats.js';
 import { GUI, GUIController } from 'dat.gui';
 import { EffectPassInfo, Sampler, ShaderPassConfig } from './type';
 import Names from './name';
-import Images from './image';
+import Images, { getMusic } from './image';
 import { getAssetsUrl } from './utils/proxy';
 
 const configs = import.meta.glob('../export/*.json');
@@ -42,11 +42,8 @@ function init() {
         const renderpass = createShaderPassConfig(config);
 
         showShaderInfo(info);
-        shaderToy.newEffect(renderpass);
+        shaderToy.newEffect(renderpass, musicCallback);
         recordViewedShader(config);
-
-        // TODO: sound controller
-        shaderToy.setGainValue(0.5);
     };
     const current = mainFolder.add(guiData, 'current', shaderNames).name('shader').onChange(name => {
         const fn = shaders[name];
@@ -55,10 +52,25 @@ function init() {
         });
     });
 
+    createMainUI(mainFolder, shaderToy)
+
     mainFolder.open();
     lazyInit(current, shaderNames, tools as HTMLElement);
 }
 init();
+
+function musicCallback(wave:Uint8Array, passID: number) {
+
+}
+
+function createMainUI(root:GUI, st:ShaderToy) {
+    const uiData = {
+        gain: 0
+    };
+    const gainControl = root.add(uiData, 'gain', 0, 1, 0.1).onChange(v => {
+        st.setGainValue(v);
+    }).name('音量');
+}
 
 type Info = {
     id: string;
@@ -143,6 +155,13 @@ function createInputs(inputs: any): EffectPassInfo[] {
                 }
                 sampler.filter = input.sampler?.filter || 'mipmap';
                 sampler.wrap = input.sampler?.wrap || 'repeat'
+            } 
+            else if(input.type === 'music') {
+                const music = getMusic(input.id);
+                src = getAssetsUrl(music);
+            }
+            else {
+                console.log('未处理的input', input)
             }
             infos.push({
                 channel,
@@ -204,7 +223,12 @@ function lazyInit(gui: GUIController, nameToValue: Record<string, string>, rootD
     list.style.display = 'flex';
     list.style.flexWrap = 'wrap';
     list.style.gap = '5px';
-    list.addEventListener('click', () => {
+    
+
+    const div = document.createElement('button');
+    div.innerHTML = '全部 visited';
+    list.appendChild(div);
+    div.addEventListener('click', () => {
         rootDOM.removeChild(list);
         const listStr = window.localStorage.getItem(KEY_已查看列表) || '[]';
         const vSet = new Set<string>(JSON.parse(listStr));
@@ -214,10 +238,6 @@ function lazyInit(gui: GUIController, nameToValue: Record<string, string>, rootD
         })
         window.localStorage.setItem(KEY_已查看列表, JSON.stringify([...vSet]));
     })
-
-    const div = document.createElement('button');
-    div.innerHTML = '全部 visited';
-    list.appendChild(div);
 
     const clickHandler = (evt: Event) => {
         const t: any = evt.target!;

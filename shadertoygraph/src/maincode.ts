@@ -198,10 +198,34 @@ function recordViewedShader(config: any) {
     window.localStorage.setItem(KEY_已查看列表, JSON.stringify([...vSet]));
 }
 
-function lazyInit(gui: GUIController, nameToValue: Record<string, string>, dom: HTMLElement) {
+function lazyInit(gui: GUIController, nameToValue: Record<string, string>, rootDOM: HTMLElement) {
     const list = document.createElement('div');
-    dom.appendChild(list);
+    rootDOM.appendChild(list);
     list.style.display = 'flex';
+    list.style.flexWrap = 'wrap';
+    list.style.gap = '5px';
+    list.addEventListener('click', () => {
+        rootDOM.removeChild(list);
+        const listStr = window.localStorage.getItem(KEY_已查看列表) || '[]';
+        const vSet = new Set<string>(JSON.parse(listStr));
+        Object.values(nameToValue).forEach(v => {
+            const arr = v.split('_');
+            vSet.add(arr[0]);
+        })
+        window.localStorage.setItem(KEY_已查看列表, JSON.stringify([...vSet]));
+    })
+
+    const div = document.createElement('button');
+    div.innerHTML = '全部 visited';
+    list.appendChild(div);
+
+    const clickHandler = (evt: Event) => {
+        const t: any = evt.target!;
+        const target = t as (EventTarget & { id: string });
+        gui.setValue(target.id);
+        target.removeEventListener('click', clickHandler);
+        list.removeChild(t);
+    }
     setTimeout(() => {
         try {
             const id = window.localStorage.getItem(KEY_当前选择);
@@ -224,10 +248,12 @@ function lazyInit(gui: GUIController, nameToValue: Record<string, string>, dom: 
             });
             Object.keys(nameToValue).forEach(key => {
                 const value = nameToValue[key];
-                if(!visitSet.has(value)) {
+                if (!visitSet.has(value)) {
                     const div = document.createElement('button');
+                    div.id = value;
                     div.innerHTML = key;
                     list.appendChild(div);
+                    div.addEventListener('click', clickHandler)
                 }
             })
         } catch (exp) {

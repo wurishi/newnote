@@ -59,11 +59,11 @@ function init() {
 }
 init();
 
-function musicCallback(wave:Uint8Array, passID: number) {
+function musicCallback(wave: Uint8Array, passID: number) {
 
 }
 
-function createMainUI(root:GUI, st:ShaderToy) {
+function createMainUI(root: GUI, st: ShaderToy) {
     const uiData = {
         gain: 0
     };
@@ -128,11 +128,11 @@ function createShaderPassConfig(config: any): ShaderPassConfig[] {
             else {
                 console.warn('not do it');
             }
-            console.log(pass);
+            // console.log(pass);
             // TODO: 其他配置以及output
         });
     }
-    console.log(shaderPassConfigs)
+    console.log(config, shaderPassConfigs)
     return shaderPassConfigs;
 }
 
@@ -141,7 +141,7 @@ function createInputs(inputs: any): EffectPassInfo[] {
     if (Array.isArray(inputs)) {
         inputs.forEach((input, idx) => {
             const channel = (input.hasOwnProperty('channel') ? input.channel : idx);
-            const type = input.type;
+            let type = input.type;
             const sampler: Sampler = {
                 filter: input.sampler?.filter || 'linear',
                 wrap: input.sampler?.wrap || 'clamp',
@@ -155,10 +155,17 @@ function createInputs(inputs: any): EffectPassInfo[] {
                 }
                 sampler.filter = input.sampler?.filter || 'mipmap';
                 sampler.wrap = input.sampler?.wrap || 'repeat'
-            } 
-            else if(input.type === 'music') {
+            }
+            else if (input.type === 'music') {
                 const music = getMusic(input.id);
                 src = getAssetsUrl(music);
+            }
+            else if (input.type === 'musicstream') {
+                type = 'music';
+                src = getAssetsUrl(getMusic(input.filepath));
+            }
+            else if(input.type === 'buffer') {
+                src = inputAndOutputID(input.id) + '';
             }
             else {
                 console.log('未处理的input', input)
@@ -174,6 +181,16 @@ function createInputs(inputs: any): EffectPassInfo[] {
     return infos;
 }
 
+function inputAndOutputID(key: string): number {
+    switch (key) {
+        case '4dXGR8': return 0;
+        case 'XsXGR8': return 1;
+        case '4sXGR8': return 2;
+    }
+    console.log('未知的input/output', key);
+    return 0;
+}
+
 function createOutputs(outputs: any) {
     const outputArr = new Array<{
         id: number
@@ -182,16 +199,13 @@ function createOutputs(outputs: any) {
     if (Array.isArray(outputs)) {
         if (outputs.length === 1) {
             const oid = outputs[0].id;
-            if (oid === '4dXGR8') {
-                outputArr.push({
-                    channel: 0, id: 0
-                })
-            }
-            else if (oid === '4dfGRr') {
+            if (oid === '4dfGRr') {
                 // main image 不需要
             }
             else {
-                console.warn('无法识别的 id:', outputs[0].id);
+                outputArr.push({
+                    channel: 0, id: inputAndOutputID(oid)
+                })
             }
         } else if (outputs.length > 0) {
             console.warn('无法识别的 outputs:', outputs);
@@ -223,7 +237,7 @@ function lazyInit(gui: GUIController, nameToValue: Record<string, string>, rootD
     list.style.display = 'flex';
     list.style.flexWrap = 'wrap';
     list.style.gap = '5px';
-    
+
 
     const div = document.createElement('button');
     div.innerHTML = '全部 visited';

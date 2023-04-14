@@ -100,12 +100,21 @@ export function getCubemaps(name: string) {
     return maps
 }
 
-const musicMap:Record<string, string> = {
+const musicMap: Record<string, string> = {
     default: '8-bit-mentality.mp3',
-    '4sXGzn': '8-bit-mentality.mp3'
+    '4sXGzn': '8-bit-mentality.mp3',
+    '4df3Rn': 'Electronebulae.mp3',
+    'XsXGzn': 'Experiment.mp3',
+    "4sXGRr": "Most-Geometric-Person.mp3",
+    "XsXGRr": "Tropical-Beeper.mp3",
+    "XdfGzn": "X-TrackTure.mp3",
+    '4dfGzn': 'ourpithyator.mp3'
 }
 
 export function getMusic(key: string) {
+    if(!musicMap[key]) {
+        console.log('music: 使用default代替了 ' + key)
+    }
     let file = musicMap[key] || musicMap.default
     return FOLDER + file
 }

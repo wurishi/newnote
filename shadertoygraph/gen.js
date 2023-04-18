@@ -1,6 +1,7 @@
-const pt = require('path')
-const fs = require('fs')
-const crc32 = require('crc32')
+// 防止误触发
+// const pt = require('path')
+// const fs = require('fs')
+// const crc32 = require('crc32')
 
 const TARGET = pt.join(__dirname, 'src', 'shadersources')
 const GLSL_TARGET = pt.join(TARGET, 'glsl')

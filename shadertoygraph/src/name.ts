@@ -1066,6 +1066,11 @@ export default {
   'MldyWr': `GPU Particles`,
   'DstXD4': `[Revision23] Fracaelid`,
   'csVXzK': `Knits & Sips`,
+  'wsX3RB': `Inessentials 2019`,
+  '7tdGDX': `percolation network 3`,
+  'wdVXz3': `nebula flow`,
+  'NdlGzs': `Foxie`,
+'XtVyD3': `"solar system" social game 2b`,
   // https://www.shadertoy.com/results?query=&sort=newest&from=68208&num=12
   // 5685 / 5755
 };

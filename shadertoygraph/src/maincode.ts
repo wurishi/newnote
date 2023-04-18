@@ -5,6 +5,8 @@ import { EffectPassInfo, Sampler, ShaderPassConfig } from './type';
 import Names from './name';
 import Images, { getMusic } from './image';
 import { getAssetsUrl } from './utils/proxy';
+import createMediaRecorder from './utils/mediaRecorder';
+import { requestFullScreen } from './utils/index'
 
 const configs = import.meta.glob('../export/*.json');
 
@@ -37,13 +39,20 @@ function init() {
     shaderNames[(Names as any)[code] || name] = name;
     shaders[name] = configs[key];
   });
+  let prevGUI: GUI;
   const setCurrent = (config: any) => {
     const info = createInfo(config);
     const renderpass = createShaderPassConfig(config);
 
-    showShaderInfo(info);
+    showShaderInfo(info, tools as HTMLElement);
     shaderToy.newEffect(renderpass, musicCallback);
     recordViewedShader(config);
+
+    if (prevGUI) {
+      gui.removeFolder(prevGUI)
+    }
+    prevGUI = gui.addFolder(`Shader(${info.id})配置`);
+    createUIWithShader(config, prevGUI);
   };
   let _gainControl: GUIController;
   const current = mainFolder
@@ -65,12 +74,38 @@ function init() {
 }
 init();
 
-function musicCallback(wave: Uint8Array, passID: number) {}
+function musicCallback(wave: Uint8Array, passID: number) { }
 
 function createMainUI(root: GUI, st: ShaderToy) {
+  let mediaRecorder: any = undefined
+  let recordControl: GUIController;
   const uiData = {
     gain: 0,
+    record() {
+      if (mediaRecorder === undefined) {
+        mediaRecorder = createMediaRecorder((isRecording) => {
+          if (isRecording) {
+            recordControl!.name('结束录制')
+          } else {
+            recordControl!.name('开始录制')
+          }
+        }
+          , st.canvas);
+      }
+      if (mediaRecorder) {
+        if (mediaRecorder.state === 'inactive') {
+          mediaRecorder.start();
+        } else {
+          mediaRecorder.stop();
+        }
+      }
+    },
+    fullScreen() {
+      requestFullScreen(st.canvas);
+      st.canvas.focus();
+    }
   };
+
   const gainControl = root
     .add(uiData, 'gain', 0, 1, 0.1)
     .onChange((v) => {
@@ -78,8 +113,12 @@ function createMainUI(root: GUI, st: ShaderToy) {
     })
     .name('音量');
 
+  recordControl = root.add(uiData, 'record').name('开始录制')
+
+  root.add(uiData, 'fullScreen').name('全屏');
   return {
     gainControl,
+    recordControl
   };
 }
 
@@ -162,6 +201,8 @@ function createInputs(inputs: any): EffectPassInfo[] {
         const img = Images.find((it) => it.name === textureMap[input.id]);
         if (img) {
           src = getAssetsUrl(img.url);
+        } else {
+          console.log('未找到img', input)
         }
         sampler.filter = input.sampler?.filter || 'mipmap';
         sampler.wrap = input.sampler?.wrap || 'repeat';
@@ -227,7 +268,18 @@ function createOutputs(outputs: any) {
 const KEY_当前选择 = '_current_shader';
 const KEY_已查看列表 = '_visited_list';
 
-function showShaderInfo(info: Info) {}
+function showShaderInfo(info: Info, rootDOM: HTMLElement) {
+  let div: HTMLDivElement = rootDOM.querySelector('#info') as HTMLDivElement;
+  if (!div) {
+    div = document.createElement('div');
+    div.id = 'info';
+    div.style.fontSize = '12px';
+    rootDOM.appendChild(div);
+  }
+  div.innerHTML = `<a href="https://www.shadertoy.com/view/${info.id}" target="_blank">${info.id} ${info.name}</a>
+  <br />
+  ${info.description}`
+}
 
 function recordViewedShader(config: any) {
   const id = config.info.id;
@@ -237,6 +289,31 @@ function recordViewedShader(config: any) {
   const vSet = new Set<string>(JSON.parse(listStr));
   vSet.add(id);
   window.localStorage.setItem(KEY_已查看列表, JSON.stringify([...vSet]));
+}
+
+function createUIWithShader(config: any, gui: GUI) {
+  if (Array.isArray(config.renderpass)) {
+    config.renderpass.forEach((pass: {
+      code: string;
+      inputs: any[];
+      name: string;
+      type: string;
+    }) => {
+      const passFolder = gui.addFolder(pass.name);
+      if (Array.isArray(pass.inputs) && pass.inputs.length > 0) {
+        createInputsUI(passFolder, pass.inputs)
+      }
+      if (pass.type === 'image') {
+        passFolder.open();
+      }
+    })
+  }
+
+  gui.open();
+}
+
+function createInputsUI(root: GUI, inputs: any[]) {
+  console.log(inputs)
 }
 
 function lazyInit(
@@ -301,7 +378,7 @@ function lazyInit(
           div.addEventListener('click', clickHandler);
         }
       });
-    } catch (exp) {}
+    } catch (exp) { }
   }, 1000);
 }
 
@@ -326,6 +403,8 @@ const textureMap: any = {
   '4sf3Rn': 'GrayNoiseSmall',
   Xsf3Rr: 'Organic3',
   XdXGzr: 'Abstract3',
+  '4df3Rr': 'Organic4',
+  '4dXGzr': 'Font1'
 };
 
 const volumeMap = {

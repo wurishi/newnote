@@ -1,4 +1,5 @@
 import { Format } from './type'
+import { getAssetsUrl } from './utils/proxy'
 
 const FOLDER = '/textures/'
 const CUBEMAPS_FOLDER = FOLDER + 'cubemaps/'
@@ -94,7 +95,7 @@ export function getCubemaps(name: string) {
     const maps: string[] = []
     for (let i = 0; i < 6; i++) {
         const tmp = i === 0 ? name : name + '_' + i
-        maps.push(CUBEMAPS_FOLDER + tmp + POSTFIX[name])
+        maps.push(getAssetsUrl(CUBEMAPS_FOLDER + tmp + POSTFIX[name]))
     }
 
     return maps

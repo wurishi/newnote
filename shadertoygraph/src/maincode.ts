@@ -3,7 +3,7 @@ import Stats from 'stats.js';
 import { GUI, GUIController } from 'dat.gui';
 import { EffectPassInfo, Sampler, ShaderPassConfig } from './type';
 import Names from './name';
-import Images, { getMusic } from './image';
+import Images, { getMusic, getVolume } from './image';
 import { getAssetsUrl } from './utils/proxy';
 import createMediaRecorder from './utils/mediaRecorder';
 import { requestFullScreen } from './utils/index'
@@ -52,8 +52,12 @@ function init() {
       gui.removeFolder(prevGUI)
     }
     prevGUI = gui.addFolder(`Shader(${info.id})配置`);
-    createUIWithShader(config, prevGUI);
+    createUIWithShader(setCurrent, updateCurrentConfig, config, prevGUI);
   };
+  const updateCurrentConfig = (config: any) => {
+    const renderpass = createShaderPassConfig(config);
+    shaderToy.newEffect(renderpass, musicCallback);
+  }
   let _gainControl: GUIController;
   const current = mainFolder
     .add(guiData, 'current', shaderNames)
@@ -214,7 +218,23 @@ function createInputs(inputs: any): EffectPassInfo[] {
         src = getAssetsUrl(getMusic(input.filepath));
       } else if (input.type === 'buffer') {
         src = inputAndOutputID(input.id) + '';
-      } else {
+      } else if (input.type === 'cubemap') {
+        const cubemapUrl = cubeMap[input.id]
+        if (cubemapUrl) {
+          src = cubemapUrl
+        } else {
+          console.log('未找到img', input)
+        }
+      } else if (input.type === 'keyboard') {
+      } else if (input.type === 'volume') {
+        const volumn = getVolume(volumeMap[input.id])
+        if (volumn) {
+          src = getAssetsUrl(volumn.url)
+        } else {
+          console.log('未找到volumn', input)
+        }
+      }
+      else {
         console.log('未处理的input', input);
       }
       infos.push({
@@ -236,6 +256,8 @@ function inputAndOutputID(key: string): number {
       return 1;
     case '4sXGR8':
       return 2;
+    case 'XdfGR8':
+      return 3;
   }
   console.log('未知的input/output', key);
   return 0;
@@ -278,7 +300,7 @@ function showShaderInfo(info: Info, rootDOM: HTMLElement) {
   }
   div.innerHTML = `<a href="https://www.shadertoy.com/view/${info.id}" target="_blank">${info.id} ${info.name}</a>
   <br />
-  ${info.description}`
+  ${(info.description + '').split('\n').join('<br />')}`
 }
 
 function recordViewedShader(config: any) {
@@ -291,29 +313,90 @@ function recordViewedShader(config: any) {
   window.localStorage.setItem(KEY_已查看列表, JSON.stringify([...vSet]));
 }
 
-function createUIWithShader(config: any, gui: GUI) {
+function createUIWithShader(setConfig: any, updateConfig: any, config: any, gui: GUI) {
+  const originalConfigStr = JSON.stringify(config);
   if (Array.isArray(config.renderpass)) {
     config.renderpass.forEach((pass: {
       code: string;
       inputs: any[];
       name: string;
       type: string;
-    }) => {
+    }, passIndex: number) => {
       const passFolder = gui.addFolder(pass.name);
       if (Array.isArray(pass.inputs) && pass.inputs.length > 0) {
-        createInputsUI(passFolder, pass.inputs)
+        createInputsUI(updateConfig, config, passFolder, passIndex) // config.renderpass[passIndex].inputs[j]
       }
       if (pass.type === 'image') {
         passFolder.open();
       }
     })
   }
-
+  const uiData = {
+    reset() {
+      setConfig(JSON.parse(originalConfigStr))
+    }
+  }
+  gui.add(uiData, 'reset').name('恢复为初始化配置');
   gui.open();
 }
 
-function createInputsUI(root: GUI, inputs: any[]) {
-  console.log(inputs)
+const inputTypeList = ['texture', 'buffer']
+
+function createInputsUI(updateConfig:any, config: any, root: GUI, passIndex: number) {
+  // config.renderpass[passIndex].inputs[j]
+  const changeConfig = (inputIndex: number, part: any) => {
+    const input = config.renderpass[passIndex].inputs[inputIndex]
+    Object.keys(part).forEach(key => {
+      const value = part[key]
+      if(value) {
+        input[key] = value
+      } else {
+        delete input[key]
+      }
+    })
+    updateConfig(config)
+  }
+
+  config.renderpass[passIndex].inputs.forEach((input: {
+    sampler: any;
+    channel: number;
+    type: string;
+    id: string;
+  }, i: number) => {
+    console.log(input)
+    const folder = root.addFolder('channel' + input.channel);
+    const uiData = {
+      type: input.type,
+      texture: input.id,
+      channel: input.id,
+    };
+    folder.add(uiData, 'type', inputTypeList).onChange(type => {
+      if (type === 'texture') {
+
+      } else if(type === 'buffer') {
+
+      }
+    })
+    if(input.type === 'texture') {
+      folder.add(uiData, 'texture', reverseKeyValue(textureMap)).onChange(texture => {
+        changeConfig(i, {
+          id: texture
+        })
+      })
+    }
+    else if(input.type === 'buffer') {
+      // folder.add(uiData, 'channel', )
+    }
+  })
+}
+
+function reverseKeyValue(obj:any) {
+  const newObj: any = {}
+  Object.keys(obj).forEach(key => {
+    const value = obj[key]
+    newObj[value] = key
+  })
+  return newObj
 }
 
 function lazyInit(
@@ -407,15 +490,16 @@ const textureMap: any = {
   '4dXGzr': 'Font1'
 };
 
-const volumeMap = {
+const volumeMap: any = {
   '4sfGRr': 'GreyNoise3D',
   XdX3Rr: 'RGBANoise3D',
 };
 
-const cubeMap = {
+const cubeMap: any = {
   XdX3zn: 'Basilica',
   '4dX3zn': 'BasilicaBlur',
   XsX3zn: 'Forest',
   XsfGzn: 'Gallery',
   '4sfGzn': 'GalleryB',
+  '4sX3zn': 'ForestBlur'
 };

@@ -123,7 +123,7 @@ export default {
   '4tByz3': 'Ladybug',
   '4s2SRt': 'Oblivion radar',
   fsXXzX: 'English Lane',
-  MldXWX: '(FAIL) curtain and ball',
+  MldXWX: '(材质无法显示) curtain and ball',
   XsfGzH: 'Star Nursery',
   wsByWV: '(FAIL) Voxel game Evolution',
   WtfGDX: 'Triangle Grid Contouring',
@@ -1070,7 +1070,17 @@ export default {
   '7tdGDX': `percolation network 3`,
   'wdVXz3': `nebula flow`,
   'NdlGzs': `Foxie`,
-'XtVyD3': `"solar system" social game 2b`,
+  'XtVyD3': `"solar system" social game 2b`,
+  'ssGfRh': `Walking Machine Animation 01`,
+  '3sy3DG': `Incandescent light bulb`,
+  'ftccDj': `Simple Strandbeest`,
+  'mdy3z1': `like fire`,
+  '4dXGWS': `IFS - random`,
+  'WtdfR8': `Stateless smoke`,
+  'MscyWH': `Low Poly Planet`,
+  'Nlyyzd': `terrain mesh  with SN`,
+  'DdsXz2': `low poly gradient thing idk`,
+  'msVXWD': `Handwritten Digit Recognizer CNN`,
   // https://www.shadertoy.com/results?query=&sort=newest&from=68208&num=12
   // 5685 / 5755
 };

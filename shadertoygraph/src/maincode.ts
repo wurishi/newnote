@@ -6,7 +6,8 @@ import Names from './name';
 import Images, { getMusic, getVolume } from './image';
 import { getAssetsUrl } from './utils/proxy';
 import createMediaRecorder from './utils/mediaRecorder';
-import { requestFullScreen } from './utils/index'
+import { requestFullScreen } from './utils/index';
+import parseGLSL from './parseglsl';
 
 const configs = import.meta.glob('../export/*.json');
 
@@ -326,6 +327,7 @@ function createUIWithShader(setConfig: any, updateConfig: any, config: any, gui:
       if (Array.isArray(pass.inputs) && pass.inputs.length > 0) {
         createInputsUI(updateConfig, config, passFolder, passIndex) // config.renderpass[passIndex].inputs[j]
       }
+      parseGLSL(updateConfig, config, passFolder, passIndex);
       if (pass.type === 'image') {
         passFolder.open();
       }
@@ -342,13 +344,13 @@ function createUIWithShader(setConfig: any, updateConfig: any, config: any, gui:
 
 const inputTypeList = ['texture', 'buffer']
 
-function createInputsUI(updateConfig:any, config: any, root: GUI, passIndex: number) {
+function createInputsUI(updateConfig: any, config: any, root: GUI, passIndex: number) {
   // config.renderpass[passIndex].inputs[j]
   const changeConfig = (inputIndex: number, part: any) => {
     const input = config.renderpass[passIndex].inputs[inputIndex]
     Object.keys(part).forEach(key => {
       const value = part[key]
-      if(value) {
+      if (value) {
         input[key] = value
       } else {
         delete input[key]
@@ -373,24 +375,24 @@ function createInputsUI(updateConfig:any, config: any, root: GUI, passIndex: num
     folder.add(uiData, 'type', inputTypeList).onChange(type => {
       if (type === 'texture') {
 
-      } else if(type === 'buffer') {
+      } else if (type === 'buffer') {
 
       }
     })
-    if(input.type === 'texture') {
+    if (input.type === 'texture') {
       folder.add(uiData, 'texture', reverseKeyValue(textureMap)).onChange(texture => {
         changeConfig(i, {
           id: texture
         })
       })
     }
-    else if(input.type === 'buffer') {
+    else if (input.type === 'buffer') {
       // folder.add(uiData, 'channel', )
     }
   })
 }
 
-function reverseKeyValue(obj:any) {
+function reverseKeyValue(obj: any) {
   const newObj: any = {}
   Object.keys(obj).forEach(key => {
     const value = obj[key]

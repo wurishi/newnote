@@ -1527,7 +1527,7 @@ export function cssTest(property: string, value?: string): boolean {
 
 所以 `background` 是支持动画的，但是 `linear-gradient()` 和 `radial-gradient()` 是不支持的。
 
-# 20.1 通过 `background-position` 模拟渐变动画
+## 20.1 通过 `background-position` 模拟渐变动画
 
 通过 `background-size: 200% 100%` 将图片的宽度设置为两倍于背景区的宽度。再通过改变 `background-position`的 x 轴初始位置来移动图片，由于背景图设置的大小是背景区的两倍，所以移动是由 `0% 0%` 到 `100% 0%`。
 
@@ -1535,14 +1535,44 @@ export function cssTest(property: string, value?: string): boolean {
 
 - `background-size`: 设置背景图大小。当取值为百分比时，表示指定背景图片相对背景区的百分比大小。当设置两个参数时，第一个值指定图片的宽度，第二个值指定图片的高度。
 
-# 20.2 通过 `background-size` 模拟渐变动画
+## 20.2 通过 `background-size` 模拟渐变动画
 
 通过改变 `background-size` 的第一个值，将背景图的大小由3倍背景区大小向1倍背景区大小过渡，形成动画效果。
 
 设置 `background-position: 100% 0`，是因为默认值 `0% 0%` 的情况下，会导致动画最左侧的颜色不变，这样不大自然。
 
-# 20.3 通过 `transform` 模拟渐变动画
+## 20.3 通过 `transform` 模拟渐变动画
 
 上面两种方式由于使用了 `background-position` 和 `background-size`，并且在渐变中改变了这两个属性，会导致页面不断地进行重绘（repaint），对页面消耗非常严重。
 
 对于伪元素配合 `transform` 进行渐变动画，通过元素的 `after` 或 `before` 伪元素，在伪元素内画出一个足够大的背景，再通过 `transform` 对伪元素进行位置变换来模拟渐变动画。
+
+## 20.4 hue-rotate
+
+使用 `filter: hue-rotate` 可以很轻松的实现渐变动画
+
+## 20.5 CSS @Property
+
+`@Property CSS at-rule` 是 CSS Houdini API 的一部分。它允许开发者显式地定义 CSS 的自定义属性，允许进行属性类型检查，设定默认值以及定义该自定义属性是否可以被继承。
+
+`@Property` 其实就是灵活度更高的 `CSS 自定义属性`。也可以称其为 `CSS Houdini 自定义属性`。
+
+- `@property --property-name`：就是自定义属性的名称，定义后可在 CSS 中通过 `var(--property-name)` 进行引用。
+
+- `syntax`：自定义属性的语法规则，也可以理解为自定义属性的类型
+
+- `inherits`：是否允许继承
+
+- `initial-value`：初始值
+
+在上述例子中：
+
+```css
+@property --colorA {
+    syntax: "<color>";
+    inherits: false;
+    initial-value: fuchsia;
+}
+```
+
+将原本定义在 `background` 上的过渡效果嫁接到了 `@property color` 上。而 CSS 是支持一个颜色变换到另外一个颜色的。通过这种方式实现了渐变背景色的过渡动画。

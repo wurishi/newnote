@@ -2,7 +2,9 @@
     import Single from "./single.svelte";
     import C1 from "./1.svelte";
     import C2 from './2.svelte';
-    import C3 from './3.svelte'
+    import C3 from './3.svelte';
+    import C4 from './4.svelte';
+    import C5 from './5.svelte';
 </script>
 
 <div />
@@ -14,6 +16,10 @@
 <C2 />
 
 <C3 />
+
+<C4 />
+
+<C5 />
 
 <style>
     :root {

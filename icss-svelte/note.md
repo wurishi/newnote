@@ -1790,3 +1790,38 @@ GPU 硬件加速 CSS 动画 > 非硬件加速的 CSS 动画 > Javascript 动画
 2. 找到掉帧的那一帧，分析该帧内不同步骤的耗时占比，进行有针对性的优化
 
 3. 观察是否存在内存泄漏
+
+# 22. 纯 CSS 方式实现 CSS 动画的暂停与播放
+
+在 CSS3 animation 中，有这样一个属性可以播放，暂停动画：
+
+```css
+animation-play-state: paused | running;
+```
+
+该属性用来定义一个动画是否运行或者暂停。可以通过查询它来确定动画是否正在运行。另外，它的值可以被设置为暂停和恢复的动画的重放。
+
+## 22.1 hover 伪类实现
+
+```css
+.btn:hover ~ .animation {
+    animation-play-state: paused;
+}
+```
+
+这个方法无法实现点击切换 暂停/播放 状态。
+
+## 22.2 checked
+
+使用 `radio` 标签的 `checked` 伪类，加上 `<label for>` 实现纯 CSS 捕获点击事件。
+
+```css
+#stop:checked ~ .animation {
+    animation-play-state: paused;
+}
+
+#play:checked ~ .animation {
+    animation-play-state: running;
+}
+```
+

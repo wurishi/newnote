@@ -1081,6 +1081,22 @@ export default {
   'Nlyyzd': `terrain mesh  with SN`,
   'DdsXz2': `low poly gradient thing idk`,
   'msVXWD': `Handwritten Digit Recognizer CNN`,
+  'MsKcRh': `Mystify Screensaver`,
+  'tdG3Rd': `Base warp fBM`,
+  'tlVGDt': `Octagrams`,
+  'WslGWl': `Cloud raymarching`,
+  'XsX3zl': `70s Melt`,
+  'lllSR2': `w10`,
+  '4tjSDt': `Warp Speed 2`,
+  '3tBGRm': `UI noise halo`,
+  'MdGBWG': `Global Wind Circulation`,
+  'XlsBDf': `Fluid solver`,
+  'MdKfWK': `Watercolour Earth`,
+  'ldK3RW': `Diffusion-limited aggregation`,
+  '4dKGWm': `Elephant`,
+  'XdycWG': `Paroi Jaune`,
+  'XsfGD4': `Woods`,
+  'wlBBWy': `Mandara boze`
   // https://www.shadertoy.com/results?query=&sort=newest&from=68208&num=12
   // 5685 / 5755
 };

@@ -3,7 +3,7 @@ import Stats from 'stats.js';
 import { GUI, GUIController } from 'dat.gui';
 import { EffectPassInfo, Sampler, ShaderPassConfig } from './type';
 import Names from './name';
-import Images, { getMusic, getVolume } from './image';
+import Images, { getMusic, getVolume, musicMap } from './image';
 import { getAssetsUrl } from './utils/proxy';
 import createMediaRecorder from './utils/mediaRecorder';
 import { requestFullScreen } from './utils/index';
@@ -85,6 +85,7 @@ function createMainUI(root: GUI, st: ShaderToy) {
   let mediaRecorder: any = undefined
   let recordControl: GUIController;
   const uiData = {
+    pause: false,
     gain: 0,
     record() {
       if (mediaRecorder === undefined) {
@@ -110,6 +111,13 @@ function createMainUI(root: GUI, st: ShaderToy) {
       st.canvas.focus();
     }
   };
+
+  const pauseControl = root
+    .add(uiData, 'pause')
+    .onFinishChange(v => {
+      pauseControl.name(v ? '继续播放' : '暂停播放');
+      st.pauseTime(true);
+    }).name('暂停播放');
 
   const gainControl = root
     .add(uiData, 'gain', 0, 1, 0.1)
@@ -207,7 +215,7 @@ function createInputs(inputs: any): EffectPassInfo[] {
         if (img) {
           src = getAssetsUrl(img.url);
         } else {
-          console.log('未找到img', input)
+          console.warn('未找到img', input)
         }
         sampler.filter = input.sampler?.filter || 'mipmap';
         sampler.wrap = input.sampler?.wrap || 'repeat';
@@ -224,7 +232,7 @@ function createInputs(inputs: any): EffectPassInfo[] {
         if (cubemapUrl) {
           src = cubemapUrl
         } else {
-          console.log('未找到img', input)
+          console.warn('未找到img', input)
         }
       } else if (input.type === 'keyboard') {
       } else if (input.type === 'volume') {
@@ -232,11 +240,11 @@ function createInputs(inputs: any): EffectPassInfo[] {
         if (volumn) {
           src = getAssetsUrl(volumn.url)
         } else {
-          console.log('未找到volumn', input)
+          console.warn('未找到volumn', input)
         }
       }
       else {
-        console.log('未处理的input', input);
+        console.warn('未处理的input', input);
       }
       infos.push({
         channel,
@@ -249,18 +257,18 @@ function createInputs(inputs: any): EffectPassInfo[] {
   return infos;
 }
 
+const bufferIDName: Record<string, number> = {
+  '4dXGR8': 0,
+  'XsXGR8': 1,
+  '4sXGR8': 2,
+  'XdfGR8': 3,
+}
+
 function inputAndOutputID(key: string): number {
-  switch (key) {
-    case '4dXGR8':
-      return 0;
-    case 'XsXGR8':
-      return 1;
-    case '4sXGR8':
-      return 2;
-    case 'XdfGR8':
-      return 3;
+  if(bufferIDName.hasOwnProperty(key)) {
+    return bufferIDName[key];
   }
-  console.log('未知的input/output', key);
+  console.warn('未知的input/output', key);
   return 0;
 }
 
@@ -274,7 +282,11 @@ function createOutputs(outputs: any) {
       const oid = outputs[0].id;
       if (oid === '4dfGRr') {
         // main image 不需要
-      } else {
+      }
+      else if(oid === 'XsfGRr') {
+        // sound 不需要
+      }
+      else {
         outputArr.push({
           channel: 0,
           id: inputAndOutputID(oid),
@@ -316,6 +328,13 @@ function recordViewedShader(config: any) {
 
 function createUIWithShader(setConfig: any, updateConfig: any, config: any, gui: GUI) {
   const originalConfigStr = JSON.stringify(config);
+  const uiData = {
+    reset() {
+      setConfig(JSON.parse(originalConfigStr))
+    }
+  }
+  gui.add(uiData, 'reset').name('恢复为初始化配置');
+
   if (Array.isArray(config.renderpass)) {
     config.renderpass.forEach((pass: {
       code: string;
@@ -324,25 +343,19 @@ function createUIWithShader(setConfig: any, updateConfig: any, config: any, gui:
       type: string;
     }, passIndex: number) => {
       const passFolder = gui.addFolder(pass.name);
+      parseGLSL(updateConfig, config, passFolder, passIndex);
       if (Array.isArray(pass.inputs) && pass.inputs.length > 0) {
         createInputsUI(updateConfig, config, passFolder, passIndex) // config.renderpass[passIndex].inputs[j]
       }
-      parseGLSL(updateConfig, config, passFolder, passIndex);
       if (pass.type === 'image') {
         passFolder.open();
       }
     })
   }
-  const uiData = {
-    reset() {
-      setConfig(JSON.parse(originalConfigStr))
-    }
-  }
-  gui.add(uiData, 'reset').name('恢复为初始化配置');
   gui.open();
 }
 
-const inputTypeList = ['texture', 'buffer']
+const inputTypeList = ['texture', 'buffer', 'music', 'keyboard', 'cubemap']
 
 function createInputsUI(updateConfig: any, config: any, root: GUI, passIndex: number) {
   // config.renderpass[passIndex].inputs[j]
@@ -365,30 +378,91 @@ function createInputsUI(updateConfig: any, config: any, root: GUI, passIndex: nu
     type: string;
     id: string;
   }, i: number) => {
-    console.log(input)
+    if (input.type === 'musicstream') {
+      input.type = 'music';
+    }
+    if (inputTypeList.indexOf(input.type) < 0) {
+      console.warn('ui未处理 input', input)
+    }
     const folder = root.addFolder('channel' + input.channel);
     const uiData = {
       type: input.type,
       texture: input.id,
-      channel: input.id,
+      buffer: input.id,
+      music: input.id,
+      cubemap: input.id,
     };
-    folder.add(uiData, 'type', inputTypeList).onChange(type => {
-      if (type === 'texture') {
-
-      } else if (type === 'buffer') {
-
-      }
-    })
-    if (input.type === 'texture') {
-      folder.add(uiData, 'texture', reverseKeyValue(textureMap)).onChange(texture => {
+    const controlList: GUIController[] = [];
+    // 根据type创建一些可控ui
+    const createTextureControl = () => {
+      const tControl = folder.add(uiData, 'texture', reverseKeyValue(textureMap)).onChange(texture => {
         changeConfig(i, {
           id: texture
-        })
-      })
+        });
+      });
+      return [tControl];
+    };
+    const createBufferControl = () => {
+      const bControl = folder.add(uiData, 'buffer', reverseKeyValue(bufferIDName)).onChange(buffer => {
+        changeConfig(i, {
+          id: buffer
+        });
+      });
+      return [bControl];
     }
-    else if (input.type === 'buffer') {
-      // folder.add(uiData, 'channel', )
+    const createMusicControl = () => {
+      const mControl = folder.add(uiData, 'music', reverseKeyValue(musicMap)).onChange(music => {
+        changeConfig(i, {
+          id: music
+        });
+      });
+      return [mControl];
+    };
+    const createCubeControl = () => {
+      const cControl = folder.add(uiData, 'cubemap', reverseKeyValue(cubeMap)).onChange(cube => {
+        changeConfig(i, {
+          id: cube
+        });
+      });
+      return [cControl];
+    };
+
+    const createControl = (type: string): GUIController[] => {
+      if (type === 'texture') {
+        return createTextureControl();
+      } else if (type === 'buffer') {
+        return createBufferControl();
+      } else if (type === 'music' || type === 'musicstream') {
+        return createMusicControl();
+      } else if (type === 'cubemap') {
+        return createCubeControl();
+      }
+      return []
     }
+    //
+    folder.add(uiData, 'type', inputTypeList.filter(t => t !== 'keyboard')).onChange(type => {
+      let id = ''
+      if (type === 'texture') {
+        id = 'XdX3Rn';
+      } else if (type === 'buffer') {
+        id = '4dXGR8';
+      } else if (type === 'music') {
+        id = '4sXGzn';
+      } else if (type === 'cubemap') {
+        id = 'XdX3zn';
+      }
+      if (id) {
+        controlList.forEach(control => {
+          control.remove();
+        });
+        controlList.length = 0;
+        controlList.push(...createControl(type));
+        changeConfig(i, {
+          type, id
+        });
+      }
+    })
+    controlList.push(...createControl(input.type));
   })
 }
 

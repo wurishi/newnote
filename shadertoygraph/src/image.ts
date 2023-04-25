@@ -101,7 +101,7 @@ export function getCubemaps(name: string) {
     return maps
 }
 
-const musicMap: Record<string, string> = {
+export const musicMap: Record<string, string> = {
     default: '8-bit-mentality.mp3',
     '4sXGzn': '8-bit-mentality.mp3',
     '4df3Rn': 'Electronebulae.mp3',

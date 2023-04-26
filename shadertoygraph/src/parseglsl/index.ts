@@ -5,6 +5,19 @@ let graphList = new Array<GraphBasic>();
 
 export default function (updateConfig: any, config: any, gui: GUI, passIndex: number) {
     // config.renderpass[passIndex].inputs[j]
+    const changeConfig = (inputIndex: number, part: any) => {
+        const input = config.renderpass[passIndex].inputs[inputIndex]
+        Object.keys(part).forEach(key => {
+            const value = part[key]
+            if (value) {
+                input[key] = value
+            } else {
+                delete input[key]
+            }
+        })
+        updateConfig(config)
+    }
+
     graphList.length = 0;
     const pass: {
         code: string;
@@ -13,7 +26,7 @@ export default function (updateConfig: any, config: any, gui: GUI, passIndex: nu
 
     const uiData = {
         code() {
-            createCodePanel(graphList);
+            createCodePanel(passIndex, graphList, changeConfig);
         }
     };
     gui.add(uiData, 'code');
@@ -26,22 +39,96 @@ function groupGLSL(code: string) {
     return graphArr;
 }
 
-function createCodePanel(list: GraphBasic[]) {
+function createCodePanel(id: number, list: GraphBasic[], changeConfig: any) {
+    const destoryFnList: any[] = [];
     const dom: HTMLDivElement = document.querySelector('#tools')!;
+    const panelID = `codePanel_${id}`;
 
-    let panel: HTMLDivElement | null = document.querySelector('#codePanel');
+    let panel: HTMLDivElement | null = document.querySelector('#' + panelID);
     if (!panel) {
         panel = document.createElement('div');
-        panel.id = 'codePanel';
+        panel.id = panelID;
+        panel.className = 'codePanel';
         dom.appendChild(panel);
+
+        const dragDom = document.createElement('div');
+        dragDom.id = 'title';
+        panel.appendChild(dragDom);
     }
 
-    list.forEach(it => {
+    const codeChange = (e: Event) => {
+        const div = e.target as HTMLDivElement;
+        const index = +(div.getAttribute('data-index')!);
+        const content = div.innerText;
+        console.log('n', content.indexOf('\n'));
+        const arr = content.split('\n');
+        list[index].updateCode(arr.join(' '));
+    };
+
+    const items: HTMLDivElement[] = []
+    list.forEach((it, index) => {
+        const line = document.createElement('div');
+        line.className = 'line';
+        line.innerHTML = `<div class="num">${it.start}</div>`;
+        panel!.appendChild(line);
+
         const item = document.createElement('div');
+        item.setAttribute('data-index', index.toString());
         item.innerHTML = it.getCode();
         // item.contentEditable = 'true';
         // item.contentEditable = 'plaintext-only';
         item.style.setProperty('-webkit-user-modify', 'read-write-plaintext-only');
-        panel!.appendChild(item);
+        // panel!.appendChild(item);
+        line.appendChild(item);
+        item.addEventListener('input', codeChange);
+        items.push(item);
     })
+    destoryFnList.push(() => {
+        items.forEach(it => {
+            it.removeEventListener('input', codeChange);
+        });
+    });
+
+    if (!document.querySelector(`#${panelID} #bottom`)) {
+        const bottomDom = document.createElement('div');
+        bottomDom.id = 'bottom';
+        panel.appendChild(bottomDom);
+
+        const applyBtn = document.createElement('button');
+        applyBtn.innerHTML = '应用修改';
+        bottomDom.appendChild(applyBtn);
+        const applyFn = () => {
+            // config.renderpass[passIndex].inputs[j]
+            changeConfig(id, { code: list.map(it => it.getCode()).join('\n') })
+        };
+        applyBtn.addEventListener('click', applyFn);
+
+        // TODO:
+        const closeBtn = document.createElement('button');
+        closeBtn.innerHTML = '关闭';
+        bottomDom.appendChild(closeBtn);
+        const closeFn = () => {
+            hideCodePanel(id, destoryFnList);
+        };
+        closeBtn.addEventListener('click', closeFn);
+
+        destoryFnList.push(() => {
+            closeBtn.removeEventListener('click', closeFn);
+            applyBtn.removeEventListener('click', applyFn);
+        });
+    }
+}
+
+function hideCodePanel(id: number, destoryFnList: any[]) {
+    destoryFnList.forEach(fn => {
+        fn && fn();
+    });
+
+    const dom: HTMLDivElement = document.querySelector('#tools')!;
+    const panelID = `codePanel_${id}`;
+
+    let panel = document.querySelector('#' + panelID);
+    if (panel) {
+        dom.removeChild(panel);
+    }
 }

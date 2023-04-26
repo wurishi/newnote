@@ -1096,7 +1096,11 @@ export default {
   '4dKGWm': `Elephant`,
   'XdycWG': `Paroi Jaune`,
   'XsfGD4': `Woods`,
-  'wlBBWy': `Mandara boze`
+  'wlBBWy': `Mandara boze`,
+  'XsVBRm': `Hydraulic Erosion`,
+  'cdVXDK': `Plants growing from nowhere`,
+  'ltcGDl': `desert`,
+  'tdSXzD': `The sun, the sky and the clouds`,
   // https://www.shadertoy.com/results?query=&sort=newest&from=68208&num=12
   // 5685 / 5755
 };

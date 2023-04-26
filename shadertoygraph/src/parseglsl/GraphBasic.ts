@@ -27,4 +27,8 @@ export default class GraphBasic {
     public getCode(): string {
         return this._code;
     }
+
+    public updateCode(code: string) {
+        this._code = code;
+    }
 }

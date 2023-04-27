@@ -1825,3 +1825,153 @@ animation-play-state: paused | running;
 }
 ```
 
+# 23. CSS 关键字 initial、inherit 、unset 和 revert
+
+`position` 有多少取值，通常的问题是 `static`, `relative`, `absolute` 和 `fixed`，此外还有 `sticky`。其实，除此之外 CSS 属性通常还可以设置下面几个值：
+
+- `initial` （默认）
+
+- `inherit` （继承）
+
+- `unset`
+
+- `revert`
+
+## 23.1 initial
+
+这个关键字用于设置 CSS 属性为它的默认值，可作用于任何 CSS 样式。（IE 不支持）
+
+## 23.2 inherit
+
+每个 CSS 属性都有一个特性就是：这个属性必然是默认继承的（`inherited: yes`）或是默认不继承的（`inherited: no`）其中之一。
+
+譬如，`background-color` 是不会继承父元素的 `background-color` 的。
+
+## 23.3 可继承属性
+
+默认为 `inherited: yes` 的属性：
+
+- 所有元素可继承：`visibility` 和 `cursor`
+
+- 内联元素可继承：`letter-spacing`, `word-spacing`, `white-space`, `line-height`, `color`, `font`, `font-family`, `font-size`, `font-style`, `font-variant`, `font-weight`, `text-decoration`, `text-transform`, `direction`
+
+- 块状元素可继承：`text-indent` 和 `text-align`
+
+- 列表元素可继承：`list-style`, `list-style-type`, `list-style-position`, `list-style-image`
+
+- 表格元素可继承：`border-collapse`
+
+## 23.4 unset
+
+从字面上理解就是不设置，其实它是 `initial` 和 `inherit` 的组合。
+
+也就是说如果我们给一个 CSS 属性设置了 `unset` 的话：
+
+1. 如果该属性是默认继承属性，该值等同于 `inherit`
+
+2. 如果该属性是非继承属性，该值等同于 `initial`
+
+```html
+<div class="father">
+    <div class="children">子级元素一</div>
+    <div class="children unset">子级元素二</div>
+</div>
+
+<style>
+    .father {
+        color: red;
+        border: 1px solid black;
+    }
+
+    .children {
+        color: green;
+        border: 1px solid blue;
+    }
+
+    .unset {
+        color: unset;
+        border: unset;
+    }
+</style>
+```
+
+在上面的例子中，对于 `.unset` 而言：
+
+1. 由于 `color` 是可继承样式，所以最终表现为父级的颜色 `red`
+
+2. 由于 `border` 是不可继承样式，最终表现为 `border: initial`，也就是默认的样式，无边框
+
+## 23.5 revert
+
+`revert` 是一个更新的关键字，源自于 CSS 3。直译为 `恢复`。
+
+它与关键字 `unset` 非常类似，在大部分情况下，他们的作用是一模一样的。唯一的区别是：
+
+- `revert`：属性应用了该值后，将还原到具有由浏览器或用户创建的自定义样式表（浏览器侧设置）设置的值
+
+- `unset`：属性应用了该值后，样式将完全被还原
+
+# 24. 纯 CSS 实现瀑布流布局
+
+TODO: 
+
+https://codepen.io/Chokcoco/pen/wYgYXX
+
+https://codepen.io/Chokcoco/pen/LgjazE?editors=1100
+
+https://codepen.io/Chokcoco/pen/KGXqyo
+
+# 25. vh, vw, vmin, vmax
+
+## 25.1 `vw` and `vh`
+
+1. 1vw 等于 1/100 的视口宽度（Viewport Width）
+
+2. 1vh 等于 1/100 的视口高度（Viewport Height）
+
+综上，对于一个页面而言，它的视窗高度就是 100vh，宽度就是 100vw。
+
+响应式web设计离不开百分比。但是，CSS 的百分比并不是所有问题的最佳解决方案。因为 CSS 的宽度是相对于包含它的最近的父元素的宽度的。所以如果你就是想用视口（viewport）的宽度或高度，而不是父元素的，那就应该使用 `vw` 和 `vh`。
+
+如果想要得到一个同屏幕等高或等宽的框，只需要简单的CSS：
+
+```css
+.slide {
+  width: 100vw;
+}
+/* 或者 */
+.slide {
+  height: 100vh;
+}
+```
+
+## 25.2 `vmin` and `vmax`
+
+1. `vmin`：是当前 `vw` 和 `vh` 中较小的值
+
+2. `vmax`：是当前 `vw` 和 `vh` 中较大的值
+
+这二个单位在横竖屏切换中十分有用。
+
+# 26. 奇妙的 `-webkit-background-clip: text`
+
+何为 `-webkit-background-clip: text`。
+
+`background-clip` 的意思就是背景裁剪，它的作用是设置元素的背景（背景图片或颜色）的填充规则。其中 `background-clip: text` 就是以区块内的文字作为裁剪区域向外裁剪，文字的背景即为区块的背景，文字之外的区域都将被裁剪掉。由于兼容性问题，通常使用它时会使用：`-webkit-background-clip: text`。
+
+```css
+div {
+    font-size: 180px;
+    font-weight: bold;
+    color: deeppink;
+    background: url('/img.jpg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    -webkit-background-clip: text;
+    color: transparent;
+}
+```
+
+其实要注意的是 `color: transparent`，如果不将文字设置为透明，只能看到带颜色的文本。只有设置为透明，才能看到文本轮廓的背景图片。
+
+TODO:

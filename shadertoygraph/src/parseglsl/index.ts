@@ -5,17 +5,22 @@ let graphList = new Array<GraphBasic>();
 
 export default function (updateConfig: any, config: any, gui: GUI, passIndex: number) {
     // config.renderpass[passIndex].inputs[j]
-    const changeConfig = (inputIndex: number, part: any) => {
-        const input = config.renderpass[passIndex].inputs[inputIndex]
-        Object.keys(part).forEach(key => {
-            const value = part[key]
-            if (value) {
-                input[key] = value
-            } else {
-                delete input[key]
-            }
-        })
-        updateConfig(config)
+    // const changeConfig = (inputIndex: number, part: any) => {
+    //     const input = config.renderpass[passIndex].inputs[inputIndex]
+    //     Object.keys(part).forEach(key => {
+    //         const value = part[key]
+    //         if (value) {
+    //             input[key] = value
+    //         } else {
+    //             delete input[key]
+    //         }
+    //     })
+    //     updateConfig(config)
+    // }
+    const changeCode = (code: string) => {
+        const pass = config.renderpass[passIndex];
+        pass.code = code;
+        updateConfig(config);
     }
 
     graphList.length = 0;
@@ -26,7 +31,7 @@ export default function (updateConfig: any, config: any, gui: GUI, passIndex: nu
 
     const uiData = {
         code() {
-            createCodePanel(passIndex, graphList, changeConfig);
+            createCodePanel(passIndex, graphList, changeCode);
         }
     };
     gui.add(uiData, 'code');
@@ -39,7 +44,7 @@ function groupGLSL(code: string) {
     return graphArr;
 }
 
-function createCodePanel(id: number, list: GraphBasic[], changeConfig: any) {
+function createCodePanel(id: number, list: GraphBasic[], changeCode: any) {
     const destoryFnList: any[] = [];
     const dom: HTMLDivElement = document.querySelector('#tools')!;
     const panelID = `codePanel_${id}`;
@@ -98,8 +103,7 @@ function createCodePanel(id: number, list: GraphBasic[], changeConfig: any) {
         applyBtn.innerHTML = '应用修改';
         bottomDom.appendChild(applyBtn);
         const applyFn = () => {
-            // config.renderpass[passIndex].inputs[j]
-            changeConfig(id, { code: list.map(it => it.getCode()).join('\n') })
+            changeCode(list.map(it => it.getCode()).join('\n'))
         };
         applyBtn.addEventListener('click', applyFn);
 

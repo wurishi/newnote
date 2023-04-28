@@ -1913,13 +1913,21 @@ animation-play-state: paused | running;
 
 # 24. 纯 CSS 实现瀑布流布局
 
-TODO: 
+## 24.1 `display: flex`
 
-https://codepen.io/Chokcoco/pen/wYgYXX
+横向 flex 布局嵌套多列纵向 flex 布局
 
-https://codepen.io/Chokcoco/pen/LgjazE?editors=1100
+## 24.2 `column-count`
 
-https://codepen.io/Chokcoco/pen/KGXqyo
+`column-count` 元素内容将被划分的最佳列数
+
+`break-inside: avoid;` 避免在元素内部插入分页符，每列最后一个元素的一小部分会出现在下一列的顶端
+
+## 24.3 `display: grid`
+
+`grid-template-columns`, `grid-template-rows` 分割行列
+
+`grid-row` 控制每个 item 所占格子的大小
 
 # 25. vh, vw, vmin, vmax
 

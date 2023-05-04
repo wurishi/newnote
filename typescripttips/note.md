@@ -96,7 +96,7 @@ type EntityWithId =
   | { type: 'comment'; commentId: string };
 ```
 
-如上期一样, 如果更优雅的转换呢?
+如上期一样, 如何更优雅的转换呢?
 
 ```typescript
 type EntityWithId = {

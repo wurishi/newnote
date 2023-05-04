@@ -1101,6 +1101,22 @@ export default {
   'cdVXDK': `Plants growing from nowhere`,
   'ltcGDl': `desert`,
   'tdSXzD': `The sun, the sky and the clouds`,
+  '4lGGRG': `Cartoon Galaxy`,
+  '4llfzj': `Galaxy/Nebula and Stars`,
+  'MdBSDc': `Black Hole Kills Galaxy`,
+  'Ms3czX': `galaxy spirals: ellipmod +Perlin`,
+  'XlcSDr': `Clickable Starfield`,
+  'cdV3Rc': `Dream Island`,
+  'llSGR1': `Galaxy spirals`,
+  'lldczr': `Spiral galaxy dust clouds`,
+  'stBcW1': `Stars and galaxy`,
+  '3d2XDh': `Gravity particles`,
+  '3lVfW3': `Heart star`,
+  'MltXWX': `Run Rabbit Junk`,
+  'XdBfzW': `Rainbow Galaxy`,
+  'fdyfDm': `Night's Backbone`,
+  'tdKSRz': `Galaxy raymarching explained`,
+  'wtfSzH': `Galaxy Test`
   // https://www.shadertoy.com/results?query=&sort=newest&from=68208&num=12
   // 5685 / 5755
 };

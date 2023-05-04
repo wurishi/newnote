@@ -1,7 +1,8 @@
 import { GUI } from 'dat.gui'
 import GraphBasic from './GraphBasic';
 
-let graphList = new Array<GraphBasic>();
+// let graphList = new Array<GraphBasic>();
+const graphListMap = new Map<number, GraphBasic[]>();
 
 export default function (updateConfig: any, config: any, gui: GUI, passIndex: number) {
     // config.renderpass[passIndex].inputs[j]
@@ -23,15 +24,16 @@ export default function (updateConfig: any, config: any, gui: GUI, passIndex: nu
         updateConfig(config);
     }
 
-    graphList.length = 0;
     const pass: {
+        name: string;
         code: string;
     } = config.renderpass[passIndex];
-    graphList = groupGLSL(pass.code);
+    const graphList = groupGLSL(pass.code);
+    graphListMap.set(passIndex, graphList);
 
     const uiData = {
         code() {
-            createCodePanel(passIndex, graphList, changeCode);
+            createCodePanel(pass.name, passIndex, graphList, changeCode);
         }
     };
     gui.add(uiData, 'code');
@@ -44,7 +46,7 @@ function groupGLSL(code: string) {
     return graphArr;
 }
 
-function createCodePanel(id: number, list: GraphBasic[], changeCode: any) {
+function createCodePanel(title: string, id: number, list: GraphBasic[], changeCode: any) {
     const destoryFnList: any[] = [];
     const dom: HTMLDivElement = document.querySelector('#tools')!;
     const panelID = `codePanel_${id}`;
@@ -58,6 +60,7 @@ function createCodePanel(id: number, list: GraphBasic[], changeCode: any) {
 
         const dragDom = document.createElement('div');
         dragDom.id = 'title';
+        dragDom.innerHTML = title;
         panel.appendChild(dragDom);
     }
 

@@ -1991,3 +1991,176 @@ div {
 ## 26.4 按钮填充效果
 
 ## 26.5 图片窥探效果
+
+# 27. conic-gradient 角向渐变
+
+## 27.1 API
+
+```css
+{
+  background: conic-gradient(deeppink, yellowgreen);
+}
+```
+
+## 27.2 与线性渐变及径向渐变的异同
+
+- `linear-gradient` 线性渐变的方向是一条直线，可以是任何角度
+
+- `radial-gradient` 径向渐变是从圆心点以椭圆形状向外扩散
+
+- `conic-gradient` 角向渐变是以圆心为起始点，然后以顺时针方向绕中心实现渐变效果
+
+## 27.3 实现颜色表盘
+
+除了 `rgb()` 颜色表示法外，还有 `hsl()` 表示法
+
+`hsl()` 被定义为色相-饱和度-明度（Hue-saturation-lightness）
+
+- 色相（H）是色彩的基本属性，就是平常所说的颜色名称，如红色，黄色等
+
+- 饱和度（S）是指色彩的纯度，越高色彩越纯，低则逐渐变灰，取0-100%的数值
+
+- 明度（V），亮度（L），取 0-100%
+
+## 27.4 配合百分比使用
+
+可以指定角向渐变每一段的比例，以实现饼图。
+
+```css
+{
+  background: conic-gradient(deeppink 0, deeppink 30%, yellowgreen 30%, yellowgreen 70%, teal 70%, teal 100%);
+}
+```
+
+在这里我们分别指定了 0%-30%, 30%-70%, 70%-100% 三个区间的颜色，下面是另一种写法：
+
+```css
+{
+  background: conic-gradient(deeppink 0 30%, yellowgreen 0 70%, teal 0 100%);
+}
+```
+
+要注意的是先定义的颜色会层叠在后定义的颜色之上，所以这种写法其实表示的是：
+
+1. 0-30% 的区间使用 `deeppink`
+
+2. 0-70% 的区间使用 `yellowgreen`
+
+3. 0-100% 的区间使用 `teal`
+
+## 27.5 配合 `background-size` 使用
+
+使用了百分比控制了区间，再配合使用 `background-size` 就可以实现各种同步贴图。
+
+## 27.6 重复角向渐变
+
+和线性渐变与径向渐变一样，角向渐变也存在重复角向渐变：`repeating-conic-gradient`
+
+## 27.7 动画与 `mix-blend-mode`
+
+## 27.8 渐变颜色条
+
+# 28. 颜色混合模式 `mix-blend-mode`
+
+CSS3 新增了一个属性 `mix-blend-mode`，通常称之为混合模式。
+
+## 28.1 概述
+
+`mix-blend-mode` 可取的值：
+
+```css
+{
+  mix-blend-mode: normal;         // 正常
+  mix-blend-mode: multiply;       // 正片叠底
+  mix-blend-mode: screen;         // 滤色
+  mix-blend-mode: overlay;        // 叠加
+  mix-blend-mode: darken;         // 变暗
+  mix-blend-mode: lighten;        // 变亮
+  mix-blend-mode: color-dodge;    // 颜色减淡
+  mix-blend-mode: color-burn;     // 颜色加深
+  mix-blend-mode: hard-light;     // 强光
+  mix-blend-mode: soft-light;     // 柔光
+  mix-blend-mode: difference;     // 差值
+  mix-blend-mode: exclusion;      // 排除
+  mix-blend-mode: hue;            // 色相
+  mix-blend-mode: saturation;     // 饱和度
+  mix-blend-mode: color;          // 颜色
+  mix-blend-mode: luminosity;     // 亮度
+  
+  mix-blend-mode: initial;
+  mix-blend-mode: inherit;
+  mix-blend-mode: unset;
+}
+```
+
+Photoshop 中高级进阶系列之一 - 图层混合模式原理：
+
+- A 基础型混合模式：利用图层的不透明度及填充不透明度来控制与下面的图像进行混合。
+
+  1. Normal 正常
+
+  2. Dissolve 溶解
+
+- B 降暗图像型混合模式（减色模式）：滤除图像中的亮调图像，从而达到使图像变暗的目的。
+
+  3. Darken 变暗
+
+  4. Multiply 正片叠底
+
+  5. Color Burn 颜色加深
+
+  6. Linear Burn 线性加深
+
+  7. Darker Color 深色
+
+- C 提亮图像型混合模式（加色模式）：滤除图像中的暗调图像，从而达到使图像变亮的目的。
+
+  8. Lighten 变亮
+
+  9. Screen 滤色
+
+  10. Color Dodge 颜色减淡
+
+  11. Linear Dodge (Add) 线性减淡（添加）
+
+  12. Lighter Color 浅色
+
+- D 融合图像型混合模式：用于不同程度的对上，下两图层中的图像进行融合。此类混合模式还可以在一定程度上提高图像的对比度。
+
+  13. Overlay 叠加
+
+  14. Soft Light 柔光
+
+  15. Hard Light 强光
+
+  16. Vivid Light 亮光
+
+  17. Linear Light 线性光
+
+  18. Pin Light 点光
+
+  19. Hard Mix 实色混合
+
+- E 变异图像型混合模式：用于制作各种变异图像效果。
+
+  20. Difference 差值
+
+  21. Exclusion 排除
+
+  22. Subtract 减去
+
+  23. Divide 划分
+
+- F 色彩叠加型混合模式：依据图像的色相，饱和度等基本属性，完成于下面图像之间的混合。
+
+  24. Hue 色相
+
+  25. Saturation 饱和度
+
+  26. Color 颜色
+
+  27. Luminosity 明度
+
+当然以上是 PS 的混合模式，数量比 CSS 多一些，但是分类是通用的。
+
+// TODO: https://github.com/chokcoco/iCSS/issues/16

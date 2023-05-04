@@ -1,3 +1,4 @@
+import { getAssetsUrl } from '@/proxy'
 import hljs from 'highlight.js'
 import { markdown } from 'markdown'
 
@@ -113,7 +114,7 @@ let fMarkdown: any
 let allTree: any
 export async function loadMarkdown(path: string) {
   if (!allTreeMap) {
-    const raw = await (await fetch('/note.md')).text()
+    const raw = await (await fetch(getAssetsUrl('/note.md'))).text()
 
     const tree = markdown.parse(raw)
     allTreeMap = splitMarkdownTree(tree)
@@ -129,7 +130,7 @@ export async function loadMarkdown(path: string) {
 
   let showTree: any[] = allTree
   try {
-    const raw = await (await fetch('/' + arr.join('/'))).text()
+    const raw = await (await fetch(getAssetsUrl('/' + arr.join('/')))).text()
     if (raw) {
       const fileTree = markdown.parse(raw)
       // console.log(fileTree)

@@ -139,6 +139,7 @@ type Info = {
   id: string;
   name: string;
   description: string;
+  tags: string[];
 };
 function createInfo(config: any): Info {
   if (config.info) {
@@ -148,6 +149,7 @@ function createInfo(config: any): Info {
     id: 'unknow',
     name: 'unknow',
     description: '',
+    tags: [],
   };
 }
 
@@ -309,10 +311,13 @@ function showShaderInfo(info: Info, rootDOM: HTMLElement) {
     div = document.createElement('div');
     div.id = 'info';
     div.style.fontSize = '12px';
+    div.style.marginTop = '20px';
     rootDOM.appendChild(div);
   }
   div.innerHTML = `<a href="https://www.shadertoy.com/view/${info.id}" target="_blank">${info.id} ${info.name}</a>
-  <br />
+  <hr />
+  TAGS: ${info.tags ? info.tags.join('|') : ''}
+  <hr />
   ${(info.description + '').split('\n').join('<br />')}`
 }
 
@@ -355,7 +360,7 @@ function createUIWithShader(setConfig: any, updateConfig: any, config: any, gui:
   gui.open();
 }
 
-const inputTypeList = ['texture', 'buffer', 'music', 'keyboard', 'cubemap']
+const inputTypeList = ['texture', 'buffer', 'music', 'keyboard', 'cubemap', 'volume']
 
 function createInputsUI(updateConfig: any, config: any, root: GUI, passIndex: number) {
   // config.renderpass[passIndex].inputs[j]
@@ -391,6 +396,7 @@ function createInputsUI(updateConfig: any, config: any, root: GUI, passIndex: nu
       buffer: input.id,
       music: input.id,
       cubemap: input.id,
+      volume: input.id,
     };
     const controlList: GUIController[] = [];
     // 根据type创建一些可控ui
@@ -426,6 +432,14 @@ function createInputsUI(updateConfig: any, config: any, root: GUI, passIndex: nu
       });
       return [cControl];
     };
+    const createVolumeControl = () => {
+      const vControl = folder.add(uiData, 'volume', reverseKeyValue(volumeMap)).onChange(volume => {
+        changeConfig(i, {
+          id: volume
+        });
+      });
+      return [vControl]
+    };
 
     const createControl = (type: string): GUIController[] => {
       if (type === 'texture') {
@@ -436,6 +450,8 @@ function createInputsUI(updateConfig: any, config: any, root: GUI, passIndex: nu
         return createMusicControl();
       } else if (type === 'cubemap') {
         return createCubeControl();
+      } else if (type === 'volume') {
+        return createVolumeControl();
       }
       return []
     }
@@ -443,13 +459,15 @@ function createInputsUI(updateConfig: any, config: any, root: GUI, passIndex: nu
     folder.add(uiData, 'type', inputTypeList.filter(t => t !== 'keyboard')).onChange(type => {
       let id = ''
       if (type === 'texture') {
-        id = 'XdX3Rn';
+        uiData.texture = id = 'XdX3Rn';
       } else if (type === 'buffer') {
-        id = '4dXGR8';
+        uiData.buffer = id = '4dXGR8';
       } else if (type === 'music') {
-        id = '4sXGzn';
+        uiData.music = id = '4sXGzn';
       } else if (type === 'cubemap') {
-        id = 'XdX3zn';
+        uiData.cubemap = id = 'XdX3zn';
+      } else if (type === 'volume') {
+        uiData.volume = id = '4sfGRr';
       }
       if (id) {
         controlList.forEach(control => {

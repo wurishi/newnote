@@ -2175,3 +2175,24 @@ Photoshop 中高级进阶系列之一 - 图层混合模式原理：
 
 ## 28.5 文字故障效果
 
+# 29. `background-blend-mode`
+
+除了 `mix-blend-mode`，CSS 还提供了一个 `background-blend-mode`，也就是背景的混合模式。
+
+- 它可以是背景图片与背景图片的混合。
+
+- 也可以是背景图片与背景色之间的混合。
+
+## 29.1 基础应用
+
+## 29.2 background-blend-mode: difference 制作黑白反向动画
+
+需要透明背景的黑白动图
+
+## 29.3 制作 hover 效果
+
+使用 `mix-blend-mode` 和 `background-blend-mode` 理论上只要图片主色是黑色，底色是白色（不是透明色），都可以通过这二个样式动态的改变图片的颜色。
+
+## 29.4 制作文字背景图
+
+使用 `mix-blend-mode` 也可以实现 `background-clip` 的文字渐变效果，只需要构造出黑色文字，白色底色的文字 `div`，再叠在图片上即可。

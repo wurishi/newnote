@@ -7,3 +7,7 @@ export const base = `/proxy/${port}/`;
 export const hmr = base ? {
     host: host + base
 } : undefined;
+
+export function getAssetsUrl(url:string):string {
+    return base + url;
+}

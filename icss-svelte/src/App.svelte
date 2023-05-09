@@ -11,10 +11,14 @@
   });
   componentList.sort((a, b) => Number(a.name)-Number(b.name));
 
+  let prevComponent:any = null;
   const selectHandler = (evt) => {
     let target = document.getElementById('content');
     if(target) {
       document.body.removeChild(target);
+    }
+    if(prevComponent && prevComponent.$destroy) {
+      prevComponent.$destroy()
     }
     const key = evt.target.value;
     const fn = allComponents[key];
@@ -24,9 +28,9 @@
       document.body.appendChild(target);
 
       fn().then((Module: any) => {
-        new Module.default({
+        prevComponent = new Module.default({
           target
-        })
+        });
       });
     }
   };

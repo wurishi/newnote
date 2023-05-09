@@ -2196,3 +2196,155 @@ Photoshop 中高级进阶系列之一 - 图层混合模式原理：
 ## 29.4 制作文字背景图
 
 使用 `mix-blend-mode` 也可以实现 `background-clip` 的文字渐变效果，只需要构造出黑色文字，白色底色的文字 `div`，再叠在图片上即可。
+
+# 30. 奇妙的 CSS shapes(CSS图形)
+
+## 30.1 CSS3
+
+在 CSS3 之前，我们能做的只有矩形，在 CSS3 出来后，通过：
+
+- `border-radius`
+
+- `border`
+
+- `transform`
+
+- 伪元素配合
+
+- gradient 渐变
+
+能够作出非常多的几何图形。
+
+- 三角形
+
+- 切角
+
+- 梯形
+
+- 五边形
+
+- 六边形
+
+- 八边形
+
+- 五角星
+
+- 六角星
+
+- 八角星
+
+- 十二角星
+
+- 椭圆
+
+## 30.2 clip-path
+
+上面讲述的是使用传统 CSS3 的方式绘制几何图形。
+
+CSS 新属性 `clip-path` 裁剪路径，可以很便捷的生成各种几何图形。对应的正是 SVG 中的 path。
+
+API:
+
+```css
+{
+  /* Keyword values */
+  clip-path: none;
+
+  /* Image values */
+  clip-path: url(resources.svg#c1);
+
+  /* Box values
+  clip-path: fill-box;
+  clip-path: stroke-box;
+  clip-path: view-box;
+  clip-path: margin-box;
+  clip-path: border-box;
+  clip-path: padding-box;
+  clip-path: content-box;
+  */
+
+  /* Geometry values */
+  clip-path: inset(100px 50px);
+  clip-path: circle(50px at 0 100px);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+
+  /* Box and geometry values combined */
+  clip-path: padding-box circle(50px at 0 100px);
+
+  /* Global values */
+  clip-path: inherit;
+  clip-path: initial;
+  clip-path: unset;
+}
+```
+
+例如：`clip-path: circle(50px at 50px 50px)` 表示在元素的（50px, 50px）处（以元素的左上角为坐标起点），裁剪生成一个半径为 50px 的圆。
+
+在整个 `clip-path` 属性中，最为重要的当属 `polygon`，可以利用 `polygon` 生成任意多边形。
+
+## 30.3 clip-path 动画
+
+`clip-path` 另外一个强大之处在于可以进行 CSS transtion 与 CSS animation，也就是过渡和动画。
+
+## 30.4 从完整的图形分割成多个小图形
+
+## 30.5 `clip-path` 动画的局限
+
+进行过渡的两个状态，坐标顶点的数量必须一致。
+
+也就是说如果想要从三角形过渡到矩形，假设 `clip-path` 分别是：
+
+- 三角形：`clip-path: polygon(50% 0, 0 100%, 100% 0)`
+
+- 矩形：`clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%)`
+
+动画是没有过渡效果的，原因就是从 3 个坐标点变换到了 4 个坐标点。
+
+因此这里需要一个讨巧的办法，在三角形的表示方法中，使用四个坐标，并让其中两个坐标重合在一起即可：
+
+- 将上面的三角形改成：`clip-path: polygon(50% 0, 50% 0, 0 100%, 100% 0)`
+
+## 30.6 N边形过渡动画
+
+## 30.7 N polygon
+
+## 30.8 `shape-outside`
+
+`shape-outside` 它也能制造各种几何图形的能力，但是它只能和浮动 `float` 一起使用。
+
+它的 API：
+
+```css
+{
+  /* Keyword values */
+  shape-outside: none;
+  shape-outside: margin-box;
+  shape-outside: content-box;
+  shape-outside: border-box;
+  shape-outside: padding-box;
+  
+  /* Function values */
+  shape-outside: circle();
+  shape-outside: ellipse();
+  shape-outside: inset(10px 10px 10px 10px);
+  shape-outside: polygon(10px 10px, 20px 20px, 30px 30px);
+  
+  /* <url> value */
+  shape-outside: url(image.png);
+  
+  /* Gradient value */
+  shape-outside: linear-gradient(45deg, rgba(255, 255, 255, 0) 150px, red 150px);
+  
+  /* Global values */
+  shape-outside: initial;
+  shape-outside: inherit;
+  shape-outside: unset;
+}
+```
+
+配合 `float` 可以实现让文字根据图形的轮廓在其周围排列，而不再仅仅局限于在矩形（图片本身无论背景是不是透明，都是一个矩形）轮廓周围排列。
+
+## 30.9 图文混排（平行四边形）
+
+## 30.10 心形，菱形
+

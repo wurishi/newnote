@@ -32,7 +32,7 @@ function init() {
   const gui = new GUI();
   const mainFolder = gui.addFolder('主菜单');
   const shaders: Record<string, any> = {};
-  const shaderNames: Record<string, string> = {};
+  let shaderNames: Record<string, string> = {};
   Object.keys(configs).forEach((key) => {
     const arr = key.split('/');
     const name = arr.at(-1)!.split('.')[0];
@@ -189,6 +189,15 @@ function createShaderPassConfig(config: any): ShaderPassConfig[] {
           inputs: createInputs(pass.inputs),
           outputs: createOutputs(pass.outputs),
         });
+      } else if (pass.type === 'cubemap') {
+        shaderPassConfigs.push({
+          name: pass.name,
+          type: 'cubemap',
+          code: pass.code,
+          inputs: createInputs(pass.inputs),
+          outputs: createOutputs(pass.outputs),
+        });
+        console.log(pass);
       } else {
         console.warn('not do it');
       }
@@ -234,7 +243,7 @@ function createInputs(inputs: any): EffectPassInfo[] {
         if (cubemapUrl) {
           src = cubemapUrl
         } else {
-          console.warn('未找到img', input)
+          console.warn('未找到cubemapimg', input)
         }
       } else if (input.type === 'keyboard') {
       } else if (input.type === 'volume') {
@@ -287,6 +296,13 @@ function createOutputs(outputs: any) {
       }
       else if(oid === 'XsfGRr') {
         // sound 不需要
+      }
+      else if(oid === '4dX3Rr') {
+        // cubemap
+        outputArr.push({
+          channel: 0,
+          id: 0,
+        });
       }
       else {
         outputArr.push({
@@ -456,30 +472,36 @@ function createInputsUI(updateConfig: any, config: any, root: GUI, passIndex: nu
       return []
     }
     //
-    folder.add(uiData, 'type', inputTypeList.filter(t => t !== 'keyboard')).onChange(type => {
-      let id = ''
-      if (type === 'texture') {
-        uiData.texture = id = 'XdX3Rn';
-      } else if (type === 'buffer') {
-        uiData.buffer = id = '4dXGR8';
-      } else if (type === 'music') {
-        uiData.music = id = '4sXGzn';
-      } else if (type === 'cubemap') {
-        uiData.cubemap = id = 'XdX3zn';
-      } else if (type === 'volume') {
-        uiData.volume = id = '4sfGRr';
-      }
-      if (id) {
-        controlList.forEach(control => {
-          control.remove();
-        });
-        controlList.length = 0;
-        controlList.push(...createControl(type));
-        changeConfig(i, {
-          type, id
-        });
-      }
-    })
+    if(input.type === 'keyboard') {
+      uiData.type = (() => {}) as any;
+      folder.add(uiData, 'type').name(input.type);
+    }
+    else {
+      folder.add(uiData, 'type', inputTypeList.filter(t => t !== 'keyboard')).onChange(type => {
+        let id = ''
+        if (type === 'texture') {
+          uiData.texture = id = 'XdX3Rn';
+        } else if (type === 'buffer') {
+          uiData.buffer = id = '4dXGR8';
+        } else if (type === 'music') {
+          uiData.music = id = '4sXGzn';
+        } else if (type === 'cubemap') {
+          uiData.cubemap = id = 'XdX3zn';
+        } else if (type === 'volume') {
+          uiData.volume = id = '4sfGRr';
+        }
+        if (id) {
+          controlList.forEach(control => {
+            control.remove();
+          });
+          controlList.length = 0;
+          controlList.push(...createControl(type));
+          changeConfig(i, {
+            type, id
+          });
+        }
+      })
+    }
     controlList.push(...createControl(input.type));
   })
 }

@@ -900,11 +900,8 @@ export default class MyEffectPass {
     }
 
     private Paint_Cubemap_Fn = (param: PaintParam) => {
-        return
-        // console.log('cubemap')
         const { bufferID, cubeBuffers } = param
         const buffer = cubeBuffers![bufferID]
-        // TODO:
         this.mEffect.ResizeCubemapBuffer(bufferID, 1024, 1024)
 
         let dstID = 1 - buffer.lastRenderDone

@@ -1147,7 +1147,32 @@ export default {
   'Xl33D7': `chasers`,
   'tdX3D2': `Carcassonne_`,
   'ttSGRc': `Flat water effects`,
-  'wsB3Rz': `[twitch] Ink & Silver`
+  'wsB3Rz': `[twitch] Ink & Silver`,
+  'MdKfRG': `Trippy Paint`,
+  'MdVBzR': `Smoke 'n' Mirrors`,
+  'Mljfzy': `Organic Planet`,
+  'NdcSzM': `Light at the End of the K hole`,
+  'NdlSzX': `Ant Particles`,
+  'NsV3Wz': `sUBLIMATING tONES & hUES`,
+  'cdX3z7': `flow streamlines - anim vort`,
+  'cdfGz7': `flow streamlines - optim`,
+  'fdV3RW': `Nebulous Nonformanifest`,
+  'fdVyDy': `(FAIL)Hash octree`,
+  'fsKGDw': `Fork sUBLIMATIN oneWisdom 432`,
+  'sld3z7': `Hex Draw`,
+  'ssScRD': `Particle Network`,
+  'tsBSDd': `Hairs on your body ;)`,
+  'wldXDX': `window memory`,
+  'wlsSD8': `interactive orbital point trap`,
+  'NsGcDK': `(FAIL)Hash octree 2`,
+  'Ntt3z2': `Jonix buffer water ripple`,
+  'WllSzf': `Paint Marks on Canvas`,
+  'WtSfzh': `Spaceless`,
+  'cdB3Ww': `Starburst (2022)`,
+  'csGGDW': `S3 Painting - Octohedron`,
+  'fllBRH': `f5 canvas`,
+  'lljBRW': `2D paint shadow tracer`,
+  'mtSGzm': `infinite canvas / endless paper`
   // Ink Ghost
   // https://www.shadertoy.com/results?query=&sort=newest&from=68208&num=12
   // 5685 / 5755

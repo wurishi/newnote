@@ -1030,7 +1030,7 @@ document.documentElement.style.setProperty('--bgColor', '#0f0')
 
 - 钩子：以`j`为命名空间，表示特定给 Javascript 调用的类名，例如：`j-request`, `j-open`
 
-## 15.1 BEM
+## 14.1 BEM
 
 BEM 的意思就是块（block），元素（element），修饰符（modifier），是由 Yandex 团队提出的一种 CSS Class 命名方法。
 
@@ -2347,4 +2347,146 @@ API:
 ## 30.9 图文混排（平行四边形）
 
 ## 30.10 心形，菱形
+
+# 31. 纯 CSS 实现波浪效果
+
+使用纯 CSS 实现波浪效果困难的原因主要是没有很好的方法实现贝塞尔曲线。
+
+借助其他的方法（SVG，Canvas）则相对比较简单。
+
+## 31.1 使用 SVG 实现波浪效果
+
+画出三次贝塞尔曲线的核心在于 `<path id="wave-2" fill="rgba(154, 205, 50, .8)" d="M 0 100 C 140.6 94.24 45.08 106.32 200 100 A 95 95 0 0 1 0 100 Z">`
+
+## 31.2 使用 canvas 实现波浪效果
+
+主要是利用 `ctx.bezierCurveTo()` 绘制三次贝塞尔曲线实现。
+
+## 31.3 纯 CSS 实现波浪效果
+
+我们都知道通过给一个正方形设置 `border-radius: 50%` 可以得到一个圆形。
+
+如果 `border-radius` 接近 50%，但是不到 50%。并将这个图形滚动起来，它的边缘就会形成类似波浪的效果。
+
+# 32. 使用 CSS 属性 `contain`，控制页面的重绘与重排
+
+`contain` 属性允许我们指定特定的 DOM 元素和它的子元素，让它们能够独立于整个 DOM 树结构之外。目的是能够让浏览器有能力只对部分元素进行重绘，重排，而不必每次都针对整个页面。
+
+API：
+
+```css
+{
+  /* No layout containment. */
+  contain: none;
+  /* Turn on size containment for an element. */
+  contain: size;
+  /* Turn on layout containment for an element. */
+  contain: layout;
+  /* Turn on style containment for an element. */
+  contain: style;
+  /* Turn on paint containment for an element. */
+  contain: paint;
+
+  /* Turn on containment for layout, paint, and size. */
+  contain: strict;
+  /* Turn on containment for layout, and paint. */
+  contain: content;
+}
+```
+
+## 32.1 `contain: size`
+
+设置了 `contain: size` 的元素渲染不会受到其子元素内容的影响。
+
+换言之，正常情况下父元素的高度会因为子元素的增多而被撑高，但设置了 `contain: size` 后，子元素数量的变化将不再影响父元素的样式布局。
+
+## 32.2 `contain: style`
+
+据说被暂时移除了
+
+## 32.3 `contain: paint`
+
+设置了 `contain: paint` 的元素此子元素不会在此元素的边界之外被展示。因此，如果元素不在屏幕上或以其他方式设置为不可见了，则能保证它的后代不可见且不会被渲染。
+
+有点像设置了 `overflow: hidden`，即明确告知用户代理（User Agent），子元素的内容不会超过元素的边界，所以超出部分不需要渲染。
+
+另外，如果元素处于屏幕以外了，那么用户代理会直接忽略渲染这些元素，从而能更快的渲染其他内容。
+
+## 32.4 `contain: layout`
+
+设置了 `contain: layout` 的元素会告知用户代理，此元素内部样式的变化不会引起元素外部的样式变化，反之亦然。
+
+DEMO 效果不明显！！！
+
+## 32.5 `contain: strict` | `contain: content`
+
+这二个属性其实就是上述几个属性的聚合效果：
+
+- `contain: strict`：同时开启 layout, style, paint, size 的功能，相当于 `contain: size layout paint`
+
+- `contain: content`：同时开启 layout, style, paint 的功能，相当于 `contain: layout paint`
+
+另外 `contain:` 本身就可以同时定义几个。
+
+# 33. fixed 定位失效
+
+在许多情况下，`position: fixed` 会失效。MDN 用一句话概括了这种情况：当元素祖先的 transform 属性非 none 时，容器由视口改为改祖先。
+
+那么为何会发生这种情况？这个问题就涉及到了堆叠上下文（Stacking Context）的概念。
+
+## 33.1 Stacking Context -- 堆叠上下文
+
+指的是 HTML 元素的三维概念，这些 HTML 元素在一条假想的相对于面向（电脑屏幕的）视窗或者网页的用户的 Z 轴上延伸，HTML 元素依据自身属性按照优先级顺序占用层叠上下文的空间。
+
+简而言之，生成的堆叠上下文会影响该元素的层叠关系与定位关系。
+
+而由于堆叠上下文的创建，该元素会影响其子元素的固定定位。设置了 `position: fixed` 的子元素将不会基于 viewport 定位，而是基于这个父元素。
+
+## 33.2 创建堆叠上下文的方式
+
+在 #3 中曾经提到过堆叠上下文的创建方式，再补充一些（*为新增的）：
+
+- 根元素（`HTML`）
+- `z-index`值不为 "auto" 的绝对/相对定位。
+- 一个 `z-index`值不为 "auto" 的 flex item。即父元素 `display: flex / inline-flex`。
+- `opacity`属性小于 1 的元素。
+- `transform`属性不为 "none" 的元素。
+- `mix-blend-mode`属性值不为 "normal" 的元素。
+- *`filter`值不为"none"的元素。
+- `perspective`值不为 "none" 的元素。
+- `isolation` 属性被设置为 "isolate" 的元素。
+- `position: fixed`
+- 元素的 `will-change`指定了任意属性。（即使后续没有使用任何变形或动画，但因为浏览器已经默认该元素是硬件加速的，即使用 GPU 处理的）
+- `webkit-overflow-scrolling`属性被设置为 "touch"。
+- *`backdrop-filter`值不为"none"的元素。
+
+然后还需要验证以上任意情况是否都会使其子元素的 `position: fixed` 失效。
+
+验证结果为：（Windows10 Chrome 版本 112.0.5615.140（正式版本） （64 位））
+
+1. transform 属性值不为 "none"的元素
+2. filter值不为“none”的元素
+3. perspective值不为“none”的元素
+4. 在 will-change 中指定了任意 CSS 属性
+5. 设置了 transform-style: preserve-3d 的元素
+6. 设置了 contain: paint | layout | content | strict 的元素
+7. 设置了 backdrop-filter 的元素
+
+另外要注意的是，在不同内核浏览器下的表现也会有区别。
+
+# 34. CSS 动画技巧与细节
+
+## 34.1 正负旋转相消
+
+让祖父元素正向旋转，父级元素反向旋转。因为一正一反的旋转，且缓动函数一样，会让整个元素看上去依然是静止的。但这是因为正反旋转互相抵消了，此时如果再给元素加上 3D 转换，并且在内层动画旋转上额外的在 X 轴多一些旋转，就能产生一些特殊的效果。
+
+## 34.2 动画相同，缓动不同
+
+如果不想使用 CSS 默认提供的 `linear`, `ease-in`, `ease-out` 等缓动函数的话，可以自定义 `cubic-bezier(1, 1, 0, 0)`，可以通过网站 [cubic-bezier.com](https://cubic-bezier.com/) 调整并得到你所需要的缓动函数的对应 cubic-bezier。
+
+## 34.3 过渡取消
+
+圆点一开始是透明的，当 hover 时，会赋予它背景颜色，并取消了它的过渡，所以它会直接显示。
+
+hover 离开后，它原本的过渡又回来了，所以它会从有颜色慢慢消失。
 

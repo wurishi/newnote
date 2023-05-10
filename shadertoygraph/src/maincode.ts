@@ -253,6 +253,7 @@ function createInputs(inputs: any): EffectPassInfo[] {
         } else {
           console.warn('未找到volumn', input)
         }
+      } else if (input.type === 'mic') {
       }
       else {
         console.warn('未处理的input', input);
@@ -376,7 +377,7 @@ function createUIWithShader(setConfig: any, updateConfig: any, config: any, gui:
   gui.open();
 }
 
-const inputTypeList = ['texture', 'buffer', 'music', 'keyboard', 'cubemap', 'volume']
+const inputTypeList = ['texture', 'buffer', 'music', 'keyboard', 'cubemap', 'volume', 'mic']
 
 function createInputsUI(updateConfig: any, config: any, root: GUI, passIndex: number) {
   // config.renderpass[passIndex].inputs[j]

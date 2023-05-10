@@ -188,6 +188,11 @@ export type EffectPassInput = {
         destroy: () => void
     }
     keyboard?: EffectPassInput_Keyboard
+    mic?: {
+        num: number
+        freqData: Uint8Array
+        waveData: Uint8Array
+    }
 } | null
 
 export type EffectPassInput_Keyboard = {

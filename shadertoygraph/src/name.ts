@@ -1172,8 +1172,33 @@ export default {
   'csGGDW': `S3 Painting - Octohedron`,
   'fllBRH': `f5 canvas`,
   'lljBRW': `2D paint shadow tracer`,
-  'mtSGzm': `infinite canvas / endless paper`
+  'mtSGzm': `infinite canvas / endless paper`,
+  'DlK3RD': `SimpleDice`,
+  'clV3zD': `Noise Blocks`,
+  'ctK3zD': `Triangle Renderer v5(IT WORKS!)`,
+  'dlGGRD': `neuland logo`,
+  'dlK3RW': `PlasmaMic`,
+  'lsycDt': `danix raymarch`,
+  'mlKGRD': `Longlow 2.5`,
+  'mlVGRW': `Draw and Fill`,
+  'mly3zD': `(FAIL)traffic simulator`,
+  'mtK3RD': `Circling Star`,
+  'mtKGRW': `Solum Object`,
+  'sssfDj': `Longlow`,
+  'clG3zD': `Cel shade donut`,
+  'clVGRD': `Ambiant AI.`,
+  'ctG3zW': `"Titan" Golfed [172 Chars]`,
+  'ctKGRW': `Cursed Nonsense`,
+  'dl33DX': `sinemorph`,
+  'dl33Rl': `blueprint effect`,
+  'dlyGzD': `Funky Blobs`,
+  'dty3RW': `Simple Trail`,
+  'mlyGRW': `Bloom Flower`,
+  'mtdGWs': `wave interference test`,
+  'mttGWX': `Rectangular Pillar LOD Traversal`,
+  'mtyGzD': `Hash world`
   // Ink Ghost
+  // blueprint effect
   // https://www.shadertoy.com/results?query=&sort=newest&from=68208&num=12
   // 5685 / 5755
 };

@@ -2490,3 +2490,91 @@ DEMO 效果不明显！！！
 
 hover 离开后，它原本的过渡又回来了，所以它会从有颜色慢慢消失。
 
+# 35. CSS 滤镜技巧与细节
+
+API:
+
+```css
+{
+  filter: blur(5px);
+  filter: brightness(0.4);
+  filter: contrast(200%);
+  filter: drop-shadow(16px 16px 20px blue);
+  filter: grayscale(50%);
+  filter: hue-rotate(90deg);
+  filter: invert(75%);
+  filter: opacity(25%);
+  filter: saturate(30%);
+  filter: sepia(60%);
+
+  /* Apply multiple filters */
+  filter: contrast(175%) brightness(3%);
+
+  /* Global values */
+  filter: inherit;
+  filter: initial;
+  filter: unset;
+}
+```
+
+## 35.1 基本用法
+
+## 35.2 hover 增亮图片
+
+brightness 表示亮度
+
+contrast 表示对比度
+
+## 35.3 生成图像阴影
+
+通过生成阴影的方式大多是 `box-shadow`, `filter: drop-shadow()`, `text-shadow`。但是它们只能生成单色阴影。
+
+如果要跨过这层限制，那可以使用伪元素生成一个与原图一样大小的新图叠加在原图下方，并利用 `filter: blur()` 并调整其亮度/对比度，透明度等，制作出一个虚幻的影子，伪装成原图的阴影效果。
+
+## 35.4 blur 混合 contrast 产生融合效果
+
+两个滤镜单独的作用为：
+
+1. `filter: blur()`：设置高斯模糊效果
+
+2. `filter: contrast()`：调整对比度
+
+但如果进行以下设置：
+
+1. 画布上设置了 `filter: contrast()`。
+
+2. 进行动画的图形需要是画布的子元素，并被设置了 `filter: blur()`。
+
+此时当二个图形相交时，边与边会产生一种边界融合的效果，通过对比度滤镜把高斯模糊的模糊边缘干掉，再利用高斯模糊实现融合效果。
+
+## 35.5 燃烧的火焰
+
+## 35.6 文字融合动画
+
+## 35.7 注意事项
+
+1. CSS 滤镜可以给同个元素同时定义多个，如：`filter: contrast(150%) brightness(1.5)`，但是先后顺序不同产生的效果也是不一样的。
+
+2. 滤镜动画需要大量计算，不断的重绘页面，属于非常消耗性能的动画。
+
+3. `blur()` 混合 `contrast()` 滤镜效果，设置不同的颜色会产生不同的效果。
+
+# 36. `text-fill-color` 与 `color` 的异同
+
+`text-fill-color` 会覆盖 `color` 所定义的字体颜色，也就是前者的优先级更高。
+
+
+## 36.1 差异
+
+在 CSS3 之前，`color` 无法设置为 `transparent`，而 `text-fill-color` 可以。但在 CSS3 中，`transparent` 被重新定义为一个真实的颜色，任何需要颜色的地方都可以被设置了。
+
+所以两者最大的差异，可以认为是 `text-fill-color` 的概念是借鉴了 SVG（SVG 中使用 `fill` 属性给图形文本上色），而 `color` 则是传统意义上的 CSS 概念。
+
+# 37. 两行 CSS 代码实现图片任意颜色赋色
+
+## 37.1 使用 `background-blend-mode: lighten` 实现
+
+任意图片只要是主体黑色纯色，背景白色。然后利用 `background-blend-mode` 然后在图片下面叠一层其他颜色，通过 `lighten` 混合模式就可以实现图片主体颜色变为其他颜色的效果。
+
+要注意的是图片主体颜色应该只有黑色纯色，并且背景是纯白色而不能是透明的！
+

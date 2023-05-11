@@ -1196,7 +1196,31 @@ export default {
   'mlyGRW': `Bloom Flower`,
   'mtdGWs': `wave interference test`,
   'mttGWX': `Rectangular Pillar LOD Traversal`,
-  'mtyGzD': `Hash world`
+  'mtyGzD': `Hash world`,
+  '3tKyzV': `T-800 (Model 101)`,
+  '4dKGWW': `Cloth Texture Simulation`,
+  '4djfW3': ` Cubic Hermite Rectangle patched`,
+  '7t3Gz7': `[TDF2021]Toy Duck`,
+  'MdKGzW': `Ragged Cloth`,
+  'Mt3yW7': `Op shop jumpers`,
+  'XtSczy': `Worm Physics`,
+  'ldGGRD': `Whippy Rope`,
+  'llyBDW': `Lazy Cloth`,
+  'DdXSzX': `magic curtain 2`,
+  'DdlSzH': `Cloth Sim. via verlet integral`,
+  'NdVXDw': `Pale Silk`,
+  'NlKBW3': `Tearable 3D Fishnet`,
+  'NsfSR8': `Flagtime`,
+  'WlXGWj': `Clothoid`,
+  'XljyDd': `Tartan Plaid`,
+  'Xtlczr': `Torn Fabric 141 chars`,
+  'clXGRX': `Drawable Curtains`,
+  'ldBBDt': `Specular material - 88 chars`,
+  'mdBSWK': `Ukranian Flag`,
+  'mts3Dl': `Celtic Knotwork Curtains WFC`,
+  'sdlSRl': `Antarctic Flag`,
+  'ttXyD2': `Old Glory 2020`,
+  'ttlcD7': `Cloth Flag`
   // https://www.shadertoy.com/results?query=&sort=newest&from=24&num=12
   // Ink Ghost
   // blueprint effect

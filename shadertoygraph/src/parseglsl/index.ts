@@ -68,17 +68,20 @@ function createCodePanel(title: string, id: number, list: GraphBasic[], changeCo
         const div = e.target as HTMLDivElement;
         const index = +(div.getAttribute('data-index')!);
         const content = div.innerText;
-        console.log('n', content.indexOf('\n'));
+        // console.log('n', content.indexOf('\n'));
         const arr = content.split('\n');
         list[index].updateCode(arr.join(' '));
     };
 
+    const listDiv = document.createElement('div');
+    listDiv.className = 'list';
+    panel!.appendChild(listDiv);
     const items: HTMLDivElement[] = []
     list.forEach((it, index) => {
         const line = document.createElement('div');
         line.className = 'line';
         line.innerHTML = `<div class="num">${it.start}</div>`;
-        panel!.appendChild(line);
+        listDiv.appendChild(line);
 
         const item = document.createElement('div');
         item.setAttribute('data-index', index.toString());
@@ -86,7 +89,6 @@ function createCodePanel(title: string, id: number, list: GraphBasic[], changeCo
         // item.contentEditable = 'true';
         // item.contentEditable = 'plaintext-only';
         item.style.setProperty('-webkit-user-modify', 'read-write-plaintext-only');
-        // panel!.appendChild(item);
         line.appendChild(item);
         item.addEventListener('input', codeChange);
         items.push(item);

@@ -624,3 +624,10 @@ const cubeMap: any = {
   '4sfGzn': 'GalleryB',
   '4sX3zn': 'ForestBlur'
 };
+
+  // video 未处理 
+  // Ink Ghost
+  // blueprint effect
+  // XsfGzn Matte compositing
+  // https://www.shadertoy.com/results?query=&sort=newest&from=72888&num=12
+  // 从最后重新开始...

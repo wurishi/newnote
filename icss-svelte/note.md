@@ -2580,3 +2580,5 @@ contrast 表示对比度
 
 # 38. 纯 CSS 导航栏下划线跟随效果
 
+# 39. 使用 `scale` 和 `transform-origin` 控制动画方向 TODO:
+

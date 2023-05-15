@@ -2,6 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const crc32 = require('crc32');
 
+const nameFile = path.join(__dirname, './src/name.ts');
+
 function createNodePromise(nodeFunction, ...args) {
   return new Promise((resolve, reject) => {
     nodeFunction.apply(null, [
@@ -26,6 +28,7 @@ async function main() {
     fs.mkdirSync(targetFolder);
   }
   const outputs = [];
+  const namePart = {};
   const files = await createNodePromise(fs.readdir, searchFolder, 'utf-8');
   for (let i = 0, len = files.length; i < len; i++) {
     const file = files[i];
@@ -57,10 +60,31 @@ async function main() {
       );
       const json = JSON.parse(raw);
       outputs.push(`'${arr[0]}': \`${json?.info?.name}\``);
+      namePart[arr[0]] = json?.info?.name;
     }
   }
+  const nameFileContent = await createNodePromise(fs.readFile, nameFile, 'utf-8');
+  const nameFileArr = nameFileContent.split('\n');
+  let nameObj = {};
+  const testArr = ["'", '"', '`'];
+  nameFileArr.forEach(line => {
+    const arr = line.split(':');
+    if(arr.length === 2) {
+      let key = arr[0].trim();
+      if(testArr.indexOf(key[0]) >= 0) {
+        key = key.substr(1, key.length - 2);
+      }
+      let value = arr[1].trim();
+      value = value.substr(1, value.length - (value.at(-1) === ',' ? 3 : 2));
+      nameObj[key] = value
+    }
+  })
+  nameObj = {...nameObj, ...namePart};
+  await createNodePromise(fs.writeFile, nameFile, `export default ${JSON.stringify(nameObj)} `, 'utf-8');
+
   if (outputs.length > 0) {
     console.log(outputs.join(',\n'));
+    console.log('name.ts 已更新')
   } else {
     console.log('没有找到新的配置文件');
   }

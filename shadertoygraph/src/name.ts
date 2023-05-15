@@ -923,7 +923,7 @@ export default {
   MslGD7: 'Not straight',
   MslGW7: 'Interval mapping',
   Mss3D7: 'Oldschool plane deformations',
-  XdXGRB: 'Pangram', // *
+  XdXGRB: 'Pangram',
   MssGD7: 'Dimensions',
   XdsGD7: 'Fog Mountains',
   XsXGRS: 'The Blob',
@@ -1221,13 +1221,5 @@ export default {
   'sdlSRl': `Antarctic Flag`,
   'ttXyD2': `Old Glory 2020`,
   'ttlcD7': `Cloth Flag`,
-  'ctd3Rl': `AI not included`
-  // https://www.shadertoy.com/results?query=&sort=newest&from=24&num=12
-  // Ink Ghost
-  // blueprint effect
-  // https://www.shadertoy.com/results?query=&sort=newest&from=68208&num=12
-  // 5685 / 5755
-
-  // https://www.shadertoy.com/results?query=&sort=newest&from=72888&num=12
-  // 从最后重新开始...
+  'ctd3Rl': `AI not included`,
 };

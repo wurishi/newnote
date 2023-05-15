@@ -2,7 +2,7 @@ import ShaderToy from './shaderToy';
 import Stats from 'stats.js';
 import { GUI, GUIController } from 'dat.gui';
 import { EffectPassInfo, Sampler, ShaderPassConfig } from './type';
-import Names from './name';
+import Names from './name.json';
 import Images, { getMusic, getVolume, musicMap } from './image';
 import { getAssetsUrl } from './utils/proxy';
 import createMediaRecorder from './utils/mediaRecorder';
@@ -572,9 +572,11 @@ function lazyInit(
         const name = (Names as any)[id] || id;
         visitSet.add(nameToValue[name]);
       });
+      let noVisitCount = 0;
       Object.keys(nameToValue).forEach((key) => {
         const value = nameToValue[key];
         if (!visitSet.has(value)) {
+          noVisitCount ++;
           const div = document.createElement('button');
           div.id = value;
           div.innerHTML = key;
@@ -582,6 +584,7 @@ function lazyInit(
           div.addEventListener('click', clickHandler);
         }
       });
+      div.innerHTML = `全部 visited (${noVisitCount})`;
     } catch (exp) { }
   }, 1000);
 }
@@ -624,10 +627,3 @@ const cubeMap: any = {
   '4sfGzn': 'GalleryB',
   '4sX3zn': 'ForestBlur'
 };
-
-  // video 未处理 
-  // Ink Ghost
-  // blueprint effect
-  // XsfGzn Matte compositing
-  // https://www.shadertoy.com/results?query=&sort=newest&from=72888&num=12
-  // 从最后重新开始...

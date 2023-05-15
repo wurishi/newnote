@@ -1222,4 +1222,5 @@ export default {
   'ttXyD2': `Old Glory 2020`,
   'ttlcD7': `Cloth Flag`,
   'ctd3Rl': `AI not included`,
+  'ctVGWw': `Fork glitch fee suwqymncwe 828`
 };

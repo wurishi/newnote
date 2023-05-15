@@ -60,8 +60,12 @@ function init() {
     shaderToy.newEffect(renderpass, musicCallback);
   }
   let _gainControl: GUIController;
+  const sortShaderNames: Record<string, string> = {};
+  Object.keys(shaderNames).sort((a, b) => a.localeCompare(b)).forEach(key => {
+    sortShaderNames[key] = shaderNames[key];
+  });
   const current = mainFolder
-    .add(guiData, 'current', shaderNames)
+    .add(guiData, 'current', sortShaderNames)
     .name('shader')
     .onChange((name) => {
       const fn = shaders[name];

@@ -1220,10 +1220,14 @@ export default {
   'mts3Dl': `Celtic Knotwork Curtains WFC`,
   'sdlSRl': `Antarctic Flag`,
   'ttXyD2': `Old Glory 2020`,
-  'ttlcD7': `Cloth Flag`
+  'ttlcD7': `Cloth Flag`,
+  'ctd3Rl': `AI not included`
   // https://www.shadertoy.com/results?query=&sort=newest&from=24&num=12
   // Ink Ghost
   // blueprint effect
   // https://www.shadertoy.com/results?query=&sort=newest&from=68208&num=12
   // 5685 / 5755
+
+  // https://www.shadertoy.com/results?query=&sort=newest&from=72888&num=12
+  // 从最后重新开始...
 };

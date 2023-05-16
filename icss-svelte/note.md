@@ -2580,5 +2580,12 @@ contrast 表示对比度
 
 # 38. 纯 CSS 导航栏下划线跟随效果
 
-# 39. 使用 `scale` 和 `transform-origin` 控制动画方向 TODO:
+# 39. 使用 `scale` 和 `transform-origin` 控制动画方向
 
+## 39.1 `transform: scale()` 实现运动
+
+`scale()` 用于修改元素的大小。可以通过向量形式定义的缩放值来放大或缩小元素，同时可以在不同的方向（x/y/z）设置不同的缩放值。
+
+## 39.2 `transform-origin` 实现运动方向
+
+`transform-origin` 可以更改一个元素变形（transform）的原点，该属性可以使用一个，两个或三个值来指定，每个值表示一个方向上的偏移量。

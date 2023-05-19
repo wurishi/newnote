@@ -7,7 +7,9 @@
   4sl3zr pixelate
   Xss3zr video heightfield
   lssGzn Coffee and Tablet
+  Mds3zn Chromatic Aberration
 
 
-  // https://www.shadertoy.com/results?query=&sort=newest&from=72852&num=12
-  // lds3zn Ray tracing test
+https://www.shadertoy.com/results?query=&sort=newest&from=72936&num=12
+6079/6086
+lslGzr The Triforce

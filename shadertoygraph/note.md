@@ -8,8 +8,10 @@
   Xss3zr video heightfield
   lssGzn Coffee and Tablet
   Mds3zn Chromatic Aberration
+  MslGzr Blueorange
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=72936&num=12
-6079/6086
-lslGzr The Triforce
+https://www.shadertoy.com/results?query=&sort=newest&from=72996&num=12
+6084/6092
+
+XdfGz8 pyroclastic explosion

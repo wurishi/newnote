@@ -2596,4 +2596,29 @@ contrast 表示对比度
 
 # 40. Pure CSS Button Effect
 
+# 41. 选择器：`:focus-within`
+
+CSS 的伪类使用一个冒号（:），CSS 伪元素使用两个冒号（::）。
+
+当然也有例外，对于 CSS2 中已经有的伪元素，例如：`before`，单冒号和双冒号是作用是一样的。
+
+所以如果网站只需要兼容 webkit, firefox, opera 等现代浏览器或者是移动端页面，建议按 CSS3 标准对于伪元素使用双冒号的写法。如果要兼容低版本的 IE 浏览器，使用 CSS2 的单冒号写法更安全。
+
+## 41.1 伪类选择器：`:focus-within`
+
+它表示一个元素获得焦点，或者该元素的后代元素获得焦点都可以触发 `:focus-within`。
+
+## 41.2 `:focus-within` 的冒泡性
+
+这个属性有点类似 Javascript 的事件冒泡，即可以从获得焦点的元素开始一直冒泡到根元素 `html`，都可以触发 `:focus-within` 事件。
+
+## 41.3 input
+
+## 41.4 TAB 切换导航
+
+## 41.5 配合 `:placeholder-shown` 伪类实现表单效果
+
+`:placeholder-shown` 大概意思就是，当 input 类型标签使用了 placeholder 属性有了默认占位文字后会触发此伪类样式。那么再配合 `:not()` 伪类则可以改变 placeholder 文字消失后的样式。
+
 TODO:
+https://github.com/chokcoco/iCSS/issues/36

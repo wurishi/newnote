@@ -2622,3 +2622,15 @@ CSS 的伪类使用一个冒号（:），CSS 伪元素使用两个冒号（::）
 
 ## 41.6 离屏导航
 
+1. QuickFilter panel will only show for BRM users when they search "seed profile" for the first time(after open page or clear graph).
+2. When they search "transaction" and "group linking" , QuickFilter will display a blue bubble without popup.
+3. When Other users search, QuickFilter will only display a blue bubble without popup.
+
+4. The QuickFilter panel can be closed by clicking the button in the upper right corner or by clicking outside the panel in other areas.
+5. After the panel is closed, moving the mouse to the bubble will make the panel reappear. If any click operation is performed on the panel, refer to action 4 for closing. Otherwise, the panel will disappear when the mouse moves away from it.
+
+1. QuickFilter panel is only displayed when a BRM user searches for "Seed Profile" for the first time (either when opening the page for the first time or after executing ClearGraph).
+2. When searching for "transaction" and "group linking", the QuickFilter panel will not pop up but only display a blue bubble.
+3. When other users search, the panel will not pop up but instead only display a blue bubble.
+4. The QuickFilter panel can be closed by clicking the button in the upper right corner or by clicking outside the panel in other areas.
+5. After the panel is closed, moving the mouse to the bubble will make the panel reappear. If any click operation is performed on the panel, refer to action 4 for closing. Otherwise, the panel will disappear when the mouse moves away from it.

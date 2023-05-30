@@ -3,6 +3,7 @@
     import C3 from "./41.3.svelte";
     import C4 from "./41.4.svelte";
     import C5 from './41.5.svelte';
+    import C6 from './41.6.svelte';
 </script>
 
 <C2 />
@@ -12,4 +13,6 @@
 <C4 />
 <hr />
 <C5 />
+<hr />
+<C6 />
 <hr />

@@ -2620,5 +2620,5 @@ CSS 的伪类使用一个冒号（:），CSS 伪元素使用两个冒号（::）
 
 `:placeholder-shown` 大概意思就是，当 input 类型标签使用了 placeholder 属性有了默认占位文字后会触发此伪类样式。那么再配合 `:not()` 伪类则可以改变 placeholder 文字消失后的样式。
 
-TODO:
-https://github.com/chokcoco/iCSS/issues/36
+## 41.6 离屏导航
+

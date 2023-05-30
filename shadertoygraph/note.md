@@ -9,9 +9,11 @@
   lssGzn Coffee and Tablet
   Mds3zn Chromatic Aberration
   MslGzr Blueorange
+  4df3zH half sphere lens distortion
+  XsX3z8 Video filters
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=72996&num=12
-6084/6092
+https://www.shadertoy.com/results?query=&sort=newest&from=73224&num=12
+6103/6113
 
-XdfGz8 pyroclastic explosion
+ldX3R8 Fake Global Illumination

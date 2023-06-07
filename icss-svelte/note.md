@@ -2622,15 +2622,27 @@ CSS 的伪类使用一个冒号（:），CSS 伪元素使用两个冒号（::）
 
 ## 41.6 离屏导航
 
-1. QuickFilter panel will only show for BRM users when they search "seed profile" for the first time(after open page or clear graph).
-2. When they search "transaction" and "group linking" , QuickFilter will display a blue bubble without popup.
-3. When Other users search, QuickFilter will only display a blue bubble without popup.
+# 42. 滚动视差
 
-4. The QuickFilter panel can be closed by clicking the button in the upper right corner or by clicking outside the panel in other areas.
-5. After the panel is closed, moving the mouse to the bubble will make the panel reappear. If any click operation is performed on the panel, refer to action 4 for closing. Otherwise, the panel will disappear when the mouse moves away from it.
+滚动视差（Parallax Scrolling）是指让多层背景以不同的速度移动，形成立体的运动效果，带来出色的视觉体验。作为网页设计的热点趋势，越来越多的网站应用了这项技术。
 
-1. QuickFilter panel is only displayed when a BRM user searches for "Seed Profile" for the first time (either when opening the page for the first time or after executing ClearGraph).
-2. When searching for "transaction" and "group linking", the QuickFilter panel will not pop up but only display a blue bubble.
-3. When other users search, the panel will not pop up but instead only display a blue bubble.
-4. The QuickFilter panel can be closed by clicking the button in the upper right corner or by clicking outside the panel in other areas.
-5. After the panel is closed, moving the mouse to the bubble will make the panel reappear. If any click operation is performed on the panel, refer to action 4 for closing. Otherwise, the panel will disappear when the mouse moves away from it.
+通常而言，滚动视差在前端需要辅助 Javascript 才能实现。当然，其实 CSS 也能够实现。
+
+## 42.1 认识 `background-attachment`
+
+`background-attachment`：如果指定了 `background-image`，那么它可以用来决定背景在视口中固定还是随着包含它的区块滚动。
+
+- `background-attachment: scroll`：背景相对于元素本身固定，而不是随着它的内容滚动。
+
+- `background-attachment: local`：背景相对于元素的内容固定，如果一个元素拥有滚动机制，背景将会随着元素的内容滚动，并且背景的绘制区域和定位区域是相对于可滚动的区域而不是包含它们的边框。
+
+- `background-attachment: fixed`：背景相对于视口固定。即使一个元素拥有滚动机制，背景也不会随着元素的内容滚动。
+
+需要注意的是，看上去 `scroll` 和 `fixed` 的效果是一样的，实则不然。
+
+`scroll` 相对于元素本身固定，`fixed` 相对于视口固定。有点类似 `position` 的 `absolute` 和 `fixed`。如果横向拖动页面大小，会发现 `fixed` 的图片在变换，因为里面的图片是基于视口进行定位的。
+
+## 42.2 使用 `background-attachment: fixed` 实现滚动视差
+
+## 42.3 使用 `transform: translate3d` 实现滚动视差
+

@@ -19,9 +19,14 @@
   Xsl3z8 Color Zebra
   XslGz8 Barrel Blur
   XssGz8 post: Barrel Blur Chroma
+  ldl3R8 Edge filter
+  lds3R8 motion
+  lss3R8 Cel Shading
+  lssGz8 Metamaterial
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=73596&num=12
-6134/6148
 
-Msl3R8 Mandel Fire
+https://www.shadertoy.com/results?query=&sort=newest&from=73620&num=12
+6136/6152
+
+lssGRH Red Planet

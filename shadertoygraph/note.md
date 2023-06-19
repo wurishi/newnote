@@ -23,10 +23,17 @@
   lds3R8 motion
   lss3R8 Cel Shading
   lssGz8 Metamaterial
+  4sX3RN NoiseWarp
+  4sfGR4 mod filter
+  XdXGz4 separateRGB
+  Xdf3R4 Pseudo Volumetric
+  Xdf3RN Contrast
+  Xsf3RN Night vision device
+  ldlGR8 RM Cell Shading
+  lsf3z4 BadTV
 
 
+https://www.shadertoy.com/results?query=&sort=newest&from=74160&num=12
+6181/6200
 
-https://www.shadertoy.com/results?query=&sort=newest&from=73620&num=12
-6136/6152
-
-lssGRH Red Planet
+Mdf3RN Audio heightfield 2

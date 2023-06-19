@@ -2678,4 +2678,14 @@ CSS 的伪类使用一个冒号（:），CSS 伪元素使用两个冒号（::）
 
 ## 43.5 长投影
 
-TODO: https://github.com/chokcoco/iCSS/issues/39
+通过对两个伪元素的 `transform: skew()` 变换以及从实色到透明色的背景色变化，实现长投影。
+
+## 43.6 色彩投影
+
+利用伪元素，生成一个和原图相同的新图叠加在原图下方，并利用滤镜 `filter: blur()` 并配合其他的亮度/对比度，透明度等滤镜，制作出一个虚幻的影子作为原图的阴影效果。
+
+## 43.7 使用 `box-shadow` 实现灯光效果
+
+## 43.8 单标签实现 TikTok Logo
+
+## 43.9 使用 `mix-blend-mode` 实现 TikTok Logo

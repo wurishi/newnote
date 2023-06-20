@@ -2689,3 +2689,28 @@ CSS 的伪类使用一个冒号（:），CSS 伪元素使用两个冒号（::）
 ## 43.8 单标签实现 TikTok Logo
 
 ## 43.9 使用 `mix-blend-mode` 实现 TikTok Logo
+
+# 44. CSS 滤镜导致 CSS 3D 失效
+
+```css
+{
+    transform-style: preserve-3d;
+    perspective: 1000;
+    transform: translate3d();
+}
+```
+
+当使用上述 CSS 3D 样式属性时，如果想继续增强效果而使用了 `mix-blend-mode` 效果，导致的结果是 3D 效果整体消失了。
+
+目前情况下：
+
+- chrome: 3D 退化为 2D
+
+- firefox: 3D 退化为 2D
+
+- safari: 渲染正常
+
+此 BUG 大致原因是，当使用 CSS 混合模式的时候，堆叠上下文会重新对使用了混合模式的元素的根节点处创建一个独立的渲染平面。此渲染平面是不支持 `preserve-3d` 的（因为它们渲染到单独的 FBO 中），所以我们看到的是一个 2D 的平面效果。
+
+另外对根节点设置 `backdrop-filter: blur(1px);` 或 `filter: blur(1px);` 也会导致同样的问题。（对子节点设置 `blur` 显示正常）
+

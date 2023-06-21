@@ -31,9 +31,13 @@
   Xsf3RN Night vision device
   ldlGR8 RM Cell Shading
   lsf3z4 BadTV
+  MdfGz4 CRT
+  Mdl3z4 box filter edge detection
+  XsX3R7 Mapping
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=74160&num=12
-6181/6200
+https://www.shadertoy.com/results?query=&sort=newest&from=74196&num=12
 
-Mdf3RN Audio heightfield 2
+6184/6209
+
+Warping - procedural 2 

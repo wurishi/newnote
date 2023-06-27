@@ -568,3 +568,104 @@ export type ActionModule = typeof import('./13_constants')
 
 export type Action = ActionModule[keyof ActionModule]
 ```
+
+# 14. global
+
+通过声明 (`declare`) 一个 `global`，可以在内部定义一个 `interface`，然后可以在所有需要用到的地方使用如下形式扩展这个接口，并且所有用到这个接口的地方都会看到扩展内容：
+
+```typescript
+
+// user.ts
+
+declare global {
+  interface GlobalReducerEvent {
+    LOG_IN: {};
+  }
+}
+
+// todos.ts
+
+declare global {
+  interface GlobalReducerEvent {
+    ADD_TODO: {
+      text: string;
+    }
+  }
+}
+
+```
+
+# 15. Extract
+
+```typescript
+export type Event =
+    | {
+        type: 'LOG_IN';
+        payload: {
+            userId: string;
+        };
+    }
+    | {
+        type: 'SIGN_OUT';
+    };
+
+const sendEvent = (eventType: Event['type'], payload?: any) => { };
+
+sendEvent('LOG_IN', { userId: '123' })
+sendEvent('SIGN_OUT')
+```
+
+在以上代码中，`sendEvent` 的代码提示并不够完善，`payload` 是可选参数，且类型为 `any`。这会造成如下的错误：
+
+```typescript
+// SIGN_OUT 不需要任何 payload
+sendEvent('SIGN_OUT', {});
+// userId 类型不正确
+sendEvent('LOG_IN', {
+    userId: 123,
+});
+// payload 缺少 userId
+sendEvent('LOG_IN', {});
+// 缺少 payload
+sendEvent('LOG_IN');
+```
+
+可以优化 `sendEvent` 成这样：
+
+```typescript
+const sendEvent = <Type extends Event['type']>
+    (...args: Extract<Event, { type: Type }> extends { payload: infer TPayload }
+        ? [Type, TPayload]
+        : [Type]
+    ) => { };
+```
+
+上述错误的使用将会第一时间被 `tsc` 发现并被告知。
+
+`Extract<U, T>` 意为从 `U` 中抽取符合 `T` 的类，比如：
+
+```typescript
+type A = 'a' | 'b' | 'c';
+type B = 'b';
+Extract<A, B> // 'b'
+// 只有 'b' 符合条件
+```
+
+类似的还有一个 `Exclude<U, T>`，它是从 `U` 中排除符合 `T` 的类，所以：
+
+```typescript
+type A = 'a' | 'b' | 'c';
+type B = 'b';
+Exclude<A, B> // 'a' | 'c'
+// 排除了 'b'
+```
+
+在上述例子中，会发现 `sendEvent` 的参数名提示为 `arg_0` `arg_1`，如果要更优雅的提示参数名，可以作如下修改：
+
+```typescript
+const sendEvent = <Type extends Event['type']>
+    (...args: Extract<Event, { type: Type }> extends { payload: infer TPayload }
+        ? [type: Type, payload: TPayload]
+        : [type: Type]
+    ) => { };
+```

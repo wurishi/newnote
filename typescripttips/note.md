@@ -669,3 +669,126 @@ const sendEvent = <Type extends Event['type']>
         : [type: Type]
     ) => { };
 ```
+
+# 16. noUncheckedIndexedAccess
+
+有如下一个对象：
+
+```typescript
+export const myObj: Record<string, string[]> = {};
+```
+
+我们可以直接这样使用：
+
+```typescript
+myObj.foo.push('bar');
+```
+
+显然，`foo` 可能是未定义的，这样写会得到一个运行时错误。但其实更合理的是在我们写代码的阶段就提示错误，这就需要我们通过修改 `tsconfig.json` 来实现：
+
+```json
+{
+  // ...
+  "noUncheckedIndexedAccess": true
+}
+```
+
+此时，我们会在代码阶段就得到错误提示，这要求我们更安全合理的编码：
+
+```typescript
+
+myObj.foo.push('bar'); // 提示 'myObj.foo' is possibly 'undefined'
+
+myObj.foo?.push('bar'); // 通过 foo? 来安全的访问
+
+if (myObj.foo) { // 先判断是否存在
+    myObj.foo.push('bar');
+}
+
+if (!myObj.foo) { // 或者为空时先初始化
+    myObj.foo = []
+}
+```
+
+# 17. 按需删除联合类型
+
+要得到一个去掉某个属性的类，可以使用 `Omit` 来实现：
+
+```typescript
+type Test = {
+    a: number;
+    b: string;
+    c: Date;
+}
+
+type WithoutC = Omit<Test, 'b'> // { a: number, c: Date }
+```
+
+但如果有一个联合类型，要去掉指定项的话，用 `Omit` 就不行了：
+
+```typescript
+type Letters = 'a' | 'b' | 'c'
+
+type WithoutC = Omit<Letters, 'b'> // 会得到一个枚举了字符串所有方法的类
+```
+
+此时可以这样来实现效果：
+
+```typescript
+type RemoveC<TType> = TType extends 'c' ? never : TType
+
+type WithoutC = RemoveC<Letters> // 得到一个正确的联合类型："a" | "b"
+```
+
+更进一步，像 `Omit<T, K>` 一样实现一个去掉指定项的类：
+
+```typescript
+type RemoveAny<TType, RType> = TType extends RType ? never : TType
+
+type WithoutB = RemoveAny<Letters, 'b'> // "a" | "c"
+```
+
+# 18. asserts
+
+```typescript
+declare global {
+    function postFn(userId: string, title: string): void
+}
+
+export class SDK {
+    constructor(public loggedInUserId?: string) { }
+
+    createPost(title: string) {
+        this.assertUserIsLoggedIn();
+
+        postFn(this.loggedInUserId, title); // 错误提示 SDK.loggedInUserId?: string | undefined 
+    }
+
+    assertUserIsLoggedIn() {
+        if (!this.loggedInUserId) {
+            throw new Error('User is not logged in');
+        }
+    }
+}
+```
+
+在上面的代码中，`postFn(this.loggedInUserId, title)` 会有一处错误，告诉你 `loggedInUserId` 可能未定义，但其实我们在 `assertUserIsLoggedIn()` 中有作过判断，并且如果将 `assertUserIsLoggedIn` 方法中的内容移到 `postFn()` 前面时，错误就会消失。这种情况下，可以使用 `asserts` 优化这个行为。
+
+```typescript
+assertUserIsLoggedIn(): asserts this is this & { loggedInUserId: string } {
+    if (!this.loggedInUserId) {
+        throw new Error('User is not logged in');
+    }
+}
+```
+
+此时：
+
+```typescript
+createPost(title: string) {
+  // 执行前，this.loggedInUserId? 还是string | undefined
+  this.assertUserIsLoggedIn();
+  // 执行后，因为有了 asserts 断言了 this.loggedInUserId 是 string 类型
+  postFn(this.loggedInUserId, title);
+}
+```

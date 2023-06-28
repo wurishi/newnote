@@ -34,10 +34,11 @@
   MdfGz4 CRT
   Mdl3z4 box filter edge detection
   XsX3R7 Mapping
+  XslGRM Halftone
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=74196&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=74436&num=12
 
-6184/6209
+6204/6231
 
-Warping - procedural 2 
+4df3R7 Circular Blur

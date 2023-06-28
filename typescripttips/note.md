@@ -792,3 +792,65 @@ createPost(title: string) {
   postFn(this.loggedInUserId, title);
 }
 ```
+
+# 19. 合理的返回
+
+# 20. Extract 巧用
+
+有这样一个类：
+
+```typescript
+export type Obj = {
+    a: 'a',
+    a2: 'a2',
+    a3: 'hello',
+    b: 'b',
+    b1: 'b1',
+    b2: 'b2',
+}
+```
+
+如果想要一个以 `a` 开头的联合类型，可以这样写：
+
+```typescript
+type ValueOfKeysStartingWithA<T> = {
+    [K in Extract<keyof T, `a${string}`>]: T[K];
+}[Extract<keyof T, `a${string}`>]
+
+type NewUnion = ValueOfKeysStartingWithA<Obj>  // "a" | "a2" | "hello"
+```
+
+对它进行进一步优化，我们可以得到一个自定义规则的 `ValueOfKeysStartingWith` 类型：
+
+```typescript
+type ValueOfKeysStartingWith<
+    T,
+    _ExtractedKeys extends keyof T = Extract<keyof T, `a${string}`>
+> = {
+    [K in _ExtractedKeys]: T[K]
+}[_ExtractedKeys]
+
+type AUnion = ValueOfKeysStartingWith<Obj> // "a" | "a2" | "hello"
+type BUnion = ValueOfKeysStartingWith<Obj, Extract<keyof Obj, `b${string}`>> // "b" | "b1" | "b2"
+```
+
+# 21. @preconstruct/cli
+
+```shell
+安装：
+npm i -D @preconstruct/cli
+
+修复：
+npx preconstruct fix
+
+编译：
+npx preconstruct build
+```
+
+修复功能，会根据 `package.json` 中的配置，指向到对应的生成好的 js 文件，如果想要 ESModule 文件，也只需要在 `package.json` 中添加一个 `"module": true` 字段，`fix` 功能会自动指向对应的 js 文件。
+
+需要在 `package.json` 中添加 `file` 属性并将 `dist` 目录添加进去。
+
+Typescript 项目还需要安装 `@babel/preset-typescript`，并在 `.babelrc` 中配置。
+
+还可以安装 `@babel/preset-env`，并在 `.babelrc` 中配置，让生成的 js 使用 ES5 之前的语法。

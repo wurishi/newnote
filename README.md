@@ -172,6 +172,10 @@ Rust
 
 参考资料: [30 天精通 RxJS](https://blog.jerry-hong.com/series/rxjs/) **(完成)**
 
+# sd
+
+stable diffusion
+
 # shadertoy
 
 参考网站: [shadertoy](https://www.shadertoy.com/) (*进行中*)
@@ -181,6 +185,7 @@ https://shadertoyunofficial.wordpress.com/
 # shadertoygraph
 重构 shadertoy 的渲染代码（极大部分的多 buffer 可以正常显示了），通过官方扩展下载的 json 文件可以通过工具生成对应的配置。
 
+目前改成直接转换官网下载的 json 文件并显示，减少中间商 -.-
 
 # sveltejs
 

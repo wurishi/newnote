@@ -35,10 +35,14 @@
   Mdl3z4 box filter edge detection
   XsX3R7 Mapping
   XslGRM Halftone
+  4sX3z4 Chromatic Aberration Effect
+  MslGzM 2D Cell PostEffect
+  XdX3Wr warptest
+  XdfGDn Colored Circles
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=74436&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=74592&num=12
 
-6204/6231
+6217/6248
 
-4df3R7 Circular Blur
+4sX3Wr Water columns

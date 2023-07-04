@@ -2716,3 +2716,65 @@ CSS 的伪类使用一个冒号（:），CSS 伪元素使用两个冒号（::）
 
 # 45. 纯 CSS 滚动进度条
 
+# 46. `box-decoration-break`
+
+取值只有两个：
+
+```css
+{
+  box-decoration-break: slice; // 默认取值
+  box-decoration-break: clone;
+}
+```
+
+使用了 `box-decoration-break: clone` 的内联元素，如果存在折行显示，那么每一行都将拥有原本单行时的所有完整样式。
+
+## 46.1 生效样式影响范围
+
+只会作用于下列样式：
+
+- background
+- border
+- border-image
+- box-shadow
+- clip-path
+- margin
+- padding
+- Syntax
+
+## 46.2 文本选中效果
+
+## 46.3 每行文字带特定边框
+
+如果想要每行都带特定的边框样式，或许可以为每一行设置一个 `<p>` ，但如果文本内容不确定，容器的宽度也不确定时，使用 `box-decoration-break` 会更加便捷。
+
+## 46.4 结合过渡动画
+
+## 46.5 注意事项
+
+兼容性：截止到 2023/07/04 为 2.77%	+	95.01%	=	97.78%
+
+要注意大部分都是支持内联元素，但不支持跨列或分页符支持。
+
+实际使用时可能需要写成：
+
+```css
+{
+   box-decoration-break: clone;
+   -webkit-box-decoration-break: clone;
+}
+```
+
+# 47. 纯 CSS 实现鼠标跟随
+
+用 CSS 如何实时监测当前鼠标的位置？
+
+让页面上铺满元素。然后通过 `~` 兄弟元素选择器，用 `hover` 的 `div` 去控制这个兄弟元素的位置。
+
+## 47.1 小球跟随
+
+## 47.2 Gooey
+
+## 47.3 鼠标跟随
+
+TODO:

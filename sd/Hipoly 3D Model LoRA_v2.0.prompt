@@ -1,0 +1,87 @@
+prompt:<lora:hipoly3DModelLora_v20:0.5>,3d,realistic,masterpiece,bestquality,
+1girl,
+warriorgirl,
+Determinedexpression,battle-readystance,armororbattleattire,weaponsuchasaswordorabow,dynamicbackgroundwithhintsofconflictoraction,
+rimlighting,sidelighting,cinematiclight,ultrahighres,8kuhd,filmgrain,bestshadow,delicate,RAW,lightparticles,
+detailedskintexture,detailedclothtexture,beautifuldetailedface,intricatedetails,ultradetailed
+Negative prompt:[:EasyNegative:0.5],extrafingers,fewerfingers,facepaint,mole,
+Sampler:DPM++2MKarras
+model:
+CFG scale:12
+steps:20
+seed:3591483779
+
+prompt:<lora:hipoly3DModelLora_v20:0.6>,
+1girl,lookingatviewer,
+upperbody,3D,realistic,
+largebreasts,excessivelyfrilledprincessdress,drapedclothes,jewelry,ornament,flower,lacetrim,
+masterpiece,bestquality,8k,detailedskintexture,detailedclothtexture,beautifuldetailedface,intricatedetails,ultradetailed,
+rimlighting,sidelighting,cinematiclight,ultrahighres,8kuhd,filmgrain,bestshadow,delicate,RAW
+Negative prompt:[:EasyNegative:0.5],extrafingers,fewerfingers,cowboy,mole,freckles,facepaint,(simplebackground:1.3),
+Sampler:UniPC
+model:
+CFG scale:10
+steps:20
+seed:1041864763
+
+prompt:<lora:hipoly3DModelLora_v20:0.5>,3d,realistic,masterpiece,bestquality,
+1girl,
+Musician,
+Holdinganinstrument,passionateexpression,sheetmusic,stageorpracticeroombackground,musicalnotesfloatingaround,
+rimlighting,sidelighting,cinematiclight,ultrahighres,8kuhd,filmgrain,bestshadow,delicate,RAW,lightparticles,
+detailedskintexture,detailedclothtexture,beautifuldetailedface,intricatedetails,ultradetailed
+Negative prompt:[:EasyNegative:0.5],extrafingers,fewerfingers,facepaint,mole,
+Sampler:DPM++2MKarras
+model:
+CFG scale:12
+steps:20
+seed:2981967814
+
+prompt:<lora:hipoly3DModelLora_v20:0.5>,masterpiece,bestquality,
+1girl,
+magician,
+Mysteriousexpression,magicalstafforwand,magicaleffectslikesparklesorenergy,flowingrobesorenchantingattire,magicalcreaturesormysticalbackground,
+rimlighting,sidelighting,cinematiclight,ultrahighres,8kuhd,filmgrain,bestshadow,delicate,RAW,lightparticles,
+detailedskintexture,detailedclothtexture,beautifuldetailedface,intricatedetails,ultradetailed
+Negative prompt:[:EasyNegative:0.5],extrafingers,fewerfingers,facepaint,mole,3d,realistic,
+Sampler:DPM++2MKarras
+model:
+CFG scale:12
+steps:20
+seed:2311242338
+
+prompt:<lora:hipoly3DModelLora_v20:0.5>,3d,realistic,masterpiece,bestquality,
+1girl,
+Scientist,Wearinglabcoat,safetygogglesorglasses,holdingscientificequipmentlikeabeakerortesttube,laboratorybackground,scientificdiagramsorformulasonachalkboardorpaper,
+rimlighting,sidelighting,cinematiclight,ultrahighres,8kuhd,filmgrain,bestshadow,delicate,RAW,lightparticles,
+detailedskintexture,detailedclothtexture,beautifuldetailedface,intricatedetails,ultradetailed
+Negative prompt:[:EasyNegative:0.5],extrafingers,fewerfingers,facepaint,mole,
+Sampler:DPM++2MKarras
+model:
+CFG scale:12
+steps:20
+seed:3321680301
+
+prompt:<lora:hipoly3DModelLora_v20:0.7>,masterpiece,bestquality,
+1girl,
+Elf,Pointedears,elegantandetherealattire,skilledwithabowandarrow,immersedinalushforestormysticalwoodlandsetting,surroundedbymagicalcreatureslikefairiesorunicorns,
+rimlighting,sidelighting,cinematiclight,ultrahighres,8kuhd,filmgrain,bestshadow,delicate,RAW,lightparticles,
+detailedskintexture,detailedclothtexture,beautifuldetailedface,intricatedetails,ultradetailed
+Negative prompt:[:EasyNegative:0.5],extrafingers,fewerfingers,facepaint,mole,
+Sampler:DPM++2MKarras
+model:
+CFG scale:12
+steps:20
+seed:3177431454
+
+prompt:<lora:hipoly3DModelLora_v20:0.5>,masterpiece,bestquality,
+1girl,
+Scientist,Wearinglabcoat,safetygogglesorglasses,holdingscientificequipmentlikeabeakerortesttube,laboratorybackground,scientificdiagramsorformulasonachalkboardorpaper,
+rimlighting,sidelighting,cinematiclight,ultrahighres,8kuhd,filmgrain,bestshadow,delicate,RAW,lightparticles,
+detailedskintexture,detailedclothtexture,beautifuldetailedface,intricatedetails,ultradetailed
+Negative prompt:[:EasyNegative:0.5],extrafingers,fewerfingers,facepaint,mole,3d,realistic,
+Sampler:DPM++2MKarras
+model:
+CFG scale:12
+steps:20
+seed:1686835190

@@ -12,12 +12,12 @@
             const y = (i - x) / 10;
             style.appendChild(
                 document.createTextNode(`
-                .position:nth-child(${i}) {
+                #c_47_3 .position:nth-child(${i + 1}) {
                     top: ${y * 20}px;
                     left: ${x * 20}px;
                 }
 
-                .position:nth-child(${i}):hover ~ .ball {
+                #c_47_3 .position:nth-child(${i + 1}):hover ~ .ball {
                     top: ${y * 20 + 10}px;
                     left: ${x * 20 + 10}px;
                 }
@@ -33,7 +33,7 @@
 
 鼠标跟随按钮
 
-<div class="page">
+<div id="c_47_3" class="page">
     <div class="container">
         {#each arr as item}
             <div class="position" />

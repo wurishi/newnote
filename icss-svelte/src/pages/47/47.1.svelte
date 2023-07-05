@@ -7,21 +7,21 @@
 
     onMount(() => {
         const style = document.createElement("style");
-        style.id = "style_46_1";
+        style.id = "style_47_1";
         for(let i=0;i<x;i++) {
             for(let j=0;j<y;j++) {
                 const idx = j * 10 + i + 1
                 style.appendChild(document.createTextNode(`
-                .position:nth-child(${idx}) {
+                #c_47_1 .position:nth-child(${idx}) {
                     top: ${i * 60}px;
                     left: ${j * 80}px;
                 }
 
-                .position:nth-child(${idx}):hover {
+                #c_47_1 .position:nth-child(${idx}):hover {
                     background: rgba(255, 255, 10, .5);
                 }
 
-                .position:nth-child(${idx}):hover ~ .ball {
+                #c_47_1 .position:nth-child(${idx}):hover ~ .ball {
                     top: ${i * 60}px;
                     left: ${j * 80}px;
                     transform: unset;
@@ -38,7 +38,7 @@
 </script>
 
 小球跟随
-<div class="container">
+<div id="c_47_1" class="container">
     {#each xArr as xItem, x}
         {#each yArr as yItem, y}
             <div class="position" />

@@ -41,10 +41,15 @@
   XdfGDn Colored Circles
   ldsGRM Clock
   MdX3Dr Crosshatch
+  4dlGDr Filter: Box Blur
+  4dsGDn Chromatic Aberration Filter
+  4slGDn Filter: Desaturation
+  Mdf3Dn CMYK Halftone
+  XslGDr Glow hack
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=74592&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=74616&num=12
 
-6217/6248
+6219/6254
 
-4sX3Wr Water columns
+4slGDr Bubbles!

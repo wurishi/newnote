@@ -39,6 +39,8 @@
   MslGzM 2D Cell PostEffect
   XdX3Wr warptest
   XdfGDn Colored Circles
+  ldsGRM Clock
+  MdX3Dr Crosshatch
 
 
 https://www.shadertoy.com/results?query=&sort=newest&from=74592&num=12

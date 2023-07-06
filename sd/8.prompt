@@ -1,0 +1,89 @@
+bubblerealm  <lora:bubblerealm_model:0.5> forest
+Negative prompt: 
+Steps: 35, 
+Size: 512x512, 
+Seed: 246196031, 
+Model: Bubble Realm, 
+Sampler: DPM++ 2S a Karras, 
+CFG scale: 7
+
+bubblerealm  <lora:bubblerealm_model:0.5> clods
+Negative prompt: 
+Steps: 35, 
+Size: 512x512, 
+Seed: 2279742595, 
+Model: Bubble Realm, 
+Sampler: DPM++ 2S a Karras, 
+CFG scale: 7
+
+bubblerealm  <lora:bubblerealm_model:0.65> garden
+Negative prompt: 
+Steps: 35, 
+Size: 512x512,
+Seed: 3569797191, 
+Model: Bubble Realm, 
+Sampler: DPM++ 2M Karras, 
+CFG scale: 7
+
+bubblerealm  <lora:bubblerealm_model:0.5> fire
+Negative prompt: 
+Steps: 35, 
+Size: 512x512, 
+Seed: 4126706500, 
+Model: Bubble Realm, 
+Sampler: DPM++ 2S a Karras, 
+CFG scale: 7
+
+bubblerealm  <lora:bubblerealm_model:0.5> clouds
+Negative prompt: 
+Steps: 35, 
+Size: 512x512, 
+Seed: 970262310, 
+Model: Bubble Realm, 
+Sampler: DPM++ 2S a Karras, 
+CFG scale: 7
+
+bubblerealm  <lora:bubblerealm_model:0.5> castle
+Negative prompt: 
+Steps: 35, 
+Size: 512x512, 
+Seed: 986189632, 
+Model: Bubble Realm, 
+Sampler: DPM++ 2M Karras, 
+CFG scale: 7
+
+bubblerealm  <lora:bubblerealm_model:0.65> insect , garden
+Negative prompt: 
+Steps: 35, 
+Size: 512x512, 
+Seed: 920117895, 
+Model: Bubble Realm, 
+Sampler: DPM++ 2M Karras, 
+CFG scale: 7
+
+bubblerealm  <lora:bubblerealm_model:0.5> astronaut
+Negative prompt: 
+Steps: 35, 
+Size: 512x512, 
+Seed: 2105624446, 
+Model: Bubble Realm, 
+Sampler: DPM++ 2S a Karras, 
+CFG scale: 7
+
+bubblerealm  <lora:bubblerealm_model:0.65> parrot
+Negative prompt: 
+Steps: 35, 
+Size: 512x512, 
+Seed: 1268362341, 
+Model: Bubble Realm, 
+Sampler: DPM++ 2M Karras, 
+CFG scale: 7
+
+bubblerealm  <lora:bubblerealm_model:0.5> water
+Negative prompt: 
+Steps: 35, 
+Size: 512x512, 
+Seed: 3248529298, 
+Model: Bubble Realm, 
+Sampler: DPM++ 2S a Karras, 
+CFG scale: 7

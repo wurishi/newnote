@@ -46,10 +46,13 @@
   4slGDn Filter: Desaturation
   Mdf3Dn CMYK Halftone
   XslGDr Glow hack
+  4sf3W8 Simple Edge Detector
+  4ss3Dr Edge Detection (Sobel kernels)
+  XdfGDH Gaussian Blur
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=74616&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=74676&num=12
 
-6219/6254
+6224/6264
 
-4slGDr Bubbles!
+4dlGW8 Eye sketch

@@ -49,6 +49,11 @@
   4sf3W8 Simple Edge Detector
   4ss3Dr Edge Detection (Sobel kernels)
   XdfGDH Gaussian Blur
+  4sl3DH Simple Hue Rotation
+  Xdl3D8 Old video
+  Xds3W8 Simple Convolve
+  lslGW8 Bump mapping
+  ldl3DH Britney in space
 
 
 https://www.shadertoy.com/results?query=&sort=newest&from=74676&num=12

@@ -9,6 +9,7 @@ import { GUI } from 'dat.gui';
 const arts = import.meta.glob('./art/*.ts');
 import nameLib from './name';
 import ListenerManager from './lib/ListenerManager';
+import { getAssetsUrl } from './proxy.js'
 
 const s = getConfig();
 
@@ -131,19 +132,19 @@ class VS {
 
             console.log(
                 'can ' +
-                    (s.canUseFloat ? '' : 'not ') +
-                    'use floating point textures'
+                (s.canUseFloat ? '' : 'not ') +
+                'use floating point textures'
             );
             console.log(
                 'can ' +
-                    (s.canRenderToFloat ? '' : 'not ') +
-                    'render to floating point textures'
+                (s.canRenderToFloat ? '' : 'not ') +
+                'render to floating point textures'
             );
             if (s.canUseFloat) {
                 console.log(
                     'can ' +
-                        (s.canFilterFloat ? '' : 'not ') +
-                        'filter floating point textures'
+                    (s.canFilterFloat ? '' : 'not ') +
+                    'filter floating point textures'
                 );
             }
 
@@ -559,7 +560,7 @@ class VS {
         gl.enable(gl.BLEND);
         gl.useProgram(s.rectProgramInfo!.program);
         twgl.setBuffersAndAttributes(gl, s.rectProgramInfo!, s.quadBufferInfo);
-        for (let ii = 0; ii < this.g.animRects.length; ) {
+        for (let ii = 0; ii < this.g.animRects.length;) {
             if (this.renderAnimRect(this.g.animRects[ii])) {
                 this.g.animRects.splice(ii, 1);
             } else {
@@ -623,7 +624,7 @@ function init() {
                 if (!playFlag) {
                     playFlag = true;
                     s.streamSource.init();
-                    s.streamSource.setSource('/audio1.mp3');
+                    s.streamSource.setSource(getAssetsUrl('/audio1.mp3'));
                 } else {
                     if (v) {
                         s.streamSource.play();
@@ -642,7 +643,7 @@ function init() {
                 if (v === 'mic') {
                     s.streamSource.setSource(v);
                 } else {
-                    s.streamSource.setSource('/' + v);
+                    s.streamSource.setSource(getAssetsUrl(v));
                 }
             });
         f.add(settings, 'mouse')

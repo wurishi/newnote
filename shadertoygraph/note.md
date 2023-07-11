@@ -54,6 +54,8 @@
   Xds3W8 Simple Convolve
   lslGW8 Bump mapping
   ldl3DH Britney in space
+  4dX3WN Chroma key
+  4sX3WN Fun with Derivatives
 
 
 https://www.shadertoy.com/results?query=&sort=newest&from=74676&num=12

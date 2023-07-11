@@ -2781,3 +2781,64 @@ CSS 的伪类使用一个冒号（:），CSS 伪元素使用两个冒号（::）
 
 ## 47.5 Water Surface
 
+# 48. CSS 火焰
+
+## Step1: filter blur && filter contrast
+
+模糊滤镜叠加对比度滤镜会产生融合效果。
+
+这两个滤镜单独作用分别是：
+
+1. `filter: blur()`: 给图像设置高斯模糊效果。
+2. `filter: contrast()`: 调整图像的对比度。
+
+利用这两个滤镜的融合效果，可以产生类似火焰形状的三角形。
+
+## Step2: 火焰粒子动画
+
+随机均匀分布大量大小不一的圆形 `div`，隐匿在火焰三角形内部。每个圆形赋予一个从下往上逐渐消失的动画，并且给于不同的 `animation-delay`。
+
+## Step3: `mix-blend-mode` 润色
+
+### 48.1 滴水效果
+
+注意：
+
+1. CSS 滤镜可以给同个元素同时定义多个，但是滤镜的先后顺序不同产生的效果也是不一样的。
+
+2. 滤镜动画需要大量的计算，不断的重绘页面，属于非常消耗性能的动画，使用时要注意使用场景。记得开启硬件加速及合理使用分层技术。
+
+3. `blur()` 混合 `contrast()` 滤镜效果，设置不同的颜色会产生不同的效果。
+
+# 49. 使用 CSS 控制动画行进
+
+拆解分析需求
+
+1. 页面 render 后，无任何操作，动画不会开始。只有鼠标对元素进行 click，触发元素的 `:active` 伪类效果时，动画才开始进行。
+
+2. 动画进行到任意时刻，鼠标停止点击，则动画停止。
+
+3. 重新对元素点击，动画继续从上一帧结束的状态开始。
+
+4. 如果动画播放完，再点击不会重复播放，动画状态保留在动画的最后一帧。
+
+## 49.1 小球从左到右
+
+## 49.2 BEER!
+
+# 是否是触摸屏的查询
+
+```css
+@media (hover: none) and (pointer: coarse) {
+    /* touchscreens */
+}
+@media (hover: none) and (pointer: fine) {
+    /* stylus */
+}
+@media (hover: hover) and (pointer: coarse) {
+    /* controllers */
+}
+@media (hover: hover) and (pointer: fine) {
+    /* mouse or touchpad */
+}
+```

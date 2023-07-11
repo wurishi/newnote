@@ -56,10 +56,11 @@
   ldl3DH Britney in space
   4dX3WN Chroma key
   4sX3WN Fun with Derivatives
+  XdfGDN Wobbly Chrome
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=74676&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=74640&num=12
 
-6224/6264
+6221/6267
 
-4dlGW8 Eye sketch
+lsX3W4 Mandelbrot - distance

@@ -385,5 +385,26 @@ export default {
   'YSzcySDB7rcbwJmTP': `384. mfx01`,
   'g7wWJ4yKzThxqkmN5': `385. mfx01`,
   'iE3Xz7bewdDm3shFC': `386. Infinite Heart of Glass`,
-  'GY6bT7gTsHXRvMshg': `387. wip`
+  'GY6bT7gTsHXRvMshg': `387. wip`,
+  'mfEsB2oGhBqM3k3Rt': `388. the connectedness of all`,
+  'y3CAW8hkHFwKx9Lct': `389. unnamed`,
+  'qKGoihMGbyYe64imT': `390. point cloud vs spheres`,
+  't9afzWHetyWR3bZSB': `391. point cloud vs spheres`,
+  'wyoNwyHa6hTbkGCKW': `392. point cloud vs spheres`,
+  'MPxc2mXYAQd5F3JFC': `393. point cloud vs spheres`,
+  'cvLGj6QKvo7uebnbK': `394. point cloud vs spheres`,
+  'W9WTPxA9AXtFxZRqq': `395. sines`,
+  '6gQQcZm2vuBMyLCkB': `396. point cloud vs spheres colored`,
+  'aRahetpEjCSsaLHkX': `397. pointsprite plasma`,
+  'tw3mJeCpEXQ6gMz2q': `398. pointsprite plasma`,
+  'QdJXEkZPWPvB4XKiy': `399. pointsprite plasma`,
+  '4d6tRjx7hKBD4t7sJ': `400. pointsprite plasma`,
+  'yz73Hm3Fq5SyrZppP': `401. rings 2`,
+  'oMwCvkkRyEiZkio4h': `402. point cloud vs spheres`,
+  'adr4oWENvpWNLwHJR': `403. geosphere`,
+  'AHgb5kGbLwEYQjRTn': `404. rings_1`,
+  '5ppKAhtsPPS3xfam7': `405. sillage`,
+  'bhTaMtEz4j9zuSn7g': `406. Knotted Candy`,
+  '5dNDeR4dqCCRvcHCT': `407. Knotted Candy`
+
 };

@@ -854,3 +854,139 @@ npx preconstruct build
 Typescript 项目还需要安装 `@babel/preset-typescript`，并在 `.babelrc` 中配置。
 
 还可以安装 `@babel/preset-env`，并在 `.babelrc` 中配置，让生成的 js 使用 ES5 之前的语法。
+
+# 22. const
+
+如果有一个变量
+
+```typescript
+export let age = 31;
+
+age = 32;
+```
+
+当我们不希望修改它的值是，可以使用 `const`:
+
+```typescript
+export const name = 'Matt';
+
+// name = 'lala'; 不可以修改
+```
+
+但如果现在有一个数组:
+
+```typescript
+export const tsPeople = [
+    'Andarist',
+    'Titian',
+    'Devansh',
+    'Anurag',
+];
+
+tsPeople[0] = 'Hello';
+```
+
+如果我们也希望数组中的每一项也不可修改时，可以这样写:
+
+```typescript
+export const tsPeople = [
+    'Andarist',
+    'Titian',
+    'Devansh',
+    'Anurag',
+] as const;
+
+// tsPeople[0] = 'Hello'; 会提示你该属性为 read-only
+```
+
+同样的也可以用在 `object` 上：
+
+```typescript
+export const moreTsPeople = {
+    'Andarist': 'Andarist',
+    'Titian': 'Titian',
+    'Devansh': 'Devansh',
+    'Anurag': 'Anurag',
+    arr: [1],
+    obj: {
+        a: 'a',
+        b: 'b',
+    }
+} as const;
+
+// moreTsPeople.Andarist = 'Whatever'; 该属性为 read-only
+// moreTsPeople.arr[0] = 13;
+// moreTsPeople.obj.b = 'str';
+```
+
+特别要注意的是，`arr` 和 `obj` 也是只读的。
+
+# 23. undefined 注意事项
+
+```typescript
+interface UserInfo1 {
+    name: string;
+    role?: "admin";
+}
+
+interface UserInfo2 {
+    name: string;
+    role: "admin" | undefined;
+}
+
+export const createUser1 = (userInfo: UserInfo1) => { };
+
+createUser1({
+    name: 'Matt'
+});
+
+createUser1({
+    name: 'David',
+    role: 'admin',
+});
+
+export const createUser2 = (userInfo: UserInfo2) => { };
+
+createUser1({
+    name: 'Matt',
+    role: undefined,
+});
+
+createUser1({
+    name: 'David',
+    role: 'admin',
+});
+```
+
+虽然 `UserInfo1` 和 `UserInfo2` 从概念上来讲是相同的，但是 `UserInfo2` 一般会被用在需要明确告知使用者这里是需要一个 `role` 属性的，即使它是 `undefined`。
+
+# 24.
+
+# 25. 练习
+
+```typescript
+export interface ColorVariants {
+    primary: 'blue';
+    secondary: 'red';
+    tertiary: 'green';
+}
+
+type PrimaryColor = ColorVariants['primary']; // blue
+
+type NonPrimaryColor = ColorVariants['secondary' | 'tertiary']; // red | green
+
+type EveryColor = ColorVariants[keyof ColorVariants]; // blue | red | green
+
+type Letters = ['a', 'b', 'c'];
+
+type AOrB = Letters[0 | 1]; // a | b
+
+type Letter = Letters[number]; // a | b | c
+
+interface UserRoleConfig {
+    user: ['view', 'create', 'update'];
+    superAdmin: ['view', 'create', 'update', 'delete'];
+}
+
+type Role = UserRoleConfig[keyof UserRoleConfig][number]; // view | create | update | delete
+```

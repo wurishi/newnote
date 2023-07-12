@@ -2845,3 +2845,51 @@ CSS 的伪类使用一个冒号（:），CSS 伪元素使用两个冒号（::）
 }
 ```
 
+# 50. `flex` 上下文中的自动 `margin`
+
+为了引出本节的主题，先看看这个问题：如何水平垂直居中一个元素？
+
+下面这个方式算是 CSS 领域最常见的方法：
+
+```html
+<div class="container">
+  <div class="box"></div>
+</div>
+```
+
+```css
+.container {
+  display: flex;
+}
+.box {
+  margin: auto;
+}
+```
+
+这里其他涉及了一个问题，如何让 `margin: auto` 在垂直方向上生效？
+
+在传统的 `display: block` 容器下，`margin: auto` 仅能在水平方向上将元素居中，但是垂直方向不行。
+
+查看 CSS 文档可以得知，在 `display: block` 下，如果 `margin-left` 和 `margin-right` 都是 `auto`，则它们的表达值相等，从而导致元素水平居中。（这里的表达值为元素剩余可用空间的一半）。
+
+但如果是 `margin-top` 和 `margin-bottom` 为 `auto` 时，则它们的值都为 0 ，所以也就无法在垂直方向上居中。
+
+如果要让单个元素使用 `margin: auto` 在垂直方向上也能够居中，需要让该元素处于 FFC(flex formatting context) 或 GFC(grid formatting context) 上下文中，也就是以下这些取值：
+
+```css
+{
+  display: flex;
+  display: inline-flex;
+  display: grid;
+  display: inline-grid;
+}
+```
+
+以 `display: flex` 举例，CSS 文档中表示，在 flex 格式化上下文中设置了 `margin: auto` 的元素，在通过 `jestify-content` 和 `align-self` 进行对齐之前，任何正处于空闲的空间都会分配到该方向的自动 margin 中。这里很重要的一点就是，`margin: auto` 的生效不仅仅是水平方向，垂直方向的空闲空间也会被分配。
+
+因为是在 *`jestify-content` 和 `align-self` 进行对齐之前分配* 所以可以通过 `margin` 来模拟实现 `flex` 布局下的 `space-between` 以及 `space-around`。
+
+## 50.1 自动 `margin` 实现 `space-around` 和 `space-between`
+
+## 50.2 自动 `margin` 实现 `align-self: center | flex-end`
+

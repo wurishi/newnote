@@ -461,7 +461,27 @@ export default {
   'khayHGH4sQWpPkn92': `460. xmas tree`,
   'zSahx3yerpFqrYbQM': `461. xmas tree`,
   'uGJhdfKrAj8tkovpA': `462. Lines Experiment 1`,
-  'NyEsirDmwdF3Q65i6': `463. unnamed`
+  'NyEsirDmwdF3Q65i6': `463. unnamed`,
+  'qjLQadWFssvPKLLCN': `464. 80smovielogo`,
+  'xG6tZRJFAL9i7pWED': `465. sloosh`,
+  'FNFsfgYT3ysjSme2P': `466. candy`,
+  'd7anES7ef6WrrDwsy': `467. codez`,
+  'gZNitbfDuN5pSwLf3': `468. glyphs`,
+  '7DtazpcMcdA6fJ4XW': `469. colors`,
+  '9EJbRaRyPZMpJ9zLk': `470. plasma grid`,
+  'eMAJ5HydzdzbnzduF': `471. plasma grid`,
+  'TDjh9ML39vLzhGboy': `472. Pulsing dots`,
+  'YiboJk6SvJNEAPSGR': `473. roty`,
+  'hjpDj9NpsfdHuD6Ya': `474. Spiral2`,
+  'vcYrT69DDanvyFBTr': `475. Garden Fireworks`,
+  '3rTF3aQTLfnSdwdcW': `476. unnamed`,
+  'enNTxR7RgQNk53fmx': `477. unnamed`,
+  'G44HeacsoBQDo4MFC': `478. unnamed`,
+  'dhnTE8qmLte8dvycB': `479. dacning disco blob`,
+  'BZdvckJFNr53H6kXS': `480. john_1`,
+  'GBQRjtz2FMC4RcMvC': `481. rage`,
+  '2nczC2kx9JRxu64gA': `482. use-thi-mic`,
+  'QQn8ttKsNBFEpfwuE': `483. unnamedzero`
 
 
 

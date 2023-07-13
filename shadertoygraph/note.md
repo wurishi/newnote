@@ -1,4 +1,5 @@
   // video 未处理 
+  // AcidWobble
   // Ink Ghost
   // blueprint effect
   // XsfGzn Matte compositing
@@ -57,10 +58,26 @@
   4dX3WN Chroma key
   4sX3WN Fun with Derivatives
   XdfGDN Wobbly Chrome
+  4ssGW4 Blah
+  MsXGD4 Dirty old CRT
+  Msf3D4 Wobbly
+  Msf3W4 Math2CV-Edge scanner
+  ldX3D4 Simple Posterization
+  MdsGW4 Portal to the Funk Dimension
+  ldXGW4 Distorted TV
+  ldsGW4 Psychedelic Ghost Britney
+  Xss3DN Bad chroma key + plasma
+  4dX3DM RGB display
+  4sfGWM sobel background
+  XdXGWM Simple Mosaic
+  XsXGDM Chroma Key Composition
+  XsfGWM pivot dance
+  Xss3D4 AcidWobble
+  lss3D4 Displacement in 137 chars
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=74640&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=74664&num=12
 
-6221/6267
+6223/6275
 
-lsX3W4 Mandelbrot - distance
+XsX3D7 Trippy #1

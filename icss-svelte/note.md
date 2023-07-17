@@ -2893,3 +2893,495 @@ CSS 的伪类使用一个冒号（:），CSS 伪元素使用两个冒号（::）
 
 ## 50.2 自动 `margin` 实现 `align-self: center | flex-end`
 
+# 51. CSS 属性选择器
+
+## 51.1 语法介绍
+
+- `[attr]`: 该选择器包含 attr 属性的所有元素，不论 attr 的值为何。
+- `[attr=val]`: 该选择器仅选择 attr 属性被赋值为 val 的所有元素。
+- `[attr~=val]`: 该选择器仅选择具有 attr 属性的元素，并要求 val 值是 attr 值包含的被**空格**分隔的取值列表里的一个。
+
+子串值（Substring value）属性选择器：
+
+下面几个属于 CSS3 新增语法，也被称为“伪正则选择器”，因为它们提供类似 regular expression 的灵活匹配方式。
+
+- `[attr|=val]`: 选择 attr 属性的值是 `val` 或值以 `val-` 开头的元素。（注意：这里的 "-" 不是一个错误，这是用来处理语言编码的）
+- `[attr^=val]`: 选择 attr 属性的值以 `val` 开头（包括 `val`）的元素。
+- `[attr$=val]`: 选择 attr 属性的值以 `val` 结尾（包括 `val`）的元素。
+- `[attr*=val]`: 选择 attr 属性的值中包含子字符串 `val` 的元素。
+
+## 51.2 用法
+
+```css
+/* 选择带有 href 属性的元素 */
+[href] {
+  color: red;
+}
+
+/* 一个 img 标签，它含有 title 属性，并且包含类名为 logo 的元素 */
+img[title][class~=logo] {}
+```
+
+## 51.3 伪正则写法
+
+### A: `i` 参数：忽略类名的大小写限制
+
+```css
+p[class*="text" i] {}
+```
+
+可以选中类似以下这些元素:
+
+```html
+<p class="text"></p>
+<p class="nameText"></p>
+<p class="desc textarea"></p>
+```
+
+### B: `g` 参数：表示大小写敏感（case-sensitively），该属性未纳入标准，支持的浏览器不多。
+
+### C: 配合 `:not` 伪类
+
+```css
+/* 选择所有没有 href 属性的 a 标签 */
+a:not([href]) {}
+
+/* 摆地摊一个 href, target, rel 属性都没有的 a 标签 */
+a:not([href]):not([target]):not([rel]) {}
+```
+
+### D: 重写行内样式
+
+```html
+<p style="height: 24px; color: red;">xxxxxx</p>
+```
+
+可以使用属性选择器强制覆盖掉上面的样式：
+
+```css
+[style*="color: red"] {
+  color: blue !important;
+}
+```
+
+## 51.4 注意事项
+
+### A: 选择器的优先级
+
+```css
+/* 这两个选择器的优先级是一致的 */
+.header {}
+[class~="header"] {}
+
+/* ID 选择器 #header 比 属性选择器 [id="header"] 的权重更高  */
+#header {}
+[id="header"] {}
+```
+
+### B: 是否需要引号
+
+从 HTML2 开始，不添加引号的写法就已经得到支持了，所以以下三种写法都是正确的：
+
+```css
+[class="header"] {}
+[class='header'] {}
+[class=header] {}
+```
+
+但对于一些特殊符号会识别错误，所以建议都加上引号：
+
+```css
+a[href=bar] {}
+a[href^=http://] {} /* 无效选择器，:// 会导致识别错误 */
+```
+
+# 52. A Guide to CSS Rules
+
+## 52.1 可能/潜在的错误写法
+
+### 留意盒子的尺寸（Beware of box model size）
+
+该规则主要针对盒子的高宽而言
+
+```css
+.mybox {
+  border: 1px solid black;
+  padding: 5px;
+  width: 100px;
+}
+```
+
+`.mybox` 的元素宽度可能会被误认为是 `100px`，但实际上是 `112px`，这是因为盒子的宽度最终由 `content, padding, border` 的宽度相加而得。
+
+建议的写法：
+
+```css
+.mybox {
+  box-sizing: border-box;
+  ...
+}
+```
+
+建议的规则：
+
+1. `width` 与 `border, border-left, border-right, padding, padding-left, padding-right` 属性同时使用时，指定 `box-sizing`。
+2. `height` 与 `border, border-top, border-bottom, padding, padding-top, padding-bottom` 属性同时使用时，指定 `box-sizing`。
+
+### `display` 匹配属性 （display-property-grouping）
+
+当元素设定不同的 `display` 时，部分规则可能无效。
+
+建议的规则：
+
+1. `display: inline`: 不与 `width, height, margin, margin-top, margin-bottom, float` 同时使用。
+2. `display: inline-block`: 不与 `float` 同时使用。
+3. `display: block`: 不与 `vertical-align` 同时使用。
+4. `display: table-*`: 不与 `margin, float` 同时使用。
+
+### 不允许属性重复（duplicate-properties）
+
+即，不允许同一个样式规则中，出现重复定义的属性：
+
+```css
+.mybox {
+  width: 100px;
+  width: 120px;
+}
+```
+
+但也有例外，定义同个属性可以用来实现一些渐进增加功能：
+
+```css
+.mybox {
+  background: #fff;
+  background: rgba(255, 255, 255, 0.5);
+}
+```
+
+对于不支持 RGBA 色彩展示的浏览器，将会回退使用第一条定义的规则：`background: #fff`。
+
+不建议的写法：
+
+```css
+/* 定义相同的属性 */
+.mybox {
+  border: 1px solid black;
+  border: 1px solid black;
+}
+/* 被另一个属性隔开 */
+.mybox {
+  border: 1px solid black;
+  color: green;
+  border: 1px solid red;
+}
+```
+
+允许的写法：
+
+```css
+/* 定义不同的属性 */
+.mybox {
+  border: 1px solid black;
+  border: 1px solid red;
+}
+```
+
+建议的规则：
+
+1. 不允许出现两次且值相同的属性。
+2. 不允许同个属性出现两次且中间被至少一个其他的属性隔开。
+
+### 不允许空规则（empty-rules）
+
+空规则就是不包含任意属性，一般是因为重构了样式但忘记删除冗余代码造成的，消除空规则可以缩小样式文件大小和精简浏览器待处理的样式信息。
+
+建议的规则：
+
+1. 样式中不包含空样式规则
+
+### 使用已知的属性（known-properties）
+
+CSS 可使用的属性变得越来越多，本规则检测属性名称是否正确，此规则将检查每个使用的属性名称以确保其是已知的属性。
+
+当然，以 `-` 前缀开始的浏览器专有属性将被忽略，因为前缀会添加各个浏览器版本属性上，而这些属性并没有一个参考标准。
+
+此规则不仅会检查属性名称，也会检查属性对应的值是否与其匹配。
+
+建议的规则：
+
+1. 样式中使用标准的属性及属性值
+
+## 52.2 兼容性
+
+### 不允许负文本缩进（Disallow negative text indent）
+
+此规则意在找出 CSS 代码中使用 `text-indent` 的潜在问题。
+
+文本负缩进通常当作辅助的目的，来隐藏屏幕上的文字。使用场景之一就是作为图像的替换技术，使用文本负缩进，可确保屏幕阅读器在文本没有显示在屏幕中时也能读取其数据。此技巧通常使用很大的负单位数值，如 -999px 或 -9999px。
+
+此缩进，允许将背景图片展示给普通用户的同时，也确保屏幕阅读器能顺利解析内联的文本信息。
+
+当文本负缩进使用在横向视图页面时，会引起一定的麻烦，因为会出现一个很长的横向滚动条，此问题可以通过添加 `direction: ltr` 来解决。
+
+建议的规则：
+
+1. 当使用负文本缩进时，配合 `direction: ltr` 一起使用。
+
+### 使用浏览器兼容前缀（Require compatible vendor prefixes）
+
+建议的规则：
+
+1. 尽量使用 `autoprefixer` 来编译 CSS 代码，使用工具去替代人工添加浏览器前缀。
+
+### 使用备用色彩值（Require fallback colors）
+
+此规则意在确保在所有的浏览器上都能显示合适的颜色。建议在使用 CSS3 颜色表示法：`rgba(), hsl(), hsla()` 时，使用一个备份颜色确保颜色值在低版本浏览器上能正常显示，像这样：
+
+```css
+.mybox {
+  color: red;
+  color: rgba(255, 0, 0, 0.5);
+}
+```
+
+建议的规则：
+
+1. 指定颜色属性时，使用了 `rgba(), hsl(), hsla()` 颜色值时，在该属性定义前使用针对旧版本浏览器的 color 颜色格式。
+
+### 不再使用针对旧版本 IE 的 hack 方式
+
+在以前，旧版本 IE 浏览器仍是不得不兼容的，CSS 代码中会存在很多 `*`，`_` 等，类似这样：
+
+```css
+{
+  background-color: yellow\0; /* ie8 */
+  +background-color: pink; /* ie7 */
+  *background-color: pink; /* ie7 */
+  _background-color: orange; /* ie6 */
+}
+```
+
+建议的规则：
+
+1. 在 IE8- 逐渐退出历史舞台的今天，如果业务已经完全抛弃 IE8- 了，就应该不再使用 `+`，`_`，`*`，`\0` 等这些针对 IE 的 hack 方式。
+
+## 52.3 CSS 性能
+
+### 不使用过多的网络字体（Don't use too many web fonts）
+
+`@font-face` 的出现让我们可以让用户使用任何字体，而不必拘泥于 "web-safe" 的字体之一。但是字体文件本身是很大的，以及部分浏览器在下载字体文件时，不会实时渲染。这就给使用网络字体的同时，带来了显示性能的隐患。因此建议，使用 `@font-face` 使用 web-fonts 不宜过多。
+
+建议的规则：
+
+1. 使用少于 5 次网络字体 `@font-face` 引用。（5 这个次数是 CSSLint 的建议）
+
+### 不使用 `@import`
+
+`@import` 命令用于在 CSS 文件中引用其他的 CSS 文件：
+
+```css
+@import url(more.css);
+@import url(andmore.css);
+
+a {
+  color: black;
+}
+```
+
+当浏览器解析以上代码时，会在每个 `@import` 后开始下载指定的文件，从而停止执行后面的代码。也就是说在 `@import` 指定的文件未下载完成前，浏览器不会同时下载其他的样式文件，总而失去了并行下载 CSS 的优势，且会造成页面的闪烁。
+
+建议的规则：
+
+1. 不在 CSS 代码中使用 `@import`
+
+### 谨慎使用属性选择器（Disallow selectors that look like regular expressions）
+
+属性选择器带来匹配便利的同时，由于这些复杂的属性选择器需要通过一遍又一遍的计算来匹配对应属性值，从而确保最终的效果正确。为此，CSS 需要消耗更多的时间，来计算整个页面的显示效果。
+
+建议的规则：
+
+1. 尽量少的使用属性选择器，如果确定要使用，应该要意识到该选择器带来的开销比一些常规选择器更大。
+
+### 谨慎使用通配符 `*`（Disallow universal selector）
+
+通用选择器 `*` 匹配所有元素。尽管每次都能很方便的选择一组元素，但如果将其作为选择器的核心部分（选择器位置的最右侧）则会造成性能问题，如：
+
+```css
+.mybox * {}
+```
+
+浏览器解析以上 CSS 规则时会按照从右至左的顺序解析选择器，因此这个规则首先会匹配文档中的所有元素。然后逐一检测这些元素是否匹配下一级的规则，在这里即是否拥有 `.mybox` 祖先样式。所以如果包含 `*` 的选择器越复杂，其解析的时间越久。
+
+建议的规则：
+
+1. 应该谨慎使用通用选择符 `*`，如果必须使用，也应该尽量避免将其放置在最右侧。
+
+### 谨慎使用未定义的属性选择器（Disallow unqualified attribute selectors）
+
+HTML5 允许在标签中创建自定义属性。然而，与上一条规则类似，如 `[type=text]`，首先会匹配所有元素，然后检查属性。这意味着*未定义属性选择器*和*通用选择器*一样都有相同性能问题。
+
+建议的规则：
+
+1. 尽量避免将属性选择器放置在选择器的最右侧。
+
+### 使用简写属性（Require shorthand properties）
+
+此规则建议，当可以通过简写属性来减少文件体积时，应当尽量使用简写方式，像这样：
+
+```css
+.mybox {
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 20px;
+  margin-bottom: 30px;
+}
+
+/* 应该替换为 */
+
+.mybox {
+  margin: 20px 10px 30px;
+}
+```
+
+建议的规则：
+
+1. 当可通过简写属性来减少文件体积时，应当尽量使用属性的简写方式。
+
+### 不允许重复背景图片定义（Disallow duplicate background images）
+
+如果有多个样式需要使用同一背景图片，那么最好声明一个包含此图片地址的通用样式类，然后将这个类添加到需要使用的元素之上，如：
+
+```css
+.heart-icon {
+  background: url(sprite.png) -16px 0 no-repeat;
+}
+.task-icon {
+  background: url(sprite.png) -32px 0 no-repeat;
+}
+
+/* 上面两个类重复定义了背景图片地址，造成了冗余代码，同时也增加了修改的成本 */
+/* 比较好的方式是抽取一个图片地址类作为利用类 */
+
+.icons {
+  background: url(sprite.png) no-repeat;
+}
+
+.heart-icon {
+  background-position: -16px 0;
+}
+.task-icon {
+  background-position: -32px 0;
+}
+```
+
+建议的规则：
+
+1. 在需要使用重复的背景图片时，应该定义一个公用类进行复用。
+
+## 52.4 可维护性和重复性（Maintainability & Duplication）
+
+### 尽量少的使用浮动 `float` （Disallow too many floats）
+
+`float` 属性是 CSS 中实现多列布局广受欢迎的方式。在项目中，`float` 元素被用来创建不同的页面布局。如果此时改变布局，则会使得 CSS 代码十分脆弱，难以维护。
+
+在如今，有更好的方式去实现网络化布局：`flex` 和 `grid`。
+
+建议的规则：
+
+1. 尽量少的使用 `float` 去进行页面布局，如果兼容性允许，应该使用 `display: flex` 或 `display: grid` 进行替代。
+
+### 不使用过多的字体大小声明（Don't use too many font size declarations）
+
+一个利于维护的站点，通常都有通用的字体集。某类字体的大小往往定义了一个代表其含义的抽象类，以便运用到站点的各个使用场景。
+
+如果未抽取出公用类，会导致书写 CSS 时频繁的使用 `font-size` 来使元素大小按预期显示。这就会带来一个问题，当设计的字体大小改变后，我们需要改变样式中所有设计的字体大小。而抽取成公用类时，只用改变类中定义的大小即可做到全局调整，像这样：
+
+```css
+.small {
+  font-size: 8px;
+}
+.medium {
+  font-size: 11px;
+}
+.large {
+  font-size: 14px;
+}
+```
+
+建议的规则：
+
+1. 不使用过多的字体大小声明，通过定义不同类型的字体类进行字体大小的复用。
+
+### 尽量少的使用 ID 选择器进行样式定义（Disallow IDs in selectors）
+
+CSS 的好处之一就是可以在多处复用样式规则，但如果使用了 ID 选择器则在不经意间就将样式局限在了单个元素上。
+
+建议的规则：
+
+1. 尽量少的使用 ID 选择器进行样式定义。
+
+# 53. CSS 负值技巧与细节
+
+## 53.1 使用负值 `outline-offset` 实现加号
+
+在新版本的 Chrome 中已经无法实现。
+
+旧版本中实现会有一些要求：
+
+- 容器得是个正方形
+- outline 边框本身的宽度不能太小
+- outline-offset 负值 x 的 取值范围为：`-(容器宽度的一半 + outline 宽度的一半) < x < -(容器宽度的一半 + outline 宽度)`
+
+## 53.2 单侧投影
+
+`box-shadow` 的用法定义：
+
+```css
+{
+  box-shadow: none | [inset? && [ <offset-x> <offset-y> <blur-radius>? <spread-radius>? <color>? ]]
+}
+```
+
+以 `box-shadow: 1px 2px 3px 4px #333` 为例，它的含义是：`x 方向偏移 1px，y 方向偏移 2px，模糊半径为 3px，扩张半径为 4px`
+
+关于 `box-shadow`，大部分时候，我们使用它都是用来生成一个两侧的投影，或者一个四侧的投影：
+
+- 投影在相邻两侧：`box-shadow: 3px 3px 1px 1px #666`
+- 投影在周围四侧：`box-shadow: 0 0 3px 3px #666`
+
+要注意的是，扩张半径可以为负值。
+
+如果阴影的模糊半径，与负的扩张半径一致，那么将看不到任何阴影，因为生成的阴影将被包含在原来的元素之下，除非给它设置一个方向上的偏移量。
+
+- 左：`box-shadow: -7px 0 5px -5px #333`
+- 右：`box-shadow: 7px 0 5px -5px #333`
+- 上：`box-shadow: 0 -7px 5px -5px #333`
+- 下：`box-shadow: 0 7px 5px -5px #333`
+
+## 53.3 使用 `scale(-1)` 实现翻转
+
+要实现一个元素的 180° 的翻转，一般使用 `transform: rotate(180deg)`，其实使用 `transform: scale(-1)` 也可以达到同样的效果
+
+## 53.4 使用负 `letter-spacing` 倒序排列文字
+
+`letter-spacing` 属性明确了文字的间距行为，通常而言，除了关键字 `normal`，我们还可以指定一个大小用来表示文字的间距。
+
+不过，受到中英文混排或者不同字体的影响，以及倒序后的排列方式，不建议使用这种方式来倒序排列文字。
+
+## 53.5 `transition-delay` 和 `animation-delay` 的负值使用，立刻开始动画
+
+如果想在一进入页面时，3个球就是同时运动的（三个球互相之间其实有 delay），只需要将 `animation-delay` 改成负值即可。
+
+被设置为负值的动画会立刻执行，并且开始的位置会是其动画阶段中的一个阶段。
+
+## 53.6 负值 `margin`
+
+在 flexbox 布局还没有流行之前，要实现多行等高布局的一种方法就是使用正 `padding` 负 `margin` 相消的方式。
+
+## 53.7 总结
+
+- 使用负 `margin` 实现元素的水平垂直居中
+- 使用负 `margin` 隐藏列表 li 首尾多余的边框
+- 使用负 `text-indent` 实现文字的隐藏
+- 使用负 `z-index` 参与层叠上下文排序
+

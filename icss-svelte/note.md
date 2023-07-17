@@ -3385,3 +3385,98 @@ CSS 的好处之一就是可以在多处复用样式规则，但如果使用了 
 - 使用负 `text-indent` 实现文字的隐藏
 - 使用负 `z-index` 参与层叠上下文排序
 
+# 54. Web 字体 `font-family` 再探秘
+
+## 54.1 字体基础知识
+
+在 Web 上常用的一些字体大体可以分为衬线字体和无衬线字体
+
+- **衬线字体**: 关键字为 `serif`，意为有衬线的字体，衬线的意思是在字符笔画末端有叫做衬线的小细节的额外装饰，而且笔画的粗细会有所不同，这些细节在大写字母中特别明显。
+
+- **无衬线字体**：关键字为 `sans-serif`，也就是无衬线的意思。专指西文中没有衬线的字体，与汉字字体中的黑体相对应。该类字体通常是机械的和统一线条的，它们往往拥有相同的曲率，笔直的线条，锐利的转角。
+
+对于 CSS 中的 `font-family` 而言，它有两类取值：
+
+1. 类似具体的字体族名定义：`font-family: Arial` 这里定义了一个具体的字体样式，字体族名为 `Arial`。
+2. 通用字体族名，它是一种备选机制，用于在指定的字体不可用时给出较好的字体，类似：`font-family: sans-serif`。其中，`sans-serif` 表示无衬线字体族，例如："Open Sans"，"Arial"，"微软雅黑"等。
+
+关于通用字体族名，在 [CSS Fonts Module Level3 -- Basic Font Properties](https://www.w3.org/TR/2018/REC-css-fonts-3-20180920/#generic-font-families) 中，定义了 5 个，也就是我们熟知的几个通用字体族名：
+
+1. `serif` 衬线字体族
+2. `sans-serif` 非衬线字体族
+3. `monospace` 等宽字体，即字体中每个字宽度相同
+4. `cursive` 草书字体
+5. `fantasy` 主要是那些具有特殊艺术效果的字体
+
+## 54.2 新增通用字体族关键字
+
+在 [CSS Fonts Module Level4 -- Generic font families](https://www.w3.org/TR/css-fonts-4/#generic-font-families) 中，新增了几个关键字：
+
+1. `system-ui` 系统默认字体
+2. `emoji` 用于兼容 emoji 表情符号字符
+3. `math` 适用于数字表达式
+4. `fangsong` 此字体系列用于中文的（仿宋）字体
+
+### `system-ui`
+
+简单而言，`font-family: system-ui` 的目的就是在不同的操作系统的 Web 页面下，自动选择本操作系统下的默认系统字体。
+
+默认使用特定操作系统的系统字体可以提高性能，因为浏览器或者 webview 不必去下载任何字体文件，而是使用已有的字体文件。`font-family: system-ui` 字体设置的优势之处在于它与当前操作系统使用的字体相匹配，对于文本内容而言，它可以得到最恰当的展示。
+
+### `San Francisco Fonts`
+
+`San Francisco Fonts` 又叫旧金山字体，是一款西文字体。随着 iOS 9 以及 WatchOS 和 Apple TV 上新的 tvOS 出现。它是一种在 iOS 系统上用于替代升级另外一款西文字体 `Helvetica Neue` 的。
+
+### `-apple-system/BlinkMacSystemFont`
+
+考虑到不同平台及向后兼容，在 macOS 和 iOS 上，需要使用 `-apple-system` 和 `BlinkMacSystemFont` 来兼容适配 `system-ui` 标准。
+
+### `Segoe UI`
+
+是 Windows 从 Vista 开始的默认西文字体族，只有西文，不支持汉字，属于无衬线体。
+
+它表示的是一个系列而不是某一款单一字体。使用 `font-family: Segoe UI` 可以在 Windows 平台以及 Windows Phone 上选取最佳的西文字体。
+
+### `Roboto`
+
+它是为 Android 操作系统设计的一个无衬线字体族。Google 描述该字体为“现代的，但平易近人的”和“有感情”的。
+
+这个字体族包含 `Thin, Light, Regular, Medium, Bold, Black` 六种粗细及相配的斜体。
+
+## 54.3 总结
+
+```css
+{
+  font-family: 
+    system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,
+    Helvetica,Arial,
+    sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol;
+}
+```
+
+1. `system-ui` 使用各个支持平台上的默认系统字体。
+2. `-apple-system` 在一些稍低版本 Mac OS X 和 iOS 上，针对旧版的 `Neue Helvetica` 和 `Lucida Grande` 字体，升级使用更为合适的 `San Francisco Fonts`。
+3. `BlinkMacSystemFont` 针对一些 Mac OS X 上的 Chrome 浏览器，使用系统默认字体。
+4. `segoe ui` 在 Windows 及 Windows Phone 上选择系统默认字体。
+5. `Roboto` 面向 Android 和一些新版的 Chrome OS。
+6. `Helvetica, Arial` 在针对不同操作系统不同平台设定采用默认系统字体后，针对一些低版本浏览器的降级方案。
+7. `sans-serif` 兜底方案，保证字体风格统一，至少也得是无衬线字体。
+
+### 字体定义规则建议：
+
+### 1. 尽量使用系统默认字体
+
+使用系统默认字体的主要原因是性能，并且系统字体的优点在于它与当前操作系统使用的相匹配，因此它的文本展示必然也是一个让人舒适展示效果。
+
+### 2. 兼顾中西，西文在前，中文在后
+
+中文或者西文（英文）都要考虑到。由于大部分中文字体也带有英文字体，但是英文部分又不怎么好看，而英文字体中大多不包含中文。所以通常会先进行英文字体的声明，选择最优的英文字体，中文字体声明则紧随其后，这样即不会影响中文字体的选择，也可以让英文部分更美观。
+
+### 3. 兼顾多操作系统
+
+选择字体的时候要考虑多操作系统。例如 MAC OS 下的很多中文字体在 Windows 都没有预装，为了保证 MAC 用户的体验，在定义中文字体的时候，先定义 MAC 用户的中文字体，再定义 Windows 用户的中文字体。
+
+### 4. 兼顾旧操作系统，以字体族系列 `serif` 和 `sans-serif` 结尾
+
+当使用一些非常新的字体时，要考虑向下兼容，兼顾到一些极旧的操作系统，使用字体系列 `serif` 和 `sans-serif` 结尾总归是不错的选择。
+

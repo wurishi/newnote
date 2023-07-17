@@ -74,10 +74,29 @@
   XsfGWM pivot dance
   Xss3D4 AcidWobble
   lss3D4 Displacement in 137 chars
+  4dl3D7 Colorize
+  MdlGDM waterly video - test
+  MdsGDM perlin video transition -test
+  ldl3WM cartoon video - test
+  4df3RS Sobel Edge Detection
+  Mdl3D7 post: Bay Did It!
+  Mdl3W7 Club disco sphere
+  Mss3D7 Oldschool plane deformations
+  lss3D7 Power off
+  lssGD7 TV Snow
+  MdsGzM edge glow with box filter
+  MsX3RS britney composite
+  MdlGRB Webcam CRT
+  Msf3RS britneyscope
+  Msl3zB cartoon video
+  MssGRB webcam roberts
+  XsfGzj Kaleidoscopic webcam IFS
+  XssGD7 Webcam edge glow
+  lds3RS Webcam
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=74664&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=74676&num=12
 
-6223/6275
+6224/6289
 
-XsX3D7 Trippy #1
+Xss3DH Candlestick

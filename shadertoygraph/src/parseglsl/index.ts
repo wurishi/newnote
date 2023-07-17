@@ -85,7 +85,8 @@ function createCodePanel(title: string, id: number, list: GraphBasic[], changeCo
 
         const item = document.createElement('div');
         item.setAttribute('data-index', index.toString());
-        item.innerHTML = it.getCode();
+        // item.innerHTML = it.getCode();
+        item.innerText = it.getCode();
         // item.contentEditable = 'true';
         // item.contentEditable = 'plaintext-only';
         item.style.setProperty('-webkit-user-modify', 'read-write-plaintext-only');

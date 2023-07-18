@@ -481,9 +481,33 @@ export default {
   'BZdvckJFNr53H6kXS': `480. john_1`,
   'GBQRjtz2FMC4RcMvC': `481. rage`,
   '2nczC2kx9JRxu64gA': `482. use-thi-mic`,
-  'QQn8ttKsNBFEpfwuE': `483. unnamedzero`
-
-
+  'QQn8ttKsNBFEpfwuE': `483. unnamedzero`,
+  'RLCfXFKZw5SjhED9h': `484. waves`,
+  'zFsctippt7CPRwvWh': `485. bounder`,
+  '84bqgyYH7r222NZui': `486. bounder`,
+  'BeRGRuNpszfDv7foC': `487. bounder`,
+  '8aEFjza4wNjuhfnvP': `488. pointsprite plasma`,
+  '5YGSiNrquYpFi3Ggo': `489. life is lil' better now thx`,
+  'bgNBk3TJvBHtbJ9jB': `490. bounder2`,
+  '2RntyLszQwDn9wi85': `491. bounder`,
+  'esptz5bbgn8NtZkbN': `492. Spiral`,
+  'SgSd9NeMcEY53XNTJ': `493. penguin thoughts`,
+  'f24WmWznGNdEXEQTu': `494. Pulsin`,
+  'XreNJG2gcwCcsQqfL': `495. circling`,
+  '2KcwnpWC6FyBx5N9S': `496. Uncontrolled triangle funnel`,
+  'Gi7T5DRKnAnrvCAPp': `497. lesson1`,
+  'SFmNpx7c5RxJxfEnq': `498. lesson1`,
+  'as29BXy9qihbCbPqA': `499. Lonely Rolling Star`,
+  'H56ztSpxnFf2kZGwv': `500. K Machine exposed shader`,
+  '2cL3kfaKBExkWc5Le': `501. baby's first vertex shader`,
+  'AZFnk3yzLiSZ2KkWS': `502. spirals`,
+  'EtY77PNcjnaQtphnu': `503. sin-plotter`,
+  '6EhsqQMiTAN8xv9yr': `504. sin-plotter`,
+  'q9Fv9bJfBujZM8GFF': `505. banan`,
+  'QfDybr9wdsTip3KZ5': `506. vertex+time based highlight`,
+  'WM2T8Fz7ftcgqwgYn': `507. plasma grid`,
+  'obL3NXCsSpjdP4EX9': `508. plasma grid`,
+  'xgrH8Ga7yhuDYom6t': `509. flowerworm`
 
 
 

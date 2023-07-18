@@ -20,11 +20,16 @@ export default function NewWebCamTexture(
     const rti = sampler2Renderer(url.sampler)
 
     // TODO: size
-    navigator.mediaDevices
-        .getUserMedia({ video: { width: 1280, height: 720 }, audio: false })
-        .then((stream) => {
-            video.srcObject = stream
-        })
+    try {
+        navigator.mediaDevices
+            .getUserMedia({ video: { width: 1280, height: 720 }, audio: false })
+            .then((stream) => {
+                video.srcObject = stream
+            })
+    } catch (error) {
+        console.log('getUserMedia', error)
+        console.log('如果不能使用https或不能使用local, 请用命令：', 'chrome://flags/#unsafely-treat-insecure-origin-as-secure')
+    }
 
     const canplay = () => {
         input.loaded = true

@@ -258,6 +258,7 @@ function createInputs(inputs: any): EffectPassInfo[] {
           console.warn('未找到volumn', input)
         }
       } else if (input.type === 'mic') {
+      } else if (input.type === 'webcam') {
       }
       else {
         console.warn('未处理的input', input);
@@ -381,7 +382,7 @@ function createUIWithShader(setConfig: any, updateConfig: any, config: any, gui:
   gui.open();
 }
 
-const inputTypeList = ['texture', 'buffer', 'music', 'keyboard', 'cubemap', 'volume', 'mic']
+const inputTypeList = ['texture', 'buffer', 'music', 'keyboard', 'cubemap', 'volume', 'mic', 'webcam']
 
 function createInputsUI(updateConfig: any, config: any, root: GUI, passIndex: number) {
   // config.renderpass[passIndex].inputs[j]

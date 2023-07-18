@@ -93,10 +93,23 @@
   XsfGzj Kaleidoscopic webcam IFS
   XssGD7 Webcam edge glow
   lds3RS Webcam
+  MdfGR2 TRIPPY
+  XdX3R2 Image Flow
+  ldX3R2 Worley noise
+  ldfGR2 scanline
+  lsf3Rj Scharr Filter
+  MsfGzX Blurry Britney
+  lsfGzX Chroma key test
+  4dlGRX Checkerboard blender
+  4ss3RX Bad video
+  Xsl3zf Night vision
+  ldXGRf NTSC Codec
+  ldf3Rf Full MAME/MESS Shader Pipe
+  lsX3zX 3 videos
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=74676&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=74628&num=12
 
-6224/6289
+6220/6292
 
-Xss3DH Candlestick
+lssGRX TekF Clouds

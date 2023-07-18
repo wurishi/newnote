@@ -507,7 +507,9 @@ export default {
   'QfDybr9wdsTip3KZ5': `506. vertex+time based highlight`,
   'WM2T8Fz7ftcgqwgYn': `507. plasma grid`,
   'obL3NXCsSpjdP4EX9': `508. plasma grid`,
-  'xgrH8Ga7yhuDYom6t': `509. flowerworm`
+  'xgrH8Ga7yhuDYom6t': `509. flowerworm`,
+  'kyrjHeuSM5skDfpNo': `510. tuto 1`,
+  'hhDozSmRkW3ExvhoP': `511. papipupepox2`
 
 
 

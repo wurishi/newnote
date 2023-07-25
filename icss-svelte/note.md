@@ -3480,3 +3480,105 @@ CSS 的好处之一就是可以在多处复用样式规则，但如果使用了 
 
 当使用一些非常新的字体时，要考虑向下兼容，兼顾到一些极旧的操作系统，使用字体系列 `serif` 和 `sans-serif` 结尾总归是不错的选择。
 
+# 55. CSS 阴影动画优化
+
+当有一个这样的盒子：
+
+```css
+div {
+  width: 100px;
+  height: 100px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+```
+
+希望在 hover 时，阴影从 `box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3)` 过渡到 `box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3)` 时，由于过渡动画时间内，浏览器会不断的重绘盒阴影。又由于阴影属于耗性能样式，所以动画给人感觉多少有些卡顿。
+
+## 55.1 使用伪元素及透明度进行优化
+
+为什么使用透明度 `opacity` 进行动画要比 `box-shadow` 进行动画性能更好？ 可以参考这个 [CSS Triggers List](https://csstriggers.com/)
+
+## 55.2 两个阴影叠加替换
+
+上面方法由于最终效果是两个阴影叠加在一起，整体感觉上阴影颜色会更深一点。所以更好的优化方案是让两个阴影交替显示。
+
+# 56. 在 CSS 中使用三角函数绘制曲线图形及展示动画
+
+[css-doodle](https://css-doodle.com/)
+
+# 57. 使用 `scroll-snap-type` 优化滚动
+
+根据 [CSS Scroll Snap Module Level1 规范](https://www.w3.org/TR/css-scroll-snap-1/)，CSS 新增了一批能够控制滚动的属性，让滚动能仅通过 CSS 的控制就得到许多原本需要 JS 介入的交互。
+
+## 57.1 `scroll-snap-type`
+
+`scroll-snap-type`：属性定义了在滚动容器中的一个临时点（snap point）如何被严格执行。
+
+语法：
+
+```css
+{
+  scroll-snap-type: none | [ x | y | block | inline | both ] [ mandatory | proximity ]?
+}
+```
+
+如果希望滚动容器在每次滚动后，子元素最终停留位置不是尴尬的被分割，而是完整呈现在容器内，可以这样写：
+
+```css
+ul {
+  scroll-snap-type: x mandatory;
+}
+li {
+  scroll-snap-align: center;
+}
+```
+
+### 1. 属性 `mandatory` 和 `proximity`
+
+- `mandatory`：通常会使用这个值，它的意思是*强制性*，表示滚动结束后，滚动停止点一定会强制停在我们指定的地方。
+- `proximity`：意思是*接近，临近，大约*，意思为在滚动结束后，滚动停止点可能是滚动停止的地方，也可能会再进行一些额外的滚动，停在我们指定的地方。
+
+### 2. `both mandatory`
+
+```css
+{
+  scroll-snap-type: both mandatory;
+}
+```
+
+表示横向与竖向的滚动都进行捕捉。
+
+## 57.2 `scroll-snap-align`
+
+使用 `scroll-snap-align` 可以简单的控制要聚集的当前滚动子元素在滚动方向上相对于父容器的对齐方式。
+
+```css
+{
+  scroll-snap-align: start | center | end;
+}
+```
+
+### `start`
+
+表示聚集的滚动子元素在滚动方向上相对于父容器顶部对齐。
+
+### `center`
+
+表示聚集的滚动子元素在滚动方向上相对于父容器中心对齐。
+
+### `end`
+
+表示聚集的滚动子元素在滚动方向上相对于父容器底部对齐。
+
+### 不规则子元素滚动
+
+如果子元素大小不一，`scroll-snap-align` 也能有非常好的表现。
+
+## 57.3 `scroll-margin` / `scroll-padding`
+
+`scroll-snap-align` 可以控制滚动子元素与父容器的对齐方式，但如果想要更精细的进行控制时，可以使用 `scroll-margin` 或 `scroll-padding`。
+
+- `scroll-padding`：作用于父容器，类似于盒子的 `padding`
+- `scroll-margin`：作用于滚动子元素，每个子元素的 `scroll-margin` 可以设置为不一样的值，类似于盒子的 `margin`
+
+

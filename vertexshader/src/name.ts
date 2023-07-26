@@ -509,7 +509,42 @@ export default {
   'obL3NXCsSpjdP4EX9': `508. plasma grid`,
   'xgrH8Ga7yhuDYom6t': `509. flowerworm`,
   'kyrjHeuSM5skDfpNo': `510. tuto 1`,
-  'hhDozSmRkW3ExvhoP': `511. papipupepox2`
+  'hhDozSmRkW3ExvhoP': `511. papipupepox2`,
+  'iGf4owSji9QC6P8yF': `512. crystal dancer (mouse.xy) 3`,
+  'cQ2oBbxfbCYZLRFtr': `513. crystal dancer (mouse.xy) 3`,
+  'Rp7GgqLK79srZtBn3': `514. crystal dancer (mouse.xy) 3`,
+  'EWTJuKrqGXLji3GwW': `515. crystal dancer (mouse.xy) 2`,
+  'iPNXnwa34wBgSSDGd': `516. crystal irisz (mouse.xy)`,
+  'uQsrjwoCeqSersLA9': `517. VM in GPU`,
+  'FWWNQRxd2LXsvsxj5': `518. brain hach`,
+  '9yyh6FdtyTqLN2EgE': `519. forest fall 1`,
+  'D4KsKHDFES8P7NEBc': `520. linespace x k`,
+  '2GcQqCitMWiQ5QRgm': `521. unnamed`,
+  'z5Wj5jyFwYiwezjLv': `522. thumpy forest - quick test`,
+  '7myySepW36ywzREow': `523. unnamed`,
+  'nCfNyk6WPr6gn4kSB': `524. Spiral-TRIdNCE2`,
+  'XRdg3Wi744WAEMHKZ': `525. Spiral-TRIdNCE1`,
+  '3Csyw9ecsH7rXLkok': `526. Spiral-Spring dNCE1`,
+  'ghFixTy38ux4F235T': `527. SpiralPrime`,
+  '7awCXKJWafHYpvqX8': `528. plan b paint it`,
+  'Z26iq8hKBPX2svsmR': `529. bounder2`,
+  '7Xo5cox42KeW3chZj': `530. incId K machinized dev0`,
+  'PLaynf8Y9S5jEPnGP': `531. papipupepo for k machhine2`,
+  'X4p3ogDk8g7e5CvmA': `532. papipupepo for k machhine2`,
+  'wHYadcJcCHsjn3cvr': `533. unnamed`,
+  'tF4ynbNrnHawnus9p': `534. Learn Vertex Shaders`,
+  'ut2hNmEtGzvzi7Rwj': `535. unnamed`,
+  'ut7msYoHpzuRZjDyc': `536. penguin thoughts kmachine test1`,
+  'YQrEtnLC8h7QHDNsd': `537. penguin thoughts kmachine test1`,
+  'gDfmqnLHBbcKghmwL': `538. penguin thoughts kmachine test1`,
+  'RAKtMyYWNoC4Qni29': `539. perc2 (stripp)`,
+  'oQzXFjHPCApgXWGq3': `540. Simple Spheres`,
+  'GA5AfMNsPaGpaCd7b': `541. unnamed`,
+  'Hsmfxt55QrbZxDm4d': `542. perc2`,
+  'DPyrvZcaDSQBadMfb': `543. unnamed`
+
+
+
 
 
 

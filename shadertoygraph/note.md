@@ -1,10 +1,15 @@
-  // video 未处理 
-  // AcidWobble
-  // Ink Ghost
-  // blueprint effect
-  // XsfGzn Matte compositing
-  // Mdf3zr edge glow
-  // XslGRn Nyan and Britney Take London
+    codeerr:
+  XsXGWX Raytracer 1
+  lsf3Wf Raytraced RedBlue 3d
+  4sX3Ds Point Poly Feature Proximity 2d
+  
+video 未处理:
+AcidWobble
+Ink Ghost
+blueprint effect
+XsfGzn Matte compositing
+Mdf3zr edge glow
+XslGRn Nyan and Britney Take London
   4sl3zr pixelate
   Xss3zr video heightfield
   lssGzn Coffee and Tablet
@@ -106,10 +111,25 @@
   ldXGRf NTSC Codec
   ldf3Rf Full MAME/MESS Shader Pipe
   lsX3zX 3 videos
+  Xdf3Rf Sobel Filter
+  XdfGzl Glass tile
+  lsXGRs AcidWobble2
+  lsf3DS Voronoi Filter
+  ldl3WB Vamp
+  ldsGDB sobels!
+  lslGDS derivatives and edges
+  4sfGDj Fundefined behaviour!
+  Msf3D2 Flag Waves
+  Mdl3WX Negative fade
+  lssGDj Ascii Art
+  XsfGDl TV CRT Pixels
+  ldX3Ds GridVid
+  lss3Dl Scanline color burner
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=74628&num=12
 
-6220/6292
+https://www.shadertoy.com/results?query=&sort=newest&from=74760&num=12
 
-lssGRX TekF Clouds
+6231/6325
+
+Sierpinski fractal

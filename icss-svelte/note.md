@@ -3581,4 +3581,8 @@ li {
 - `scroll-padding`：作用于父容器，类似于盒子的 `padding`
 - `scroll-margin`：作用于滚动子元素，每个子元素的 `scroll-margin` 可以设置为不一样的值，类似于盒子的 `margin`
 
+# 58. CSS 实现充电动画
 
+## 58.1 Battery Animation
+
+## 58.2 HuaWei Battery Charging Animation

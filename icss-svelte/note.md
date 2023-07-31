@@ -3586,3 +3586,102 @@ li {
 ## 58.1 Battery Animation
 
 ## 58.2 HuaWei Battery Charging Animation
+
+# 59. CSS 中的层叠（Cascading）
+
+## 59.1 常见 CSS 优先级误区
+
+通常我们聊到 CSS 规则的优先级，都是以下这样的：
+
+一个选择器的优先级可以说是由四个部分相加（分量），可以认为是 *个十百千* 四位数：
+
+- 千位：如果声明在 `style` 的属性（内联样式）则该位得一分。这样的声明没有选择器，所以它的总得分就是 1000
+- 百位：选择器中包含 ID 选择器则该位得一分
+- 十位：选择器中包含类选择器，属性选择器或者伪类则该位得一分
+- 个位：选择器中包含元素，伪元素选择器则该位得一分
+
+总的来说规则就是：内联 > ID 选择器 > 类/属性/伪类选择器 > 标签元素/伪元素
+
+上面的规则的问题在于一来只考虑了页面作者定义的样式的优先级，并且没有包含 `!important` 规则。另外决定一个 CSS 样式的最终表现而言，还有一个非常重要的概念 -- 层叠
+
+## 59.2 层叠（Cascading）
+
+层叠是 CSS 的一个基本特征，它是一个定义了如何合并来自多个源的属性值的算法。下面是影响层叠的五个源：
+
+- 浏览器会有一个基本的样式来给任何网页设置默认样式。这些样式统称*用户代理样式*
+- 网页的作者可以定义文档的样式，这是最常见的样式表。大多数情况下此类样式表会定义多个，它们构成网站的视觉和体验，即页面主题，可以理解为*页面作者样式*
+- 读者、作为浏览器的用户，可以使用自定义样式表定制使用体验，可以理解为*用户样式*
+- 动画（Animation），指使用 `@Keyframes` 规则定义状态间的动画，动画序列中定义关键帧的样式来控制 CSS 动画序列
+- 过渡（Transition）
+
+再算上 `!important` 的顺序大概是：
+
+1. user agent（用户代理样式）
+2. user（用户样式）
+3. author（页面作者样式）
+4. animations（动画）
+5. author（用户作者样式）!important
+6. user（用户样式）!important
+7. user agent（用户代理样式）!important
+8. transitions（过渡）
+
+即优先级大概是这样：过渡动画过程中每一帧的样式 > 用户代理，用户，作者设置的 `!important` 样式 > 动画过程中每一帧的样式优先级 > 页面作者，用户，用户代理的普通样式
+
+# 60. 实现带圆角的渐变边框
+
+## 60.1 使用 border-image 实现渐变边框
+
+`border-image` 最大问题在于设置的 `border-radius` 会失效。
+
+## 60.2 `background-image` + 伪元素
+
+缺点：
+
+- 多使用了伪元素
+- 如果要求边框内的背景是透明的，此方案便行不通了。
+
+## 60.3 `background-clip` 实现
+
+因为用到了 `background-clip: border-box`，所以还需要 `background-origin: border-box` 使图案完整显示。
+
+缺点：同样如果要求边框内的背景是透明的，此方案便行不通了。
+
+## 60.4 `border-image` + `overflow: hidden`
+
+既然 `border-image` 会使得 `border-radius` 失效，那么就给它增加一个父容器，在父容器上设置 `overflow: hidden` + `border-radius` 即可。
+
+## 60.5 `border-image` + `clip-path`
+
+设置 `border-image` 的元素 `border-radius` 会失效，但在 CSS 中，还有其它方法可以产生带圆角的容器，即 `clip-path`。
+
+`clip-path` 属性可以创建一个只有元素的部分区域可以显示的剪切区域。即元素与该区域覆盖的部分显示，其他部分隐藏。剪切区域是被引用的内嵌的 URL 定义的路径或外部 SVG 路径。
+
+`clip-path: inset(0 round 10px)`
+
+- `clip-path: inset()` 是矩形裁剪
+- `inset()` 的用法有多种，在这里 `inset(0 round 10px)` 可以理解为，实现一个父容器大小（完全贴合，垂直水平居中于父容器）且 `border-radius: 10px` 的容器，将这个元素之外的所有东西裁剪掉（即不可见）。
+
+# 61. CSS 故障艺术
+
+## 61.1 使用 mix-blend-mode 实现抖音 LOGO
+
+## 61.2 图片 Glitch Art 风
+
+要注意的是由于图片本身并不是红色和青色的，所以需要通过 `background-image: url() color` 在 `color` 处叠加上这两种颜色，并通过 `background-blend-mode: lighten` 让其表现出来。
+
+另外为了保持中间叠加部分为原色，需要再叠加一个 `mix-blend-mode: darken` 反向处理一下。
+
+## 61.3 动态 Glitch 效果
+
+## 61.4 Glitch Art 风格的 404 效果
+
+## 61.5 其他配色效果
+
+`黄 + 粉红 + 蓝` 配合 `mix-blend-mode: multiply`。
+
+如果效果不希望和背景混合在一起，可以使用 `isolation: isolate` 进行隔离
+
+## 61.6 `clip-path` 实现文字断裂效果
+
+## 61.7 `clip-path` 的 Glitch Art
+

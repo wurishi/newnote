@@ -2,6 +2,8 @@
   XsXGWX Raytracer 1
   lsf3Wf Raytraced RedBlue 3d
   4sX3Ds Point Poly Feature Proximity 2d
+  4sj3RD Hackathon shader
+  ldjGRW new sijie
   
 video 未处理:
 AcidWobble
@@ -125,11 +127,17 @@ XslGRn Nyan and Britney Take London
   XsfGDl TV CRT Pixels
   ldX3Ds GridVid
   lss3Dl Scanline color burner
+  4dBGR1 Pixelizer from fr-minus-017
+  MdSGRW Colorblind Simulation
+  Xd23zD Field in Cave
+  Xs2GRw I want to pixelate Shirley Jones
+  Ms23DR MattiasCRT
+  lsBGWz Hexagon Pixels
 
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=74760&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=74736&num=12
 
-6231/6325
+6229/6338
 
-Sierpinski fractal
+4s23DR ray/cone & ray/frustum

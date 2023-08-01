@@ -3685,3 +3685,211 @@ li {
 
 ## 61.7 `clip-path` 的 Glitch Art
 
+# 62. 使用 `display: contents` 增强页面语义
+
+## 62.1 基本用法
+
+设置了 `display: contents` 属性的元素本身将不会产生任何盒子，但是它会保留其子元素的正常展示。
+
+## 62.2 充当无语义的包裹框
+
+在写 React, Vue 时，这个属性在写 JSX / 模板时能有很好的作用，并且也非常符合这个属性本身的定位。
+
+比如：
+
+```jsx
+return (
+  <div class="wrap">
+    <h2>title</h2>
+    <div>...</div>
+  </div>
+)
+```
+
+如果只是想输出 `.wrap` 中的内容，但由于框架限制，必须加一个 `.wrap` 包裹多个元素，但是 `.wrap` 本身其实并没有任何样式。如果此时将该元素放到其他 `display: flex`，`display: grid` 容器下，由于加了这层 `.wrap`，整个布局也都需要重新调整。
+
+以前的作法是使用框架提供的容器 `<React.Fragment>` 或 `<template>` 元素，它们都不会向页面插入任何多余节点。
+
+而现在多了一种选择就是加上 `display: contents`：
+
+```jsx
+return (
+  <div class="wrap" style="display: contents">
+    <h2>title</h2>
+    <div>...</div>
+  </div>
+)
+```
+
+## 62.3 让代码更符合语义化
+
+在实际场景中，页面上充斥着大量可点击按钮，或可以点击的文字。在语义上它们应该是一个个 `<button>`，但是由于按钮样式没那么好控制，并且会引入很多默认样式，一般我们都是使用 `<p>, <div>, <a>` 等标签来模拟的。
+
+现在有了 `display: contents` 可以让我们的代码更符合语义化，并且不需要去解决 `<button>` 带来的样式问题：
+
+```html
+<p class="button">
+    <button style="display: contents"> Button </button>
+</p>
+<p class="button">
+    <button style="display: contents"> Click Me </button>
+</p>
+```
+
+当然了，对于提升使用了 `<div>, <a>` 标签模拟的按钮的可访问性而言，更好的办法是通过 [WAI-ARIA 标准](https://www.w3.org/TR/wai-aria-1.1/) 定义的一系列 `ARIA-*` 属性来改善。
+
+## 62.4 在替换元素及表单元素中一些有意思的现象
+
+`display: contents` 并非在所有元素下的表现都一致。
+
+对于可替换元素及大部分表单元素，使用 `display: contents` 的作用类似于 `display: none`。
+
+也就是说对于一些常见的可替换元素，表单元素：
+
+- `<br>`
+- `<canvas>`
+- `<object>`
+- `<audio>`
+- `<iframe>`
+- `<img>`
+- `<video>`
+- `<frame>`
+- `<input>`
+- `<textarea>`
+- `<select>`
+
+作用 `display: contents` 相当于使用了 `display: none`，元素的整个框和内容都不会绘制在页面上。
+
+## 62.5 `<button>` 的一些异同
+
+`<button></button>` 如果包裹了内容，其一些可继承的样式还是会被子内容继承的，这个在实际使用中需要注意。（都会继承，只是其他标签没有 `<button` 这么多的附加样式）
+
+## 62.6 对 A11Y 的影响
+
+如果页面对可访问性的要求很高，使用此属性时要当心。
+
+# 63. CSS MASK
+
+## 63.1 语法
+
+最基本，使用 mask 的方式是借助图片：
+
+```css
+{
+  mask: url(mask.png);        /* 使用位图来做遮罩 */
+  mask: url(masks.svg#star);  /* 使用 SVG 图形中的形状来做遮罩 */
+}
+```
+
+此外，mask 还可以接受一个类似 `background` 的参数，也就是渐变：
+
+```css
+{
+  mask: linear-gradient(#000, transparent); /* 使用渐变来做遮罩 */
+}
+```
+
+图片与 mask 生成的渐变的 `transparent` 的重叠部分，将会变得透明。
+
+## 63.2 使用 mask 实现图片切角遮罩
+
+## 63.3 多张图片下使用 mask
+
+## 63.4 使用 MASK 进行转场动画
+
+## 63.5 mask 与滤镜和混合模式
+
+## 63.6 mask 与图片
+
+当然，mask 最本质的作用应该还是作用于图片上。
+
+# 64. 不定宽溢出文本适配滚动
+
+## 64.1 hover 时弹出框提示
+
+一种可行的方案是在 hover 时，弹出一个文本框展示全文，最简单的就是在标签下添加 `title` 属性：
+
+```html
+<nav>
+  <p ttile="溢出文本1 溢出文本2 溢出文本3 溢出文本4">溢出文本1 溢出文本2 溢出文本3 溢出文本4</p>
+</nav>
+```
+
+这里主要讲的是在文本和容器长度都不确定的情况下，文本实现在 hover 状态下，从左向右，滚动到文本末端再滚动回初始位置，如此反复的提示效果。
+
+## 64.2 容器定宽，文本不定宽
+
+给标签加上 `display: inline-block`，让标签的宽度变为实际文本的宽度。
+
+## 64.3 父容器不定宽度
+
+如果父容器的宽度不固定，或者由于 `calc` 兼容性问题无法使用，则可以这样：
+
+```css
+@keyframes move1 {
+    from {
+        left: 0;
+        transform: translate(0, 0);
+    }
+    to {
+        left: 100%;
+        transform: translate(-100%, 0);
+    }
+}
+```
+
+- `transform: translate(-100%, 0)` 能够向左移自身宽度的 100%
+- `left: 100%` 能够实现向右位移父容器宽度的 100%
+
+使用 `margin-left` 替换 `left` 也一样可以实现，使用百分比表示的 `margin-left` 位移的基准也是父元素的宽度。
+
+## 64.4 不足之处
+
+### 1. 无法判断文本长度是否超出父元素宽度
+
+我们只是希望文本溢出时，hover 时才出现滚动效果，但这在纯 CSS 下是无法实现的。
+
+在父元素定宽的例子中，可以使用 `min-width` 来限制，其他情况下可能还是需要借助 JavaScript 进行简单的判断，然后通过 `class` 来实现。
+
+### 2. 动画闪烁
+
+在父容器不定宽的情况下，由于对两个属性进行了动画，并且位移的方向还是相反的，所以动画可能看上去会有一点闪烁。
+
+# 65. 使用 `tabindex` 配合 `focus-within` 实现父选择器
+
+在目前的 CSS 中没有真正意义上被广泛实现的父选择器，这和浏览器的渲染机制有关。
+
+但可以通过 `:focus-within` 伪类来达到类似的目的。
+
+它表示一个元素获得焦点，或该元素的后代元素获得焦点，利用它我们可以实现通过元素的子元素的（focus事件），触发该伪元素，从而实现一个狭义上的父选择器。
+
+## 65.1 `:focus-within` 伪类实现父选择的缺陷
+
+最大问题是元素必须要有 `focus` 事件，才能触发它或者它的父元素的 `:focus-within`。所以一般情况下，只能和 `<button>`，`<input>` 元素一起使用。
+
+不同于 `<button>, <input>, <select>, <a>` 这类可交互元素，`<div>, <span>, <table>` 这类非交互元素，默认是不能被聚焦的，即默认不存在 `focus` 事件。
+
+## 65.2 使用 `tabindex` 使元素获得 `focus` 事件
+
+`tabindex` HTML 标签属性，指示其元素是否可以聚焦，以及它是否参与键盘导航（通常使用 tab 键）
+
+也就是说，一个单独的 div 标签，它是没有 `focus` 事件的。但当给它加上一个 `tabindex` 属性后，它就和 `<input>` 类似，拥有了 `focus` 事件，再配合 `focus:within` 能够使用的场景就大大提升了。
+
+```html
+<div>
+  <!-- 没有 focus 事件的元素 -->
+  <div>Click</div>
+</div>
+
+<div>
+  <!-- 拥有 focus 事件的元素 -->
+  <div tabindex="-1">Click</div>
+</div>
+```
+
+关于为什么这里使用 `tabindex="-1"`，是因为 `tabindex` 为负值是表示该元素可以聚焦，但是不能通过键盘导航来访问到该元素。因为我们只是需要让元素获得 `focus` 事件，但并不需要它真的能够用键盘导航来访问。
+
+## 65.2 `button` 的 `focus` 事件冒泡问题
+
+该方案其实是依赖 `focus` 事件的冒泡来实现的，而对于 `<button>` 元素，它在不同的系统和不同的浏览器下表现可能会有不同，在使用时要注意。（MAC 下 Safari 可能存在 `focus` 事件被目标元素捕获后，不再继续向上冒泡的问题）
+

@@ -133,11 +133,14 @@ XslGRn Nyan and Britney Take London
   Xs2GRw I want to pixelate Shirley Jones
   Ms23DR MattiasCRT
   lsBGWz Hexagon Pixels
+  4dS3D1 Bayer dithering
+  ldB3Dh Mrs Scary
+  Mdj3DD sigmoid edge detection
 
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=74736&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=74688&num=12
 
-6229/6338
+6225/6340
 
-4s23DR ray/cone & ray/frustum
+lsj3DD Daisy

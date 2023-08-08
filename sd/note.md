@@ -1,5 +1,7 @@
 https://cloud.tencent.com/developer/article/2273366?from=20783
 
+https://www.esheep.com/model/1569
+
 # Sampler (采样器/采样方法)
 
 - Euler: 最简单，最快。

@@ -136,11 +136,15 @@ XslGRn Nyan and Britney Take London
   4dS3D1 Bayer dithering
   ldB3Dh Mrs Scary
   Mdj3DD sigmoid edge detection
+  Md2GDw mpeg artifacts
+  MsS3DW vlahos chroma key
 
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=74688&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=74952&num=12
 
-6225/6340
+6247/6369
 
 lsj3DD Daisy
+
+ldjGRw

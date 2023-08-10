@@ -4,6 +4,8 @@
   4sX3Ds Point Poly Feature Proximity 2d
   4sj3RD Hackathon shader
   ldjGRW new sijie
+  4dS3RK IntersectCircleContours
+  Xd2GRy Playable Tic-Tac-Toe
   
 video 未处理:
 AcidWobble
@@ -138,13 +140,16 @@ XslGRn Nyan and Britney Take London
   Mdj3DD sigmoid edge detection
   Md2GDw mpeg artifacts
   MsS3DW vlahos chroma key
+  XdB3zV toon video shader
+  XdS3zK Colorlayers
+  XsjGz3 Undulant Spectre
+  ldjGzV VCR distortion
+  lslGWf my piano
 
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=74952&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=74928&num=12
 
-6247/6369
+6245/6375
 
-lsj3DD Daisy
-
-ldjGRw
+4sj3Rc Reactable Synth

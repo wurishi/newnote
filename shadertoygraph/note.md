@@ -6,6 +6,7 @@
   ldjGRW new sijie
   4dS3RK IntersectCircleContours
   Xd2GRy Playable Tic-Tac-Toe
+  lsSGD3 DrawRectangleAtCenterOfScreen
   
 video 未处理:
 AcidWobble
@@ -145,11 +146,20 @@ XslGRn Nyan and Britney Take London
   XsjGz3 Undulant Spectre
   ldjGzV VCR distortion
   lslGWf my piano
+  Ms2GRc Simple Wobble Shader
+  4dBGWG Rotoscoping
+  Mdj3zd Simple static
+  Xs23DG laplacian5
+  4sB3WK Shadow remover
+  Mdj3Wy Simple Difference Keyer
+  XdSGD3 Mirrors
+  Ms2GWc Dot Ripples
+  ls23Dc Hexagon Sampling
 
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=74928&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=74892&num=12
 
-6245/6375
+6242/6392
 
-4sj3Rc Reactable Synth
+MdB3Dd Random Blob Movement

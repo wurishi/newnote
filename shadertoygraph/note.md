@@ -155,11 +155,22 @@ XslGRn Nyan and Britney Take London
   XdSGD3 Mirrors
   Ms2GWc Dot Ripples
   ls23Dc Hexagon Sampling
+  Xd2GDd [SH]2014 My shame
+  MdfXzn partial derivatives visualizatio
+  MdfXR8 Jumbotron
+  ldXSz4 DawnBringer
+  4dsSR7 video stripes
+  4sfSR7 Cartoonish WebCam: variant
+  MdfSRM video flip
+  ldfSzM DiscoBritney
+  ldsSR4 randomly generated shaders
+  lsXXz7 Kaleidoscope Video
+  lsfXzM ColdbergTVShader
 
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=74892&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=74736&num=12
 
-6242/6392
+6229/6396
 
-MdB3Dd Random Blob Movement
+MdlSRM KIFS

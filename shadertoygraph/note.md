@@ -7,6 +7,7 @@
   4dS3RK IntersectCircleContours
   Xd2GRy Playable Tic-Tac-Toe
   lsSGD3 DrawRectangleAtCenterOfScreen
+  4ssSWn Super-lightweight XOR circles
   
 video 未处理:
 AcidWobble
@@ -166,11 +167,14 @@ XslGRn Nyan and Britney Take London
   ldsSR4 randomly generated shaders
   lsXXz7 Kaleidoscope Video
   lsfXzM ColdbergTVShader
+  4ssXWn quick?sort
+  lsXSDn Matrix Rain Shader
+  lslSz7 Disintegration Transition
 
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=74736&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=74964&num=12
 
-6229/6396
+6248/6418
 
-MdlSRM KIFS
+ldlSWn RayMarchingTemplate

@@ -8,6 +8,7 @@
   Xd2GRy Playable Tic-Tac-Toe
   lsSGD3 DrawRectangleAtCenterOfScreen
   4ssSWn Super-lightweight XOR circles
+  XsXSD8 Spinning Circles
   
 video 未处理:
 AcidWobble
@@ -170,11 +171,16 @@ XslGRn Nyan and Britney Take London
   4ssXWn quick?sort
   lsXSDn Matrix Rain Shader
   lslSz7 Disintegration Transition
+  MdfXDH NES-IFY
+  MsXXDH Cheap edge detection
+  ldfXDH Cheap color depth reduction
+  ldsSDn In your face
+  ldsSWr edgedetect
 
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=74964&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=75036&num=12
 
-6248/6418
+6254/6427
 
-ldlSWn RayMarchingTemplate
+lsfXWH SH - visualizer

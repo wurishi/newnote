@@ -53,6 +53,8 @@ function f2() {
     const LENGTH = 25000000
     const arr = new Array(LENGTH)
     const iarr = new Int32Array(LENGTH)
+    const obj = {}
+    const set = new Set()
 
     let time = 0
     const outputs = []
@@ -72,22 +74,69 @@ function f2() {
     }
     outputs.push(`set iarr: ${Date.now() - time}`)
 
+    // // set obj
+    // time = Date.now()
+    // for (i = 0; i < LENGTH; i++) {
+    //     obj[i] = i
+    // }
+    // outputs.push(`set obj: ${Date.now() - time}`)
+
+    // // set Set
+    // time = Date.now()
+    // for (i = 0; i < LENGTH; i++) {
+    //     set.add(i)
+    // }
+    // outputs.push(`set set: ${Date.now() - time}`)
+
     var count = 0
-    // each arr
+    // each(i) arr
     count = 0
     time = Date.now()
     for (i = 0; i < LENGTH; i++) {
         count += arr[i]
     }
-    outputs.push(`(${count})each arr: ${Date.now() - time}`)
+    outputs.push(`(${count})each(i) arr: ${Date.now() - time}`)
 
-    // each iarr
+    // each(forEach) arr
+    count = 0
+    time = Date.now()
+    arr.forEach(val => {
+        count += val
+    })
+    outputs.push(`(${count})each(forEach) arr: ${Date.now() - time}`)
+
+    // each(i) iarr
     count = 0
     time = Date.now()
     for (i = 0; i < LENGTH; i++) {
         count += iarr[i]
     }
-    outputs.push(`(${count})each iarr: ${Date.now() - time}`)
+    outputs.push(`(${count})each(i) iarr: ${Date.now() - time}`)
+
+    // each(forEach) arr
+    count = 0
+    time = Date.now()
+    iarr.forEach(val => {
+        count += val
+    })
+    outputs.push(`(${count})each(forEach) iarr: ${Date.now() - time}`)
+
+    var key
+    // // each obj
+    // count = 0
+    // time = Date.now()
+    // for(key in obj) {
+    //     count += obj[key]
+    // }
+    // outputs.push(`(${count})each obj: ${Date.now() - time}`)
+
+    // // each set
+    // count = 0
+    // time = Date.now()
+    // for(key of set) {
+    //     count += key
+    // }
+    // outputs.push(`(${count})each set: ${Date.now() - time}`)
 
     const IDX = Math.floor(LENGTH / 3)
     // index arr
@@ -105,6 +154,14 @@ function f2() {
         count += iarr[IDX]
     }
     outputs.push(`(${count})index iarr: ${Date.now() - time}`)
+
+    // // index obj
+    // count = 0
+    // time = Date.now()
+    // for (i = 0; i < LENGTH; i++) {
+    //     count += obj[IDX]
+    // }
+    // outputs.push(`(${count})index obj: ${Date.now() - time}`)
 
     console.log(outputs.join('\n'))
 }

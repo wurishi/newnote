@@ -200,12 +200,20 @@ XslGRn Nyan and Britney Take London
   MslXRl Pixelate video
   MssXzl Color Separation Filter
   ldsXzl Pixelate Slider
+  4dXXDl Simple Chromatic Aberration
+  4sXSWs Film grain
+  XdlSDl SIG2014 - Halftone
+  lsXSWl EM Interference Effect
+  4sSSzz Fish Eye effect
+  MslSDl BlackBody
+  MssSDl Tiles image effect
+  XssSDs Fast Blur
 
 
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=75036&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=75228&num=12
 
-6254/6427
+6270/6487
 
 lsfXWH SH - visualizer

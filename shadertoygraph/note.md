@@ -176,6 +176,31 @@ XslGRn Nyan and Britney Take London
   ldfXDH Cheap color depth reduction
   ldsSDn In your face
   ldsSWr edgedetect
+  XdXXD4 Chromatical
+  4dXSzB Raining On Your Screen
+  MdsSD7 Pixelizer
+  MsXXD7 Mandelbrit
+  MsfSW7 Moving mirror
+  MsfXDM Arbitrary mirror
+  XdfXRB Teal & Orange
+  ldXXW7 Mirror chalkboard
+  4dXSzl EGA Colors
+  4dXXzl CGA Colors
+  MdsXRB lightbulb screen
+  MssXzf LSDToy
+  XdXXzX JuliaFreak
+  XssSz2 ZBuffer
+  ldXXzs Demonic Britney
+  lslXR2 ChromaKeyBorder
+  lssXRf Liquid Woman
+  4dsXWB Test compression shader
+  4ssXDS One line outline
+  MdfSRs Cellphone
+  MdfXRs Simple distortion
+  MslXRl Pixelate video
+  MssXzl Color Separation Filter
+  ldsXzl Pixelate Slider
+
 
 
 

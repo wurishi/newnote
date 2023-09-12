@@ -91,9 +91,9 @@ async function main() {
 
   if (outputs.length > 0) {
     console.log(outputs.join(',\n'));
-    console.log('name.ts 已更新' + outputs.length + '条')
+    console.log('name.ts 已更新' + outputs.length + '条(' + files.length + ')')
   } else {
-    console.log('没有找到新的配置文件');
+    console.log('没有找到新的配置文件(' + files.length + ')');
   }
 
 }

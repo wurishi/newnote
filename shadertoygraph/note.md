@@ -210,12 +210,18 @@ XslGRn Nyan and Britney Take London
   XssSDs Fast Blur
   XdBSzW cracked 2
   ls2XR1 cracked
+  MsBSRm Polar grid
+  ldSXRm Hammer grid
+  lsBXzD It's ASCII bitch!
+  lsSXzm Transverse Mercator grid
+  4sjXzm TV Moire Pattern Effect
+  lsjSWR Old CRT simulation
 
 
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=75228&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=75144&num=12
 
-6270/6487
+6263/6491
 
-lsfXWH SH - visualizer
+XdBSDh Energy Lifeform

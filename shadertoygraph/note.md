@@ -233,12 +233,16 @@ XslGRn Nyan and Britney Take London
   4sBSzc idk
   MdjSRy Terrible TV signal
   lsBXzV Comic print
+  4s2SR3 Basic Interlace Sample
+  4d2SWy Triangles Mosaic
+  MdfGD2 glitch 01, shampain
+  lsfGD2 glitch 02, shampain
 
 
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=75156&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=75036&num=12
 
-6264/6513
+6254/6513
 
-MdBSRc fractal mix
+Ms2SWG Sewer

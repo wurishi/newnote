@@ -62,3 +62,6 @@ node_const1.connect(0, node_sum, 1);
 node_sum.connect(0, node_watch, 0);
 
 graph.start();
+
+// const result = graph.serialize();
+// console.log(result);

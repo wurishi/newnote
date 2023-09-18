@@ -216,12 +216,29 @@ XslGRn Nyan and Britney Take London
   lsSXzm Transverse Mercator grid
   4sjXzm TV Moire Pattern Effect
   lsjSWR Old CRT simulation
+  MsjSD1 LowRes
+  lsSSD1 LED Display
+  lsSXD1 Double Vision
+  4sjSDW LED Comparison
+  MsBXWD cercle
+  Xs2XDD Simple Crosshatching
+  ld2XWD Cel shaderish
+  MsSXDm True Gaussian Weighted Blur
+  MdSSDm its time to oil up
+  4dBXDw Greenscreen remover
+  Md2XWw LinearDitherForSRGB
+  Xd2XzG Curtain
+  XdSXRy Mouse zoom
+  4d2Xzy PenTile
+  4sBSzc idk
+  MdjSRy Terrible TV signal
+  lsBXzV Comic print
 
 
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=75144&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=75156&num=12
 
-6263/6491
+6264/6513
 
-XdBSDh Energy Lifeform
+MdBSRc fractal mix

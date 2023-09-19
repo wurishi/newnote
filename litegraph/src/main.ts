@@ -10,17 +10,20 @@ import { LGraph, LGraphCanvas, LGraphNode, LiteGraph } from 'litegraph.js'
 //   LiteGraph.unregisterNodeType(key);
 // });
 
+// LiteGraph.clearRegisteredTypes();
+
 class MyAddNode extends LGraphNode {
   static title: string = 'Sum'; // menu title
 
   constructor() {
     super('Sum') // node title
 
-    this.addInput('A', 'number');
+    this.addInput('A', '');
     this.addInput('B', 'number');
     this.addOutput('A+B', 'number');
     this.properties = {
-      precision: 1
+      precision: 1,
+      code: `void main() {}`
     };
     this.boxcolor = '#00ff00';
   }
@@ -30,11 +33,26 @@ class MyAddNode extends LGraphNode {
     A = (A === undefined) ? 0 : A;
     let B = this.getInputData<number>(1);
     B = (B === undefined) ? 0 : B;
+    // console.log(A, B)
     this.setOutputData(0, (A + B).toFixed(this.properties.precision));
   }
 
 }
 LiteGraph.registerNodeType('basic/sum', MyAddNode);
+
+class TempObj extends LGraphNode {
+  static title: string = 'TempObj';
+  constructor() {
+    super('TempObj');
+
+    this.addOutput('Code', '');
+  }
+
+  onExecute(): void {
+    this.setOutputData(0, { a: 100, b: 200 });
+  }
+}
+LiteGraph.registerNodeType('basic/Temp', TempObj);
 
 const graph = new LGraph();
 const canvas = new LGraphCanvas('#mycanvas', graph); // { autoresize: true }
@@ -63,5 +81,5 @@ node_sum.connect(0, node_watch, 0);
 
 graph.start();
 
-// const result = graph.serialize();
-// console.log(result);
+const result = graph.serialize();
+console.log(result);

@@ -237,12 +237,16 @@ XslGRn Nyan and Britney Take London
   4d2SWy Triangles Mosaic
   MdfGD2 glitch 01, shampain
   lsfGD2 glitch 02, shampain
+  4dSXDc Stippling (Black on White)
+  4sSSDc Britney's Brilliant Boxblur
+  MdSSWc Green Screen v2
+  Xs2XDK mirror mix
 
 
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=75036&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=75000&num=12
 
-6254/6513
+6251/6517
 
-Ms2SWG Sewer
+MsjSW3 Ether

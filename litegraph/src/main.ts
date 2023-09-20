@@ -46,10 +46,29 @@ class TempObj extends LGraphNode {
     super('TempObj');
 
     this.addOutput('Code', '');
+    this.properties = {
+      length: 0,
+    }
   }
 
   onExecute(): void {
     this.setOutputData(0, { a: 100, b: 200 });
+  }
+
+  onPropertyChanged(property: string, value: any, prevValue: any): boolean | void {
+    if (property === 'length') {
+      const newV = Number(value);
+      const oldV = Number(prevValue);
+      if (newV > oldV) {
+        for (let i = oldV; i < newV; i++) {
+          this.addInput('line' + (i + 1), '');
+        }
+      } else if (newV < oldV) {
+        for (let i = oldV; i >= newV; i--) {
+          this.removeInput(i)
+        }
+      }
+    }
   }
 }
 LiteGraph.registerNodeType('basic/Temp', TempObj);

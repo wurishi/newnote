@@ -8,6 +8,7 @@ import { getAssetsUrl } from './utils/proxy';
 import createMediaRecorder from './utils/mediaRecorder';
 import { requestFullScreen } from './utils/index';
 import parseGLSL from './parseglsl';
+import liteGraphMain from './litegraph';
 
 const configs = import.meta.glob('../export/*.json');
 
@@ -82,6 +83,7 @@ function init() {
   lazyInit(current, shaderNames, tools as HTMLElement);
 }
 init();
+liteGraphMain();
 
 function musicCallback(wave: Uint8Array, passID: number) { }
 

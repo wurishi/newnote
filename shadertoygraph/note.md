@@ -252,11 +252,11 @@ XslGRn Nyan and Britney Take London
 
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=74940&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=74880&num=12
 
-6246
+6241
 /
-6539
+6540
 
 
-lls3W8 Solar distortion 2
+MtX3DN [2TC 15] Ethereal silhouette

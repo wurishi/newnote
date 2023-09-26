@@ -241,12 +241,22 @@ XslGRn Nyan and Britney Take London
   4sSSDc Britney's Brilliant Boxblur
   MdSSWc Green Screen v2
   Xs2XDK mirror mix
+  4tX3zN Simple Night Vision
+  lls3RH c64 Post Process
+  ltsGRH TV Noise
+  4ts3zM Knitted PostProcess
+  MtfGDn Ray Marching Experiment 1
+  llfGR7 Posterize and grayscale
+  ltX3RM invert color
 
 
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=74988&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=74940&num=12
 
-6250/6520
+6246
+/
+6539
 
-Md2SDt Simplicity Clouds
+
+lls3W8 Solar distortion 2

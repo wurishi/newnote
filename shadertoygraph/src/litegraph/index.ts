@@ -4,13 +4,15 @@ import Watch from './watch';
 
 import DefineNode from './global/defineNode';
 import FunctionNode from './global/functionNode';
+import VarNode from './global/varNode';
 
 LiteGraph.clearRegisteredTypes();
 
-LiteGraph.registerNodeType('watch', Watch);
+LiteGraph.registerNodeType('log/watch', Watch);
 
 LiteGraph.registerNodeType('定义/define', DefineNode);
 LiteGraph.registerNodeType('定义/function', FunctionNode);
+LiteGraph.registerNodeType('定义/var', VarNode);
 
 export default function () {
     const canvas = document.getElementById('litegraph_canvas') as HTMLCanvasElement;

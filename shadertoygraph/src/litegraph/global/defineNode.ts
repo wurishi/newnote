@@ -8,6 +8,7 @@ export default class DefineNode extends LGraphNode {
         super(DefineNode.title);
 
         this.addInput('value', 'string');
+
         this.addOutput('name', 'string');
         this.addOutput(CONSTANTS.CODE, CONSTANTS.CODE_TYPE);
         this.properties = {
@@ -16,10 +17,19 @@ export default class DefineNode extends LGraphNode {
         }
     }
 
+    protected getCode(): string {
+        const name = this.properties.name;
+        const value = this.getInputDataByName('value') || this.properties.value;
+        return `#define ${name} ${value}`;
+    }
+
+    getTitle(): string {
+        return this.getCode();
+    }
+
     onExecute(): void {
         const name = this.properties.name;
         this.setOutputData(0, name);
-        const value = this.getInputData(0) || this.properties.value
-        this.setOutputData(1, `#define ${name} ${value}`);
+        this.setOutputData(1, this.getCode());
     }
 }

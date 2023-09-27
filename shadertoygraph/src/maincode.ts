@@ -69,6 +69,11 @@ function init() {
     .add(guiData, 'current', sortShaderNames)
     .name('shader')
     .onChange((name) => {
+      if (window.dispatchEvent) {
+        const evt = new Event('CurrentShader');
+        (evt as any).name = name;
+        window.dispatchEvent(evt);
+      }
       const fn = shaders[name];
       fn().then((module: any) => {
         setCurrent(module.default);
@@ -83,10 +88,11 @@ function init() {
   lazyInit(current, shaderNames, tools as HTMLElement);
   return {
     gui,
+    setCurrent,
   };
 }
-const { gui } = init();
-liteGraphMain(gui);
+const { gui, setCurrent } = init();
+liteGraphMain({ gui, setCurrent });
 
 function musicCallback(wave: Uint8Array, passID: number) { }
 
@@ -287,7 +293,7 @@ const bufferIDName: Record<string, number> = {
 }
 
 function inputAndOutputID(key: string): number {
-  if(bufferIDName.hasOwnProperty(key)) {
+  if (bufferIDName.hasOwnProperty(key)) {
     return bufferIDName[key];
   }
   console.warn('未知的input/output', key);
@@ -305,10 +311,10 @@ function createOutputs(outputs: any) {
       if (oid === '4dfGRr') {
         // main image 不需要
       }
-      else if(oid === 'XsfGRr') {
+      else if (oid === 'XsfGRr') {
         // sound 不需要
       }
-      else if(oid === '4dX3Rr') {
+      else if (oid === '4dX3Rr') {
         // cubemap
         outputArr.push({
           channel: 0,
@@ -483,8 +489,8 @@ function createInputsUI(updateConfig: any, config: any, root: GUI, passIndex: nu
       return []
     }
     //
-    if(input.type === 'keyboard') {
-      uiData.type = (() => {}) as any;
+    if (input.type === 'keyboard') {
+      uiData.type = (() => { }) as any;
       folder.add(uiData, 'type').name(input.type);
     }
     else {
@@ -582,7 +588,7 @@ function lazyInit(
       Object.keys(nameToValue).forEach((key) => {
         const value = nameToValue[key];
         if (!visitSet.has(value)) {
-          noVisitCount ++;
+          noVisitCount++;
           const div = document.createElement('button');
           div.id = value;
           div.innerHTML = key;

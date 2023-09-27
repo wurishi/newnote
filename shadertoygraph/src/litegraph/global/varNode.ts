@@ -19,13 +19,18 @@ export default class VarNode extends LGraphNode {
             isConst: false,
             type: 'float',
             name: 'foo',
+            isOut: false,
         };
     }
 
     protected getCode(): string {
-        const { isConst, name, type } = this.properties;
+        const { isConst, name, type, isOut } = this.properties;
         const initValue = this.getInputDataByName('initValue');
-        return `${isConst ? 'const ' : ''}${type} ${name} ${initValue === undefined ? '' : '= ' + initValue};`;
+        let prefix = isConst ? 'const ' : '';
+        if (isOut) {
+            prefix = 'out ';
+        }
+        return `${prefix}${type} ${name} ${initValue === undefined ? '' : '= ' + initValue};`;
     }
 
     getTitle(): string {

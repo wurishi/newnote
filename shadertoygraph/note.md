@@ -248,15 +248,23 @@ XslGRn Nyan and Britney Take London
   MtfGDn Ray Marching Experiment 1
   llfGR7 Posterize and grayscale
   ltX3RM invert color
+  ltl3WN Ray-traced kaleidoscope
+  4lsGDM Mosaic(Diamond)
+  Xtl3WM Displacement Transition
+  4lXGzS Video Pixelate
+  4tl3RS Quick Linear Blur
+  XlX3RS Page Curl Effect
+  Xlf3RS Video BillBoarding
+  lls3WM Kuwahara
 
 
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=74880&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=74760&num=12
 
-6241
+6231
 /
-6540
+6543
 
 
-MtX3DN [2TC 15] Ethereal silhouette
+XtlGzS Tiny Planet Cutting Experience

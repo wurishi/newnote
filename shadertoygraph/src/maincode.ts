@@ -81,9 +81,12 @@ function init() {
 
   mainFolder.open();
   lazyInit(current, shaderNames, tools as HTMLElement);
+  return {
+    gui,
+  };
 }
-init();
-liteGraphMain();
+const { gui } = init();
+liteGraphMain(gui);
 
 function musicCallback(wave: Uint8Array, passID: number) { }
 

@@ -3916,3 +3916,35 @@ return (
 
 使用 `mask` 切割图片时 `-webkit-mask-composite` 属性有点类似于 `mix-blend-mode`，它是用来指定应用于同一个元素的多个蒙版图像相互合成的方式。指定为 `xor` 时类似于偶数相减，奇数相加的模式。
 
+# 67. `position-sticky` 失效的问题
+
+`sticky` 定位类似于相对定位，（当它表现为 `fixed` 定位的特性时）会根据最近的滚动容器（nearest scrollport）自动计算偏移量。
+
+## 67.1 包裹的父容器高度与 `sticky` 元素一致
+
+如果在 `.sticky` 元素和你希望吸附的滚动元素之间，添加上一层 `.parent` 的 div 元素，不给 div 添加任何样式，sticky 就失效了。
+
+失效原因：
+
+此时 `.sticky` 元素的最近的 `scrollport` 变成了它的父容器 `.parent`。该元素的高度和 `.sticky` 元素的高度是一样的，所以表现不出 `fixed` 的特性。
+
+其实这里也不算完全失效，只需要将 `.parent` 元素的高度设置的大于 `.sticky` 元素本身，也能看到效果。
+
+## 67.2 包裹的父容器设置了 `overflow:hidden`
+
+当 `.sticky` 的父元素为 `overflow:hidden` 时，即使它的高度比 `sticky` 元素高，但是在滚动中仍然不会表现出 `fixed` 特性。
+
+失效原因：
+
+设置了 `overflow: hidden` 的元素，它不再使用滚动特性。
+
+另外要注意的是，设置为 `position: sticky` 元素的任意父节点的 `overflow` 属性都必须是 `visible` 的。否则 `sticky` 不会生效。
+
+## 67.3 总结
+
+`sticky` 生效的条件：
+
+- 必须指定 `top, right, bottom, left` 四个阈值中的一个，并且达到了设定的阈值，才可使粘性定位生效，否则其行为与相对定位相同。 另外 `top, bottom` 同时设置时，`top` 生效的优先级高。`left, right` 同时设置时，`left` 的优先级高。
+- 任意父节点的 `overflow` 属性必须是 `visible`，否则不会生效。因为父容器无法滚动时，`sticky` 元素自然也就不存在滚动然后固定的情况。
+- 父元素的高度必须大于当前元素，否则也会失效。
+

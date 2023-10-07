@@ -256,15 +256,25 @@ XslGRn Nyan and Britney Take London
   XlX3RS Page Curl Effect
   Xlf3RS Video BillBoarding
   lls3WM Kuwahara
+  4ll3RB 20150205_asciiShader
+  4tX3Rj Britney's Spaceship
+  MlX3R2 nicyb
+  Mlf3R2 Another Blue World
+  Mss3R7 chromatic tearing
+  MtX3z2 Sigmoid Contrast
+  Mtf3R2 pixelb's World of Britney
+  Mtl3Rj Pseudo Gaussian Blur
+  llXGz2 StefanPeeters
+  llf3R2 Kellen
 
 
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=74760&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=74820&num=12
 
-6231
+6236
 /
-6543
+6570
 
 
-XtlGzS Tiny Planet Cutting Experience
+Mts3WS It's a kind of magic

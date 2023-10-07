@@ -51,7 +51,12 @@ export default function (params: { gui: GUI, setCurrent: any }) {
     folder.add(guiData, 'init').name('初始化');
     folder.add(guiData, 'saveCurrent').name('Save');
 
+    folder.open();
+    if (canvas.parentElement) {
+        canvas.parentElement.style.visibility = 'hidden';
+    }
+
     window.addEventListener('CurrentShader', (evt) => {
-        console.log(evt);
+        // console.log(evt);
     });
 }

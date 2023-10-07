@@ -3889,7 +3889,30 @@ return (
 
 关于为什么这里使用 `tabindex="-1"`，是因为 `tabindex` 为负值是表示该元素可以聚焦，但是不能通过键盘导航来访问到该元素。因为我们只是需要让元素获得 `focus` 事件，但并不需要它真的能够用键盘导航来访问。
 
-## 65.2 `button` 的 `focus` 事件冒泡问题
+## 65.3 `button` 的 `focus` 事件冒泡问题
 
 该方案其实是依赖 `focus` 事件的冒泡来实现的，而对于 `<button>` 元素，它在不同的系统和不同的浏览器下表现可能会有不同，在使用时要注意。（MAC 下 Safari 可能存在 `focus` 事件被目标元素捕获后，不再继续向上冒泡的问题）
+
+# 66. CSS 艺术 -- 使用 `background` 创造各种美妙的背景
+
+## 66.1 背景基础知识
+
+在 CSS 中 `background` 最常用的是下面 4 种情况：
+
+- 纯色背景 `background: #000`
+- 线性渐变 `background: linear-gradient(#fff, #000)`
+- 径向渐变 `background: radial-gradient(#fff, #000)`
+- 角向渐变 `background: conic-gradient(#fff, #000)`
+
+## 66.2 背景进阶 -- 使用 `mix-blend-mode`
+
+## 66.3 使用径向渐变
+
+## 66.4 使用混合模式叠加不同的渐变图案
+
+## 66.5 使用 `mask`
+
+`mask-composite` OR `-webkit-mask-composite`
+
+使用 `mask` 切割图片时 `-webkit-mask-composite` 属性有点类似于 `mix-blend-mode`，它是用来指定应用于同一个元素的多个蒙版图像相互合成的方式。指定为 `xor` 时类似于偶数相减，奇数相加的模式。
 

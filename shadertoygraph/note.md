@@ -270,11 +270,10 @@ XslGRn Nyan and Britney Take London
 
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=74820&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=74640&num=12
 
-6236
+6221
 /
-6570
+6578
 
-
-Mts3WS It's a kind of magic
+Mlj3zR [NV15] blankspace

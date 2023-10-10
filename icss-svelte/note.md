@@ -3948,3 +3948,20 @@ return (
 - 任意父节点的 `overflow` 属性必须是 `visible`，否则不会生效。因为父容器无法滚动时，`sticky` 元素自然也就不存在滚动然后固定的情况。
 - 父元素的高度必须大于当前元素，否则也会失效。
 
+# 68. 使用纯 CSS 实现滚动阴影效果
+
+使用 `background-attachment` 实现滚动阴影
+
+一些问题：
+
+- 因为使用的是背景 `background` 模拟的阴影，所以内容永远是在背景之上的。
+- `background-attachment` 的兼容性问题，不过大多数兼容问题出在了 `background-attachment: fixed` 上。本例中主要是使用 `local, scroll` 所以影响不大。
+
+# 69. 一行 CSS 代码
+
+初衷是为了在 [CSSBattle](https://cssbattle.dev) 上使用尽量少的代码实现效果。
+
+```html
+<a style=box-shadow:0+0+0+200px#b5e0ba,0+0+0+5in#5d3a3a>
+<!-- HTML5 支持属性后面的值不用引号包住 -->
+```

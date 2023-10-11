@@ -3965,3 +3965,42 @@ return (
 <a style=box-shadow:0+0+0+200px#b5e0ba,0+0+0+5in#5d3a3a>
 <!-- HTML5 支持属性后面的值不用引号包住 -->
 ```
+
+# 70. 水平垂直居中深入挖掘
+
+- absolute: `position:absolute` 配合 `top:50%;left:50%;transform:translate(-50%,-50%)`
+- autobot: `display:flex` 配合 `margin:auto`
+- flex: `display:flex` 配合 `align-items:center;justify-content:center`
+- grid: `display:grid` 配合 `place-content:center`
+
+## 70.1 居中单个元素
+
+四种方案都能很好的完成，但是方案 `absolute` 和 `autobot` 需要在父元素和子元素上都添加 CSS，`flex` 和 `grid` 方案对于子元素是无感知的，只需要通过修改父元素的 CSS 即可。
+
+## 70.2 居中多个元素
+
+- `absolute` 方案由于用的是绝对定位，导致子元素都叠在了一起
+- `flex` 和 `grid` 方案，如果不添加边距(margin/gap)，子元素会贴在一起
+- 不限制方向的话，`flex` 默认是水平排列, `grid` 默认是竖直排列
+- `grid` 下所有子元素的宽度会被强行拉伸到最宽的一个子元素的内容的宽度（也就是拉伸至网格宽度）（因为本例中没有指定子元素的具体宽度，可以认为是元素在 `grid` 布局下 `width: auto` 的行为）
+
+## 70.3 控制间距
+
+提示：`flex` 布局从 chrome84 开始，也支持直接使用 `gap` 对子元素的间距进行控制
+
+- `autobot` 方案由于 `margin: auto` 是需要均分剩余空间的，所以无法通过 `gap: 5px` 将间隔控制在 5px。
+
+## 70.4 元素多到溢出
+
+- `autobot` 由于没有剩余空间，`margin: auto` 已经无法做到均匀分配了，所以会出现一边贴着容器边，另外一边溢出。
+- `flex` 和 `grid` 都做到了即使超出容器空间，仍然是水平垂直居中的。
+
+## 70.5 总结
+
+`flex` 方案目前是最优的水平垂直居中方案。
+
+- 便捷的水平垂直居中单个元素
+- 便捷的水平垂直居中多个元素，无论是横向，竖向，或是内容超出
+- 非常方便的控制子元素的间距
+- 不会改变子元素的宽度
+

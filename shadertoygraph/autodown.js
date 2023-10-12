@@ -3,6 +3,7 @@ const path = require("path");
 const fs = require("fs");
 
 const TIMEOUT = 60000;
+const DOWNLOAD_FOLDER = 'e';
 
 const LOADED = {};
 
@@ -38,16 +39,16 @@ async function getView(browser, key) {
 
 function saveFile(key, jsnShaderStr) {
   return new Promise((resolve) => {
-    let fileName = path.join(__dirname, "shadertoy", key + ".json");
+    let fileName = path.join(__dirname, DOWNLOAD_FOLDER, key + ".json");
     const testName = path.join(
       __dirname,
-      "shadertoy",
+      DOWNLOAD_FOLDER,
       (key + ".json").toLocaleLowerCase()
     );
     if (fs.existsSync(testName)) {
       fileName = path.join(
         __dirname,
-        "shadertoy",
+        DOWNLOAD_FOLDER,
         key + ".json" + "_" + Date.now()
       );
     }
@@ -61,12 +62,12 @@ function saveFile(key, jsnShaderStr) {
           resolve();
         });
       }
-    } catch (error) {}
+    } catch (error) { }
   });
 }
 
 async function getList(n, total) {
-  const browser = await puppeteer.launch({ timeout: TIMEOUT });
+  const browser = await puppeteer.launch({ timeout: TIMEOUT, headless: 'new' });
   const page = await browser.newPage();
   const listURL = `https://www.shadertoy.com/results?query=&sort=newest&from=${n}&num=${total}`;
   await page.goto(listURL, { timeout: TIMEOUT });
@@ -103,7 +104,7 @@ async function getList(n, total) {
   return len;
 }
 
-const NUM = 74424;
+const NUM = 74436;
 const PAGE = 12;
 async function batch() {
   for (let i = 0; i < 10; i++) {
@@ -116,7 +117,7 @@ async function batch() {
 }
 
 async function recordLoaded() {
-  const folder = path.join(__dirname, "shadertoy");
+  const folder = path.join(__dirname, DOWNLOAD_FOLDER);
   const files = fs.readdirSync(folder);
   files.forEach((f) => {
     if (f.endsWith(".json")) {

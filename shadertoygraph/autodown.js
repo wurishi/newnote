@@ -3,7 +3,7 @@ const path = require("path");
 const fs = require("fs");
 
 const TIMEOUT = 60000;
-
+const DOWNLOAD_FOLDER = "e";
 const LOADED = {};
 
 async function getView(browser, key) {
@@ -38,16 +38,16 @@ async function getView(browser, key) {
 
 function saveFile(key, jsnShaderStr) {
   return new Promise((resolve) => {
-    let fileName = path.join(__dirname, "shadertoy", key + ".json");
+    let fileName = path.join(__dirname, DOWNLOAD_FOLDER, key + ".json");
     const testName = path.join(
       __dirname,
-      "shadertoy",
+      DOWNLOAD_FOLDER,
       (key + ".json").toLocaleLowerCase()
     );
     if (fs.existsSync(testName)) {
       fileName = path.join(
         __dirname,
-        "shadertoy",
+        DOWNLOAD_FOLDER,
         key + ".json" + "_" + Date.now()
       );
     }
@@ -121,7 +121,7 @@ async function batch(count = 10) {
 }
 
 async function recordLoaded() {
-  const folder = path.join(__dirname, "shadertoy");
+  const folder = path.join(__dirname, DOWNLOAD_FOLDER);
   const files = fs.readdirSync(folder);
   files.forEach((f) => {
     if (f.endsWith(".json")) {

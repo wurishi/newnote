@@ -3,7 +3,6 @@ const path = require("path");
 const fs = require("fs");
 
 const TIMEOUT = 60000;
-const DOWNLOAD_FOLDER = 'e';
 
 const LOADED = {};
 
@@ -39,16 +38,16 @@ async function getView(browser, key) {
 
 function saveFile(key, jsnShaderStr) {
   return new Promise((resolve) => {
-    let fileName = path.join(__dirname, DOWNLOAD_FOLDER, key + ".json");
+    let fileName = path.join(__dirname, "shadertoy", key + ".json");
     const testName = path.join(
       __dirname,
-      DOWNLOAD_FOLDER,
+      "shadertoy",
       (key + ".json").toLocaleLowerCase()
     );
     if (fs.existsSync(testName)) {
       fileName = path.join(
         __dirname,
-        DOWNLOAD_FOLDER,
+        "shadertoy",
         key + ".json" + "_" + Date.now()
       );
     }
@@ -62,12 +61,12 @@ function saveFile(key, jsnShaderStr) {
           resolve();
         });
       }
-    } catch (error) { }
+    } catch (error) {}
   });
 }
 
 async function getList(n, total) {
-  const browser = await puppeteer.launch({ timeout: TIMEOUT, headless: 'new' });
+  const browser = await puppeteer.launch({ timeout: TIMEOUT, headless: "new" });
   const page = await browser.newPage();
   const listURL = `https://www.shadertoy.com/results?query=&sort=newest&from=${n}&num=${total}`;
   await page.goto(listURL, { timeout: TIMEOUT });
@@ -81,7 +80,12 @@ async function getList(n, total) {
     const arr = (href + "").split("/");
     return arr.at(-1);
   });
-  keys = keys.filter((k) => !LOADED[k]);
+  keys = keys.filter((k) => {
+    if (k) {
+      return !LOADED[k];
+    }
+    return false;
+  });
   console.log(n, " keys:", keys);
 
   const len = keys.length;
@@ -104,10 +108,10 @@ async function getList(n, total) {
   return len;
 }
 
-const NUM = 74436;
+const NUM = 72216;
 const PAGE = 12;
-async function batch() {
-  for (let i = 0; i < 10; i++) {
+async function batch(count = 10) {
+  for (let i = 0; i < count; i++) {
     let num = NUM - i * PAGE;
     let tmp = await getList(num, PAGE);
     if (tmp > 0) {
@@ -117,7 +121,7 @@ async function batch() {
 }
 
 async function recordLoaded() {
-  const folder = path.join(__dirname, DOWNLOAD_FOLDER);
+  const folder = path.join(__dirname, "shadertoy");
   const files = fs.readdirSync(folder);
   files.forEach((f) => {
     if (f.endsWith(".json")) {
@@ -129,5 +133,4 @@ async function recordLoaded() {
 
 recordLoaded();
 
-getList(NUM, PAGE);
-// batch();
+batch(1);

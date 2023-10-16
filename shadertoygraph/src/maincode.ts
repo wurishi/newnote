@@ -38,6 +38,7 @@ function init() {
     const arr = key.split('/');
     const name = arr.at(-1)!.split('.')[0];
     const code = name.split('_')[0];
+    const nameStr = (Names as any)[code] || name;
     shaderNames[(Names as any)[code] || name] = name;
     shaders[name] = configs[key];
   });
@@ -599,6 +600,26 @@ function lazyInit(
       div.innerHTML = `全部 visited (${noVisitCount})`;
     } catch (exp) { }
   }, 1000);
+
+  const searchList = rootDOM.querySelector('#searchList');
+  const slist = rootDOM.querySelector('#slist');
+  if (searchList && slist) {
+    searchList.addEventListener('change', () => {
+      const searchName = (searchList as any).value;
+      const value = nameToValue[searchName];
+      if (value) {
+        gui.setValue(value);
+      } else {
+        console.warn('search error: ', searchName);
+      }
+    })
+
+    Object.keys(nameToValue).forEach(item => {
+      const opt = document.createElement('option');
+      opt.value = item;
+      slist.appendChild(opt);
+    })
+  }
 }
 
 const textureMap: any = {

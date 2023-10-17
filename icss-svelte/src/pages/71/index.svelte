@@ -1,20 +1,9 @@
 <script lang="ts">
-    import { onMount } from "svelte";
-
-    onMount(() => {
-        const list = document.querySelector("#list");
-        if (list) {
-            for (let i = 0; i < 10; i++) {
-                const opt = document.createElement("option");
-                opt.value = "Item" + i;
-                list.appendChild(opt);
-            }
-        }
-    });
+    import C2 from './71.2.svelte';
+    import C3 from './71.3.svelte';
 </script>
 
-<input list="list" on:change={() => console.log("chang")} />
-<datalist id="list">
-    <option value="Apple" />
-    <option value="Ab" />
-</datalist>
+<C2 />
+<hr />
+<C3 />
+<hr />

@@ -108,11 +108,14 @@ async function getList(n, total) {
   return len;
 }
 
-const NUM = 72216;
+const current = 1;
+const NUM = 68340;
 const PAGE = 12;
+
 async function batch(count = 10) {
   for (let i = 0; i < count; i++) {
     let num = NUM - i * PAGE;
+    console.log(`${num} (${i}/${count})`);
     let tmp = await getList(num, PAGE);
     if (tmp > 0) {
       await getList(num, PAGE); // retry
@@ -131,6 +134,26 @@ async function recordLoaded() {
   });
 }
 
-recordLoaded();
+function fixFile() {
+  const folder = path.join(__dirname, DOWNLOAD_FOLDER);
+  const files = fs.readdirSync(folder);
+  const map = {};
+  files.forEach((file) => {
+    if (file.includes(".json_")) {
+      const arr = file.split("_");
+      const testKey = arr[0].toLocaleLowerCase();
+      if (!map[testKey]) {
+        const oldPath = path.join(folder, file);
+        const newPath = path.join(folder, arr[0]);
+        fs.renameSync(oldPath, newPath);
+      }
+      map[testKey] = true;
+    }
+  });
+}
 
-batch(1);
+fixFile();
+
+// recordLoaded();
+
+// batch(current);

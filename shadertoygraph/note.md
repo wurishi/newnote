@@ -270,10 +270,10 @@ XslGRn Nyan and Britney Take London
 
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=59640&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=58560&num=12
 
-4971
+4881
 /
-6634
+6647
 
-Xl2fzV 6. Raytracing
+lsyyRG Archimedean spiral

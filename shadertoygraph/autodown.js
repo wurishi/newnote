@@ -108,8 +108,8 @@ async function getList(n, total) {
   return len;
 }
 
-const current = 1;
-const NUM = 68340;
+const current = 101;
+const NUM = 55500;
 const PAGE = 12;
 
 async function batch(count = 10) {
@@ -152,8 +152,11 @@ function fixFile() {
   });
 }
 
-fixFile();
+(() => {
+  // fixFile();
+  // return;
 
-// recordLoaded();
+  recordLoaded();
 
-// batch(current);
+  batch(current);
+})();

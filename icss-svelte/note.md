@@ -4022,3 +4022,22 @@ return (
 
 - 它会生成一个自己的新的堆叠上下文（It becomes a stacking context），也就是说它会改变它的子元素的 `absolute` 定位和 `fixed` 定位的基准
 - 它会成新的格式化上下文（It becomes a new formatting context），也就是说，元素外部的布局不会再影响它的子元素。
+
+# 72. 动态高度过渡动画
+
+## 72.1 `transition` 不支持 `height: auto`
+
+当我们期望容器高度自适应内容时，会设置 `height: unset` 或 `height: auto`（`unset` 与 `auto` 相同）。但是 CSS transtion 不支持元素的高度为 `auto` 的变化。
+
+如果将 `auto` 设置成一个具体的高度值，过渡转换就会生效。
+
+## 72.2 巧用 `max-height` 适配动态高度
+
+将 `height: 0` 改成 `max-height: 0`，再将 `height: auto` 替换成 `max-height: 1000px`，利用 `max-height` 支持 transition 来实现过渡动画。
+
+但这里也有两个缺陷：
+
+- 如果实际场景中需要使用到 `max-height`，那么就无法用这个方法来代替了。
+- 另外就是视觉上有延迟，`max-height` 的值与实际高度相差越大越明显。比如实际高度是 `200px`，而 `max-height` 设置为 `1000px`，动画时间为 `1s`，缓动函数为 `linear`。那么实际动画从 0 到 200px 的时候动画就停止了，而动画时间只过去了 0.2秒。
+
+# 73. 边框动画

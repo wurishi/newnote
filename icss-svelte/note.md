@@ -4107,5 +4107,17 @@ return (
 
 ## 75.3 旋转元素角度
 
+# 76. transition 技巧与细节
+
+## 76.1 并非所有属性都支持 transition
+
+另外，即使是支持 `transition` 的属性，在某些特定状态下，也会不支持。比如 `height: auto` 和 `width: auto`。
+
+## 76.2 精细化控制每一个属性
+
+## 76.3 动态改变 `transition-duration`
+
+## 76.4 Snow Scratch
+
 
 

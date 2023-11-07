@@ -31,6 +31,7 @@
     }
     legend {
         padding: 0 10px;
+        margin-left: 0;
     }
 
     fieldset:nth-of-type(2) {

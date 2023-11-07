@@ -4071,3 +4071,27 @@ return (
 ## 73.9 `border-image`
 
 ## 73.10 `border-image` 使用渐变
+
+# 74. 标签 `fieldset` 与 `legend`
+
+## 74.1 了解 `<fieldset>` 与 `<legend>`
+
+通常而言，`<fieldset>` 与 `<legend>` 常用在表单中。
+
+- `<fieldset>` : 用于对表单中的控制元素进行分组。
+- `<legend>` : 在 `<fieldset>` 中内置一个 `<legend>` 作为 `fieldset` 的标题。
+
+比较有意思的点在于，如果给 `fieldset` 设置了 `border` 边框，则 `legend` 元素内的内容则会作为分组的标题，嵌入 `border` 内。
+
+## 74.2 控制 `legend` 的位置及样式
+
+对于 `legend` 的位置和样式，是可以进行控制的。
+
+对于位置，可以通过 `margin` 和父元素的 `padding` 进行控制，如果父元素 `<fieldset>` 不设置 `padding`，`legend` 不设置 `margin`，则 `<legend>` 默认定位在最左侧。所以可以通过改变 `legned` 的 `margin` 或父元素的 `padding-left` 控制标题的初始位置。
+
+通过控制 `legned` 的 `padding`，可以增加周围元素的区域，控制留白的多少。
+
+## 74.3 标题两侧横线
+
+## 74.4 边框嵌套文字
+

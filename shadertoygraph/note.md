@@ -270,10 +270,10 @@ XslGRn Nyan and Britney Take London
 
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=48240&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=47220&num=12
 
-4021
+3936
 /
-6675
+6690
 
 BlinkStar 

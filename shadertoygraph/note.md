@@ -270,10 +270,10 @@ XslGRn Nyan and Britney Take London
 
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=47220&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=46020&num=12
 
-3936
+3836
 /
 6690
 
-BlinkStar 
+WtcGD7 Sake shader （blend color） 

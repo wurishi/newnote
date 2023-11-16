@@ -270,10 +270,10 @@ XslGRn Nyan and Britney Take London
 
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=44460&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=43260&num=12
 
 3706
 /
 6697
 
-tdGBDt Smooth Minimum - gradient 2D
+wsscR2 Neighbor bound tracking

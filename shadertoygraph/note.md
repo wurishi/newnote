@@ -270,10 +270,10 @@ XslGRn Nyan and Britney Take London
 
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=46020&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=44460&num=12
 
-3836
+3706
 /
-6690
+6697
 
-WtcGD7 Sake shader （blend color） 
+tdGBDt Smooth Minimum - gradient 2D

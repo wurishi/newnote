@@ -108,8 +108,8 @@ async function getList(n, total) {
   return len;
 }
 
-const current = 103;
-const NUM = 30204;
+const current = 101;
+const NUM = 28980;
 const PAGE = 12;
 
 async function batch(count = 10) {
@@ -131,6 +131,8 @@ async function doGetList(num, retry = 1) {
       console.log(`retry ${num}`, error);
       await doGetList(num, retry + 1);
     }
+  } else {
+    throw new Error("max retry", num);
   }
 }
 

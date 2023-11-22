@@ -108,17 +108,28 @@ async function getList(n, total) {
   return len;
 }
 
-const current = 101;
-const NUM = 55500;
+const current = 103;
+const NUM = 30204;
 const PAGE = 12;
 
 async function batch(count = 10) {
   for (let i = 0; i < count; i++) {
     let num = NUM - i * PAGE;
     console.log(`${num} (${i}/${count})`);
-    let tmp = await getList(num, PAGE);
-    if (tmp > 0) {
-      await getList(num, PAGE); // retry
+    await doGetList(num);
+  }
+}
+
+async function doGetList(num, retry = 1) {
+  if (retry <= 3) {
+    try {
+      let tmp = await getList(num, PAGE);
+      if (tmp > 0) {
+        await getList(num, PAGE);
+      }
+    } catch (error) {
+      console.log(`retry ${num}`, error);
+      await doGetList(num, retry + 1);
     }
   }
 }

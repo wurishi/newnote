@@ -10,9 +10,13 @@ import { requestFullScreen } from './utils/index';
 import parseGLSL from './parseglsl';
 import liteGraphMain from './litegraph';
 
-const configs = import.meta.glob('../export/*.json');
+// configs
+// const configs = import.meta.glob('../export/*.json');
 
-function init() {
+// assets
+// import assets from './all.json'
+
+function init(assets: string[]) {
   const app = document.querySelector('#app')!;
   const tools = document.querySelector('#tools')!;
 
@@ -34,14 +38,31 @@ function init() {
   const mainFolder = gui.addFolder('主菜单');
   const shaders: Record<string, any> = {};
   let shaderNames: Record<string, string> = {};
-  Object.keys(configs).forEach((key) => {
-    const arr = key.split('/');
-    const name = arr.at(-1)!.split('.')[0];
-    const code = name.split('_')[0];
+  // configs
+  // Object.keys(configs).forEach((key) => {
+  //   const arr = key.split('/');
+  //   const name = arr.at(-1)!.split('.')[0];
+  //   const code = name.split('_')[0];
+  //   const nameStr = (Names as any)[code] || name;
+  //   shaderNames[(Names as any)[code] || name] = name;
+  //   shaders[name] = configs[key];
+  // });
+  // assets
+  assets.forEach(key => {
+    const name = key.split('.')[0];
+    const code = key.split('_')[0];
     const nameStr = (Names as any)[code] || name;
-    shaderNames[(Names as any)[code] || name] = name;
-    shaders[name] = configs[key];
-  });
+    shaderNames[nameStr] = name;
+    shaders[name] = () => {
+      return new Promise(resolve => {
+        fetch(getAssetsUrl('/' + key)).then(res => {
+          res.json().then(raw => {
+            resolve({default: raw});
+          })
+        })
+      })
+    };
+  })
   let prevGUI: GUI;
   const setCurrent = (config: any) => {
     const info = createInfo(config);
@@ -92,8 +113,15 @@ function init() {
     setCurrent,
   };
 }
-const { gui, setCurrent } = init();
-liteGraphMain({ gui, setCurrent });
+
+(() => {
+  fetch(getAssetsUrl('/all.json')).then(res => {
+    res.json().then(asset => {
+      const { gui, setCurrent } = init(asset);
+      liteGraphMain({ gui, setCurrent });
+    })
+  })
+})()
 
 function musicCallback(wave: Uint8Array, passID: number) { }
 

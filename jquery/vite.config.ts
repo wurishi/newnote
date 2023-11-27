@@ -16,6 +16,7 @@ export default defineConfig({
             input: {
                 index: path.resolve(__dirname, 'index.html'),
                 ready: path.resolve(__dirname, 'ready.html'),
+                name: path.resolve(__dirname, 'name.html'),
             },
         }
     }

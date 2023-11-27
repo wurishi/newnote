@@ -1,6 +1,7 @@
 const puppeteer = require("puppeteer");
 const path = require("path");
 const fs = require("fs");
+const process = require("process");
 
 const TIMEOUT = 60000;
 const DOWNLOAD_FOLDER = "e";
@@ -109,7 +110,7 @@ async function getList(n, total) {
 }
 
 const current = 101;
-const NUM = 28980;
+const NUM = 24456;
 const PAGE = 12;
 
 async function batch(count = 10) {
@@ -132,7 +133,7 @@ async function doGetList(num, retry = 1) {
       await doGetList(num, retry + 1);
     }
   } else {
-    throw new Error("max retry", num);
+    process.abort();
   }
 }
 

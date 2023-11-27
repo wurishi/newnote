@@ -1,3 +1,5 @@
+proxy port 22225 (jquery)
+
 # antvg2
 
 [参考资料](https://antv-g2.gitee.io/zh/docs/manual/about-g2)
@@ -80,6 +82,9 @@ electron
 # jest
 
 [参考资料](https://jestjs.io/docs/zh-Hans/getting-started) _(进行中 2/4)_
+
+# jquery
+[参考资料](https://learn.jquery.com/about-jquery/)
 
 # jsgenerator
 

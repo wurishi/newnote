@@ -107,4 +107,99 @@ $('tr:odd');
 $('#myForm :input'); // 所有 #myForm 中的类似 input 的元素 (包含 input, button, select 等)
 
 $('div:visible');
+$('div:hidden');
+// jQuery 并非是依赖 CSS 的 visibility, opacity 或 display 来判断元素是否显示的，除以下几种情况外都会被认定为可见元素：
+// display: none;
+// type="hidden" 的表单元素
+// width 和 height 为 0
+// 隐藏的父元素
+
+$('div:gt(2)'); // 从第三个开始之后的所有 div
+
+$('div:animated'); // 动画已经播放完的 div
 ```
+
+### 2. 是否包含某个元素
+
+```js
+if ($('div.foo')) {} // 错误的方法，因为 $() 始终会返回一个对象
+if ($('div.foo').length) {} // 正确的方法，长度为 0 时，表示没有此元素
+```
+
+### 3. 缓存查询结果
+
+jQuery 并不会缓存查询结果
+
+```js
+const divs = $('div');
+```
+
+如果要经常性的使用查询结果，应该使用一个变量把它缓存下来。不过需要注意的是，当 DOM 发生改变时，需要再次调用 `$()` 查询。
+
+### 4. Refining & Filtering Selections
+
+```js
+$('div.foo').has('p'); // div.foo 是否包含 p 标签
+$('h1').not('.bar'); // classname 中没有 bar 的 h1 标签
+$('ul li').filter('.current'); // classname 为 current 的 ul li 标签
+$('ul li').first(); // 第一个
+$('ul li').eq(5); // 第六个
+```
+
+### 5. Selecting Form
+
+```js
+$('form :checked'); // :checked 对 checkboxes, radio buttons, selects 有效
+$('form :disabled'); // input 标签是否被设置了 disabled ，这种写法性能更好，也可以用 $('form input').filter(':disabled') 代替
+$('form :enabled'); // 与 :disabled 相对的，是查找没有被设置 disabled 属性的元素
+$('form :input'); // 包含 input, textarea, select, button 等元素
+$('form :selected'); 
+// :password
+// :reset
+// :radio
+// :text
+// :submit
+// :checkbox
+// :button
+// :image
+// :file
+```
+
+## Working with Selections
+
+```js
+$('h1').html('hello world'); // setter
+$('h1').html() // getter 'hello world'
+```
+
+要注意的是 jQuery 支持链式调用，即可以这样：`$('h1').find('h3').eq(2).html('html')`。
+
+但像 `html()` 这种支持 `setter/getter` 的方法，只有在 `setter()` 时才支持链接调用，也就是说下面这种写法是不对的：
+
+```js
+$('h1').html().addClass('test'); // 不支持
+```
+
+此外，如果使用了 `eq()` 之后想要返回到上一级，可以使用 `end()` 方法：
+
+```js
+$('#content')
+    .find('h3')
+    .eq(2)
+        .html('h3')
+        .end() // 恢复到 #content 的所有 h3 的 selector 下
+    .eq(0)
+        .html('first h3');
+```
+
+## Manipulating Elements
+
+### 1. Getting and Setting
+
+- `.html()` - 获取或设置元素的 HTML 内容
+- `.text()` - 获取或设置元素的 text 内容，HTML 将会被删除
+- `.attr()` - 
+- `.width()`
+- `.height()`
+- `.position()`
+- `.val()`

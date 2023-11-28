@@ -73,6 +73,68 @@ type MyPick<T, K extends keyof T> = {[遍历 K]: T对应的值}
 type MyPick<T, K extends keyof T> = {[key in K]: T[key]}
 ```
 
+# 6. 简单的 Vue 类型
+
+实现类似 Vue 的类型支持的简化版本
+
+假设 `SimpleVue` 只接受带有 `data, computed, methods` 字段的 Object 作为其唯一参数
+
+- `data` 是一个简单的函数，它返回一个提供上下文 `this` 的对象，无法在 `data` 中获取其他的计算属性或方法。
+- `computed` 将 `this` 作为上下文的函数对象，进行一些计算并返回结果。在上下文中应该暴露计算出的值而不是函数。
+- `methods` 是函数的对象，其上下文也是 `this`。函数可以访问 `data, computed, 其他 methods` 中暴露的字段。与 `computed` 不同之处在于 `methods` 在上下文中按原样暴露为函数。
+
+```ts
+const instance = SimpleVue({
+    data() {
+        return {
+            firstname: 'Type',
+            lastname: 'Challenges',
+            amount: 10,
+        }
+    },
+    computed: {
+        fullname() {
+            return this.firstname + ' ' + this.lastname;
+        }
+    },
+    methods: {
+        hi() {
+            alert(this.fullname.toLowerCase());
+        }
+    }
+})
+```
+
+```ts
+declare function SimpleVue(options: any): any
+// 1. D, C, M 分别对应 data, computed, methods
+declare function SimpleVue<D, C, M>(options: Option<D, C, M>): Option<D, C, M>
+// 2. 定义 Option，先添加 data
+type Option<D, C, M> = {
+    data? : D,
+}
+// 3. 再添加 computed ，用 ThisType 约束 computed 中的 this
+type Option<D, C, M> = {
+    data? : D,
+    computed?: C & ThisType<D>,
+}
+// 4. 此时 computed 访问到的 data 类型可能是传入的函数，需要转换成返回的类型
+type Option<D, C, M> = {
+    //...
+    computed? : C & ThisType<D extends () => infer R ? R : D>,
+    // 也可以用 ReturnType<D> 代替 R
+}
+// 5. 添加 methods
+type Option<D, C, M> = {
+    //...
+    methods?: M & ThisType<
+        (D extends () => infer R ? R : D) // 类似 computed 处理 data 的方式
+        & {[K in keyof C]: C[K] extends (...args: never[]) => any ? ReturnType<C[K]> : C[K]} // computed 需要从 Record<string, function> 转换成 Record<string, ReturnType<fun>>
+        & M // methods 还能访问其他的方法
+    >
+}
+```
+
 # 7. 对象属性只读
 
 不使用内置的 `Readonly<T>`，自己实现一个

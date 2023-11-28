@@ -125,5 +125,98 @@ type Length<T extends readonly any[]> = any
 type Length<T extends readonly any[]> = 访问 T 的长度属性 
 // 4. 
 type Length<T extends readonly any[]> = T['length']
-// 5. 
+// 5. 如果要检测 T 是否有 length 属性，可以写成这样
+type Length<T extends readonly any[]> = T extends { length: infer L } ? L : never
+```
+
+# 43. 实现 Exclude
+
+实现内置的 `Exclude<T, U>` 类型
+
+`Exclude<T, U>：从联合类型 T 中排除 U 中的类型，来构造一个新的类型`
+
+```ts
+type Result = MyExclude<'a' | 'b' | 'c', 'a'> // 'b' | 'c'
+```
+
+```ts
+type MyExclude<T, U> = any
+// 1.
+type MyExclude<T, U> = 只要 T 是继承于 U 就返回 never 否则返回 T
+// 2.
+type MyExclude<T, U> = T extends U ? never : T
+```
+
+# 189. Awaited
+
+假如有一个 Promise 对象，这个 Promise 对象会返回一个类型。在 TS 中，使用 Promise<T> 中的 T 来描述这个返回的类型。
+
+实现一个类型，可以获取这个 T 类型
+
+```ts
+type ExampleType = Promise<string>
+
+type Result = MyAwaited<ExampleType> // string
+```
+
+```ts
+type MyAwaited<T> = any
+// 1. 使用 PromiseLike
+type MyAwaited<T> = T extends PromiseLike<infer U> ? U : never
+// 2. 这种写法无法解决 type Z = Promise<Promise<string | number>> 即 Promise<T> T 又是一个 Promise
+type MyAwaited<T> = T extends PromiseLike<infer U>
+    ? 如果 U 又是一个 Promise
+    : never
+// 3.
+type MyAwaited<T> = T extends PromiseLike<infer U>
+    ? U extends PromiseLike<unknow>
+        ? MyAwaited<U>
+        : U
+    : never
+// 4. 如果不能使用 PromiseLike 就自己定义一个
+type Thenable<T> = { then: (onfulfilled: (...args: T[]) => unknown ) => unknown }
+type ExtendedPromise<T> = Promise<T> | Thenable<T> // Promise<T> 或者任何有 .then 的类型
+type MyAwaited<T> = T extends ExtendedPromise<infer U>
+    ? U extends ExtendedPromise<unknow>
+        ? MyAwaited<U>
+        : U
+    : never
+```
+
+# 268. If
+
+实现一个 `If` 类型，`If<C, T, F>` 接收一个条件类型 `C`，判断为真时返回 `T`，判断为假时返回 `F`。`C` 只能是 `true / false`
+
+```ts
+type A = If<true, 'a', 'b'> // a
+type B = If<false, 'a', 'b'> // b
+```
+
+```ts
+type If<C, T, F> = any
+// 1. 使用三元
+type If<C extends boolean, T, F> = C extends true ? T : F
+```
+
+要特别注意 boolean 他作为类型时，是个联合类型
+
+```ts
+type Q = boolean extends true ? 1 : 2 // return 2
+// 因为 boolean = true | false
+// (true extends true === true) &&( false extends true === false)
+// true && false === false
+```
+
+# 533. Concat
+
+在 TS 中实现 JavaScript 内置的 `Array.concat` 方法，这个类型接受两个参数，返回的新数组类型应该是按照输入参数从左到右的顺序合并为一个新的数组
+
+```ts
+type Result = Concat<[1], [2]> // [1, 2]
+```
+
+```ts
+type Concat<T, U> = any
+// 1. 利用 ... 解构运算符
+type Concat<T extends unknown[], U extends unknown[]> = [...T, ...U]
 ```

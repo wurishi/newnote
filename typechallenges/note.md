@@ -1,5 +1,8 @@
 https://github.com/type-challenges/type-challenges/blob/main/README.zh-CN.md
 
+国内镜像：
+https://hub.yzuu.cf/type-challenges/type-challenges/blob/main/questions/00005-extreme-readonly-keys/README.zh-CN.md
+
 # 2. 获取函数返回类型
 
 不使用 `ReturnType` 实现 TS 的 `ReturnType<T>` 泛型
@@ -71,6 +74,41 @@ type MyPick<T, K extends keyof T> = any
 type MyPick<T, K extends keyof T> = {[遍历 K]: T对应的值}
 // 4.
 type MyPick<T, K extends keyof T> = {[key in K]: T[key]}
+```
+
+# 5. 获取只读字段
+
+实现泛型 `GetReadonlyKeys<T>`, 它返回由对象 T 所有的只读属性的键组成的联合类型
+
+```ts
+interface Todo {
+    readonly title: string
+    readonly description: string
+    completed: boolean
+}
+type Keys = GetReadonlyKeys<Todo> // title | description
+```
+
+```ts
+type GetReadonlyKeys<T> = any
+// 1. 需要返回联合类型
+type GetReadonlyKeys<T> = keyof {
+    [不是readonly的K]: T[K]
+}
+// 2. 
+type GetReadonlyKeys<T> = keyof {
+    [K in keyof T as K是不是readonly extends true ? K : never]: T[K]
+}
+// 3.
+type GetReadonlyKeys<T> = keyof {
+    [K in keyof T as Equal<Pick<T, K>, Readonly<Record<K, T[K]>>> extends true ? K : never]: T[K]
+}
+// 4. Pick<T, K>, Readonly<Record<K, T[K]>> 再加上 Equal 导致符号太多
+// 定义一个 U extends T = Readonly<T>
+// Pick<T, K>, Pick<U, K>
+type GetReadonlyKeys<T, U extends T = Readonly<T>> = keyof {
+    [K in keyof T as Equal<Pick<T, K>, Pick<U, K>> extends true ? K : never]: T[K]
+}
 ```
 
 # 6. 简单的 Vue 类型

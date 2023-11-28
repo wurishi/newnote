@@ -77,3 +77,53 @@ type TupleToObject<T extends readonly any[]> = {
 ```
 
 # 13. Hello World
+
+# 14. 第一个元素
+
+实现一个 `First<T>` 泛型，它接受一个数组 `T` 并返回它的第一个元素的类型
+
+```ts
+type arr1 = ['a', 'b', 'c']
+type arr2 = [3, 2, 1]
+
+type head1 = First<arr1> // 'a'
+type head2 = First<arr2> // 3
+```
+
+```ts
+type First<T extends any[]> = any
+// 1. 取第一项
+type First<T extends any[]> = T[0] 
+// 2. 上面的定义在 Expect<Equal<First<[]>, never>> 时会报错, 所以需要一些手段判断传入元组是否为空
+// 2.1 如果是空数组返回 never 否则返回 T[0]
+type First<T extends any[]> = T extends [] ? never : T[0]
+// 2.2 如果 'length' 为 0 返回 never 否则返回 T[0]
+type First<T extends any[]> = T['length'] extends 0 ? never : T[0]
+// 2.3 如果是 [F, ...rest] 则返回 F 否则返回 never
+type First<T extends any[]> = T extends [infer F, ...infer Rest] ? F : never
+```
+
+# 18. 获取元组长度
+
+创建一个 `Length` 泛型，这个泛型只接受一个只读的元组，并返回这个元组的长度
+
+```ts
+type tesla = ['tesla', 'model 3']
+type spaceX = [1, 2, 3]
+
+type teslaLength = Length<tesla> // 2
+type spaceXLength = Length<spaceX> // 3
+```
+
+```ts
+type Length<T> = any
+// 1. 
+type Length<T只接受一个只读元组> = any
+// 2. 
+type Length<T extends readonly any[]> = any
+// 3.
+type Length<T extends readonly any[]> = 访问 T 的长度属性 
+// 4. 
+type Length<T extends readonly any[]> = T['length']
+// 5. 
+```

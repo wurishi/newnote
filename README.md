@@ -234,6 +234,10 @@ https://shadertoyunofficial.wordpress.com/
 - fundamentals: [fundamentals](https://threejsfundamentals.org/threejs/lessons/zh_cn/) (*进行中*)
 - webgl - webglfundamentals: [webglfundamentals](https://webglfundamentals.org/webgl/lessons/zh_cn/)
 
+# typechallenges
+
+参考资料：[type-challenges](https://github.com/type-challenges/type-challenges/blob/main/README.zh-CN.md)
+
 # typescripttips
 
 TS小技巧

@@ -196,10 +196,58 @@ $('#content')
 
 ### 1. Getting and Setting
 
-- `.html()` - 获取或设置元素的 HTML 内容
-- `.text()` - 获取或设置元素的 text 内容，HTML 将会被删除
-- `.attr()` - 
-- `.width()`
-- `.height()`
-- `.position()`
-- `.val()`
+- `.html()` - 获取或设置元素的 html 内容
+- `.text()` - 获取或设置元素的 text 内容，html 将会被删除
+- `.attr()` - 获取或设置元素的属性
+- `.width()` - 获取或设置元素的宽（像素）
+- `.height()` - 获取或设置元素的高（像素）
+- `.position()` - 获取元素的位置（仅只读）
+- `.val()` - 获取或设置 Form 元素的值
+
+要注意的是上述方法的 Setting 是针对查询到的所有元素进行操作的，所以在 set 时最好是使用 `first eq` 等指定到具体的元素。
+
+### 2. Moving, Copying, and Removing Elements
+
+- `$('a').after($('b'))` - a 的后面是 b: a -> b
+- `$('a').insertAfter($('b'))` - a 插入到 b 的后面 b -> a
+- `insertBefore()`
+- `before()`
+- `appendTo()`
+- `append()`
+- `prependTo()`
+- `prepend()`
+- `clone()` - 克隆元素
+- `remove()` - 删除元素包括事件监听
+- `detach()` - 暂时删除元素，将元素重新放回页面时之前的事件监听仍然保留
+
+### 3. Creating New Elements
+
+```js
+$('<p>content</p>');
+$('<a />', {
+    html: '<strong>link</strong> content',
+    'class': 'new',
+    href: 'foo.html',
+});
+// 要注意的是，每次添加一个 DOM 是非常消耗资源的事情，如果想要加入多个元素，应该试着将他们聚合在一起一次性提交，比如说这样：
+const myItems = [];
+for (let i = 0; i < 100; i++) {
+    myItems.push(`<li>${i}</li>`);
+}
+$('ul').append(myItems.join(''));
+```
+
+### 4. Manipulating Attributes
+
+```js
+$('a').attr('herf', 'foo.html');
+$('a').attr({
+    href: 'foo.html',
+    rel: 'nofollow',
+});
+$('a').attr({
+    href: function(idx, href) {
+        return '/new/' + href;
+    }
+});
+```

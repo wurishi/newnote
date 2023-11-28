@@ -270,10 +270,10 @@ XslGRn Nyan and Britney Take London
 
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=21000&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=19800&num=12
 
-1751
+1651
 /
 6740
 
-fsjBzw shiny scales
+ElectronicGems 

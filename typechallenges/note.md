@@ -1,5 +1,52 @@
 https://github.com/type-challenges/type-challenges/blob/main/README.zh-CN.md
 
+# 2. 获取函数返回类型
+
+不使用 `ReturnType` 实现 TS 的 `ReturnType<T>` 泛型
+
+```ts
+const fn = (v: boolean) => v ? 1 : 2
+type a = MyReturnType<typeof fn> // 1 | 2
+```
+
+```ts
+type MyReturnType<T> = any
+// 1. 通过 infer 推断函数返回类型并返回
+type MyReturnType<T> = T extends (...args: any[]) => infer R ? R : never
+// 2. any 可能不雅观，改成 unknown
+type MyReturnType<T> = T extends (...args: unknown[]) => infer R ? R : never
+// 3. unknown 也不好，改成 never
+type MyReturnType<T> = T extends (...args: never[]) => infer R ? R : never
+```
+
+# 3. 实现 Omit
+
+不使用 `Omit` ，实现 TS 中的 `Omit<T, K>` 泛型
+
+`Omit<T, K>` 会创建一个省略 `K` 中字段的 T 对象
+
+```ts
+interface Todo {
+    title: string
+    description: string
+    completed: boolean
+}
+
+type TodoPreview = MyOmit<Todo, 'description' | 'title'> // {completed: boolean}
+```
+
+```ts
+type MyOmit<T, K> = any
+// 1.
+type MyOmit<T, K> = {
+    [key in keyof T extends K ? never : key]: T[key]
+}
+// 2. 会报一个错误：'key' has a circular constraint
+type MyOmit<T, K> = {
+    [key in keyof T as key extends K ? never : key]: T[key]
+}
+```
+
 # 4. 实现 Pick
 
 不使用 `Pick<T, K>`，实现 TS 内置的 `Pick<T, K>` 功能
@@ -209,7 +256,7 @@ type Q = boolean extends true ? 1 : 2 // return 2
 
 # 533. Concat
 
-在 TS 中实现 JavaScript 内置的 `Array.concat` 方法，这个类型接受两个参数，返回的新数组类型应该是按照输入参数从左到右的顺序合并为一个新的数组
+在类型系统中实现 JavaScript 内置的 `Array.concat` 方法，这个类型接受两个参数，返回的新数组类型应该是按照输入参数从左到右的顺序合并为一个新的数组
 
 ```ts
 type Result = Concat<[1], [2]> // [1, 2]
@@ -219,4 +266,88 @@ type Result = Concat<[1], [2]> // [1, 2]
 type Concat<T, U> = any
 // 1. 利用 ... 解构运算符
 type Concat<T extends unknown[], U extends unknown[]> = [...T, ...U]
+// 2. Concat<typeof tuple, typeof tuple>, [1, 1]> 会报错, 根据错误提示加上 readonly
+type Concat<T extends readonly unknown[], U extends readonly unknown[]> = [...T, ...U]
+```
+
+# 898. Includes
+
+在类型系统里实现 JavaScript 的 `Array.includes` 方法，这个类型接受两个参数，返回的类型要么是 `true`，要么是 `false`
+
+```ts
+type isPillarMen = Includes<['Kars', 'Esidisi'], 'Dio'> // false
+```
+
+```ts
+type Includes<T extends readonly any[], U> = any
+// 1. 一开始是想以三元作为判断
+type Includes<T extends readonly any[], U> = U extends T[number] ? true : false
+// 2. 但对于引用类型，联合类型等测试用例都不过
+type Includes<T extends readonly any[], U> = 在 JS 中可以用一个对象记录 T 里面的所有值，然后遍历 U 看看在不在这个对象中
+// 3.
+type Includes<T extends readonly any[], U> = {
+    [P in T[number]]: true
+}[U] extends true ? true : false
+// 4. 但对于 Includes<[false, 2, 3, 5, 6, 7], false> 和 联合类型仍然有部分测试用例不过
+// 5. 最后只能写一个 IsEqual 帮助类型
+type IsEqual<X, Y> = 
+    (<T>() => T extends X ? 1 : 2) extends
+    (<T>() => T extends Y ? 1 : 2)
+        ? true
+        : false
+// 6. 然后一个一个拿出来比较
+type Includes<T extends readonly any[], U> = T extends [infer First, ...infer Rest]
+    ? IsEqual<First, U> extends true
+        ? true
+        : Includes<Rest, U>
+    : false
+```
+
+# 3057. Push
+
+在类型系统中实现 `Array.push`
+
+```ts
+type Result = Push<[1, 2], '3'> // [1, 2, '3']
+```
+
+```ts
+type Push<T, U> = any
+// 1. 
+type Push<T extends any[], U> = U extends any[] ? [...T, ...U] : [...T, U]
+// 2. 在 boolean 判断时再次发生问题 Push<[1], boolean> => [1, true] || [1, false] 
+type Push<T extends unknown[], U> = [U] extends [T[number]] ? T : [...T, U]
+// 3. 但在碰到 Push<['1', 2, '3', boolean], boolean> 这种情况时，上述方法仍不正确
+```
+
+# 3060. Unshift
+
+在类型系统中实现 `Array.unshift`
+
+```ts
+type Result = Unshift<[1, 2], 0> // [0, 1, 2]
+```
+
+```ts
+type Unshift<T, U> = any
+// 1. 
+type Unshift<T extends unknown[], U> = U extends any[] ? [...U, ...T] : [U, ...T]
+// 2. 同样的 Unshift<[1], boolean> = [1, true] | [1, false]
+type Unshift<T extends unknown[], U> = [U] extends [T[number]] ? T : [U, ...T]
+// 3. 同样的如果 T 中有 U 时，结果不正确
+```
+
+# 3312. Parameters
+
+实现内置的 `Parameters` 类型
+
+```ts
+const foo = (arg1: string, arg2: number): void => {}
+type FunctionParamsType = MyParameters<typeof foo> // [arg1: string, arg2: number]
+```
+
+```ts
+type MyParameters<T extends (...args: any[]) => any> = any
+// 1. 通过 infer 把 ...args: any[] 变成一个内部泛型
+type MyParameters<T extends (...args: any[]) => any> = T extends (...any: infer S) => any ? S : any
 ```

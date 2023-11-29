@@ -406,6 +406,94 @@ type First<T extends any[]> = T['length'] extends 0 ? never : T[0]
 type First<T extends any[]> = T extends [infer F, ...infer Rest] ? F : never
 ```
 
+# 15. 最后一个元素
+
+实现一个 `Last<T>` 泛型，它接受一个数组 `T` 并返回最后一个元素的类型
+
+```ts
+type arr = ['a', 1]
+type tail = Last<arr> // 1
+```
+
+```ts
+type Last<T extends any[]> = any
+// 1. 
+type Last<T extends any[]> = 访问 T 的最后一项
+// 2. 因为只有 T['length'] 可用，但是它访问的是结尾后的一项，所以想办法让 T.length + 1，即整体往后移一格
+type Last<T extends any[]> = [never, ...T][T['length']]
+// 3. 或者用 infer 把数组前面的和最后一项分开
+type Last<T extends any[]> = T extends [...infer R, infer L] ? L : never
+```
+
+# 16. 排除最后一项
+
+实现一个泛型 `Pop<T>`，它接受一个数组 `T` ，并返回一个由数组 T 的前 N-1 项（N 为 T 的长度）以相同的顺序组成的数组。
+
+```ts
+type arr = [3, 2, 1]
+type re = Pop<arr> // [3, 2]
+```
+
+```ts
+type Pop<T extends any[]> = any
+// 1. 
+type Pop<T extends any[]> = T extends [...infer R, any] ? R : never
+// 2. Equal<Pop<[]>, []> 会报错，所以需要针对空数组单独处理
+type Pop<T extends any[]> = T['length'] extends 0
+    ? T
+    : T extends [...infer R, any] ? R : never
+```
+
+实现 `Shift, Push, Unshift`
+
+```ts
+type Shift<T extends any[]> = T extends [infer F, ...infer R] ? R : never
+
+type Push<T extends any[], P> = [...T, P]
+
+type Unshift<T extends any[], P> = [P, ...T]
+```
+
+# 17. 柯里化 1
+
+柯里化是一种将带有多个参数的函数转换为每个带有一个参数的函数序列的技术
+
+```ts
+const add = (a: number, b: number) => a + b
+const three = add(1, 2)
+
+const curriedAdd = Currying(add)
+const five = curriedAdd(2)(3)
+```
+
+传递给 `Curring` 的函数可能有多个参数，需要正确反映它们的类型。这里只要求柯里化后的函数每次仅接受一个参数，接受完所有参数后，应该返回其结果
+
+```ts
+declare function Currying(fn: any): any
+// 1.
+declare function Currying<F>(fn: F): Curried<F>
+// 2.
+type Curried<F> = F extends (...args: infer A) => infer R
+    ? A extends [infer AF, ...infer O]
+        ? (arg: AF) => Curried<(...args: O) => R>
+        : R
+    : never
+// 3. Equal<typeof curried3, () => true> 测试不通过
+type Curried<F> = F extends (...args: infer A) => infer R
+    ? A extends [infer AF, ...infer O]
+        ? 如果 O 的参数总数为0 直接返回 (arg) => R 
+        : R
+    : never
+// 4.
+type Curried<F> = F extends (...args: infer A) => infer R
+    ? A extends [infer AF, ...infer O]
+        ? (arg: F) => O['length'] extends 0
+            ? R
+            : Curried<(...args: O) => R>
+        : () => R
+    : never
+```
+
 # 18. 获取元组长度
 
 创建一个 `Length` 泛型，这个泛型只接受一个只读的元组，并返回这个元组的长度
@@ -430,6 +518,36 @@ type Length<T extends readonly any[]> = 访问 T 的长度属性
 type Length<T extends readonly any[]> = T['length']
 // 5. 如果要检测 T 是否有 length 属性，可以写成这样
 type Length<T extends readonly any[]> = T extends { length: infer L } ? L : never
+```
+
+# 20. PromiseAll
+
+给函数 `PromiseAll` 指定类型，它接受 Promise 或类似 Promise 的对象的数组，返回值应为 `Promise<T>`，其中 T 应该是这些 Promise 结果类型组成的数组
+
+```ts
+const promise1 = Promise.resolve(3)
+const promise2 = 42
+const promise3 = new Promise<string>((resolve, reject) => {
+    setTimeout(resolve, 100, 'foo')
+})
+
+const p = PromiseAll([promise1, promise2, promise3] as const) // Promise<[number, 42, string]>
+```
+
+```ts
+declare function PromiseAll(values: any): any
+// 1.
+declare function PromiseAll<T extends any[]>(values: readonly [...T]): Promise<{[K in keyof T]: T[K] extends Promise<infer R> | infer R ? R : T[K]}>
+```
+
+关于为何 `Promise<{[K in keyof T]: xxx}> somehow equal Promise<[xxx, xxx, xxx]`
+
+```ts
+type Tuple = ['a', 'b']
+type funcReturnTuple<T extends unknow[]> = ([...T]) => {
+    [P in keyof T]: ''
+}
+type case = funcReturnTuple<Tuple> // ([...T]: Iterable<any> => ['', ''])
 ```
 
 # 43. 实现 Exclude

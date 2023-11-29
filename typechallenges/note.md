@@ -202,6 +202,86 @@ type MyReadonly<T> = {设置为只读[K in keyof T]: T[K]}
 type MyReadonly<T> = {readonly [K in keyof T]: T[K]}
 ```
 
+# 8. 对象部分属性只读
+
+实现一个泛型 `MyReadonly2<T, K>`，类型 K 指定 T 中要被设置为只读的属性，如果未提供 K ，则所有属性都变为只读，就像普通的 `Readonly<T>` 一样。
+
+```ts
+interface Todo {
+    title: string
+    discription: string
+    completed: boolean
+}
+const todo: MyReadonly2<Todo, 'title' | 'discription'> = {}
+todo.completed = true // success
+todo.title = 'title' // error
+```
+
+```ts
+type MyReadonly2<T, K> = any
+// 1. 因为 K 可以不提供，所以需要使用 = 提供一个默认值
+type MyReadonly2<T, K> = any
+// 2. 
+type MyReadonly2<T, K extends keyof T = keyof T> = 只读属性对象 & 其他属性对象
+// 3. 可以使用内置的 Omit<> & Readonly<Pick<>> 组合
+type MyReadonly2<T, K extends keyof T = keyof T> = Omit<T, K> & Readonly<Pick<T, K>>
+// 4. 如果不使用内置的方法
+type MyReadonly2<T, K extends keyof T = keyof T> = { readonly [R in K]: T[R] } & { [O in keyof T as O extends K ? never : O]: T[O] }
+```
+
+# 9. 对象属性只读（递归）
+
+实现一个泛型 `DeepReadonly<T>`，它会将对象的每个属性及子对象的每个属性递归地设为只读。仅考虑处理对象，不用考虑处理数组，函数，类等。
+
+```ts
+type X = {
+    x: {
+        a: 1,
+    },
+    y: 'hey',
+}
+type Result = DeepReadonly<X>
+/*
+Result = {
+    readonly x: {
+        readonly a: 1,
+    },
+    readonly y: 'hey',
+}
+*/
+```
+
+```ts
+type DeepReadonly<T> = any
+// 1.
+type DeepReadonly<T> = keyof T extends never ? T : { readonly [K in keyof T]: DeepReadonly<T[K]> }
+// 2. 使用 never 部分测试不通过，换用更准确的联合类型？
+type Primary = string | number | boolean | Function
+// 3.
+type DeepReadonly<T> = {
+    readonly [K in keyof T]: T[K] extends Primary
+        ? T[K]
+        : DeepReadonly<T[K]>
+}
+```
+
+# 10. 元组转集合
+
+实现泛型 `TupleToUnion<T>`，返回元组所有值的合集
+
+```ts
+type Arr = ['1', '2', '3']
+type Test = TupleToUnion<Arr> // '1' | '2' | '3'
+```
+
+```ts
+type TupleToUnion<T> = any
+// 1. 使用 T[number] 表示元组的每一项
+type TupleToUnion<T extends any[]> = T[number]
+// 2. 或者使用 Array<infer U> 获取到元组的每一项
+type TupleToUnion<T extends any[]> = T extends Array<infer ITEM> ? ITEM : never
+```
+
 # 11. 元组转换为对象
 
 将一个元组类型转换为对象类型，这个对象类型的键/值和元组中的元素对应
@@ -221,6 +301,36 @@ type TupleToObject<T extends readonly any[]> = {
 type TupleToObject<T extends readonly any[]> = {
     [P in T[number]]: P
 } 
+```
+
+# 12. 可串联构造器
+
+在 JS 中经常会使用可串联（Chainable / Pipeline）的函数构造一个对象，在 TS 中，能够合理的给它赋上类型吗？
+
+你需要提供两个函数 `option(key, value)` 使用提供的 key 和 value 扩展当前的对象，然后通过 `get()` 获取最终结果
+
+```ts
+const result = config
+    .option('foo', 123)
+    .option('name', 'type')
+    .option('bar', { value: 'Hello World' })
+    .get()
+// 期望 result 的类型是：
+interface Result {
+    foo: number
+    name: string
+    bar: {
+        value: string
+    }
+}
+```
+
+```ts
+type Chainable = {
+    option(key: string, value: any): any
+    get(): any
+}
+// 1.
 ```
 
 # 13. Hello World

@@ -309,6 +309,8 @@ type TupleToObject<T extends readonly any[]> = {
 
 你需要提供两个函数 `option(key, value)` 使用提供的 key 和 value 扩展当前的对象，然后通过 `get()` 获取最终结果
 
+另外 `key` 应该只接受字符串，而 `value` 可以是任何类型。另外 `key` 只能被使用一次。
+
 ```ts
 const result = config
     .option('foo', 123)
@@ -330,7 +332,51 @@ type Chainable = {
     option(key: string, value: any): any
     get(): any
 }
-// 1.
+// 1. 给 get 提供一个泛型
+type Chainable<R> = {
+    option(key: string, value: any): any
+    get(): R
+}
+// 2. option() 的返回类型应该是 Chainable, 另外可以提供给 R 一个默认值 {} 或者 object
+type Chainable<R = {}> = {
+    option(key: string, value: any): Chainable
+    get(): R
+}
+// 3. option() 的返回类型应该是在原有 R 的基础上增加一个{新K: 新V}
+type Chainable<R = {}> = {
+    option(key: string, value: any): Chainable<R & Record<key的类型, value的类型>>
+    get(): R
+}
+// 4. 另外 K 应该指定为 string 类型
+type Chainable<R = {}> = {
+    option<K extends string, V>(key: K, value: V): Chainable<R & Record<K, V>>
+    get(): R
+}
+// 5. 因为限制了 key 只能使用一次，所以要判断 K 是否已经包含在 R 的 key 中了
+type Chainable<R = {}> = {
+    option<K extends string, V>(key: K extends keyof R ? never : K, value: V): Chainable<R & Record<K, V>>
+    get(): R
+}
+// 6. testcase 中 key 可以重复传入只是值的类型不同，所以增加验证只有类型相同时才返回 never
+type Chainable<R = {}> = {
+    option<K extends string, V>(
+        key: K extends keyof R
+            ? (V extends R[K] ? K : never)
+            : K,
+        value: V
+    ): Chainable<R & Record<K, V>>
+    get(): R
+}
+// 7. 最后 R & Record<K, V> 会合并相同 K 的不同类型的情况成为一个类型集合，所以应该使用 Omit 保证合并时，是覆盖而非创建成多类型集合
+type Chainable<R = {}> = {
+    option<K extends string, V>(
+        key: K extends keyof R
+            ? (V extends R[K] ? K : never)
+            : K,
+        value: V
+    ): Chainable<Omit<R, K> & Record<K, V>>,
+    get(): R
+}
 ```
 
 # 13. Hello World

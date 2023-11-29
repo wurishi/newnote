@@ -43,6 +43,15 @@
 //     option(key: string, value: any): any
 //     get(): any
 // }
+type Chainable<R = {}> = {
+    option<K extends keyof any, V>(
+        key: K extends keyof R 
+            ? (V extends R[K] ? K : never) 
+            : K,
+        value: V
+    ): Chainable<Omit<R, K> & Record<K, V>>
+    get(): R
+}
 
 /* _____________ 测试用例 _____________ */
 import type { Alike, Expect } from '@type-challenges/utils'
@@ -66,6 +75,11 @@ const result3 = a
     // @ts-expect-error
     .option('name', 123)
     .get()
+
+type R1 = typeof result1
+let r1:R1;
+type R3 = typeof result3
+let r3:R3;
 
 type cases = [
     Expect<Alike<typeof result1, Expected1>>,

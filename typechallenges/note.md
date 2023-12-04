@@ -770,6 +770,129 @@ type capitalized = CapitalizeWords<'hello world, my friends'> // 'Hello World, M
 ```ts
 type CapitalizeWords<S extends string> = any
 // 1.
+type CapitalizeRest<S extends string> = S extends `${infer F}${infer R}`
+    ? `${F}${CapitalizeRest<Uppercase<F> extends Lowercase<F> ? Capitalize<R> : R>}`
+    : S;
+type CapitalizeWords<S extends string> = Capitalize<CapitalizeRest<S>>
+```
+
+# 114. CamelCase
+
+实现 `CamelCase<T>`，将 `snake_case` 类型的字符串转换为 `camelCase` 形式。
+
+```ts
+type camelCase1 = CamelCase<'hello_world_with_types'> // helloWorldWithTypes
+type camelCase2 = CamelCase<'HELLO_WORLD'> // helloWorld
+```
+
+```ts
+type CamelCase<S extends string> = any
+// 1. 传入的字符串递归演变大概是这样的：
+// hello${R} -> helloWorld${R} -> helloWorldWith_${R} -> helloWorldWithTypes
+type CamelCase<S extends string> = S extends `${infer L}_${infer F}${infer R}`
+    ? 如果是 左边 + _ + 首字母 + 其他部分的格式需要递归调用
+    : Lowercase<S> // 只有一个单词，全小写即可
+// 2. 
+type CamelCase<S extends string> = S extends `${infer L}_${infer F}${infer R}`
+    ? 如果 F 不包含大小写（即 $ _ 这种）
+        ? L + CamelCase<F + R>
+        : L + Uppercase<F> + CamelCase<R>
+    : Lowercase<S>
+// 3.
+type CamelCase<S extends string> = S extends `${infer L}_${infer F}${infer R}`
+    ? Uppercase<F> extends Lowercase<F>
+        ? `${Lowercase<L>}_${CamelCase<`${F}${R}`>}`
+        : `${Lowercase<L>}${Uppercase<F>}${CamelCase<R>}`
+    : Lowercase<S>
+```
+
+# 116. Replace
+
+实现 `Replace<S, From, To>` 将字符串 S 中的第一个子字符串 Form 替换为 To
+
+```ts
+type replaced = Replace<'types are fun!', 'fun', 'awesome'> // 'types are awesome!' 
+```
+
+```ts
+type Replace<S extends string, From extends string, To extends string> = any
+// 1.
+type Replace<S extends string, From extends string, To extends string> = From extends ''
+    ? S
+    : S extends `${infer L}${From}${infer R}`
+        ? `${L}${To}${R}`
+        : S
+// 2. 或者
+type Replace<S extends string, From extends string, To extends string> = 
+    S extends `${infer L}${From extends '' ? never : From}${infer R}`
+        ? `${L}${To}${R}`
+        : S
+```
+
+# 119. ReplaceAll
+
+实现 `ReplaceAll<S, From, To>` 将字符串 S 中所有子串 From 替换为 To
+
+```ts
+type replaced = ReplaceAll<'t y p e s', ' ', ''> // 'types'
+```
+
+```ts
+type ReplaceAll<S extends string, From extends string, To extends string> = any
+// 1. 将 Replace 递归调用
+type ReplaceAll<S extends string, From extends string, To extends string> = 
+    S extends `${infer L}${From}${infer R}`
+        ? `${L}${To}${ReplaceAll<R, From, To>}`
+        : S
+// 2. From 有可能找不到所以别忘了处理
+type ReplaceAll<S extends string, From extends string, To extends string> = 
+    S extends `${infer L}${From extends '' ? never : From}${infer R}`
+        ? `${L}${To}${ReplaceAll<R, From, To>}`
+        : S
+```
+
+# 147. C printf
+
+C 语言中 `printf` 可以指定打印的格式：
+
+```c
+printf("The result is %d", 42);
+```
+
+期望实现一个泛型，传入 `"The result is %d"` 可以返回元组 ['dec']，转换关系如下：
+
+```ts
+type ControlsMap = {
+    c: 'char',
+    s: 'string',
+    d: 'dec',
+    o: 'oct',
+    h: 'hex',
+    f: 'float',
+    p: 'pointer',
+}
+```
+
+```ts
+type ParsePrintFormat = any
+// 1. 
+type ParsePrintFormat<T> = T extends `${string}%${infer C}${infer R}`
+    ? C extends keyof ControlsMap
+        ? [ControlsMap[C], ...ParsePrintFormat<R>]
+        : ParsePrintFormat<R>
+    : []
+```
+
+# 151. Query String Parser
+
+- 如果只有键没有值，则值转换为 true，即 `/?key` 转换为 `{key: true}`
+- 多个重复的键需要合并成一个键，它的值应该是个元组
+- 如果键的值只有一个，则它的值不应是个元组
+- 如果多个重复的键的值也是相同的，即 `key=value&key=value`，应该合并成 `key=value` 再转换
+
+```ts
+type ParseQueryString = any
+// 1.
 ```
 
 # 189. Awaited

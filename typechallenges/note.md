@@ -568,6 +568,135 @@ type MyExclude<T, U> = 只要 T 是继承于 U 就返回 never 否则返回 T
 type MyExclude<T, U> = T extends U ? never : T
 ```
 
+# 55. 联合类型转化为交叉类型
+
+实现高级工具类型 `UnionToIntersection<U>`
+
+```ts
+type I = UnionToIntersection<'foo' | 42 | true> // 'foo' & 42 & true
+```
+
+```ts
+type UnionToIntersection<U> = any
+// 1. 函数的参数在逆变位置上，而根据 ts 规范，逆变位置上同一个类型的多个候选会被推断成交叉类型
+type ToUnionOfFunction<T> = T extends any ? (arg: T) => any : never
+// 2.
+type UnionToIntersection<U> = ToUnionOfFunction<U> extends (a: infer U) => any ? U : never;
+```
+
+# 57. 获得必需的属性
+
+实现高级工具类型 `GetRequired<T>`，该类型保留所有必需的属性
+
+```ts
+type I = GetRequired<{ foo: number, bar?: string }> // { foo: number }
+```
+
+```ts
+type GetRequired<T> = any
+// 1.
+type GetRequired<T> = {
+    [K只要K是满足 T[K] 为 Required的]: T[K]
+}
+// 2.
+type GetRequired<T> = {
+    [K in keyof T as T[K] extends Required<T>[K] ? K : never]: T[K]
+}
+// 3. 或者不使用 Required<T>, 使用 -? 代替
+type GetRequired<T> = {
+    [K in keyof T as {[P in K]: T[K]} extends {[P in K]-?: T[K]} ? K : never]: T[K]
+}
+```
+
+# 59. 获得可选属性
+
+实现高级工具类型 `GetOptional<T>`，该类型保留所有可选属性
+
+```ts
+type I = GetOptional<{ foo: number, bar?: string }> // { bar?: string } 
+```
+
+```ts
+type GetOptional<T> = any
+// 1. 和 GetRequired 一样，只是 ? 后的返回换一下
+type GetOptional<T> = {
+    [K in keyof T as T[K] extends Required<T>[K] ? never : K]:T[K]
+}
+// 2. 如果无法在 TS4.1 及以上使用 as，则可以换个思路
+type GetOptional<T> = Pick<T, 所有Optional属性>
+// 3.
+type Opt<T> = {[K in keyof T]-? : {} extends Pick<T, K> ? K : never}[keyof T] // 得到 optional key 的联合类型
+// 4. 
+type GetOptional<T> = Pick<T, Opt<T>>
+```
+
+# 62. 查找类型
+
+假设想通过指定公共属性 `type` 的具体值，从联合类型中查找到此 `type` 对应的类型
+
+```ts
+interface Cat {
+    type: 'cat'
+    breeds: 'A' | 'B'
+}
+interface Dog {
+    type: 'dog',
+    breeds: 'C' | 'D'
+    color: 'brown' | 'white'
+}
+type MyDog = LookUp<Cat | Dog, 'dog'> // interface Dog
+```
+
+```ts
+type LookUp<U, T> = any
+// 1.
+type LookUp<U, T> = U extends { type: T } ? U : never
+// 2. 这样写法无法保证输入的可靠性，即 LookUp<Cat | Dog, 1> 也是可以输入的，如果想在 1 这里提示必须输入 type 有的值，可以这样：
+type LookUp<U extends { type: any }, T extends U['type']> = U extends { type: T } ? U : never
+```
+
+# 89. 必需的键
+
+实现高级工具类型 `RequiredKeys<T>`, 返回 T 中所有必需属性的键组成的联合类型
+
+```ts
+type Result = RequiredKeys<{ foo: number, bar?: string }> // "foo"
+```
+
+```ts
+type RequiredKeys<T> = any
+// 1.
+type RequiredKeys<T, K = keyof T> = K extends keyof T
+    ? T extends Required<Pick<T, K>>
+        ? K
+        : never
+    : never
+// 2. 如果不使用 Required
+type RequiredKeys<T> = {
+    [K in keyof T]-?: Pick<T, K> 是否等于 Required<Pick<T, K>> ? K : never
+}[keyof T]
+// 3. IsEqual<X, Y>
+type RequiredKeys<T> = {
+    [K in keyof T]-?: IsEqual<{[P in K]: T[P]}, { [P in K]-? : T[P] }> extends true ? K : never
+}[keyof T]
+```
+
+# 90. 可选类型的键
+
+实现高级工具类型 `OptionalKeys<T>`，返回 T 中所有可选属性的键组成的联合类型
+
+```ts
+type OptionalKeys<T> = any
+// 1. 
+type OptionalKeys<T> = {
+    [K in keyof T]-?: {} extends Pick<T, K> ? K : never
+}[keyof T]
+// 2. 或者使用 Required
+type OptionalKeys<T, K = keyof T> = K extends keyof T
+    ? T extends Required<Pick<T, K>> ? never : K
+    : never
+```
+
 # 189. Awaited
 
 假如有一个 Promise 对象，这个 Promise 对象会返回一个类型。在 TS 中，使用 Promise<T> 中的 T 来描述这个返回的类型。

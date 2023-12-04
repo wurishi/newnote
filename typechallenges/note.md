@@ -713,6 +713,65 @@ type Space = ' ' | '\t' | '\n'
 type TrimLeft<S extends string> = S extends `${Space}${infer R}` ? TrimLeft<R> : S;
 ```
 
+# 108. 去除两端空白字符
+
+实现 `Trim<T>`，它接受一个明确的字符串类型，并返回一个新字符串，其中两端的空白符都已被删除。
+
+```ts
+type trimed = Trim<' Hello World '> // 'Hello World'
+```
+
+```ts
+type Trim<S extends string> = any
+// 1. 和 TrimLeft 类似，只是要拿到左|右则的字符串
+type Space = ' ' | '\t' | '\n'
+type Trim<S extends string> = S extends `${Space}${infer R}` | `${infer R}${Space}`
+    ? Trim<R>
+    : S
+// 2. TrimLeft / TrimRight
+type TrimLeft<S extends string> = S extends `${Space}${infer R}` ? TrimLeft<R> : S;
+type TrimRight<S extends string> = S extends `${infer R}${Space}` ? TrimRight<R> : S
+// 3. TrimAlternate
+type TrimAlt<S extends string> = TrimRight<TrimLeft<S>>;
+```
+
+# 110. Capitalize
+
+实现 `Capitalize<T>` 它将字符串 T 的第一个字母转换为大写，其余字母保持不变。
+
+```ts
+type capitalized = Capitalize<'hello world'> // 'Hello world'
+```
+
+```ts
+type MyCapitalize<S extends string> = any
+// 1.
+type MyCapitalize<S extends string> = S extends `${infer F}${infer R}`
+    ? `${Uppercase<F>}${R}` : S
+// 2. 关于字符串中的 infer 推导规则：
+// 如果不包含其他规则，则前面的 infer 只会推导一个字符，最后一个 infer 会推导剩下所有的字符
+type Type<S extends string> = S extends `${infer A}${infer B}${infer O}`
+    ? A
+    : S
+type Result = Type<'hello'> // A: 'h', B: 'e', O: 'llo' 
+// 3. 如果增加了推导条件，则会按推导条件对字符串进行分割
+type Split<S> = S extends `${infer L}-${infer R}` ? `${infer L} ${infer R}` : never
+type Result = Split<'021-123'> // L: '021', $: '123'
+```
+
+# 112. Capitalize Words
+
+实现 `CapitalizeWords<T>`，它将字符串中的每个单词的第一个字母转换为大写，其他部分保持原样
+
+```ts
+type capitalized = CapitalizeWords<'hello world, my friends'> // 'Hello World, My Friends'
+```
+
+```ts
+type CapitalizeWords<S extends string> = any
+// 1.
+```
+
 # 189. Awaited
 
 假如有一个 Promise 对象，这个 Promise 对象会返回一个类型。在 TS 中，使用 Promise<T> 中的 T 来描述这个返回的类型。

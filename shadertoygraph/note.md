@@ -270,10 +270,10 @@ XslGRn Nyan and Britney Take London
 
 
 
-https://www.shadertoy.com/results?query=&sort=newest&from=11820&num=12
+https://www.shadertoy.com/results?query=&sort=newest&from=10800&num=12
 
-986
+901
 /
 6769
 
-DlXGD2 Ten ringsOOOOOOOOOO A20DC216
+wdVBRh Printf Debugging For Shaders!!!!

@@ -697,6 +697,22 @@ type OptionalKeys<T, K = keyof T> = K extends keyof T
     : never
 ```
 
+# 106. 去除左侧空白
+
+实现 `TrimLeft<T>`，它返回的是删除了输入的 T 字符串开头空白的字符串。
+
+```ts
+type trimed = TrimLeft<' Hello World '> // 'Hello World '
+```
+
+```ts
+type TrimLeft<S extends string> = any
+// 1. 定义 Space
+type Space = ' ' | '\t' | '\n'
+// 2. 
+type TrimLeft<S extends string> = S extends `${Space}${infer R}` ? TrimLeft<R> : S;
+```
+
 # 189. Awaited
 
 假如有一个 Promise 对象，这个 Promise 对象会返回一个类型。在 TS 中，使用 Promise<T> 中的 T 来描述这个返回的类型。

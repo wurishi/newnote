@@ -956,6 +956,102 @@ type MyAwaited<T> = T extends ExtendedPromise<infer U>
     : never
 ```
 
+# 191. 追加参数
+
+实现一个泛型 `AppendArgument<Fn, A>`，对于给定的函数类型 Fn, 以及一个任意类型 A。返回一个新的函数 G，G 拥有 Fn 的所有参数并在末尾追加类型为 A 的参数。
+
+```ts
+type Fn = (a: number, b: string) => number
+
+type Result = AppendArgument<Fn, boolean> // (a: number, b: string, x: boolean) => number
+```
+
+```ts
+type AppendArgument<Fn, A> = any
+// 1.
+type AppendArgument<Fn, A> = Fn extends (...args: infer REST) => infer RETURN
+    ? (...args: [...REST, A]) => RETURN
+    : never
+// 2. 对 Fn 作一下限制
+type AppendArgument<Fn extends Function, A> = ...
+// 3. 或者使用内置工具类型 Parameters 和 ReturnType
+type AppendArgument<Fn extends (...args: any) => any, A> = (...args:[Parameters<Fn>, A]) => ReturnType<Fn> 
+```
+
+# 213. Vue Basic Props
+
+基于 #6 Simple Vue，添加 props 属性，它用来定义外部传入的 props 的类型，如：
+
+```ts
+{
+    props: {
+        foo: Boolean,
+    }
+}
+// 或者
+{
+    props: {
+        foo: { type: Boolean }
+    }
+}
+// 当属性有多个类型时，需要转换为联合属性
+{
+    props: {
+        foo: { type: [Boolean, Number, String] }
+    }
+} // type Props = { foo: boolean | number | string }
+```
+
+```ts
+declare function VueBasicProps(options: any): any
+// 1. 增加 P
+declare function VueBasicProps<P, D, C, M>(options: Option<P, D, C, M>): Option<P, D, C, M>
+type Option<P, D, C, M> = {
+    props?: P,
+    data?: (this: PropsType<P>) => D,
+    computed?: C & ThisType<(D extends () => any ? ReturnType<D> : D) & PropsType<P>>,
+    methods?: M & ThisType<(D extends () => any ? ReturnType<D> : D) & ComputedValueType<C> & M & PropsType<P>>
+}
+type ComputedValueType<C> = {
+    [K in keyof C as C[K] extends () => any ? K : never]:
+        C[K] extends () => any ? ReturnType<C[K]> : C[K]
+}
+// 2. PropsType
+type PropsType<T> = {
+    [P in keyof T]: {} extends T[P]
+        ? any
+        : T[P] extends { type: any }
+            ? T[P]['type'] extends (infer R)[] // 这里使用 any[] 会导致传入 ConverArrayPropType<T[P]['type]> 是 StringConstructor 
+                ? ConverArrayPropType<R>
+                : ConvertInstanceType<T[P]['type']>
+            : ConvertInstanceType<T[P]>
+}
+// 3. 用 ReturnType 和 InstanceType 区分值类型和对象类型？
+type ConvertInstanceType<T> = T extends new (args: any) => any
+    ? T extends typeof String | typeof Boolean | typeof Number
+        ? ReturnType<T>
+        : InstanceType<T>
+    : T
+type ConverArrayPropType<T, U = T> = T extends U
+    ? ConvertInstanceType<T>
+    : never
+```
+
+另外将 `StringConstructor` 转换为 `string` 可以这样：
+
+```ts
+type PropConstructor<T> = | { new (...args: any[]): T & object } | { (): T }
+type InferPropType<P> = P extends PropConstructor<infer T>
+    ? unknown extends T
+        ? any
+        : T
+    : any;
+```
+
+# 216. Slice
+
+
+
 # 268. If
 
 实现一个 `If` 类型，`If<C, T, F>` 接收一个条件类型 `C`，判断为真时返回 `T`，判断为假时返回 `F`。`C` 只能是 `true / false`

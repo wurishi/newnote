@@ -1050,7 +1050,34 @@ type InferPropType<P> = P extends PropConstructor<infer T>
 
 # 216. Slice
 
+实现一个泛型 `Slice<Arr, Start, End>`，它和 JS 中的 `Array.slice` 功能类似，会返回由 Start 和 End 指定的 Arr 中的部分数组。
 
+```ts
+type Arr = [1, 2, 3, 4, 5]
+type Result = Slice<Arr, 2, 4> // [3, 4]
+```
+
+```ts
+type Slice<Arr, Start, End> = any
+// 1. 过于复杂，直接查看 00216-extreme-slice.ts 的 Source Code
+```
+
+# 223. IsAny
+
+实现一个泛型 `IsAny<T>`，当输入的 T 类型是 any 时，返回 true，其他都返回 false。
+
+```ts
+type IsAny<T> = any
+// 1. 方案一
+type IsAny<T> = 0 extends (1 & T) ? true : false
+// 2. 方案二
+type IsAny<T> = [{}, T] extends [T, null] ? true : false
+// 3. 方案三
+type IsAny<T> = ((a: [any]) => [any]) extends (a: T) => [T] ? true : false
+// 4. 方案四
+type IfEquals<X, Y, A=X, B=never> = (<T>() => T extends X ? 1 : 2) extends (<T>() => T extends Y ? 1 : 2) ? A : B
+type IsAny<T> = IfEquals<T, any, true, false>
+```
 
 # 268. If
 
@@ -1075,6 +1102,68 @@ type Q = boolean extends true ? 1 : 2 // return 2
 // (true extends true === true) &&( false extends true === false)
 // true && false === false
 ```
+
+# 270. Typed Get
+
+实现一个类似 `lodash.get` 的泛型工具。
+
+```ts
+type Data = {
+    foo: {
+        bar: {
+            value: 'foobar',
+            count: 6,
+        },
+        included: true,
+    },
+    hello: 'world',
+}
+type A = Get<Data, 'hello'> // 'world'
+type B = Get<Data, 'foo.bar.count'> // 6
+type C = Get<Data, 'foo.bar'> // { value: 'foobar', count: 6 }
+```
+
+```ts
+type Get<T, K> = string
+// 1.
+type Get<T, K> = K extends `${infer F}.${infer R}`
+    ? F extends keyof T
+        ? Get<T[F], R>
+        : never
+    : K extends keyof T
+        ? T[K]
+        : false
+```
+
+# 274. Integers Comparator
+
+实现一个泛型工具 `Comparator<A, B>` 用来比较 A B 的大小
+
+```ts
+type Comparator<A extends number, B extends number> = any
+// 1. 直接查看 00274-extreme-integers-comparator.ts SourceCode
+```
+
+# 296. Permutation
+
+实现联合类型的全排列，将联合类型转换成所有可能的全排列数组的联合类型
+
+```ts
+type perm = Permutation<'A' | 'B' | 'C'>
+// ['A', 'B', 'C'] | ['A', 'C', 'B'] | ['B', 'A', 'C'] | ['B', 'C', 'A'] | ['C', 'A', 'B'] | ['C', 'B', 'A']
+```
+
+```ts
+type Permutation<T> = any
+// 1.
+type Permutation<T, K = T> = [T] extends [never]
+    ? []
+    : K extends K
+        ? [K, ...Permutation<Exclude<T, K>>]
+        : never
+```
+
+<!-- TODO -->
 
 # 533. Concat
 

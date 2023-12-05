@@ -364,7 +364,7 @@ function createOutputs(outputs: any) {
   return outputArr;
 }
 
-const KEY_当前选择 = '_current_shader';
+const KEY_当前选择 = '_current_shader_1';
 const KEY_已查看列表 = '_visited_list';
 
 function showShaderInfo(info: Info, rootDOM: HTMLElement) {

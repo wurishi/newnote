@@ -893,6 +893,31 @@ type ParsePrintFormat<T> = T extends `${string}%${infer C}${infer R}`
 ```ts
 type ParseQueryString = any
 // 1.
+type ParseQueryString<S extends string> = S extends '' ? {} : MergeParams<SplitParams<S>>
+// 2. SplitParams 负责将 'k1=v1&k2=v2&k3&k1' 拆分成 ['k1=v1', 'k2=v2', 'k3', 'k1']
+type SplitParams<S extends string> = S extends `${infer KV}&${infer R}`
+    ? [KV, SplitParams<R>]
+    : [S]
+// 3. 
+type MergeParams<T extends string[], M = {}> = T extends [infer E, ...infer R extends string[]]
+    ? E extends `${infer K}=${infer V}`
+        ? MergeParams<R, SetProperty<M, K, V>>
+        : E extends `${infer K}`
+            ? MergeParams<R, SetProperty<M, K>>
+            : never
+    : M
+// 4. 
+type SetProperty<M, K extends PropertyKey, V = true> = {
+    [P in keyof M | K]: P extends K
+        ? P extends keyof M
+            ? M[P] extends V
+                ? M[P]
+                : M[P] extends any[]
+                    ? V extends M[P][number] ? T[P] : [...M[P], V]
+                    : [M[P], V]
+            : V
+        : P extends M ? M[P] : never
+}
 ```
 
 # 189. Awaited

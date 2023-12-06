@@ -1163,7 +1163,83 @@ type Permutation<T, K = T> = [T] extends [never]
         : never
 ```
 
-<!-- TODO -->
+# 298. Length of String
+
+计算字符串的长度，类似 `String.length`
+
+```ts
+type LengthOfString<S extends string> = any
+// 1. 将字符串递归转换成数组，再获取数组的长度
+type LengthOfString<S extends string, A extends string[] = []> = 
+    S extends `${infer F}${infer R}`
+        ? LengthOfString<R, [F, ...A]>
+        : A['length']
+```
+
+# 300. String to Number
+
+将字符串转换成数字，类似 `Number.parseInt`
+
+```ts
+type ToNumber<S extends string> = any
+// 1. 貌似只有数组的length可以返回数字，一种想法是往一个数组中间追加任意东西，直到数组的length和S相同
+type ToNumber<S extends string, T extends any[] = []> = S extends `${T['length']}`
+    ? T['length']
+    : ToNumber<S, [...T, any]>
+// 2. 上面的方法只支持string是正确的数字字符串，否则理论上是会无限循环下去的，所以直接通过`infer N extends number` 强制转换，如果成功就是数字，如果失败直接返回 never
+type ToNumber<S extends string> = S extends `${infer N extends number}`
+    ? N
+    : never
+```
+
+# 399. Tuple Filter
+
+实现一个泛型 `FilterOut<T, F>`，它会将 F 从元组 T 中过滤掉。
+
+```ts
+type Filtered = FilterOut<[1, 2, null, 3], null> // [1, 2, 3]
+```
+
+```ts
+type FilterOut<T extends any[], F> = any
+// 1.
+type FilterOut<T extends any[], F> = T extends [infer R, ...infer Rest]
+    ? R extends F
+        ? FilterOut<Rest, F>
+        : [R, ...FilterOut<Rest, F>]
+    : []
+// 2. 对于 never 无法正确处理，如 FilterOut<[never], never>，将 `R extends F` 改成 `[R] extends [F]`
+type FIlterOut<T extends any[], F> = T extends [infer R, ...infer Rest]
+    ? [R] extends [F]
+        ? FilterOut<Rest, F>
+        : [R, ...FilterOut<Rest, F>]
+    : []
+```
+
+# 459. Flatten
+
+实现一个 `Flatten`，它可以将传入的数组扁平化后返回。
+
+```ts
+type flatten = Flatten<[1, 2, [3, 4], [[[5]]]]> // [1, 2, 3, 4, 5]
+```
+
+```ts
+type Flatten = any
+// 1. 新增一个数组用来存放已经扁平化后的结果
+type Flatten<T extends unknown[], R extends unknown[] = []> = 
+    T extends [infer F, ...infer Rest]
+        ? F extends unknown[]
+            ? Flatten<[...F, ...Rest], R>
+            : Flatten<Rest, [...R, F]>
+        : R
+// 2. 不用临时数组的方案：
+type Flatten<T> = T extends [infer F, ...infer R]
+    ? F extends unknown[]
+        ? [...Flatten<F>, ...Flatten<R>] // F R 都需要继续 flat
+        : [F, ...Flatten<R>] // R 继续 flat
+    : T
+```
 
 # 533. Concat
 

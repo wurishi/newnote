@@ -1271,8 +1271,80 @@ const eight = curriedAdd(2)(3)(4)
 ```ts
 declare function DynamicParamsCurrying(fn: any): any
 // 1.
+declare function DynamicParamsCurring<A extends unknown[], R>(fn: (...args: A) => R): Curry<A, R>
+// 2.
+type Curry<A, R, D extends unknown[] = []> = A extends [infer H, ...infer T]
+    ? T extends []
+        ? (...args: [...D, H]) => R
+        : ((...args: [...D, H]) => Curry<T, R>) & Curry<T, R, [...D, H]>
+    : () => R
 ```
 
+# 472. Tuple to Enum Object
+
+枚举是 TS 的一种原生语法（JS 中不存在）。因此在 JS 中，枚举会被转换成如下形式的代码：
+
+```js
+let OperatingSystem
+;(function (OperatingSystem) {
+    OperatingSystem[(OperatingSystem['MacOS'] = 0)] = 'MacOS'
+    OperatingSystem[(OperatingSystem['Windows'] = 1)] 'Windows'
+    OperatingSystem[(OperatingSystem['Linux'] = 2)] = 'Linux'
+})(OperatingSystem || (OperatingSystem = {}))
+```
+
+实现的类型应该将给定的字符串元组转成一个行为类似枚举的对象。另外枚举属性一般是 `pascal-case` 的。
+
+```ts
+Enum<['macOS', 'Windows', 'Linux']>
+// { readonly MacOS: 'macOS', readonly Windows: 'Windows', readonly Linux: 'Linux' }
+```
+
+如果传递了第二个泛型参数，且值为 `true`。那么返回值应该是一个 `number` 字面量。
+
+```ts
+Enum<['macOS', 'Windows', 'Linux'], true>
+// { readonly MacOS: 1, readonly Windows: 2, readonly Linux: 3 }
+```
+
+```ts
+type Enum<T extends readonly string[], N extends boolean = false> = any
+// 1. 方案一 - 方案四直接看 00472-hard-tuple-to-enum-object.ts 的 SourceCode
+// 2. 方案五 先将['a', 'b', 'c'] 转换成 [['a', 0], ['b', 1], ['c', 2]]
+type Format<T extends readonly unknown[], P extends unknown[] = []> = T extends readonly [infer F, ...infer R]
+    ? [[F, P['length']], ...Format<R, [...P, unknown]>]
+    : []
+// Format<T>[number] = ['a', 0]
+type Enum<T extends readonly string[], B extends boolean = false> = {
+    readonly [K in Format<T>[number] as Capitalize<K[0]>]: B extends true
+        ? K[1]
+        : K[0]
+}
+// 3. 方案六 或者只转换下标
+type TupleIndex<T extends readonly unknown[]> = T extends readonly [infer F, ...infer R]
+    ? TupleIndex<R> | R['length']
+    : never
+// TupleIndex = 0 | 1 | 2
+type Enum<T extends readonly string[], B extends boolean = false> = {
+    readonly [K in TupleIndex<T> as Capitalize<T[K]>]: B extends true
+        ? K
+        : T[K]
+}
+```
+
+关于 `&` 交叉类型
+
+```ts
+// 交叉类型可以用来作类型约束
+type EnsureType<T, C> = T & C
+
+type a = EnsureType<'1', string> // '1'
+type b = EnsureType<1, string> // never
+
+// 交叉类型也可以用来合并类型
+type r = Readonly<{a: string} & {b : string}>
+// { readonly a: string; readonly b: string }
+```
 
 # 533. Concat
 

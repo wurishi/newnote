@@ -42,19 +42,19 @@
 
 // declare function DynamicParamsCurrying(fn: any): any
 
-// type Curry<A, R, D extends unknown[] = []> = A extends [infer H, ...infer T]
-//   ? T extends []
-//     ? (...args: [...D, H]) => R
-//     : ((...args: [...D, H]) => Curry<T, R>) & Curry<T, R, [...D, H]>
-//   : () => R
-// declare function DynamicParamsCurrying<A extends unknown[], R>(fn: (...args: A) => R): Curry<A, R>
+type Curry<A, R, D extends unknown[] = []> = A extends [infer H, ...infer T]
+  ? T extends []
+    ? (...args: [...D, H]) => R
+    : ((...args: [...D, H]) => Curry<T, R>) & Curry<T, R, [...D, H]>
+  : () => R
+declare function DynamicParamsCurrying<A extends unknown[], R>(fn: (...args: A) => R): Curry<A, R>
 
-declare function DynamicParamsCurrying<Fn extends (...arg: any) => any>(fn: Fn): Fn extends (...arg: infer P) => ReturnType<Fn> ? Curring<P, ReturnType<Fn>> : never
-type Curring<P, Ret> = P extends [infer X, ...infer R]
-  ? <T extends any[]>(...arg: T) => Curring<P extends [...T, ...infer Rest]
-    ? Rest
-    : never, Ret>
-  : Ret
+// declare function DynamicParamsCurrying<Fn extends (...arg: any) => any>(fn: Fn): Fn extends (...arg: infer P) => ReturnType<Fn> ? Curring<P, ReturnType<Fn>> : never
+// type Curring<P, Ret> = P extends [infer X, ...infer R]
+//   ? <T extends any[]>(...arg: T) => Curring<P extends [...T, ...infer Rest]
+//     ? Rest
+//     : never, Ret>
+//   : Ret
 
 // declare function DynamicParamsCurrying<T extends any[], U>(fn: (...args: T) => U): Curring<T, U>
 // type Curring<T extends any[], U> = T extends []

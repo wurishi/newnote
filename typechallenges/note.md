@@ -1241,6 +1241,39 @@ type Flatten<T> = T extends [infer F, ...infer R]
     : T
 ```
 
+# 462. 柯里化2
+
+Currying 是一种将带有多个参数的函数转换为每个带有一个参数的函数序列的技术。
+
+但在前端，柯里化函数参数个数动态化更常见，例如 `Function.bind(this, [...params])`
+
+```ts
+const func = (a: number, b: number, c: number) => {
+    return a + b + c
+}
+const bindFunc = func.bind(null, 1, 2)
+const result = bindFunc(3) // 6
+```
+
+实现一个动态参数化的柯里化函数
+
+```ts
+const add = (a: number, b: number, c: number) => a + b + c
+const three = add(1, 1, 1)
+
+const curriedAdd = DynamicParamsCurring(add)
+
+const six = curriedAdd(1, 2, 3)
+const seven = curriedAdd(1, 2)(4)
+const eight = curriedAdd(2)(3)(4)
+```
+
+```ts
+declare function DynamicParamsCurrying(fn: any): any
+// 1.
+```
+
+
 # 533. Concat
 
 在类型系统中实现 JavaScript 内置的 `Array.concat` 方法，这个类型接受两个参数，返回的新数组类型应该是按照输入参数从左到右的顺序合并为一个新的数组

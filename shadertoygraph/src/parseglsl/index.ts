@@ -113,6 +113,15 @@ function createCodePanel(title: string, id: number, list: GraphBasic[], changeCo
         };
         applyBtn.addEventListener('click', applyFn);
 
+        const consoleBtn = document.createElement('button');
+        consoleBtn.innerHTML = 'console';
+        bottomDom.appendChild(consoleBtn);
+        const consoleFn = () => {
+            const str = list.map(it => it.getCode()).join('\n');
+            console.log(str);
+        }
+        consoleBtn.addEventListener('click', consoleFn);
+
         // TODO:
         const closeBtn = document.createElement('button');
         closeBtn.innerHTML = '关闭';
@@ -125,6 +134,7 @@ function createCodePanel(title: string, id: number, list: GraphBasic[], changeCo
         destoryFnList.push(() => {
             closeBtn.removeEventListener('click', closeFn);
             applyBtn.removeEventListener('click', applyFn);
+            consoleBtn.removeEventListener('click', consoleFn);
         });
     }
 }

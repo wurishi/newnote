@@ -5,7 +5,7 @@ export default class MyBroadcastChannel implements Boardcast {
     private broadcastChannel: BroadcastChannel;
 
     constructor(private name: string) {
-        this.broadcastChannel = new BroadcastChannel(name);
+        this.broadcastChannel = new BroadcastChannel(this.name);
     }
 
     init(): void {

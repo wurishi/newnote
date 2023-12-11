@@ -218,7 +218,7 @@ https://shadertoyunofficial.wordpress.com/
 
 # testdemo
 
-跨 Tab Demo
+跨 Tab Demo (BroadcastChannel/SharedWorker/LocalStorage)
 
 # thebookofshaders
 

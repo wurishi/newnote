@@ -1,22 +1,30 @@
-import { createCanvas, createProgram, fragment, getAttribLocation, getUniformLocation, vertex } from "./webgl";
+import { fragment, vertex } from "./webgl";
 import S from './test'
+import WebGLCanvas from "./lib/WebGLCanvas";
 
 (() => {
-  const canvas = createCanvas();
-  document.body.appendChild(canvas);
-  const gl = canvas.getContext('webgl2')!;
-  if (!gl) {
-    return;
-  }
+  let webGL = new WebGLCanvas();
+  document.body.appendChild(webGL.canvas);
 
   const v = vertex;
-  const f = fragment.replace('{USER_FRAGMENT}', S)
+  const f = fragment.replace('{USER_FRAGMENT}', S);
 
-  const program = createProgram(gl, v, f);
+  webGL.createProgram(v, f);
+  const uiCount = webGL.getUniformLocation('count');
 
-  const a_pos = getAttribLocation(gl, program, 'a_position');
-  a_pos.setFloat32(new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]))
-
-  const iTime = getUniformLocation(gl, program, 'iTime');
-  
+  let then = 0, time = 0, frame = 0;
+  const render = (now: number) => {
+    now *= 0.001;
+    const elapsedTime = Math.min(now - then, 0.1);
+    then = now;
+    frame++;
+    time += elapsedTime;
+    uiCount.uniform1i(1)
+    webGL.resizeCanvasToDisplaySize()
+    webGL.render({
+      time, frame
+    });
+    requestAnimationFrame(render);
+  }
+  requestAnimationFrame(render);
 })()

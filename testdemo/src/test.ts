@@ -15,6 +15,10 @@ float f1(float x, float offset, float freq)
     return .4 * sin(radians(30.) * x + offset) + .1 * sin(freq * x);
 }
 
+#define DEFAULT_COUNT 12
+
+uniform int count;
+
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
     float scale = iResolution.y;
@@ -22,27 +26,57 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
     vec3 col = vec3(0);
 
-    float offsets[3] = float[3](
-        0. * radians(360.) / 3.,
-        1. * radians(360.) / 3.,
-        2. * radians(360.) / 3.
+    float offsets[DEFAULT_COUNT] = float[DEFAULT_COUNT](
+        0. * radians(360.) / 12.,
+        1. * radians(360.) / 12.,
+        2. * radians(360.) / 12.,
+        3. * radians(360.) / 12.,
+        4. * radians(360.) / 12.,
+        5. * radians(360.) / 12.,
+        6. * radians(360.) / 12.,
+        7. * radians(360.) / 12.,
+        8. * radians(360.) / 12.,
+        9. * radians(360.) / 12.,
+        10. * radians(360.) / 12.,
+        11. * radians(360.) / 12.
     );
     
-    float freqs[3] = float[3](
+    float freqs[DEFAULT_COUNT] = float[DEFAULT_COUNT](
+        radians(160.),
+        radians(213.),
+        radians(186.),
+        radians(160.),
+        radians(213.),
+        radians(186.),
+        radians(160.),
+        radians(213.),
+        radians(186.),
         radians(160.),
         radians(213.),
         radians(186.)
     );
 
-    float colorfreqs[3] = float[3](
+    float colorfreqs[DEFAULT_COUNT] = float[DEFAULT_COUNT](
+        .317,
+        .210,
+        .401,
+        .317,
+        .210,
+        .401,
+        .317,
+        .210,
+        .401,
         .317,
         .210,
         .401
     );
 
-    for (int i = 0; i < 3; ++i) {
+    float tmp[3] = float[3](0.0, 0.0, 0.0);
+
+    for (int i = 0; i < count; ++i) {
         float x = uv.x + 4. * iTime;
         float y = f1(x, offsets[i], freqs[i]);
+        y = clamp(y, tmp[i] - 1., tmp[i] + 1.);
         float uv_x = min(uv.x, 1. + .4 * sin(radians(210.) * iTime + radians(360.) * float(i) / 3.));
         
         float r = uv.x / 40.;
@@ -54,4 +88,5 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     }
 
     fragColor = vec4(tonemap(col), 1.);
+    // fragColor = vec4(col, 1.);
 }`

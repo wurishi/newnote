@@ -1346,6 +1346,77 @@ type r = Readonly<{a: string} & {b : string}>
 // { readonly a: string; readonly b: string }
 ```
 
+# 476. Sum
+
+实现一个泛型 `Sum<A, B>`，如果两个参数都是非否整数，则相加并返回结果对应的字符串。参数类型可以是 `string/number/bigint`
+
+```ts
+type T0 = Sum<2, 3> // '5'
+type T1 = Sum<'13', '21'> // '34'
+type T2 = Sum<'328', 7> // '335'
+type T3 = Sum<1_000_000_000_000n, '123'> // '1000000000123'
+```
+
+```ts
+type Sum<A extends string | number | bigint, B extends string | number | bigint> = string
+// 1. 见 00476-extreme-sum.ts source code
+```
+
+# 517. Multiply
+
+实现一个泛型 `Multiply<A, B>`，如果两个参数都是非否整数，则相乘并返回结果对应的字符串。参数类型可以是 `string/number/bigint`
+
+```ts
+type T0 = Multiply<2, 3> // '6'
+type T1 = Multiply<3, '5'> // '15'
+type T2 = Multiply<'4', 10> // '40'
+type T3 = Multiply<0, 16> // '0'
+type T4 = Multiply<'13', '21'> // '273'
+type T5 = Multiply<'43423', 321543n> // '13962361689'
+```
+
+```ts
+type Multiply<A extends string | number | bigint, B extends string | number | bigint> = string
+// 1. 见 00517-extreme-multiply.ts source code
+// 2. source code 中有一个简易实现，它只能解决小数字相乘，比如 123 X 45，但它的思路值得借鉴
+// 123 X 45 = (3 * 5) + (3 * 4 * 10) + (2 * 5) + (2 * 5 * 10) + (2 * 4 * 100) + (1 * 5 * 100) + (1 * 4 * 1000)
+```
+
+# 527. Append to object
+
+实现一个为接口添加一个新字段的类型。
+
+```ts
+type Test = { id: '1' }
+type Result = AppendToObject<Test, 'value', 4> // { id: '1', value: 4 }
+```
+
+```ts
+type AppendToObject<T, U, V> = any
+// 1. 遍历T和U，如果P(key)是T下的就用{P: T[P]}否则就是{P: V}
+type AppendToObject<T, U, V> = {
+    [P in keyof T | U]: P extends keyof T ? T[P] : V
+}
+// 2. [] 这里也报错，需要限制一个 U 的类型，可以是 string 或者 PropertyKey
+type AppendToObject<T, U extends string, V> = {
+    [P in keyof T | U]: P extends keyof T ? T[P] : V
+}
+// 3. 另一种方法，直接遍历 U 然后把结果和 T 作合并(&)
+type AppendToObject<T, U extends string, V> = {
+    [P in U]: V
+} & T
+// 4. 但会报错，因为
+type test = {
+    key: 'cat'
+}
+type Result = AppendToObject<test, 'home', boolean> // { home: boolean } & test 并没有把 test 展开
+// 5. 所以可以用 Omit 强制展开一下
+type AppendToObject<T, U extends string, V> = Omit<{
+    [P in U]: V
+} & T, never>
+type Result = AppendToObject<test, 'home', boolean> // 结果就是正确的 { home: boolean, key: 'cat' }
+```
+
 # 533. Concat
 
 在类型系统中实现 JavaScript 内置的 `Array.concat` 方法，这个类型接受两个参数，返回的新数组类型应该是按照输入参数从左到右的顺序合并为一个新的数组

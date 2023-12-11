@@ -18,6 +18,7 @@ float f1(float x, float offset, float freq)
 #define DEFAULT_COUNT 12
 
 uniform int count;
+uniform float itemPos[12];
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
@@ -71,12 +72,10 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         .401
     );
 
-    float tmp[3] = float[3](0.0, 0.0, 0.0);
-
     for (int i = 0; i < count; ++i) {
         float x = uv.x + 4. * iTime;
         float y = f1(x, offsets[i], freqs[i]);
-        y = clamp(y, tmp[i] - 1., tmp[i] + 1.);
+        y = clamp(y, itemPos[i] - 1., itemPos[i] + 1.);
         float uv_x = min(uv.x, 1. + .4 * sin(radians(210.) * iTime + radians(360.) * float(i) / 3.));
         
         float r = uv.x / 40.;

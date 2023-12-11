@@ -1417,6 +1417,46 @@ type AppendToObject<T, U extends string, V> = Omit<{
 type Result = AppendToObject<test, 'home', boolean> // 结果就是正确的 { home: boolean, key: 'cat' }
 ```
 
+# 529. Absolute
+
+实现一个接收 `string/number/bigint` 类型的参数的 `Absolute` 类型，返回一个正数字符串
+
+```ts
+type Test = -100;
+type Result = Absolute<Test>; // '100'
+```
+
+```ts
+type Absolute<T extends number | string | bigint> = any
+// 1. 通过 `` 截取 - 符号
+type Absolute<T extends number | string | bigint> = `${T}` extends `-${infer R}` ? R : `${T}`
+// 2. 或者通过新增加一个 U ，把 `${T}` 写到统一的地方
+type Absolute<T extends number | string | bigint, U = `${T}`> = U extends `-${infer R}` ? R : U
+```
+
+# 531. String to Union
+
+实现一个将接收到的 `String` 参数转换为一个字母 `Union` 类型
+
+```ts
+type Result = StringToUnion<'123'> // '1' | '2' | '3'
+```
+
+```ts
+type StringToUnion<T extends string> = any
+// 1.
+type StringToUnion<T extends string> = T extends `${infer F}${infer R}`
+    ? F | StringToUnion<R>
+    : never
+// 2. 或者先把字符串abc拆成[a, b, c]，然后通过遍历数组[number]获取联合类型
+type Split<S extends string> = S extends ''
+    ? []
+    : S extends `${infer F}${infer R}`
+        ? [F, ...Split<R>]
+        : [S]
+type StringToUnion<T extends string> = Split<T>[number]
+```
+
 # 533. Concat
 
 在类型系统中实现 JavaScript 内置的 `Array.concat` 方法，这个类型接受两个参数，返回的新数组类型应该是按照输入参数从左到右的顺序合并为一个新的数组
@@ -1432,6 +1472,10 @@ type Concat<T extends unknown[], U extends unknown[]> = [...T, ...U]
 // 2. Concat<typeof tuple, typeof tuple>, [1, 1]> 会报错, 根据错误提示加上 readonly
 type Concat<T extends readonly unknown[], U extends readonly unknown[]> = [...T, ...U]
 ```
+
+# 545. printf
+
+TODO:
 
 # 898. Includes
 

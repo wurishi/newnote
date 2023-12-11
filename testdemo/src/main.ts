@@ -1,6 +1,7 @@
 import { fragment, vertex } from "./webgl";
 import S from './test'
 import WebGLCanvas from "./lib/WebGLCanvas";
+import { getWindowRect } from "./lib/utils";
 
 (() => {
   let webGL = new WebGLCanvas();
@@ -13,6 +14,13 @@ import WebGLCanvas from "./lib/WebGLCanvas";
   const uiCount = webGL.getUniformLocation('count');
 
   let then = 0, time = 0, frame = 0;
+  let rect = { x: 0, y: 0, w: 0, h: 0 };
+  const watchWindowPos = () => {
+    rect = getWindowRect('body');
+  }
+  window.addEventListener('resize', watchWindowPos);
+  watchWindowPos();
+
   const render = (now: number) => {
     now *= 0.001;
     const elapsedTime = Math.min(now - then, 0.1);
@@ -24,6 +32,9 @@ import WebGLCanvas from "./lib/WebGLCanvas";
     webGL.render({
       time, frame
     });
+    if (frame % 30 === 0) {
+      watchWindowPos();
+    }
     requestAnimationFrame(render);
   }
   requestAnimationFrame(render);

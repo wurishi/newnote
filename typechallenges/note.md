@@ -1475,7 +1475,31 @@ type Concat<T extends readonly unknown[], U extends readonly unknown[]> = [...T,
 
 # 545. printf
 
-TODO:
+```ts
+type FormatCase1 = Format<'%sabc'> // string => string
+type FormatCase2 = Format<'%s%dabc'> // string => number => string
+type FormatCase3 = Format<'sdabc'> // string
+type FormatCase4 = Format<'sd%abc'> // string
+```
+
+```ts
+type Format<T extends string> = any
+// 1. 先定义一个字典，碰到%s就是string, %d 就是 number
+type MapDict = {
+    s: string;
+    d: number;
+}
+// 2.
+type Format<T extends string> = T extends `${string}%${infer M}${infer R}`
+    ? M extends keyof MapDict
+        ? (x: MapDict[M]) => Format<R>
+        : Format<R>
+    : string
+```
+
+# 553. Deep object to unique
+
+<!-- https://hub.yzuu.cf/type-challenges/type-challenges/tree/main/questions/00553-hard-deep-object-to-unique -->
 
 # 898. Includes
 

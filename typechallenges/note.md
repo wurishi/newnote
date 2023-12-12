@@ -1601,13 +1601,53 @@ type Diff<O, O1> = {
 集合对象中使用交，并集
 
 ```ts
-type Result1 = keyof (Foo | Bar) // 只有同时存在于 Foo 和 Bar 的keys
-type Result2 = keyof (Foo & Bar) // 只要存在于 Foo 或 Bar 的keys
+type Result1 = keyof (Foo | Bar) // 只有同时存在于 Foo 和 Bar 的 keys
+type Result2 = keyof (Foo & Bar) // 只要存在于 Foo 或 Bar 的 keys
 ```
 
 # 651. Length of String 2
 
 与 298 相同？
+
+# 697. Tag
+
+```ts
+type GetTags<B> = any
+
+type Tag<B, T extends string> = any
+
+type UnTag<B> = any
+
+type HasTag<B, T extends string> = any
+type HasTags<B, T extends readonly string[]> = any
+type HasExactTags<B, T extends readonly string[]> = any
+// 1. view 00697-extreme-tag.ts source code
+```
+
+# 730. Union to Tuple
+
+```ts
+type UnionToTuple<T> = any
+// 1. ts 没有提供从联合类型取值的操作
+type Union = 1 | 2
+type A = Union[1] // error
+// 2. 也不能直接将联合类型转为元组
+type UnionToTuple<T> = T extends infer F | infer R ? [F, R] : never
+type A = UnionToTuple<Union> // [1, 1] | [2, 2]
+// 3. 可以将联合类型转换成函数的交叉类型，再通过 infer 推断类型
+// 函数重载
+type FunctionOverload = {
+    (): number;
+    (): string;
+}
+// 函数交叉类型
+type Intersection = (() => number) & (() => string)
+// 通过ReturnType上面二种方法都可以拿到最后一个定义的类型
+type A = ReturnType<FunctionOverload> // string
+type B = ReturnType<Intersection> // string
+// 函数重载和函数交叉类型是相等的
+type C = FunctionOverload extends Intersection ? true : false // true
+```
 
 # 898. Includes
 

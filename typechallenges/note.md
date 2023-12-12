@@ -1499,7 +1499,115 @@ type Format<T extends string> = T extends `${string}%${infer M}${infer R}`
 
 # 553. Deep object to unique
 
-<!-- https://hub.yzuu.cf/type-challenges/type-challenges/tree/main/questions/00553-hard-deep-object-to-unique -->
+```ts
+type Foo = { foo: 2; bar: { 0: 1 }; baz: { 0: 1 } }
+type UniqFoo = DeepObjectToUniq<Foo>
+
+let foo:Foo, uniqFoo: UniqFoo
+uniqFoo = foo // ok
+foo = uniqFoo // ok
+
+Equal<UniqFoo, Foo> // false
+UniqFoo['foo'] // 2
+UniqFoo['bar'][0] // 1
+Equal<keyof Foo & string, keyof UniqFoo & string> // true
+```
+
+```ts
+type DeepObjectToUniq<O extends object> = any
+// 1. 查看 00553-hard-deep-object-to-unique.ts source code
+```
+
+# 599. Merge
+
+将两个类型合并成一个类型，第二个类型的键会覆盖第一个类型的键
+
+```ts
+type foo = {
+    name: string;
+    age: string;
+}
+type coo = {
+    age: number;
+    sex: string;
+}
+type Result = Merge<foo, coo> // { name: string, age: number, sex: string }
+```
+
+```ts
+type Merge<F, S> = any
+// 1.
+type Merge<F, S> = {
+    [K in keyof F | keyof S]: K extends keyof S
+        ? S[K]
+        : K extends keyof F
+            ? F[K]
+            : never
+}
+// 2. 或者使用 Omit
+type Merge<F, S> = Omit<F, keyof S> & S
+// 3. 但是会在test中出错，因为返回的类型需要使用[K in keyof]把类型的每个属性遍历开
+type Merge<F, S, P = Omit<F, keyof S> & S> = {
+    [K in keyof P]: P[K]
+}
+```
+
+# 612. KebabCase
+
+将 `camelCase` 或 `PascalCase` 字符串转换成 `kebab-case`
+
+```ts
+type FooBarBaz = KebabCase<'FooBarBaz'> // foo-bar-baz
+type DoNothing = KebabCase<'do-nothing'> // do-nothing
+```
+
+```ts
+type KebabCase<S> = any
+// 1. Uncapitalize<S> 会将首字母转换成小写
+type KebabCase<S> = S extends `${infer F}${infer R}`
+    ? R extends Uncapitalize<R>
+        ? `${Uncapitalize<F>}${KebabCase<R>}`
+        : `${Uncapitalize<F>}-${KebabCase<R>}`
+    : S
+```
+
+# 645. Diff
+
+获取两个接口类型中的差值属性
+
+```ts
+type Foo = {
+    a: string;
+    b: number;
+}
+type Bar = {
+    a: string;
+    c: boolean;
+}
+type Result1 = Diff<Foo, Bar> // { b: number, c: boolean }
+type Result2 = Diff<Bar, Foo> // { b: number, c: boolean }
+```
+
+```ts
+type Diff<O, O1> = any
+// 1. 使用 Omit
+type Diff<O, O1> = Omit<(O & O1), keyof (O | O1)>
+// 2. 不使用 Omit
+type Diff<O, O1> = {
+    [K in keyof(O & O1) as K extends keyof (O | O1) ? never : K]: (O & O1)[K]
+}
+```
+
+集合对象中使用交，并集
+
+```ts
+type Result1 = keyof (Foo | Bar) // 只有同时存在于 Foo 和 Bar 的keys
+type Result2 = keyof (Foo & Bar) // 只要存在于 Foo 或 Bar 的keys
+```
+
+# 651. Length of String 2
+
+与 298 相同？
 
 # 898. Includes
 

@@ -9,7 +9,7 @@ export interface Boardcast {
 }
 
 export default function createBoardcast(): Boardcast {
-    // return new MyBroadcastChannel('helloworld');
+    return new MyBroadcastChannel('helloworld');
     // return new MySharedWorker('www');
-    return new MyLocalStorage('rte');
+    // return new MyLocalStorage('rte');
 }

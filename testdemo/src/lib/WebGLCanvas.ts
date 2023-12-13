@@ -25,9 +25,9 @@ export type RenderParams = {
 
 export default class WebGLCanvas {
 
-    public _canvas: HTMLCanvasElement;
-    public _gl: WEBGL_CONTEXT;
-    public _program?: WebGLProgram;
+    protected _canvas: HTMLCanvasElement;
+    protected _gl: WEBGL_CONTEXT;
+    protected _program?: WebGLProgram;
 
     constructor(canvas?: HTMLCanvasElement, style?: {
         width?: string, height?: string
@@ -141,10 +141,10 @@ export default class WebGLCanvas {
         }
     }
 
-    public _aPos?: AttribLocation;
-    public _iRes?: UniformLocation;
-    public _iTim?: UniformLocation;
-    public _iFra?: UniformLocation;
+    protected _aPos?: AttribLocation;
+    protected _iRes?: UniformLocation;
+    protected _iTim?: UniformLocation;
+    protected _iFra?: UniformLocation;
 
     public init(): asserts this is (this & {
         _aPos: AttribLocation,

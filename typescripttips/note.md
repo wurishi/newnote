@@ -791,6 +791,7 @@ createPost(title: string) {
   // 执行后，因为有了 asserts 断言了 this.loggedInUserId 是 string 类型
   postFn(this.loggedInUserId, title);
 }
+// 注意 loggedInUserId 必须是 public / protected, private 不行
 ```
 
 # 19. 合理的返回

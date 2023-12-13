@@ -1649,6 +1649,29 @@ type B = ReturnType<Intersection> // string
 type C = FunctionOverload extends Intersection ? true : false // true
 ```
 
+# 734. Inclusive Range
+
+```ts
+type InclusiveRange<Lower extends number, Higher extends number> = any
+// 1.
+type InclusiveRange<Lower extends number, Higher extends number, C extends any[] = [], I = false, R extends number[] = []> = I extends true
+    ? C['length'] extends Higher
+        ? [...R, Higher]
+        : InclusiveRange<Lower, Higher, [...C, 1], true, [...R, C['length']]>
+    : C['length'] extends Lower
+        ? InclusiveRange<Lower, Higher, C, true>
+        : C['length'] extends Higher
+            ? []
+            : InclusiveRange<Lower, Higher, [...C, 1], false>
+```
+
+# 741. Sort
+
+```ts
+type Sort = any
+// 1.
+```
+
 # 898. Includes
 
 在类型系统里实现 JavaScript 的 `Array.includes` 方法，这个类型接受两个参数，返回的类型要么是 `true`，要么是 `false`

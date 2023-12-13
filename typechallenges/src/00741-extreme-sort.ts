@@ -46,9 +46,11 @@ type Split<A extends number[], M extends number, Lower extends number[] = [], Hi
             ? Split<T, M, [...Lower, H], Higher>
             : Split<T, M, Lower, [...Higher, H]>
         : [Lower, Higher]
-type IsLower<A extends number, B extends number> = ('0123456789' extends `${string}${A}${string}${B}${string}`)
+;type IsLower<A extends number, B extends number> = '0123456789' extends `${string}${A}${string}${B}${string}`
     ? true
     : false
+
+type t0 = Sort<[2, 1]>
 
 /* _____________ Test Cases _____________ */
 import type { Equal, Expect } from '@type-challenges/utils'

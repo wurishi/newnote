@@ -1686,6 +1686,13 @@ join('-')('a') // 'a'
 ```ts
 declare function join(delimiter: any): (...parts: any[]) => any
 // 1.
+type StringJoin<D extends string, T extends string[]> = T extends [`${infer F}`, ...infer R extends string[]]
+    ? R extends []
+        ? F
+        : `${F}${D}${StringJoin<D, R>}`
+    : ''
+// 2.
+declare function join<D extends string>(delimiter: D): <T extends string[]>(...parts: T) => StringJoin<D, T>
 ```
 
 # 898. Includes

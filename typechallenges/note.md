@@ -1669,6 +1669,22 @@ type InclusiveRange<Lower extends number, Higher extends number, C extends any[]
 
 ```ts
 type Sort = any
+// 1. view 00741-extreme-sort.ts source code
+```
+
+# 847. String Join
+
+```ts
+const hyphenJoiner = join('-');
+const result = hyphenJoiner('a', 'b', 'c') // 'a-b-c'
+
+join('#')('a', 'b', 'c') // 'a#b#c'
+join('')('a', 'b', 'c') // 'abc'
+join('-')('a') // 'a'
+```
+
+```ts
+declare function join(delimiter: any): (...parts: any[]) => any
 // 1.
 ```
 

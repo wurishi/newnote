@@ -1695,6 +1695,22 @@ type StringJoin<D extends string, T extends string[]> = T extends [`${infer F}`,
 declare function join<D extends string>(delimiter: D): <T extends string[]>(...parts: T) => StringJoin<D, T>
 ```
 
+# 869. DistributeUnions
+
+```ts
+type T1 = DistributeUnions<[1 | 2, 'a' | 'b']> // [1, 'a'] | [2, 'a'] | [1 | 'b'] | [2, 'b']
+
+type T2 = DistributeUnions<{ type: 'a', value: number | string } | { type: 'b', value: boolean }>
+// | { type: 'a', value: number }
+// | { type: 'a', value: string }
+// | { type: 'b', value: boolean }
+```
+
+```ts
+type DistributeUnions<T> = any
+// 1. view 00869-extreme-distributeunions.ts source code
+```
+
 # 898. Includes
 
 在类型系统里实现 JavaScript 的 `Array.includes` 方法，这个类型接受两个参数，返回的类型要么是 `true`，要么是 `false`
@@ -1726,6 +1742,61 @@ type Includes<T extends readonly any[], U> = T extends [infer First, ...infer Re
         ? true
         : Includes<Rest, U>
     : false
+```
+
+# 925. Assert Array Index
+
+```ts
+// 1. view 00925-extreme-assert-array-index.ts source code
+```
+
+# 949. AnyOf
+
+实现一个 `AnyOf<T extends readonly any[]>` 泛型，在 T 中只有一个值为 true 就返回 true。否则返回 false。 `[] / {}` 都认为是 false
+
+```ts
+type Sample1 = AnyOf<[1, '', false, [], {}]> // true
+type Sample2 = AnyOf<[0, '', false, [], {}]> // false
+```
+
+```ts
+type AnyOf<T extends readonly any[]> = any
+// 1. 0 | '' | false | [] | undefined | null 这些值指定为 Falsy 都比较简单，主要麻烦的是 {}，有两种方法表示空对象
+type Obj1 = {[key: string]: never}
+type Obj2 = Record<string, never>
+type FALSE = [] | Record<string, never> | '' | 0 | false | undefined | null
+// 2. 使用 T[number] 遍历
+type FalsyVal<V> = V extends FALSE ? false : true
+type AnyOf<T extends readonly any[]> = true extends FalsyVal<T[number]> ? true : false
+// 3. 使用 infer 递归检查
+type AnyOf<T extends readonly any[]> = T extends [infer Head, ...infer Tail]
+    ? Head extends FALSE
+        ? AnyOf<Tail>
+        : true
+    : false
+```
+
+# 956. DeepPick
+
+```ts
+type obj = {
+    name: 'hoge',
+    age: 20,
+    friend: {
+        name: 'fuga',
+        age: 30,
+        family: {
+            name: 'baz',
+            age: 1,
+        }
+    }
+}
+type T1 = DeepPick<obj, 'name'> // { name: 'hoge' }
+type T2 = DeepPick<obj, 'name' | 'friend.name'> // { name: 'hoge' } & { friend: { name: 'fuga' } }
+```
+
+```ts
+
 ```
 
 # 3057. Push

@@ -1843,6 +1843,117 @@ type IsUnion<T, T1 = T> = Equal<(T extends any
 ), boolean>
 ```
 
+# 1130. ReplaceKeys
+
+```ts
+type ReplaceKeys<U, T, Y> = any
+// 1. 
+type ReplaceKeys<U, T, Y> = {
+    [K in keyof U]: 如果 K 在 T 里面
+        ? 从 Y 中找
+            ? 如果找到就输出Y[K]
+            : 否则啥都不做
+        : 原样输出U[K]
+}
+// 2.
+type ReplaceKeys<U, T, Y> = {
+    [K in keyof U]: K extends T
+        ? K extends keyof Y
+            ? Y[K]
+            : never
+        : U[K]
+}
+```
+
+# 1290. Pinia
+
+```ts
+declare function defineStore(store: unknown): unknown
+// 1. 首先要有一个将Getters从方法转换成值
+type MapGetter<G> = {
+    readonly [K in keyof G]: G[K] extends (...args: any[]) => any
+        ? ReturnType<G[K]>
+        : never
+}
+// 2.
+declare function defineStore<S, G, A>(store: {
+    id: string;
+    state: () => S;
+    getters: G & ThisType<Readonly<S> & MapGetters<G>>;
+    actions: A & ThisType<S & MapGetters<G> & A>;
+}): S & MapGetters<G> & A & { init: () => void }
+```
+
+# 1367. Remove Index Signature
+
+```ts
+type Foo = {
+    [key: string]: any
+    foo(): void
+}
+type A = RemoveIndexSignature<Foo> // { foo(): void }
+```
+
+```ts
+type RemoveIndexSignature<T> = any
+// 1.
+type RemoveIndexSignature<T, P = PropertyKey> = {
+    [K in keyof T as P extends K
+        ? never
+        : K extends P
+            ? K
+            : never
+    ]: T[K]
+}
+```
+
+# 1383. Camelize
+
+实现 Camelize 类型，将对象属性名从蛇形命名（下划线命名）转换为小驼峰命名
+
+```ts
+Camlize<{
+    some_prop: string,
+    prop: { another_prop: string },
+    array: [{ snake_case: string }]
+}>
+// result
+type Result = {
+    someProp: string,
+    prop: { anotherProp: string },
+    array: [{ snakeCase: string }]
+}
+```
+
+```ts
+type Camelize<T> = any
+// 1. view 01383-hard-camelize.ts source code
+```
+
+# 1978. Percentage Parser
+
+```ts
+PercentageParser<''> // ['', '', '']
+PercentageParser<'+85%'> // ['+', '85', '%']
+PercentageParser<'-85%'> // ['-', '85', '%']
+PercentageParser<'85%'> // ['', '85', '%']
+PercentageParser<'85'> // ['', '85', '']
+```
+
+```ts
+type PercentageParser<A extends string> = any
+// 1. 用infer先判断有+/-和%的情况, 再判断有+/-的情况，再判断有%的情况。。。
+type PercentageParser<A extends string> = A extends `${infer R extends '+' | '-'}${infer U}%`
+    ? [R, U, '%']
+    : A extends `${infer R extends '+' | '-'}${infer U}`
+        ? [R, U, '']
+        : A extends `${infer U}%`
+            ? ['', U, '%']
+            : A extends `${infer U}`
+                ? ['', U, '']
+                : never
+```
+
 # 3057. Push
 
 在类型系统中实现 `Array.push`

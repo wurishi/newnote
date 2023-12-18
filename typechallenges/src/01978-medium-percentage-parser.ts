@@ -32,15 +32,21 @@
 
 // type PercentageParser<A extends string> = any
 
-type PercentageParser<A extends string> = A extends `${infer R extends '+' | '-'}${infer U}%`
-    ? [R, U, '%']
-    : A extends `${infer R extends '+' | '-'}${infer U}`
-        ? [R, U, '']
-        : A extends `${infer U}%`
-            ? ['', U, '%']
-            : A extends `${infer U}`
-                ? ['', U, '']
-                : never
+// type PercentageParser<A extends string> = A extends `${infer R extends '+' | '-'}${infer U}%`
+//     ? [R, U, '%']
+//     : A extends `${infer R extends '+' | '-'}${infer U}`
+//         ? [R, U, '']
+//         : A extends `${infer U}%`
+//             ? ['', U, '%']
+//             : A extends `${infer U}`
+//                 ? ['', U, '']
+//                 : never
+
+type CheckPrefix<T> = T extends '+' | '-' ? T : never;
+type CheckSuffix<T> = T extends `${infer P}%` ? [P, '%'] : [T, ''];
+type PercentageParser<A extends string> = A extends `${CheckPrefix<infer L>}${infer R}`
+    ? [L, ...CheckSuffix<R>]
+    : ['', ...CheckSuffix<A>]
 
 /* _____________ 测试用例 _____________ */
 import type { Equal, Expect } from '@type-challenges/utils'

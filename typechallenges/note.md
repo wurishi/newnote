@@ -1954,6 +1954,24 @@ type PercentageParser<A extends string> = A extends `${infer R extends '+' | '-'
                 : never
 ```
 
+# 2059. Drop String
+
+```ts
+type Butterfly = DropString<'foobar!', 'fb'> // 'ooar!'
+```
+
+```ts
+type DropString<S, R> = any
+// 1.
+type DropString<S, R> = S extends `${infer X}${infer Y}`
+    ? R extends `${string}${X}${string}`
+        ? DropString<Y, R> // 如果 R 里面有 X, 就去掉 X 继续 Drop 剩余的 Y
+        : `${X}${DropString<Y, R>}` // 如果没有，就保留X, 拿剩下的 Y 继续检查
+    : ''
+```
+
+TODO: https://hub.yzuu.cf/type-challenges/type-challenges/blob/main/questions/02070-medium-drop-char/README.zh-CN.md
+
 # 3057. Push
 
 在类型系统中实现 `Array.push`

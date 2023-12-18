@@ -1970,7 +1970,25 @@ type DropString<S, R> = S extends `${infer X}${infer Y}`
     : ''
 ```
 
-TODO: https://hub.yzuu.cf/type-challenges/type-challenges/blob/main/questions/02070-medium-drop-char/README.zh-CN.md
+# 2070. Drop Char
+
+从字符串中剔除指定字符。
+
+```ts
+type DropChar<S, C> = any
+// 1. 
+type DropChar<S, C> = S extends `${infer F}${infer R}`
+    ? F extends C
+        ? DropChar<R, C>
+        : `${F}${DropChar<R, C>}`
+    : ''
+// 2. 或者定义 C extends string，然后直接让C参数模板字符串的匹配
+type DropChar<S, C extends string> = S extends `${infer L}${C}${infer R}`
+    ? DropChar<`${L}${R}`, C>
+    : S
+```
+
+TODO: https://hub.yzuu.cf/type-challenges/type-challenges/blob/main/questions/02257-medium-minusone/README.zh-CN.md
 
 # 3057. Push
 

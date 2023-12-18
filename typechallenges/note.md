@@ -1796,7 +1796,51 @@ type T2 = DeepPick<obj, 'name' | 'friend.name'> // { name: 'hoge' } & { friend: 
 ```
 
 ```ts
+type DeepPick = any
+// 1. view 00956-hard-deeppick.ts source code
+```
 
+# 1042. IsNever
+
+实现一个类型 `IsNever<T>`， 当 T 接受的类型是 `never` 时，返回 true，否则返回 false
+
+```ts
+type A = IsNever<never> // true
+type B = IsNever<undefined> // false
+type C = IsNever<null> // false
+type D = IsNever<[]> // false
+type E = IsNever<number> // false
+```
+
+```ts
+type IsNever<T> = any
+// 1. 使用 Equal
+type IsNever<T> = Equal<T, never>
+// 2. 如果直接使用 extends 
+type IsNever<T> = T extends never ? true : false
+// 3. 会发现无法通过 Equal<IsNever<never>, true> 的测试，需要加个[]
+type IsNever<T> = [T] extends [never] ? true : false
+```
+
+# 1097. IsUnion
+
+实现一个类型 `IsUnion<T>`，如果输入的类型 T 是联合类型，返回 true，否则返回 false
+
+```ts
+type case1 = IsUnion<string> // false
+type case2 = IsUnion<string | number> // true
+type case3 = IsUnion<[string | number]> // false
+```
+
+```ts
+type IsUnion<T> = any
+// 1. 如果 T 中只有一个，返回的结果要么是true要么是false,如果超过一个，则会返回true&false 即 boolean
+type IsUnion<T, T1 = T> = Equal<(T extends any
+    ? T1 extends T
+        ? true
+        : false
+    : false
+), boolean>
 ```
 
 # 3057. Push

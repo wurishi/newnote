@@ -36,7 +36,57 @@
 
 /* _____________ Your Code Here _____________ */
 
-type DeepPick = any
+// type DeepPick = any
+
+// type DeepPick<O extends object, Keys extends string> = 
+//   UnionToIntersection<Keys extends string ? PickByPath<O, Split<Keys>> : never>;
+
+// type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (k: infer I) => void
+//   ? I : never;
+
+// type Path = readonly string[];
+
+// /**
+//  * Tail<[]> = []
+//  * Tail<['foo', 'bar']> = ['bar']
+//  */
+// type Tail<P extends Path> = P extends [unknown, ...infer T] ? T : [];
+
+// type Split<S extends string> = S extends `${infer Key}.${infer Rest}`
+//   ? [Key, ...Split<Rest>]
+//   : [S]
+
+// type PickByPath<O, P extends Path> = P extends []
+//   ? O
+//   : P[0] extends keyof O
+//     ? { [K in P[0]]: PickByPath<O[P[0]], Tail<P>> }
+//     : unknown;
+
+// type DeepPick<T, PathUnion extends string> = 
+//   UnionToInterection<PathUnion extends infer Keys ? TypeGet<T, Keys> : never>;
+
+// type UnionToInterection<U> = (U extends any ? (arg: U) => any : never) extends ((arg: infer I) => any) ? I : never;
+
+// type TypeGet<T, Paths> = Paths extends `${infer A}.${infer B}`
+//   ? A extends keyof T 
+//     ? { [K in A]: TypeGet<T[A], B> } 
+//     : never
+//   : Paths extends keyof T
+//     ? { [K in Paths]: T[Paths] }
+//     : never
+
+// type a0 = TypeGet<Obj, 'b' | 'obj' | ''>
+
+type DeepPick<T extends Record<string, any>, U extends string> = (U extends string
+    ? U extends `${infer F}.${infer R}`
+      ? (arg: {[K in F]: DeepPick<T[F], R>}) => void
+      : U extends keyof T
+        ? (arg:Pick<T, U>) => void
+        : (arg: unknown) => void
+    : never
+  ) extends (arg:infer Z) => void ? Z : never
+  
+type t1 = DeepPick<Obj, 'a' | 'obj.e' | 'obj.obj2.i'>
 
 /* _____________ Test Cases _____________ */
 import type { Equal, Expect } from '@type-challenges/utils'

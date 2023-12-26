@@ -2035,6 +2035,8 @@ type PickByType<T, U> = Pick<T, {
 
 ```
 
+https://hub.yzuu.cf/type-challenges/type-challenges/tree/main/questions/02688-medium-startswith
+
 # 3057. Push
 
 在类型系统中实现 `Array.push`

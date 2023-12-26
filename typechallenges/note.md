@@ -2010,6 +2010,31 @@ type Tmp<A extends unknown[]> = A extends [unknown, ...infer R]
 // 3. view 02257-medium-minusone.ts source code
 ```
 
+# 2595. PickByType
+
+```ts
+type OnlyBoolean = PickByType<{
+    name: string
+    count: number
+    isReadonly: boolean
+    isEnable: boolean
+}, boolean>
+// { isReadonly: boolean; isEnable: boolean; }
+```
+
+```ts
+type PickByType<T, U> = any
+// 1. 使用 as 约束 K
+type PickByType<T, U> = {
+    [K in keyof T as T[K] extends U ? K : never]: T[K]
+}
+// 2. 或者使用Pick
+type PickByType<T, U> = Pick<T, {
+    [P in keyof T]: T[P] extends U ? P : never
+}[keyof T]>
+
+```
+
 # 3057. Push
 
 在类型系统中实现 `Array.push`

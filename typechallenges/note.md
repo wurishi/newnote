@@ -1988,7 +1988,27 @@ type DropChar<S, C extends string> = S extends `${infer L}${C}${infer R}`
     : S
 ```
 
-TODO: https://hub.yzuu.cf/type-challenges/type-challenges/blob/main/questions/02257-medium-minusone/README.zh-CN.md
+# 2257. MinusOne
+
+给定一个正整数作为类型的参数，要求返回的类型是该数字减1
+
+```ts
+type Zero = MinusOne<1> // 0
+type FiftyFour = MinusOne<55> // 54
+```
+
+```ts
+type MinusOne<T extends number> = any
+// 1. 
+type MinusOne<T, Arr extends unknown[] = []> = T extends Arr['length']
+    ? Tmp<Arr>['length'] // Tmp用来获取 Arr.length - 1
+    : MinusOne<T, [...Arr, any]>
+type Tmp<A extends unknown[]> = A extends [unknown, ...infer R]
+    ? R['length']
+    : never
+// 2. 上面的方法面对负数或者数字很大时会失败
+// 3. view 02257-medium-minusone.ts source code
+```
 
 # 3057. Push
 

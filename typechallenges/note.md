@@ -2102,6 +2102,57 @@ type PartialByKeys<T, K extends keyof T = keyof T> = MergeType<{
 // 可以打开 exactOptionalPropertyTypes flag in tsconfig.ts 来解决
 ```
 
+# 2759. RequiredByKeys
+
+实现一个通用的 `RequiredByKeys<T, K>`, K 应该是 T 的属性集。当没有提供 K 时，它就和普通的 `Required<T>` 一样使所有属性成为必选。
+
+```ts
+interface User {
+    name?: string
+    age?: number
+    address?: string
+}
+type UserRequiredName = RequiredByKeys<User, 'name'> // { name:string; age?:number; address?:string; }
+```
+
+```ts
+type RequiredByKeys<T, K> = any
+// 1.
+type Merge<O> = {
+    [K in keyof O]: O[K]
+}
+// 2. 
+type RequiredByKeys<T, K extends keyof T = keyof T> = Merge<T & 
+Required<Pick<T, K extends keyof T ? K : never>>>
+```
+
+# 2793. Mutable
+
+实现一个通用的类型 `Mutable<T>`，使类型 T 的全部属性可变（非只读）。
+
+```ts
+interface Todo {
+    readonly title: string
+    readonly description: string
+    readonly completed: boolean
+}
+type MutableTodo = Metable<Todo> // { title:string; description:string; completed:boolean; }
+```
+
+```ts
+type Mutable<T> = any
+// 1. 使用 -readonly 关键字就可以将属性指定为非只读
+type Mutable<T> = {
+    -readonly [K in keyof T]: T[K]
+}
+// 2. 这样只能转换第一层，如果要 deep -readonly ，可以使用递归
+type Mutable<T> = {
+    -readonly [K in keyof T]: T[K] extends object
+        ? Mutable<T[K]>
+        : T[K]
+}
+```
+
 # 3057. Push
 
 在类型系统中实现 `Array.push`

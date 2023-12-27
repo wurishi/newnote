@@ -110,12 +110,16 @@ async function getList(n, total) {
 }
 
 const current = 101;
-const NUM = 24456;
+const NUM = 12; // from
 const PAGE = 12;
 
 async function batch(count = 10) {
   for (let i = 0; i < count; i++) {
     let num = NUM - i * PAGE;
+    if (num < 0) {
+      console.log(num, "过小");
+      break;
+    }
     console.log(`${num} (${i}/${count})`);
     await doGetList(num);
   }

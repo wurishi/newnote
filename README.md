@@ -178,6 +178,7 @@ concurrent 实验
 # rust
 
 Rust
+https://rust.p2hp.com/learn/
 
 # rxjs30
 

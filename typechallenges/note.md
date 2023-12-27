@@ -2035,7 +2035,72 @@ type PickByType<T, U> = Pick<T, {
 
 ```
 
-https://hub.yzuu.cf/type-challenges/type-challenges/tree/main/questions/02688-medium-startswith
+# 2688. StartsWith
+
+实现 `StartsWith<T, U>` 接收两个 string 类型参数，然后判断 T 是否以 U 开头。根据结果返回 true 或 false。
+
+```ts
+type a = StartsWith<'abc', 'ac'> // false
+type b = StartsWith<'abc', 'ab'> // true
+type c = StartsWith<'abc', 'abcd'> // false
+```
+
+```ts
+type StartsWith<T extends string, U extends string> = any
+// 1. 
+type StartsWith<T extends string, U extends string> = T extends `${U}${string}` ? true : false
+```
+
+# 2693. EndsWith
+
+实现 `EndsWith<T, U>` 接收两个 string 类型参数，判断 T 是否以 U 结尾。根据结果返回 true/false
+
+```ts
+type a = EndsWith<'abc', 'bc'> // true
+type b = EndsWith<'abc', 'abc'> // true
+type c = EndsWith<'abc', 'd'> // false
+```
+
+```ts
+type EndsWith<T extends string, U extends string> = any
+// 1.
+type EndsWith<T extends string, U extends string> = T extends U
+    ? true
+    : T extends `${string}${U}`
+        : true
+        : false
+// 2. `${string}${U}` 已经包含了 string==='' 的情况，所以可以简写
+type EndsWith<T extends string, U extends string> = T extends `${string}${U}` ? true : false
+```
+
+# 2757. PartialByKeys
+
+实现一个通用的 `PartialByKeys<T, K>`，它接收两个类型参数 T 和 K。
+K 应该设置为可选的 T 的属性集。当没有提供 K 时，它就和普通的 `Partial<T>` 一样使所有属性都是可选的
+
+```ts
+interface User {
+    name: string
+    age: number
+    address: string
+}
+type UserPartialName = PartialByKeys<User, 'name'> // { name?:string; age:number; address:string; }
+```
+
+```ts
+type PartialByKeys<T, K> = any
+// 1.
+type MergeType<O> = {
+    [P in keyof O]: O[P]
+}
+type PartialByKeys<T, K extends keyof T = keyof T> = MergeType<{
+    [Key in keyof T as Key extends K ? Key : never]?: T[Key]
+} & {
+    [Key in keyof T as Key extends K ? never : Key]: T[Key]
+}>
+// 2. 会出现 name?: string | undefined 的情况
+// 可以打开 exactOptionalPropertyTypes flag in tsconfig.ts 来解决
+```
 
 # 3057. Push
 

@@ -46,10 +46,3 @@ type cases = [
   Expect<Equal<PickByType<Model, string>, { name: string }>>,
   Expect<Equal<PickByType<Model, number>, { count: number }>>,
 ]
-
-/* _____________ Further Steps _____________ */
-/*
-  > Share your solutions: https://tsch.js.org/2595/answer
-  > View solutions: https://tsch.js.org/2595/solutions
-  > More Challenges: https://tsch.js.org
-*/

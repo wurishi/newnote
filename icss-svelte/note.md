@@ -4119,5 +4119,22 @@ return (
 
 ## 76.4 Snow Scratch
 
+# 77. 使用 mask 实现遮罩过滤
 
+## 77.1 mask 简单用法介绍
+
+```css
+{
+  /* 使用图片 */
+  mask: url(mask.png); /* 使用位图来做遮罩 */
+  mask: url(masks.svg#star); /* 使用 SVG 图形中的形状来做遮罩 */
+
+  /* 使用渐变 */
+  mask: linear-gradient(#000, transparent);
+}
+```
+
+## 77.2 mask 实现遮罩
+
+要注意的是，使用 mask，不是将弹幕部分遮挡住。而是利用 `mask`，指定弹幕容器之下哪些部分正常展示，哪些部分透明隐藏的。
 

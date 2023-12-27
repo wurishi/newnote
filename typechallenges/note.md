@@ -2153,6 +2153,11 @@ type Mutable<T> = {
 }
 ```
 
+TODO:
+https://hub.yzuu.cf/type-challenges/type-challenges/tree/main/questions/02822-hard-split
+
+https://hub.yzuu.cf/type-challenges/type-challenges/issues?q=label%3A2793+label%3Aanswer+sort%3Areactions-%2B1-desc+
+
 # 3057. Push
 
 在类型系统中实现 `Array.push`

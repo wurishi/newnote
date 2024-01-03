@@ -1563,6 +1563,8 @@ Demo 4.4.2:
 
 # 5. 巧用 SVG 滤镜制作表情包
 
+[参考链接](https://github.com/chokcoco/iCSS/issues/107)
+
 ## 5.1 什么是  SVG `feTurbulence`滤镜？
 
 Turbulence 意为湍流，不稳定气流。而 SVG `<feTurbulence>`滤镜能够实现半透明的烟熏或波状图像。通常用于实现一些特殊的纹理。滤镜利用 Perlin 噪声函数创建了一个图像。噪声在模拟云雾效果时非常有用，能产生非常复杂的质感，利用它可以实现人造纹理比如说云纹，大理石纹的合成。

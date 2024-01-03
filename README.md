@@ -201,11 +201,11 @@ https://shadertoyunofficial.wordpress.com/
 
 # sveltejs
 
-参考网站: [sveltejs](https://www.sveltejs.cn/)
+参考网站: [sveltejs](https://www.sveltejs.cn/) **(完成)**
 
 # svg
 
-参考网站: [腾讯云社区](https://cloud.tencent.com/developer/section/1423860)
+参考网站: [腾讯云社区](https://cloud.tencent.com/developer/section/1423860) **(完成)**
 
 # tensorflowjs
 
@@ -219,7 +219,7 @@ https://shadertoyunofficial.wordpress.com/
 
 # testdemo
 
-跨 Tab Demo (BroadcastChannel/SharedWorker/LocalStorage)
+跨 Tab Demo (BroadcastChannel/SharedWorker/LocalStorage) **(完成)**
 
 # thebookofshaders
 
@@ -245,7 +245,7 @@ https://shadertoyunofficial.wordpress.com/
 
 # typescripttips
 
-TS小技巧
+TS小技巧 **(完成)**
 
 # u3decs
 
@@ -261,7 +261,7 @@ U3D JobSystem
 
 # unity2d
 
-包括 Unity Isometric, Unity 2D, Unity 2D 灯光 的一些笔记
+包括 Unity Isometric, Unity 2D, Unity 2D 灯光 的一些笔记 **(完成)**
 
 # unitye
 

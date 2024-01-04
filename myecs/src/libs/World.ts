@@ -1,0 +1,5 @@
+namespace myecs {
+    class World {
+
+    }
+}

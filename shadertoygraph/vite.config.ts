@@ -10,6 +10,10 @@ export default defineConfig({
     server: {
         port: 22222,
         hmr,
+        watch: {
+            usePolling: true
+        },
     },
     base,
+    publicDir: 'export',
 })

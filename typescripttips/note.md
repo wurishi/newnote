@@ -96,7 +96,7 @@ type EntityWithId =
   | { type: 'comment'; commentId: string };
 ```
 
-如上期一样, 如果更优雅的转换呢?
+如上期一样, 如何更优雅的转换呢?
 
 ```typescript
 type EntityWithId = {
@@ -567,4 +567,427 @@ export type Action = 'ADD_TODO' | 'EDIT_TODO' | 'REMOVE_TODO'
 export type ActionModule = typeof import('./13_constants')
 
 export type Action = ActionModule[keyof ActionModule]
+```
+
+# 14. global
+
+通过声明 (`declare`) 一个 `global`，可以在内部定义一个 `interface`，然后可以在所有需要用到的地方使用如下形式扩展这个接口，并且所有用到这个接口的地方都会看到扩展内容：
+
+```typescript
+
+// user.ts
+
+declare global {
+  interface GlobalReducerEvent {
+    LOG_IN: {};
+  }
+}
+
+// todos.ts
+
+declare global {
+  interface GlobalReducerEvent {
+    ADD_TODO: {
+      text: string;
+    }
+  }
+}
+
+```
+
+# 15. Extract
+
+```typescript
+export type Event =
+    | {
+        type: 'LOG_IN';
+        payload: {
+            userId: string;
+        };
+    }
+    | {
+        type: 'SIGN_OUT';
+    };
+
+const sendEvent = (eventType: Event['type'], payload?: any) => { };
+
+sendEvent('LOG_IN', { userId: '123' })
+sendEvent('SIGN_OUT')
+```
+
+在以上代码中，`sendEvent` 的代码提示并不够完善，`payload` 是可选参数，且类型为 `any`。这会造成如下的错误：
+
+```typescript
+// SIGN_OUT 不需要任何 payload
+sendEvent('SIGN_OUT', {});
+// userId 类型不正确
+sendEvent('LOG_IN', {
+    userId: 123,
+});
+// payload 缺少 userId
+sendEvent('LOG_IN', {});
+// 缺少 payload
+sendEvent('LOG_IN');
+```
+
+可以优化 `sendEvent` 成这样：
+
+```typescript
+const sendEvent = <Type extends Event['type']>
+    (...args: Extract<Event, { type: Type }> extends { payload: infer TPayload }
+        ? [Type, TPayload]
+        : [Type]
+    ) => { };
+```
+
+上述错误的使用将会第一时间被 `tsc` 发现并被告知。
+
+`Extract<U, T>` 意为从 `U` 中抽取符合 `T` 的类，比如：
+
+```typescript
+type A = 'a' | 'b' | 'c';
+type B = 'b';
+Extract<A, B> // 'b'
+// 只有 'b' 符合条件
+```
+
+类似的还有一个 `Exclude<U, T>`，它是从 `U` 中排除符合 `T` 的类，所以：
+
+```typescript
+type A = 'a' | 'b' | 'c';
+type B = 'b';
+Exclude<A, B> // 'a' | 'c'
+// 排除了 'b'
+```
+
+在上述例子中，会发现 `sendEvent` 的参数名提示为 `arg_0` `arg_1`，如果要更优雅的提示参数名，可以作如下修改：
+
+```typescript
+const sendEvent = <Type extends Event['type']>
+    (...args: Extract<Event, { type: Type }> extends { payload: infer TPayload }
+        ? [type: Type, payload: TPayload]
+        : [type: Type]
+    ) => { };
+```
+
+# 16. noUncheckedIndexedAccess
+
+有如下一个对象：
+
+```typescript
+export const myObj: Record<string, string[]> = {};
+```
+
+我们可以直接这样使用：
+
+```typescript
+myObj.foo.push('bar');
+```
+
+显然，`foo` 可能是未定义的，这样写会得到一个运行时错误。但其实更合理的是在我们写代码的阶段就提示错误，这就需要我们通过修改 `tsconfig.json` 来实现：
+
+```json
+{
+  // ...
+  "noUncheckedIndexedAccess": true
+}
+```
+
+此时，我们会在代码阶段就得到错误提示，这要求我们更安全合理的编码：
+
+```typescript
+
+myObj.foo.push('bar'); // 提示 'myObj.foo' is possibly 'undefined'
+
+myObj.foo?.push('bar'); // 通过 foo? 来安全的访问
+
+if (myObj.foo) { // 先判断是否存在
+    myObj.foo.push('bar');
+}
+
+if (!myObj.foo) { // 或者为空时先初始化
+    myObj.foo = []
+}
+```
+
+# 17. 按需删除联合类型
+
+要得到一个去掉某个属性的类，可以使用 `Omit` 来实现：
+
+```typescript
+type Test = {
+    a: number;
+    b: string;
+    c: Date;
+}
+
+type WithoutC = Omit<Test, 'b'> // { a: number, c: Date }
+```
+
+但如果有一个联合类型，要去掉指定项的话，用 `Omit` 就不行了：
+
+```typescript
+type Letters = 'a' | 'b' | 'c'
+
+type WithoutC = Omit<Letters, 'b'> // 会得到一个枚举了字符串所有方法的类
+```
+
+此时可以这样来实现效果：
+
+```typescript
+type RemoveC<TType> = TType extends 'c' ? never : TType
+
+type WithoutC = RemoveC<Letters> // 得到一个正确的联合类型："a" | "b"
+```
+
+更进一步，像 `Omit<T, K>` 一样实现一个去掉指定项的类：
+
+```typescript
+type RemoveAny<TType, RType> = TType extends RType ? never : TType
+
+type WithoutB = RemoveAny<Letters, 'b'> // "a" | "c"
+```
+
+# 18. asserts
+
+```typescript
+declare global {
+    function postFn(userId: string, title: string): void
+}
+
+export class SDK {
+    constructor(public loggedInUserId?: string) { }
+
+    createPost(title: string) {
+        this.assertUserIsLoggedIn();
+
+        postFn(this.loggedInUserId, title); // 错误提示 SDK.loggedInUserId?: string | undefined 
+    }
+
+    assertUserIsLoggedIn() {
+        if (!this.loggedInUserId) {
+            throw new Error('User is not logged in');
+        }
+    }
+}
+```
+
+在上面的代码中，`postFn(this.loggedInUserId, title)` 会有一处错误，告诉你 `loggedInUserId` 可能未定义，但其实我们在 `assertUserIsLoggedIn()` 中有作过判断，并且如果将 `assertUserIsLoggedIn` 方法中的内容移到 `postFn()` 前面时，错误就会消失。这种情况下，可以使用 `asserts` 优化这个行为。
+
+```typescript
+assertUserIsLoggedIn(): asserts this is this & { loggedInUserId: string } {
+    if (!this.loggedInUserId) {
+        throw new Error('User is not logged in');
+    }
+}
+```
+
+此时：
+
+```typescript
+createPost(title: string) {
+  // 执行前，this.loggedInUserId? 还是string | undefined
+  this.assertUserIsLoggedIn();
+  // 执行后，因为有了 asserts 断言了 this.loggedInUserId 是 string 类型
+  postFn(this.loggedInUserId, title);
+}
+// 注意 loggedInUserId 必须是 public / protected, private 不行
+```
+
+# 19. 合理的返回
+
+# 20. Extract 巧用
+
+有这样一个类：
+
+```typescript
+export type Obj = {
+    a: 'a',
+    a2: 'a2',
+    a3: 'hello',
+    b: 'b',
+    b1: 'b1',
+    b2: 'b2',
+}
+```
+
+如果想要一个以 `a` 开头的联合类型，可以这样写：
+
+```typescript
+type ValueOfKeysStartingWithA<T> = {
+    [K in Extract<keyof T, `a${string}`>]: T[K];
+}[Extract<keyof T, `a${string}`>]
+
+type NewUnion = ValueOfKeysStartingWithA<Obj>  // "a" | "a2" | "hello"
+```
+
+对它进行进一步优化，我们可以得到一个自定义规则的 `ValueOfKeysStartingWith` 类型：
+
+```typescript
+type ValueOfKeysStartingWith<
+    T,
+    _ExtractedKeys extends keyof T = Extract<keyof T, `a${string}`>
+> = {
+    [K in _ExtractedKeys]: T[K]
+}[_ExtractedKeys]
+
+type AUnion = ValueOfKeysStartingWith<Obj> // "a" | "a2" | "hello"
+type BUnion = ValueOfKeysStartingWith<Obj, Extract<keyof Obj, `b${string}`>> // "b" | "b1" | "b2"
+```
+
+# 21. @preconstruct/cli
+
+```shell
+安装：
+npm i -D @preconstruct/cli
+
+修复：
+npx preconstruct fix
+
+编译：
+npx preconstruct build
+```
+
+修复功能，会根据 `package.json` 中的配置，指向到对应的生成好的 js 文件，如果想要 ESModule 文件，也只需要在 `package.json` 中添加一个 `"module": true` 字段，`fix` 功能会自动指向对应的 js 文件。
+
+需要在 `package.json` 中添加 `file` 属性并将 `dist` 目录添加进去。
+
+Typescript 项目还需要安装 `@babel/preset-typescript`，并在 `.babelrc` 中配置。
+
+还可以安装 `@babel/preset-env`，并在 `.babelrc` 中配置，让生成的 js 使用 ES5 之前的语法。
+
+# 22. const
+
+如果有一个变量
+
+```typescript
+export let age = 31;
+
+age = 32;
+```
+
+当我们不希望修改它的值是，可以使用 `const`:
+
+```typescript
+export const name = 'Matt';
+
+// name = 'lala'; 不可以修改
+```
+
+但如果现在有一个数组:
+
+```typescript
+export const tsPeople = [
+    'Andarist',
+    'Titian',
+    'Devansh',
+    'Anurag',
+];
+
+tsPeople[0] = 'Hello';
+```
+
+如果我们也希望数组中的每一项也不可修改时，可以这样写:
+
+```typescript
+export const tsPeople = [
+    'Andarist',
+    'Titian',
+    'Devansh',
+    'Anurag',
+] as const;
+
+// tsPeople[0] = 'Hello'; 会提示你该属性为 read-only
+```
+
+同样的也可以用在 `object` 上：
+
+```typescript
+export const moreTsPeople = {
+    'Andarist': 'Andarist',
+    'Titian': 'Titian',
+    'Devansh': 'Devansh',
+    'Anurag': 'Anurag',
+    arr: [1],
+    obj: {
+        a: 'a',
+        b: 'b',
+    }
+} as const;
+
+// moreTsPeople.Andarist = 'Whatever'; 该属性为 read-only
+// moreTsPeople.arr[0] = 13;
+// moreTsPeople.obj.b = 'str';
+```
+
+特别要注意的是，`arr` 和 `obj` 也是只读的。
+
+# 23. undefined 注意事项
+
+```typescript
+interface UserInfo1 {
+    name: string;
+    role?: "admin";
+}
+
+interface UserInfo2 {
+    name: string;
+    role: "admin" | undefined;
+}
+
+export const createUser1 = (userInfo: UserInfo1) => { };
+
+createUser1({
+    name: 'Matt'
+});
+
+createUser1({
+    name: 'David',
+    role: 'admin',
+});
+
+export const createUser2 = (userInfo: UserInfo2) => { };
+
+createUser1({
+    name: 'Matt',
+    role: undefined,
+});
+
+createUser1({
+    name: 'David',
+    role: 'admin',
+});
+```
+
+虽然 `UserInfo1` 和 `UserInfo2` 从概念上来讲是相同的，但是 `UserInfo2` 一般会被用在需要明确告知使用者这里是需要一个 `role` 属性的，即使它是 `undefined`。
+
+# 24.
+
+# 25. 练习
+
+```typescript
+export interface ColorVariants {
+    primary: 'blue';
+    secondary: 'red';
+    tertiary: 'green';
+}
+
+type PrimaryColor = ColorVariants['primary']; // blue
+
+type NonPrimaryColor = ColorVariants['secondary' | 'tertiary']; // red | green
+
+type EveryColor = ColorVariants[keyof ColorVariants]; // blue | red | green
+
+type Letters = ['a', 'b', 'c'];
+
+type AOrB = Letters[0 | 1]; // a | b
+
+type Letter = Letters[number]; // a | b | c
+
+interface UserRoleConfig {
+    user: ['view', 'create', 'update'];
+    superAdmin: ['view', 'create', 'update', 'delete'];
+}
+
+type Role = UserRoleConfig[keyof UserRoleConfig][number]; // view | create | update | delete
 ```

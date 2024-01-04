@@ -1,5 +1,10 @@
 [link](https://jestjs.io/docs/zh-Hans/getting-started)
 
+```
+logHeapUsage
+coverage
+```
+
 # 1. 介绍
 
 ## 1.1 开始

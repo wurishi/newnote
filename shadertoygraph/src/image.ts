@@ -1,4 +1,5 @@
 import { Format } from './type'
+import { getAssetsUrl } from './utils/proxy'
 
 const FOLDER = '/textures/'
 const CUBEMAPS_FOLDER = FOLDER + 'cubemaps/'
@@ -94,8 +95,27 @@ export function getCubemaps(name: string) {
     const maps: string[] = []
     for (let i = 0; i < 6; i++) {
         const tmp = i === 0 ? name : name + '_' + i
-        maps.push(CUBEMAPS_FOLDER + tmp + POSTFIX[name])
+        maps.push(getAssetsUrl(CUBEMAPS_FOLDER + tmp + POSTFIX[name]))
     }
 
     return maps
+}
+
+export const musicMap: Record<string, string> = {
+    default: '8-bit-mentality.mp3',
+    '4sXGzn': '8-bit-mentality.mp3',
+    '4df3Rn': 'Electronebulae.mp3',
+    'XsXGzn': 'Experiment.mp3',
+    "4sXGRr": "Most-Geometric-Person.mp3",
+    "XsXGRr": "Tropical-Beeper.mp3",
+    "XdfGzn": "X-TrackTure.mp3",
+    '4dfGzn': 'ourpithyator.mp3'
+}
+
+export function getMusic(key: string) {
+    if(!musicMap[key]) {
+        console.log('music: 使用default代替了 ' + key)
+    }
+    let file = musicMap[key] || musicMap.default
+    return FOLDER + file
 }

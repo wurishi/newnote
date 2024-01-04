@@ -1099,7 +1099,7 @@ webpack.config.js
 以下是一些由社区提供的对代码分离很有帮助的插件和 loader:
 
 - [ExtractTextPlugin](https://www.webpackjs.com/plugins/extract-text-webpack-plugin/): 用于将 CSS 从主应用程序中分离. (webpack 4 开始使用 [mini-css-extract-plugin](https://github.com/webpack-contrib/mini-css-extract-plugin))
-- [bundle-loader](https://www.webpackjs.com/loaders/bundle-loader/): 用于分离代友和延迟加载生成的 bundle.
+- [bundle-loader](https://www.webpackjs.com/loaders/bundle-loader/): 用于分离代码和延迟加载生成的 bundle.
 - [promise-loader](https://github.com/gaearon/promise-loader): 类似于 `bundle-loader`, 但是使用的是 promise.
 
 ## 9.3 动态导入(dynamic imports)

@@ -53,7 +53,7 @@ function B (y) {
 
 如果用 FP 的写法, 我们会完全避免这种 Function 的产生, 这会大大降低系统的状态复杂度, 进而减少 BUG.
 
-- Pure: 是指一个 Function 只要传入相同的参数将永远返回相同的结果, 并且不会造成任何副使用(Side Effect), 如修改外部状态.
+- Pure: 是指一个 Function 只要传入相同的参数将永远返回相同的结果, 并且不会造成任何副作用(Side Effect), 如修改外部状态.
 - FP: FP 虽然不能完全避免 BUG, 但可以减少不必要的复杂度, 让系统更好维护.
 - Out of the Tar Pit: 这篇[论文](http://curtclifton.net/papers/MoseleyMarks06a.pdf?fbclid=IwAR0gb8bUhNOewLehDjazJapgwIQAFaG6NEGiL_WWpLqXs1c8KaIKtJAZCiE)在探讨各种编程模式能不能降低系统的复杂度, 其中就有提到 FP 可以很好的避免因状态所导致的复杂性问题.
 

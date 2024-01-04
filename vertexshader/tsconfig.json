@@ -13,7 +13,8 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noImplicitReturns": true,
-        "types": ["vite/client"]
+        "types": ["vite/client"],
+        "allowJs": true
     },
     "include": ["./src"]
 }

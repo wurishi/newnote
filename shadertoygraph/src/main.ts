@@ -62,7 +62,7 @@ function init() {
     return key;
   });
 
-  const gui = ();new GUI
+  const gui = new GUI();
   const mainFolder = gui.addFolder('主菜单');
   const folderMap = new Map<string, GUI>();
 

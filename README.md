@@ -1,3 +1,5 @@
+proxy port 22226 (testdemo)
+
 # antvg2
 
 [参考资料](https://antv-g2.gitee.io/zh/docs/manual/about-g2)
@@ -81,6 +83,9 @@ electron
 
 [参考资料](https://jestjs.io/docs/zh-Hans/getting-started) _(进行中 2/4)_
 
+# jquery
+[参考资料](https://learn.jquery.com/about-jquery/)
+
 # jsgenerator
 
 参考资料:
@@ -99,6 +104,12 @@ electron
 leetcode
 
 [labuladong的算法小抄](https://labuladong.gitbook.io/algo/)
+
+# litegraph
+
+litegraph.js
+
+https://github.com/jagenjo/litegraph.js
 
 # ml5
 
@@ -167,10 +178,15 @@ concurrent 实验
 # rust
 
 Rust
+https://rust.p2hp.com/learn/
 
 # rxjs30
 
 参考资料: [30 天精通 RxJS](https://blog.jerry-hong.com/series/rxjs/) **(完成)**
+
+# sd
+
+stable diffusion
 
 # shadertoy
 
@@ -181,14 +197,15 @@ https://shadertoyunofficial.wordpress.com/
 # shadertoygraph
 重构 shadertoy 的渲染代码（极大部分的多 buffer 可以正常显示了），通过官方扩展下载的 json 文件可以通过工具生成对应的配置。
 
+目前改成直接转换官网下载的 json 文件并显示，减少中间商 -.-
 
 # sveltejs
 
-参考网站: [sveltejs](https://www.sveltejs.cn/)
+参考网站: [sveltejs](https://www.sveltejs.cn/) **(完成)**
 
 # svg
 
-参考网站: [腾讯云社区](https://cloud.tencent.com/developer/section/1423860)
+参考网站: [腾讯云社区](https://cloud.tencent.com/developer/section/1423860) **(完成)**
 
 # tensorflowjs
 
@@ -199,6 +216,10 @@ https://shadertoyunofficial.wordpress.com/
 [无代码训练](https://teachablemachine.withgoogle.com/train)
 
 [Magenta](https://magenta.tensorflow.org/get-started/)
+
+# testdemo
+
+跨 Tab Demo (BroadcastChannel/SharedWorker/LocalStorage) **(完成)**
 
 # thebookofshaders
 
@@ -218,9 +239,13 @@ https://shadertoyunofficial.wordpress.com/
 - fundamentals: [fundamentals](https://threejsfundamentals.org/threejs/lessons/zh_cn/) (*进行中*)
 - webgl - webglfundamentals: [webglfundamentals](https://webglfundamentals.org/webgl/lessons/zh_cn/)
 
+# typechallenges
+
+参考资料：[type-challenges](https://github.com/type-challenges/type-challenges/blob/main/README.zh-CN.md)
+
 # typescripttips
 
-TS小技巧
+TS小技巧 **(完成)**
 
 # u3decs
 
@@ -236,7 +261,7 @@ U3D JobSystem
 
 # unity2d
 
-包括 Unity Isometric, Unity 2D, Unity 2D 灯光 的一些笔记
+包括 Unity Isometric, Unity 2D, Unity 2D 灯光 的一些笔记 **(完成)**
 
 # unitye
 
@@ -293,3 +318,6 @@ SVG 路径动画
 参考资料: [ZRender 官网 Examples](https://ecomfe.github.io/zrender-doc/public/examples.html) **(完成)**
 
 https://turtletoy.net/turtle/90a99d3469#AMOUNT=0.2
+
+WebRTC
+https://github.com/wang1xiang/webrtc-tutorial/blob/master/04-one-to-one/src/socket.js

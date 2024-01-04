@@ -1,4 +1,7 @@
 import './style.css';
 import demo from './Animation/AnimatedTreemap';
 
-demo();
+// demo();
+
+import TF from './tf';
+TF();

@@ -59,6 +59,7 @@ import NewVideoTexture from './effectpass/newVideoTexture'
 import { updateTextureFromImage } from './utils/texture/updateTextureFromImage'
 import NewKeyboardTexture from './effectpass/newKeyboardTexture'
 import NewWebCamTexture from './effectpass/newWebCamTexture'
+import NewMicTexture from './effectpass/newMicTexture'
 
 type DestroyCall = {
     (wa: AudioContext): void
@@ -177,7 +178,12 @@ export default class MyEffectPass {
             this.resetTexture(slot, input)
             result.failed = false
         } else if (url.type === 'mic') {
-            // TODO: mic
+            // TODO:
+            console.warn('TODO: mic 未支持，可改为 music 暂替')
+            // input = NewMicTexture(wa!, this.mGL, url)
+            // result.needsShaderCompile = false // TODO
+            // this.resetTexture(slot, input)
+            // result.failed = false
         } else if (url.type === 'video') {
             input = NewVideoTexture(this.mGL, url)
 
@@ -900,11 +906,8 @@ export default class MyEffectPass {
     }
 
     private Paint_Cubemap_Fn = (param: PaintParam) => {
-        return
-        // console.log('cubemap')
         const { bufferID, cubeBuffers } = param
         const buffer = cubeBuffers![bufferID]
-        // TODO:
         this.mEffect.ResizeCubemapBuffer(bufferID, 1024, 1024)
 
         let dstID = 1 - buffer.lastRenderDone

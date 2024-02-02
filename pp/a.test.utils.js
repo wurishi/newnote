@@ -12,7 +12,6 @@ import {
 } from '@reach/router'
 import { render as rtlRender } from '@testing-library/react'
 import { Provider } from 'react-redux'
-import { PAYPAL_THEME } from '@paypalcorp/pp-react-theme'
 import { ThemeProvider } from '@emotion/react'
 
 /**
@@ -32,7 +31,7 @@ function render(ui, options) {
   const utils = rtlRender(
     <React.Suspense fallback="__test_fallback__">
       <LocationProvider history={history}>
-        <ThemeProvider theme={PAYPAL_THEME}>{ui}</ThemeProvider>
+        <ThemeProvider theme={_THEME}>{ui}</ThemeProvider>
       </LocationProvider>
     </React.Suspense>,
     renderOptions,
@@ -59,7 +58,7 @@ function renderWithRedux(ui, { store, ...renderOptions } = {}) {
   function Wrapper({ children }) {
     return <Provider store={store}>{children}</Provider>
   }
-  return rtlRender(<ThemeProvider theme={PAYPAL_THEME}>{ui}</ThemeProvider>, {
+  return rtlRender(<ThemeProvider theme={_THEME}>{ui}</ThemeProvider>, {
     wrapper: Wrapper,
     ...renderOptions,
   })
